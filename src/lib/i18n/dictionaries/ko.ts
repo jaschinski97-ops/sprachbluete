@@ -603,6 +603,24 @@ const ko = {
   "progress.milestoneRow": "처음 {{size}}개 단어",
   "progress.milestoneValue": "{{total}}개 중 {{started}}개 시작",
   "progress.milestoneNote": "어휘와 같은 순서 — 자주 쓰는 일상 단어가 먼저 나옵니다.",
+  /* Geführter Lernpfad */
+  "path.next": "다음 학습 단계",
+  "path.title": "문장 이해하고 만들기",
+  "path.intro": "먼저 간단한 문장의 구조를 배우고 듣기, 쓰기, 말하기에 활용하세요.",
+  "path.sequence": "설명 → 예문 → 연습 → 직접 사용",
+  "path.open": "학습 열기",
+  "path.sentenceStructure": "문장은 어떻게 만들어질까요?",
+  "path.structureNote": "간단한 문장은 누가 행동하는지, 무엇이 일어나는지, 무엇이 영향을 받는지 보여 줍니다. 어순은 언어마다 다릅니다.",
+  "path.subject": "누가? · 주어",
+  "path.verb": "무엇을 하나요? · 동사",
+  "path.object": "무엇을? · 목적어",
+  "path.practiceNote": "예문을 본 뒤 새로운 단어와 완전한 문장으로 연습하세요.",
+  "path.areas": "다섯 가지 학습 영역",
+  "path.vocabulary": "한 번에 최대 20장의 카드, 이후 단어를 직접 입력하세요.",
+  "path.listening": "글을 보지 않고 문장을 이해하고 다시 들은 뒤 받아쓰기로 확인하세요.",
+  "path.literacy": "대화를 읽고 직접 답장을 쓰세요.",
+  "path.speaking": "문장을 따라 말하고 자유롭게 답하며 역할극을 하세요.",
+  "path.grammar": "규칙을 이해하고 바로 연습에 적용하세요.",
 } as const;
 
 export default ko;

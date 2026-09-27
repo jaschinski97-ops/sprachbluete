@@ -5,6 +5,7 @@ import type { UiLanguage } from '@/lib/i18n/types';
 import { shuffled, seededRandom } from '../drills/random';
 
 export const SENTENCE_PREPARATION_MS = 15_000;
+export const SENTENCE_SESSION_SIZE = 8;
 /** 4:3:2 ratio for short sentences, not Nation's 4/3/2-minute talks. */
 export const SENTENCE_WINDOWS_MS = [12_000, 9_000, 6_000] as const;
 export type SentenceMode = 'shadowing' | 'sentenceRepeat' | 'sentenceListening';
@@ -27,7 +28,7 @@ export function sentenceSession(
   seed: number,
   anchor: UiLanguage = 'de'
 ): SentenceTask[] {
-  return shuffled(satzaufgabenFuer(language, anchor) ?? [], seededRandom(seed));
+  return shuffled(satzaufgabenFuer(language, anchor) ?? [], seededRandom(seed)).slice(0, SENTENCE_SESSION_SIZE);
 }
 export function sentenceAnswers(task: SentenceTask, seed: number): string[] {
   return shuffled(task.answers, seededRandom(seed));

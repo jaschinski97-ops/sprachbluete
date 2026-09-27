@@ -62,7 +62,9 @@ jest.mock('@/lib/drills/session', () => ({
 }));
 jest.mock('@/lib/review-log', () => ({ recordDrill: async () => {} }));
 jest.mock('expo-router', () => ({
-  useLocalSearchParams: () => ({ direction: 'de_to_th' }),
+  // Der Lern-Reiter beginnt nun auf dem Pfad; dieser Fehlerfall öffnet
+  // ausdrücklich die Karteikarten über ihre direkte Übungsadresse.
+  useLocalSearchParams: () => ({ direction: 'de_to_th', mode: 'cards' }),
   useRouter: () => ({ setParams: jest.fn() }),
 }));
 jest.mock('@/lib/profile', () => ({

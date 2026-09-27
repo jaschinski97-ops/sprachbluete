@@ -603,6 +603,24 @@ const ja = {
   "progress.milestoneRow": "最初の{{size}}語",
   "progress.milestoneValue": "{{total}}語中{{started}}語を開始",
   "progress.milestoneNote": "語彙と同じ順序です。よく使う日常語が先に並びます。",
+  /* Geführter Lernpfad */
+  "path.next": "次のステップ",
+  "path.title": "文を理解して作る",
+  "path.intro": "まず簡単な文の仕組みを学び、聞く・書く・話す練習で使いましょう。",
+  "path.sequence": "説明 → 例 → 練習 → 自分で使う",
+  "path.open": "レッスンを開く",
+  "path.sentenceStructure": "文はどう作る？",
+  "path.structureNote": "簡単な文は、誰が行動し、何が起こり、何に働きかけるかを示せます。語順は言語によって異なります。",
+  "path.subject": "誰が？・主語",
+  "path.verb": "どうする？・動詞",
+  "path.object": "何を？・目的語",
+  "path.practiceNote": "例を見てから、新しい単語と文全体で練習しましょう。",
+  "path.areas": "5つの学習分野",
+  "path.vocabulary": "1回に最大20枚のカード。その後、自分で単語を入力します。",
+  "path.listening": "文字を見ずに文を理解し、聞き直して書き取りで確かめます。",
+  "path.literacy": "対話を読み、自分の返答を書きます。",
+  "path.speaking": "文を復唱し、自由に答え、ロールプレイをします。",
+  "path.grammar": "規則を理解し、すぐに練習で使います。",
 } as const;
 
 export default ja;

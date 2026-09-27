@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import type { VocabEntry } from '@/data/vocab-types';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -96,11 +97,10 @@ function messageOf(e: unknown): string {
 function parseMode(value: unknown, direction: PairDirection): Mode {
   // SEIT AE-66 ÜBER DIE MODESLISTE STATT EINZELNER LITERALE: `?mode=shadowing`
   // ist für jede Richtung gültig oder fällt auf Karteikarten zurück — auch ein
-  // gemerkter Modus einer alten Richtung kann nie einen ungültigen Zustand
-  // ergeben. 'heute' (Heutige Runde, Schritt 2) ist kein richtungseigener
-  // Modus, sondern als Sammelmodus überall gültig.
-  const modes: string[] = [...modesForDirection(direction), 'heute'];
-  return typeof value === 'string' && modes.includes(value) ? (value as Mode) : 'cards';
+  // Alte oder ungültige Modus-Adressen landen auf der Lernübersicht. 'heute'
+  // ist als Sammelmodus überall gültig.
+  const modes: string[] = [...modesForDirection(direction), 'heute', 'path'];
+  return typeof value === 'string' && modes.includes(value) ? (value as Mode) : 'path';
 }
 
 function ZurueckZurUebersicht() {
@@ -153,7 +153,7 @@ export default function ReviewScreen() {
    * Oberflächen bleibt der Stand über einen Neustart erhalten.
    */
   const remember = useCallback(async (direction: PairDirection | null, mode?: Mode) => {
-    setProfile(await setReviewSpot(direction ? { direction, mode: mode ?? 'cards' } : null));
+    setProfile(await setReviewSpot(direction ? { direction, mode: mode ?? 'path' } : null));
   }, []);
 
   const open = useCallback(
@@ -214,11 +214,8 @@ export default function ReviewScreen() {
     );
   }
 
-  // Ohne `?mode=` in der Adresse gilt der gemerkte Stand - aber nur, wenn er
-  // zu DIESER Richtung gehoert.
-  const gemerkterModus =
-    profile.review && profile.review.direction === direction ? profile.review.mode : undefined;
-  const mode = parseMode(params.mode ?? gemerkterModus, direction);
+  // Ohne ausdrücklichen Übungsmodus beginnt Lernen immer auf dem Lernpfad.
+  const mode = parseMode(params.mode, direction);
 
   return (
     <ReviewBody
@@ -231,10 +228,8 @@ export default function ReviewScreen() {
       }}
       onRemember={remember}
       onExit={() => {
-        // Explizit 'cards' statt `mode: undefined`: Ohne `?mode=` greift der
-        // gemerkte Profilstand, und der Merk-Effekt unten haette die Sitzung
-        // sofort wieder geoeffnet - "Verlassen" waere eine No-op.
-        router.setParams({ direction, mode: 'cards' });
+        // Ein expliziter Pfadmodus schließt auch direkte Übungsadressen.
+        router.setParams({ direction, mode: 'path' });
       }}
     />
   );
@@ -268,11 +263,12 @@ function ReviewBody({
   onExit: () => void;
 }) {
   const { t, languageName, uiLanguage } = useLocale();
+  const [lessonOpen, setLessonOpen] = useState(false);
+  const [writingPack, setWritingPack] = useState<VocabEntry[] | null>(null);
   useEffect(() => {
     // Die Heutige Runde ist ein Sammelmodus ohne gemerkten Stand — als
-    // Lesezeichen bleibt die Karteikarten-Sitzung, sonst stünde man beim
-    // nächsten Öffnen mitten in einer abgebrochenen Runde.
-    onRemember(direction, mode === 'heute' ? 'cards' : mode);
+    // Lesezeichen bleibt die Lernübersicht, statt eine abgebrochene Runde.
+    onRemember(direction, mode === 'heute' ? 'path' : mode);
     // `onRemember` ist bewusst nicht in der Liste: Es schreibt das Profil und
     // erzeugt dadurch eine neue Identitaet - mit ihm liefe der Effekt endlos.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -296,30 +292,42 @@ function ReviewBody({
       }>
       {mode === 'heute' ? (
         <TodayRoundRunner key={direction} direction={direction} onExit={onExit} />
+      ) : mode === 'path' ? (
+        <>
+          <LearnPath
+            direction={direction}
+            lessonOpen={lessonOpen}
+            setLessonOpen={setLessonOpen}
+            onOpen={(picked) => {
+              setWritingPack(null);
+              onOpen(direction, picked);
+            }}
+          />
+          {ziel && goalLanguage(ziel) === 'de' ? <PruefungsEinstieg direction={direction} /> : null}
+          <DirectionBar onSwitch={onSwitch} />
+        </>
       ) : (
         <>
-          {/* Der Hauptknopf der Runde bleibt unter den Übungen sichtbar —
-              nur nicht, während die Runde selbst läuft. */}
-          <HeutigeRundeKnopf onPress={() => onOpen(direction, 'heute')} />
-          <ModeBar
-            direction={direction}
-            mode={mode}
-            onPick={(picked) => onOpen(direction, picked)}
-          />
-
-          {/* Eigenständiger Punkt „Prüfung“ — NUR beim Lernziel Deutsch
-              (Nutzerplan 14.09.: erst Deutsch zum Laufen bringen, die
-              Erweiterung auf die anderen Ziele folgt von Hand). */}
-          {ziel && goalLanguage(ziel) === 'de' ? (
-            <PruefungsEinstieg direction={direction} />
-          ) : null}
-
-          <DirectionBar onSwitch={onSwitch} />
+          <ThemedButton label={t('common.back')} onPress={onExit} />
+          <ThemedText type="smallBold">{t(modeKey(mode))}</ThemedText>
 
           {mode === 'cards' ? (
-        <CardSession direction={direction} onExit={onExit} key={direction} />
+        <CardSession
+          direction={direction}
+          onWrite={(entries) => {
+            setWritingPack(entries);
+            onOpen(direction, 'writing');
+          }}
+          key={direction}
+        />
       ) : mode === 'writing' ? (
-        <WritingRunner key={`${direction}:writing`} direction={direction} onExit={onExit} />
+        <WritingRunner
+          key={`${direction}:writing`}
+          direction={direction}
+          entries={writingPack ?? undefined}
+          size={writingPack ? 20 : undefined}
+          onExit={onExit}
+        />
       ) : mode === 'dictation' ? (
         <DictationRunner
           key={`${direction}:dictation`}
@@ -382,8 +390,87 @@ function HeutigeRundeKnopf({ onPress }: { onPress: () => void }) {
       label={t('round.cta', { minutes: ROUND_MINUTES })}
       accessibilityLabel={t('round.ctaA11y', { minutes: ROUND_MINUTES })}
       onPress={onPress}
-      variant="primary"
     />
+  );
+}
+
+const SENTENCE_EXAMPLES = {
+  th: ['ฉัน', 'กิน', 'ข้าว'],
+  en: ['I', 'eat', 'rice'],
+  es: ['Yo', 'como', 'arroz'],
+  de: ['Ich', 'esse', 'Reis'],
+} as const;
+
+function LearnPath({
+  direction,
+  lessonOpen,
+  setLessonOpen,
+  onOpen,
+}: {
+  direction: PairDirection;
+  lessonOpen: boolean;
+  setLessonOpen: (value: boolean) => void;
+  onOpen: (mode: Mode) => void;
+}) {
+  const { t } = useLocale();
+  const colors = useTheme();
+  const groups = groupsForDirection(direction);
+  const grammar = groups[4].modes[0];
+  const example = SENTENCE_EXAMPLES[targetLanguageOf(direction)];
+
+  return (
+    <View style={styles.learnHome}>
+      <ThemedView type="backgroundElement" style={styles.pathHero}>
+        <ThemedText type="smallBold" themeColor="accent">{t('path.next')}</ThemedText>
+        <ThemedText type="subtitle">{t('path.title')}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{t('path.intro')}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{t('path.sequence')}</ThemedText>
+        <ThemedButton
+          label={lessonOpen ? t('common.back') : t('path.open')}
+          onPress={() => setLessonOpen(!lessonOpen)}
+          variant="primary"
+        />
+      </ThemedView>
+
+      {lessonOpen ? (
+        <ThemedView type="backgroundElement" style={styles.lessonPanel}>
+          <ThemedText type="smallBold">{t('path.sentenceStructure')}</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">{t('path.structureNote')}</ThemedText>
+          <View style={styles.sentenceParts}>
+            {example.map((word, index) => (
+              <ThemedView key={`${word}:${index}`} type="background" style={styles.sentencePart}>
+                <ThemedText type="default" style={styles.exampleWord}>{word}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t((['path.subject', 'path.verb', 'path.object'] as const)[index])}
+                </ThemedText>
+              </ThemedView>
+            ))}
+          </View>
+          <ThemedText type="small" themeColor="textSecondary">{t('path.practiceNote')}</ThemedText>
+          {([
+            [grammar, modeKey(grammar)],
+            ['cards', 'mode.cards'],
+            ['sentenceListening', 'mode.sentenceListening'],
+            ['lesestoffe', 'mode.lesestoffe'],
+            ['writing', 'mode.writing'],
+            ['sagen', 'mode.sagen'],
+          ] as const).map(([candidate, key], index) => (
+            <Pressable
+              key={`${candidate}:${index}`}
+              onPress={() => onOpen(candidate)}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.pathStep, pressed && styles.pressed]}>
+              <ThemedText type="smallBold">{index + 1}. {t(key)}</ThemedText>
+              <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
+            </Pressable>
+          ))}
+        </ThemedView>
+      ) : null}
+
+      <HeutigeRundeKnopf onPress={() => onOpen('heute')} />
+      <ThemedText type="smallBold" themeColor="textSecondary">{t('path.areas')}</ThemedText>
+      <ModeBar direction={direction} onPick={onOpen} />
+    </View>
   );
 }
 
@@ -452,70 +539,48 @@ function DirectionPicker({
   );
 }
 
-/** Umschalter zwischen Karteikarten und den Übungen dieser Richtung. */
-function ModeBar({
-  direction,
-  mode,
-  onPick,
-}: {
-  direction: PairDirection;
-  mode: Mode;
-  onPick: (mode: Mode) => void;
-}) {
+/** Fünf eigenständige Lernbereiche mit Übungen hinter einer kurzen Beschreibung. */
+function ModeBar({ direction, onPick }: { direction: PairDirection; onPick: (mode: Mode) => void }) {
   const { t } = useLocale();
+  const colors = useTheme();
+  const [expanded, setExpanded] = useState<TranslationKey | null>(null);
+  const descriptions = [
+    'path.vocabulary',
+    'path.listening',
+    'path.literacy',
+    'path.speaking',
+    'path.grammar',
+  ] as const;
 
   return (
     <View style={styles.modeBar}>
-      {groupsForDirection(direction).map((group) => {
-        // Eine Gruppe, die genauso heisst wie ihre einzige Uebung, braucht
-        // keine Beschriftung - „Sprechen Sprechen" waere doppelt.
-        const groupLabel = t(group.label);
-        const caption =
-          group.modes.length === 1 && modeLabel(group.modes[0], t) === groupLabel
-            ? null
-            : groupLabel;
+      {groupsForDirection(direction).map((group, index) => {
+        const open = expanded === group.label;
         return (
-          <View key={group.label} style={styles.modeGroup}>
-            {caption ? (
-              <ThemedText type="small" themeColor="textSecondary">
-                {caption}
-              </ThemedText>
+          <ThemedView key={group.label} type="backgroundElement" style={styles.skillCard}>
+            <Pressable
+              onPress={() => setExpanded(open ? null : group.label)}
+              accessibilityRole="button"
+              accessibilityLabel={t(group.label)}
+              accessibilityState={{ expanded: open }}
+              style={({ pressed }) => [styles.skillHeader, pressed && styles.pressed]}>
+              <View style={styles.skillText}>
+                <ThemedText type="smallBold">{t(group.label)}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">{t(descriptions[index])}</ThemedText>
+              </View>
+              <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={18} color={colors.textSecondary} />
+            </Pressable>
+            {open ? (
+              <View style={styles.skillModes}>
+                {group.modes.map((candidate) => (
+                  <ThemedButton key={candidate} label={modeLabel(candidate, t)} onPress={() => onPick(candidate)} />
+                ))}
+              </View>
             ) : null}
-            {group.modes.map((candidate) => {
-              const label = modeLabel(candidate, t);
-              const selected = candidate === mode;
-              return (
-                <Pressable
-                  key={candidate}
-                  onPress={() => onPick(candidate)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${groupLabel}: ${label}`}
-                  accessibilityState={{ selected }}
-                  // `flexShrink` am Pressable (dem Flex-Kind der Gruppe) UND
-                  // an der Fläche: nur so gibt „Satz wiederholen“ auf schmalen
-                  // Screens seinen Platz ab, statt abgeschnitten zu werden.
-                  style={({ pressed }) => [
-                    styles.modeWrap,
-                    pressed && styles.pressed,
-                  ]}>
-                  {/* Gewaehlt = gefuellt mit Akzentfarbe, nicht grau mit
-                      Tonfarben-Rahmen: Die Tonfarben sind Lerninhalt (die fünf
-                      Thai-Toene); sie zusaetzlich als Auswahlzustand zu
-                      verwenden haette zwei Bedeutungen in ein Farbalphabet
-                      gelegt (gleiche Entscheidung wie in drill-runner). */}
-                  <ThemedView
-                    type={selected ? 'accent' : 'backgroundElement'}
-                    style={styles.modeButton}>
-                    <ThemedText
-                      type="small"
-                      themeColor={selected ? 'accentText' : 'text'}>
-                      {label}
-                    </ThemedText>
-                  </ThemedView>
-                </Pressable>
-              );
-            })}
-          </View>
+            {index === 0 && !open ? (
+              <ThemedButton label={t('mode.cards')} onPress={() => onPick('cards')} />
+            ) : null}
+          </ThemedView>
         );
       })}
     </View>
@@ -577,7 +642,7 @@ function DirectionBar({ onSwitch }: { onSwitch: () => void }) {
   );
 }
 
-function CardSession({ direction, onExit }: { direction: PairDirection; onExit: () => void }) {
+function CardSession({ direction, onWrite }: { direction: PairDirection; onWrite: (entries: VocabEntry[]) => void }) {
   const { t } = useLocale();
   const colors = useTheme();
   const [queue, setQueue] = useState<ReviewItem[] | null>(null);
@@ -593,7 +658,7 @@ function CardSession({ direction, onExit }: { direction: PairDirection; onExit: 
     setQueueError(null);
     buildReviewQueue(direction)
       .then((items) => {
-        if (!cancelled) setQueue(items);
+        if (!cancelled) setQueue(items.slice(0, 20));
       })
       .catch((e) => {
         if (!cancelled) setQueueError(messageOf(e));
@@ -626,7 +691,7 @@ function CardSession({ direction, onExit }: { direction: PairDirection; onExit: 
     setIndex(0);
     setRevealed(false);
     buildReviewQueue(direction)
-      .then(setQueue)
+      .then((items) => setQueue(items.slice(0, 20)))
       .catch((e) => setQueueError(messageOf(e)));
   }, [direction]);
 
@@ -665,6 +730,7 @@ function CardSession({ direction, onExit }: { direction: PairDirection; onExit: 
         </ThemedText>
         <View style={styles.actions}>
           <ThemedButton label={t('common.recheck')} onPress={restart} />
+          {rated > 0 ? <ThemedButton label={t('mode.writing')} onPress={() => onWrite(queue.map((item) => item.entry))} variant="primary" /> : null}
         </View>
       </ThemedView>
     );
@@ -686,9 +752,6 @@ function CardSession({ direction, onExit }: { direction: PairDirection; onExit: 
         <ThemedText type="small" themeColor="textSecondary">
           {t('cards.progress', { index: index + 1, total: queue.length })}
         </ThemedText>
-        {/* Verlassen mitten in der Runde — der Karten-Runner war der einzige
-            Übungsfluss ohne Rückweg zur Übungsliste (Nutzerbefund 21.09.). */}
-        <ThemedButton label={t('common.back')} onPress={onExit} />
       </View>
 
       <Flashcard
@@ -735,6 +798,66 @@ function CardSession({ direction, onExit }: { direction: PairDirection; onExit: 
 }
 
 const styles = StyleSheet.create({
+  learnHome: {
+    gap: Spacing.three,
+  },
+  pathHero: {
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    gap: Spacing.two,
+  },
+  lessonPanel: {
+    borderRadius: Spacing.three,
+    padding: Spacing.three,
+    gap: Spacing.three,
+  },
+  sentenceParts: {
+    flexDirection: 'row',
+    gap: Spacing.one,
+  },
+  sentencePart: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+    borderRadius: Spacing.two,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.one,
+    gap: Spacing.half,
+  },
+  exampleWord: {
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  pathStep: {
+    minHeight: 44,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.two,
+  },
+  skillCard: {
+    borderRadius: Spacing.three,
+    padding: Spacing.two,
+    gap: Spacing.one,
+  },
+  skillHeader: {
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.two,
+    gap: Spacing.two,
+  },
+  skillText: {
+    flex: 1,
+    gap: Spacing.half,
+  },
+  skillModes: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.one,
+    padding: Spacing.one,
+  },
   /**
    * Mindestgroesse eines Tippziels. WCAG 2.2 verlangt in 2.5.8 (AA) 24x24
    * CSS-Pixel; Apple und Google empfehlen 44 bzw. 48. Gemessen wurde im
@@ -769,57 +892,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     flexShrink: 1,
   },
-  /**
-   * Die Fertigkeit steht VOR ihren Knoepfen, nicht darueber.
-   *
-   * Zuerst lag die Beschriftung ueber jeder Gruppe; damit stand jeder Knopf in
-   * einer eigenen Zeile und die Leiste war fuenf Zeilen hoch. Jetzt laeuft
-   * alles in EINER umbrechenden Reihe wie vor Phase 18 - die Fertigkeit ist
-   * nur der kleine Text davor.
-   *
-   * SEIT DEM UI-REVIEW 2026-09-07 BRICHT DIE GRUPPE SELBST AUCH UM: Ohne
-   * `flexWrap` wurde „Satz wiederholen“ auf schmalen Screens abgeschnitten,
-   * weil kein Knopf seinen Platz abgab. Eine Beschriftung kann dadurch einmal
-   * allein am Zeilenende stehen - das kleinere Übel gegenüber einem
-   * unerreichbaren Modus.
-   *
-   * SEIT DEM UI-REVIEW 2026-09-09 UMBRICHT SIE AUCH WIRKLICH: RN-Web-Erben
-   * haben `flexShrink: 0` und messen max-content — die Gruppe war also immer
-   * so breit wie alle ihre Chips zusammen, ihr eigenes `flexWrap` hatte nie
-   * eine enge Zeile und sprang daher nie an; „Satz wiederholen“ lief rechts
-   * aus dem 390-px-Screen hinaus und war unerreichbar. `flexShrink: 1` plus
-   * `minWidth: 0` erlauben erst das Schrumpfen unter die Inhaltsbreite, und
-   * NUR dadurch bekommt das innere Umbrechen seine Grenze. `alignSelf:
-   * 'stretch'` ist in dieser Reihe zwar schon der Default, steht aber
-   * ausdruecklich hier, damit eine spaetere Zentrierung der Leiste die
-   * Vollbreite der Gruppe nicht wieder aufhebt.
-   */
-  modeGroup: {
-    alignSelf: 'stretch',
-    flexShrink: 1,
-    minWidth: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-  },
   modeBar: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: Spacing.two,
-  },
-  /** Macht den Knopf zum flexiblen Kind seiner Gruppe (siehe oben). */
-  modeWrap: {
-    flexShrink: 1,
-  },
-  modeButton: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.two,
-    borderWidth: 1,
-    borderColor: 'transparent',
   },
   examRow: {
     flexDirection: 'row',

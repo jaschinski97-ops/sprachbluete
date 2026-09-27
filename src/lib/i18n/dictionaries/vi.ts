@@ -603,6 +603,24 @@ const vi = {
   "progress.milestoneRow": "{{size}} từ đầu tiên",
   "progress.milestoneValue": "Đã bắt đầu {{started}}/{{total}}",
   "progress.milestoneNote": "Theo thứ tự trong kho từ — từ thông dụng hằng ngày đứng trước.",
+  /* Geführter Lernpfad */
+  "path.next": "Bước tiếp theo của bạn",
+  "path.title": "Hiểu và tạo câu",
+  "path.intro": "Trước tiên hãy học cấu trúc của câu đơn giản. Sau đó dùng nó khi nghe, viết và nói.",
+  "path.sequence": "Giải thích → ví dụ → luyện tập → tự áp dụng",
+  "path.open": "Mở bài học",
+  "path.sentenceStructure": "Một câu được tạo như thế nào?",
+  "path.structureNote": "Một câu đơn giản có thể cho biết ai hành động, điều gì xảy ra và đối tượng nào chịu tác động. Trật tự từ thay đổi tùy ngôn ngữ.",
+  "path.subject": "Ai? · chủ ngữ",
+  "path.verb": "Điều gì xảy ra? · động từ",
+  "path.object": "Cái gì? · tân ngữ",
+  "path.practiceNote": "Xem ví dụ, rồi luyện tập với từ mới và câu hoàn chỉnh.",
+  "path.areas": "Năm lĩnh vực học tập",
+  "path.vocabulary": "Tối đa 20 thẻ mỗi lượt; sau đó tự gõ các từ.",
+  "path.listening": "Hiểu câu khi không nhìn chữ, nghe lại và kiểm tra bằng bài chính tả.",
+  "path.literacy": "Đọc hội thoại và viết câu trả lời của riêng bạn.",
+  "path.speaking": "Nói theo câu, trả lời tự do và đóng vai.",
+  "path.grammar": "Hiểu một quy tắc và áp dụng ngay trong bài tập.",
 } as const;
 
 export default vi;

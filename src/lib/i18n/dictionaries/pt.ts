@@ -603,6 +603,24 @@ const pt = {
   "progress.milestoneRow": "Primeiras {{size}} palavras",
   "progress.milestoneValue": "{{started}} de {{total}} iniciadas",
   "progress.milestoneNote": "Mesma ordem do vocabulário — palavras cotidianas frequentes vêm primeiro.",
+  /* Geführter Lernpfad */
+  "path.next": "Seu próximo passo",
+  "path.title": "Entender e formar frases",
+  "path.intro": "Primeiro, aprenda como funciona uma frase simples. Depois, use-a ao ouvir, escrever e falar.",
+  "path.sequence": "Explicação → exemplos → prática → uso independente",
+  "path.open": "Abrir lição",
+  "path.sentenceStructure": "Como se forma uma frase?",
+  "path.structureNote": "Uma frase simples pode mostrar quem age, o que acontece e o que é afetado. A ordem das palavras varia conforme o idioma.",
+  "path.subject": "Quem? · sujeito",
+  "path.verb": "O que acontece? · verbo",
+  "path.object": "O quê? · objeto",
+  "path.practiceNote": "Observe o exemplo e depois pratique com novas palavras e frases completas.",
+  "path.areas": "Suas cinco áreas de aprendizagem",
+  "path.vocabulary": "Até 20 cartões por rodada; depois digite as palavras por conta própria.",
+  "path.listening": "Entenda frases sem texto, ouça novamente e confira com um ditado.",
+  "path.literacy": "Leia diálogos e escreva suas próprias respostas.",
+  "path.speaking": "Repita frases, responda livremente e participe de diálogos.",
+  "path.grammar": "Entenda uma regra e aplique-a imediatamente em um exercício.",
 } as const;
 
 export default pt;

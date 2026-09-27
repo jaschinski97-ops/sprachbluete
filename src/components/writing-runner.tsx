@@ -9,6 +9,7 @@ import { Colors, Spacing } from '@/constants/theme';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
 import { learningLanguage, writingPromptKey } from '@/lib/languages/definitions';
+import type { VocabEntry } from '@/data/vocab-types';
 
 import { type Rating } from '@/lib/fsrs/types';
 import type { PairDirection } from '@/lib/languages/types';
@@ -46,9 +47,13 @@ const RATING_KEYS: Record<Rating, TranslationKey> = {
 
 export function WritingRunner({
   direction,
+  entries,
+  size,
   onExit,
 }: {
   direction: PairDirection;
+  entries?: VocabEntry[];
+  size?: number;
   onExit: () => void;
 }) {
   const theme = useTheme();
@@ -70,13 +75,13 @@ export function WritingRunner({
     setDraft('');
     setResult(null);
     setResults([]);
-    buildWritingSession({ direction }).then((next) => {
+    buildWritingSession({ direction, entries, size }).then((next) => {
       if (!cancelled) setSession(next);
     });
     return () => {
       cancelled = true;
     };
-  }, [direction, round]);
+  }, [direction, entries, size, round]);
 
   const prompt = session?.prompts[index] ?? null;
 

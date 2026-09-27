@@ -377,6 +377,18 @@ describe('Eine Runde', () => {
     );
   });
 
+  it('fragt nach den Karteikarten nur Wörter aus demselben 20er-Paket ab', async () => {
+    const store = await freshStore();
+    const pack = VOCABULARY.slice(0, 20);
+    const session = await buildWritingSession({
+      direction: 'de_to_th', store, now: T0, seed: 7, entries: pack, size: 20,
+    });
+    expect(session.prompts).toHaveLength(20);
+    expect(new Set(session.prompts.map((prompt) => prompt.vocabId))).toEqual(
+      new Set(pack.map((entry) => entry.id))
+    );
+  });
+
   it('zählt richtige und fehlerfreie Antworten getrennt', () => {
     const prompt = buildWritingPrompt(deutsch('บ้าน'), 'th_to_de');
     const machen = (given: string) => ({

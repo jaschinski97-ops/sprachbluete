@@ -18,7 +18,7 @@ test('Satzaufgaben kommen aus den Beispielsätzen des Wortschatzes — Text und 
 test('whole-sentence contrasts, stable randomised rounds and mandatory time windows', () => {
   const task = SENTENCE_TASKS_BY_LANGUAGE.th[0];
   expect(sentenceSession('th', 3)).toEqual(sentenceSession('th', 3));
-  expect(sentenceSession('th', 3)).toHaveLength(SENTENCE_TASKS_BY_LANGUAGE.th.length);
+  expect(sentenceSession('th', 3)).toHaveLength(Math.min(8, SENTENCE_TASKS_BY_LANGUAGE.th.length));
   expect(new Set(sentenceAnswers(task, 2))).toEqual(new Set(task.answers));
   expect(preparationRemaining(100, 101)).toBe(14999);
   expect(preparationRemaining(100, 15100)).toBe(0);

@@ -728,6 +728,24 @@ const de = {
   "progress.milestoneRow": "Die ersten {{size}} Wörter",
   "progress.milestoneValue": "{{started}} von {{total}} begonnen",
   "progress.milestoneNote": "Reihenfolge wie im Wortschatz — häufige Alltagswörter stehen vorn.",
+  /* Geführter Lernpfad */
+  "path.next": "Dein nächster Schritt",
+  "path.title": "Sätze verstehen und bilden",
+  "path.intro": "Lerne erst, wie ein einfacher Satz aufgebaut ist. Wende ihn danach beim Hören, Schreiben und Sprechen an.",
+  "path.sequence": "Erklärung → Beispiele → Üben → selbst anwenden",
+  "path.open": "Lektion öffnen",
+  "path.sentenceStructure": "Wie entsteht ein Satz?",
+  "path.structureNote": "Ein einfacher Satz kann zeigen, wer handelt, was geschieht und was betroffen ist. Die Wortstellung unterscheidet sich je nach Sprache.",
+  "path.subject": "Wer? · Subjekt",
+  "path.verb": "Was geschieht? · Verb",
+  "path.object": "Was? · Objekt",
+  "path.practiceNote": "Sieh dir das Beispiel an. Übe anschließend mit neuen Wörtern und ganzen Sätzen.",
+  "path.areas": "Deine fünf Lernbereiche",
+  "path.vocabulary": "Bis zu 20 Karten pro Runde; danach Wörter selbst eintippen.",
+  "path.listening": "Sätze ohne Text verstehen, erneut hören und im Diktat prüfen.",
+  "path.literacy": "Dialoge lesen und eigene Antworten schreiben.",
+  "path.speaking": "Sätze nachsprechen, frei antworten und Rollen spielen.",
+  "path.grammar": "Eine Regel verstehen und sofort in einer Übung anwenden.",
 } as const;
 
 export default de;

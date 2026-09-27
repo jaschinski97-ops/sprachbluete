@@ -603,6 +603,24 @@ const tr = {
   "progress.milestoneRow": "İlk {{size}} kelime",
   "progress.milestoneValue": "{{total}} içinden {{started}} başlandı",
   "progress.milestoneNote": "Kelime listesiyle aynı sıra — sık kullanılan gündelik kelimeler önce gelir.",
+  /* Geführter Lernpfad */
+  "path.next": "Sıradaki adımın",
+  "path.title": "Cümleleri anla ve kur",
+  "path.intro": "Önce basit bir cümlenin nasıl kurulduğunu öğren. Sonra dinlerken, yazarken ve konuşurken kullan.",
+  "path.sequence": "Açıklama → örnekler → alıştırma → kendin kullan",
+  "path.open": "Dersi aç",
+  "path.sentenceStructure": "Cümle nasıl kurulur?",
+  "path.structureNote": "Basit bir cümle kimin eylemi yaptığını, ne olduğunu ve neyden etkilendiğini gösterebilir. Sözcük sırası dile göre değişir.",
+  "path.subject": "Kim? · özne",
+  "path.verb": "Ne oluyor? · fiil",
+  "path.object": "Neyi? · nesne",
+  "path.practiceNote": "Örneği incele, ardından yeni sözcükler ve tam cümlelerle alıştırma yap.",
+  "path.areas": "Beş öğrenme alanın",
+  "path.vocabulary": "Tur başına en fazla 20 kart; ardından sözcükleri kendin yaz.",
+  "path.listening": "Metne bakmadan cümleleri anla, tekrar dinle ve dikteyle kontrol et.",
+  "path.literacy": "Diyalogları oku ve kendi yanıtlarını yaz.",
+  "path.speaking": "Cümleleri tekrarla, serbestçe yanıt ver ve rol yap.",
+  "path.grammar": "Bir kuralı anlayıp hemen alıştırmada uygula.",
 } as const;
 
 export default tr;

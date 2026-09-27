@@ -603,6 +603,24 @@ const id = {
   "progress.milestoneRow": "{{size}} kata pertama",
   "progress.milestoneValue": "{{started}} dari {{total}} dimulai",
   "progress.milestoneNote": "Urutan sama seperti kosakata — kata sehari-hari yang umum lebih dulu.",
+  /* Geführter Lernpfad */
+  "path.next": "Langkah Anda berikutnya",
+  "path.title": "Memahami dan menyusun kalimat",
+  "path.intro": "Pelajari dahulu cara kerja kalimat sederhana. Lalu gunakan saat mendengar, menulis, dan berbicara.",
+  "path.sequence": "Penjelasan → contoh → latihan → gunakan sendiri",
+  "path.open": "Buka pelajaran",
+  "path.sentenceStructure": "Bagaimana kalimat disusun?",
+  "path.structureNote": "Kalimat sederhana dapat menunjukkan siapa yang bertindak, apa yang terjadi, dan apa yang terkena tindakan. Urutan kata berbeda menurut bahasa.",
+  "path.subject": "Siapa? · subjek",
+  "path.verb": "Apa yang terjadi? · kata kerja",
+  "path.object": "Apa? · objek",
+  "path.practiceNote": "Amati contoh, lalu berlatih dengan kata baru dan kalimat lengkap.",
+  "path.areas": "Lima bidang belajar Anda",
+  "path.vocabulary": "Hingga 20 kartu tiap putaran; lalu ketik kata sendiri.",
+  "path.listening": "Pahami kalimat tanpa teks, dengarkan lagi, dan periksa lewat dikte.",
+  "path.literacy": "Baca dialog dan tulis jawaban Anda sendiri.",
+  "path.speaking": "Tirukan kalimat, jawab bebas, dan bermain peran.",
+  "path.grammar": "Pahami aturan dan langsung terapkan dalam latihan.",
 } as const;
 
 export default id;

@@ -707,6 +707,24 @@ const es: Partial<Record<TranslationKey, string>> = {
   "progress.milestoneRow": "Primeras {{size}} palabras",
   "progress.milestoneValue": "{{started}} de {{total}} empezadas",
   "progress.milestoneNote": "Mismo orden que el vocabulario: las palabras cotidianas más frecuentes van primero.",
+  /* Geführter Lernpfad */
+  "path.next": "Tu siguiente paso",
+  "path.title": "Comprender y formar oraciones",
+  "path.intro": "Primero aprende cómo funciona una oración sencilla. Después úsala al escuchar, escribir y hablar.",
+  "path.sequence": "Explicación → ejemplos → práctica → uso propio",
+  "path.open": "Abrir lección",
+  "path.sentenceStructure": "¿Cómo se forma una oración?",
+  "path.structureNote": "Una oración sencilla puede indicar quién actúa, qué ocurre y qué recibe la acción. El orden de las palabras varía según el idioma.",
+  "path.subject": "¿Quién? · sujeto",
+  "path.verb": "¿Qué ocurre? · verbo",
+  "path.object": "¿Qué? · objeto",
+  "path.practiceNote": "Observa el ejemplo y luego practica con palabras nuevas y oraciones completas.",
+  "path.areas": "Tus cinco áreas de aprendizaje",
+  "path.vocabulary": "Hasta 20 tarjetas por ronda; después escribe las palabras tú mismo.",
+  "path.listening": "Comprende oraciones sin texto, vuelve a escucharlas y compruébalas con un dictado.",
+  "path.literacy": "Lee diálogos y escribe tus propias respuestas.",
+  "path.speaking": "Repite oraciones, responde libremente y representa situaciones.",
+  "path.grammar": "Comprende una regla y aplícala enseguida en un ejercicio.",
 };
 
 export default es;

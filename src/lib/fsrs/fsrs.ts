@@ -158,10 +158,10 @@ export function isDue(card: FSRSCardState, now: number = Date.now()): boolean {
  * Neue Karten haben R = 0 und stünden sonst in JEDER Sitzung ganz vorn: bei
  * wachsendem Grundstock fluteten sie die Sitzung, und die fälligen Karten —
  * das, was der Spaced Repetition eigentlich gehört — verhungerten dahinter.
- * Zehn neue Karten je Sitzung ist der übliche Bereich von Anki-Vorgaben und
- * hält den Einstieg kurz, ohne den Fortschritt zu stoppen.
+ * Der Lernpfad nutzt 20 Wörter je Runde. Fällige Wiederholungen stehen davor;
+ * dadurch können in einer gemischten Runde weniger als 20 neue Wörter stehen.
  */
-export const NEW_CARDS_PER_SESSION = 10;
+export const NEW_CARDS_PER_SESSION = 20;
 
 /**
  * Fällige Karten für eine Sitzung: bereits Gelernte zuerst, schwächste voran

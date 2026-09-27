@@ -24,6 +24,7 @@ import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 
 /** Karteikarten oder eine der richtungseigenen Übungen — plus „Heutige Runde“ als Sammelmodus. */
 export type Mode =
+  | 'path'
   | 'cards'
   | DrillId
   | 'speaking'
@@ -84,6 +85,7 @@ export function modesForDirection(direction: PairDirection): Mode[] {
 }
 
 export function modeKey(mode: Mode): TranslationKey {
+  if (mode === 'path') return 'tabs.learn';
   if (mode === 'cards') return 'mode.cards';
   if (mode === 'heute') return 'mode.heute';
   if (mode === 'speaking') return 'mode.speaking';

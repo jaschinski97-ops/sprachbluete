@@ -603,6 +603,24 @@ const fr = {
   "progress.milestoneRow": "Les {{size}} premiers mots",
   "progress.milestoneValue": "{{started}} sur {{total}} commencés",
   "progress.milestoneNote": "Même ordre que le vocabulaire — les mots courants du quotidien d’abord.",
+  /* Geführter Lernpfad */
+  "path.next": "Votre prochaine étape",
+  "path.title": "Comprendre et former des phrases",
+  "path.intro": "Apprenez d’abord la structure d’une phrase simple, puis utilisez-la à l’écoute, à l’écrit et à l’oral.",
+  "path.sequence": "Explication → exemples → exercices → application personnelle",
+  "path.open": "Ouvrir la leçon",
+  "path.sentenceStructure": "Comment construire une phrase ?",
+  "path.structureNote": "Une phrase simple peut indiquer qui agit, ce qui se passe et ce qui est concerné. L’ordre des mots varie selon la langue.",
+  "path.subject": "Qui ? · sujet",
+  "path.verb": "Que se passe-t-il ? · verbe",
+  "path.object": "Quoi ? · objet",
+  "path.practiceNote": "Observez l’exemple, puis entraînez-vous avec de nouveaux mots et des phrases complètes.",
+  "path.areas": "Vos cinq domaines d’apprentissage",
+  "path.vocabulary": "Jusqu’à 20 cartes par séance, puis saisissez les mots vous-même.",
+  "path.listening": "Comprenez des phrases sans texte, réécoutez-les et vérifiez avec une dictée.",
+  "path.literacy": "Lisez des dialogues et rédigez vos propres réponses.",
+  "path.speaking": "Répétez des phrases, répondez librement et jouez des rôles.",
+  "path.grammar": "Comprenez une règle et appliquez-la aussitôt dans un exercice.",
 } as const;
 
 export default fr;

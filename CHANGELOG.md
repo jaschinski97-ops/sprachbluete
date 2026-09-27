@@ -5,6 +5,16 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 [`docs/arbeitsverlauf-bis-2026-09-25.md`](docs/arbeitsverlauf-bis-2026-09-25.md).
 
+## [Unveröffentlicht] – 27.09.2026
+
+### Lernen
+
+- Der Lern-Reiter öffnet jetzt eine ruhige Startseite mit einer Satzbau-Erklärung und einer geführten Folge aus Grammatik, Wortschatz, Hören, Lesen, Schreiben und Sprechen. Die Beispielwörter passen zur gewählten Lernsprache.
+- Wortschatz, Hören, Lesen & Schreiben, Sprechen und Grammatik stehen in eigenen, aufklappbaren Zeilen statt in einer gemeinsamen Chip-Leiste. Alle bisherigen Übungen bleiben erreichbar.
+- Eine Karteikartenrunde enthält höchstens 20 Wörter; bei genügend Stoff werden bis zu 20 neue Karten zugelassen, fällige Wiederholungen zuerst. Danach kann man schreibgeeignete Wörter aus derselben Runde eintippen. Die tägliche gemischte Runde bleibt erreichbar.
+- Hörverständnis, Shadowing und Satzwiederholung enden nach acht Sätzen statt den gesamten Satzbestand als eine Runde anzuzeigen.
+- Neue Texte für die Lernübersicht sind in allen 20 Oberflächensprachen enthalten.
+
 ## [Unveröffentlicht] – 26.09.2026
 
 Ergebnis einer Testrunde über mehrere App-Sprachen (Deutsch, Englisch, Thai,

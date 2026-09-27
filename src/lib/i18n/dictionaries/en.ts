@@ -701,6 +701,24 @@ const en: Partial<Record<TranslationKey, string>> = {
   "progress.milestoneRow": "First {{size}} words",
   "progress.milestoneValue": "{{started}} of {{total}} started",
   "progress.milestoneNote": "Same order as the vocabulary — common everyday words come first.",
+  /* Geführter Lernpfad */
+  "path.next": "Your next step",
+  "path.title": "Understand and build sentences",
+  "path.intro": "First learn how a simple sentence works. Then use it in listening, writing and speaking.",
+  "path.sequence": "Explanation → examples → practice → use it yourself",
+  "path.open": "Open lesson",
+  "path.sentenceStructure": "How is a sentence built?",
+  "path.structureNote": "A simple sentence can show who acts, what happens and what is affected. Word order varies by language.",
+  "path.subject": "Who? · subject",
+  "path.verb": "What happens? · verb",
+  "path.object": "What? · object",
+  "path.practiceNote": "Study the example, then practise with new words and complete sentences.",
+  "path.areas": "Your five learning areas",
+  "path.vocabulary": "Up to 20 cards per round; then type words yourself.",
+  "path.listening": "Understand sentences without text, replay them and check with dictation.",
+  "path.literacy": "Read dialogues and write your own replies.",
+  "path.speaking": "Repeat sentences, answer freely and role-play.",
+  "path.grammar": "Understand a rule and apply it in an exercise right away.",
 };
 
 export default en;

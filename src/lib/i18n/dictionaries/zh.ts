@@ -603,6 +603,24 @@ const zh = {
   "progress.milestoneRow": "前 {{size}} 个词",
   "progress.milestoneValue": "已开始 {{started}}/{{total}}",
   "progress.milestoneNote": "顺序与词库相同——常用日常词汇在前。",
+  /* Geführter Lernpfad */
+  "path.next": "你的下一步",
+  "path.title": "理解并造句",
+  "path.intro": "先了解简单句的结构，再把它用于听、写和说。",
+  "path.sequence": "讲解 → 例句 → 练习 → 自主运用",
+  "path.open": "打开课程",
+  "path.sentenceStructure": "句子是怎样组成的？",
+  "path.structureNote": "简单句可以说明谁在行动、发生了什么以及什么受到影响。词序因语言而异。",
+  "path.subject": "谁？· 主语",
+  "path.verb": "做什么？· 动词",
+  "path.object": "什么？· 宾语",
+  "path.practiceNote": "先看例句，再用新词和完整句子练习。",
+  "path.areas": "你的五个学习领域",
+  "path.vocabulary": "每轮最多20张卡片，然后自己输入单词。",
+  "path.listening": "不看文字理解句子，反复听，并用听写检查。",
+  "path.literacy": "阅读对话并写出自己的回答。",
+  "path.speaking": "跟读句子、自由回答并进行角色扮演。",
+  "path.grammar": "理解一条规则并立即在练习中运用。",
 } as const;
 
 export default zh;

@@ -621,6 +621,13 @@ const vi = {
   "path.literacy": "Đọc hội thoại và viết câu trả lời của riêng bạn.",
   "path.speaking": "Nói theo câu, trả lời tự do và đóng vai.",
   "path.grammar": "Hiểu một quy tắc và áp dụng ngay trong bài tập.",
+  /* Kapitelplan */
+  "chapter.position": "Chương {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "Đã hoàn thành",
+  "chapter.words": "{{count}} từ cho chương này",
+  "chapter.finish": "Đánh dấu chương đã hoàn thành",
+  "chapter.all": "Tất cả các chương",
+  "chapter.doneCount": "Đã hoàn thành {{done}} / {{total}}",
 } as const;
 
 export default vi;

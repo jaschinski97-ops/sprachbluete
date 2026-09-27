@@ -621,6 +621,13 @@ const ko = {
   "path.literacy": "대화를 읽고 직접 답장을 쓰세요.",
   "path.speaking": "문장을 따라 말하고 자유롭게 답하며 역할극을 하세요.",
   "path.grammar": "규칙을 이해하고 바로 연습에 적용하세요.",
+  /* Kapitelplan */
+  "chapter.position": "{{index}}장 / 총 {{total}}장 · {{level}}",
+  "chapter.completed": "완료",
+  "chapter.words": "이 장의 단어 {{count}}개",
+  "chapter.finish": "이 장을 완료로 표시",
+  "chapter.all": "전체 장",
+  "chapter.doneCount": "{{total}}장 중 {{done}}장 완료",
 } as const;
 
 export default ko;

@@ -621,6 +621,13 @@ const ru = {
   "path.literacy": "Читайте диалоги и пишите собственные ответы.",
   "path.speaking": "Повторяйте предложения, отвечайте свободно и разыгрывайте роли.",
   "path.grammar": "Разберите правило и сразу примените его в упражнении.",
+  /* Kapitelplan */
+  "chapter.position": "Глава {{index}} из {{total}} · {{level}}",
+  "chapter.completed": "Завершено",
+  "chapter.words": "{{count}} слов для этой главы",
+  "chapter.finish": "Отметить главу завершённой",
+  "chapter.all": "Все главы",
+  "chapter.doneCount": "Завершено {{done}} из {{total}}",
 } as const;
 
 export default ru;

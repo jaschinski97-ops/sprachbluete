@@ -1,6 +1,7 @@
 import type { CapturedPcm } from './microphone-capture';
 import { analyzeToneContour, type ToneContourMeasurement } from './analysis';
-import { satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
+import { buildSentenceTasks, satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
+import type { VocabEntry } from '@/data/vocab-types';
 import type { UiLanguage } from '@/lib/i18n/types';
 import { shuffled, seededRandom } from '../drills/random';
 
@@ -26,9 +27,11 @@ export type SentenceMode = 'shadowing' | 'sentenceRepeat' | 'sentenceListening';
 export function sentenceSession(
   language: SatzSprache,
   seed: number,
-  anchor: UiLanguage = 'de'
+  anchor: UiLanguage = 'de',
+  words?: VocabEntry[]
 ): SentenceTask[] {
-  return shuffled(satzaufgabenFuer(language, anchor) ?? [], seededRandom(seed)).slice(0, SENTENCE_SESSION_SIZE);
+  return shuffled(words ? buildSentenceTasks(words, anchor) : satzaufgabenFuer(language, anchor), seededRandom(seed))
+    .slice(0, SENTENCE_SESSION_SIZE);
 }
 export function sentenceAnswers(task: SentenceTask, seed: number): string[] {
   return shuffled(task.answers, seededRandom(seed));

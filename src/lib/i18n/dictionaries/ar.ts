@@ -621,6 +621,13 @@ const ar = {
   "path.literacy": "اقرأ الحوارات واكتب ردودك الخاصة.",
   "path.speaking": "ردّد الجمل، وأجب بحرية، ومثّل الأدوار.",
   "path.grammar": "افهم قاعدة وطبّقها فوراً في تمرين.",
+  /* Kapitelplan */
+  "chapter.position": "الفصل {{index}} من {{total}} · {{level}}",
+  "chapter.completed": "مكتمل",
+  "chapter.words": "{{count}} كلمة لهذا الفصل",
+  "chapter.finish": "تحديد الفصل كمكتمل",
+  "chapter.all": "جميع الفصول",
+  "chapter.doneCount": "اكتمل {{done}} من {{total}}",
 } as const;
 
 export default ar;

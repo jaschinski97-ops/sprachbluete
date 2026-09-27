@@ -47,9 +47,11 @@ const SELBST_RATINGS: { rating: Rating; key: TranslationKey }[] = [
 
 export function RoleplayRunner({
   direction,
+  situationId,
   onExit,
 }: {
   direction: PairDirection;
+  situationId?: string;
   onExit: () => void;
 }) {
   const { t, uiLanguage } = useLocale();
@@ -65,9 +67,15 @@ export function RoleplayRunner({
 
   useEffect(() => {
     let cancelled = false;
+    setSzene(null);
     loadSituations()
       .then((alle) => {
-        if (!cancelled) setSzenen(alle.filter((s) => s.direction.endsWith(`_to_${sprache}`)).map(s => localizedSituation(s, uiLanguage)));
+        if (cancelled) return;
+        const matching = alle.filter((s) => s.direction.endsWith(`_to_${sprache}`))
+          .filter((s) => !situationId || s.id === situationId)
+          .map((s) => localizedSituation(s, uiLanguage));
+        setSzenen(matching);
+        if (situationId) setSzene(matching[0] ?? null);
       })
       .catch(() => {
         if (!cancelled) setSzenen([]);
@@ -76,7 +84,7 @@ export function RoleplayRunner({
       cancelled = true;
       void stopPronunciation();
     };
-  }, [sprache, uiLanguage]);
+  }, [sprache, uiLanguage, situationId]);
 
   if (szenen === null) {
     return (
@@ -168,7 +176,8 @@ export function RoleplayRunner({
           <ThemedButton
             label={t('roleplay.otherScene')}
             onPress={() => {
-              setSzene(null);
+              if (situationId) onExit();
+              else setSzene(null);
               void stopPronunciation();
             }}
           />

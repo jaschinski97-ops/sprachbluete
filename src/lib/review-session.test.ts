@@ -80,6 +80,14 @@ describe('buildReviewQueue', () => {
     expect(queue.every((item) => item.card.state === 'new')).toBe(true);
   });
 
+  it('zieht für ein Kapitel nur dessen Wörter, auch wenn sie nicht am Anfang des Grundstocks stehen', async () => {
+    const store = await freshStore();
+    const ids = new Set(VOCABULARY.slice(35, 55).map((entry) => entry.id));
+    const queue = await buildReviewQueue('de_to_th', store, T0, ids);
+    expect(queue).toHaveLength(20);
+    expect(new Set(queue.map((item) => item.entry.id))).toEqual(ids);
+  });
+
   it('verbindet jede Karte mit ihrem Vokabeleintrag', async () => {
     const store = await freshStore();
     const queue = await buildReviewQueue('de_to_th', store, T0);

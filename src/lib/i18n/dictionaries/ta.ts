@@ -621,6 +621,13 @@ const ta = {
   "path.literacy": "உரையாடல்களைப் படித்து உங்கள் பதில்களை எழுதுங்கள்.",
   "path.speaking": "வாக்கியங்களைத் தொடர்ந்து சொல்லி சுதந்திரமாகப் பதிலளித்து பாத்திரமேற்று பேசுங்கள்.",
   "path.grammar": "விதியைப் புரிந்து உடனே பயிற்சியில் பயன்படுத்துங்கள்.",
+  /* Kapitelplan */
+  "chapter.position": "அத்தியாயம் {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "முடிந்தது",
+  "chapter.words": "இந்த அத்தியாயத்திற்கு {{count}} சொற்கள்",
+  "chapter.finish": "அத்தியாயத்தை முடிந்ததாகக் குறிக்கவும்",
+  "chapter.all": "அனைத்து அத்தியாயங்கள்",
+  "chapter.doneCount": "{{total}} இல் {{done}} முடிந்தது",
 } as const;
 
 export default ta;

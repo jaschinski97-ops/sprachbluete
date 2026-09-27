@@ -621,6 +621,13 @@ const id = {
   "path.literacy": "Baca dialog dan tulis jawaban Anda sendiri.",
   "path.speaking": "Tirukan kalimat, jawab bebas, dan bermain peran.",
   "path.grammar": "Pahami aturan dan langsung terapkan dalam latihan.",
+  /* Kapitelplan */
+  "chapter.position": "Bab {{index}} dari {{total}} · {{level}}",
+  "chapter.completed": "Selesai",
+  "chapter.words": "{{count}} kata untuk bab ini",
+  "chapter.finish": "Tandai bab selesai",
+  "chapter.all": "Semua bab",
+  "chapter.doneCount": "{{done}} dari {{total}} selesai",
 } as const;
 
 export default id;

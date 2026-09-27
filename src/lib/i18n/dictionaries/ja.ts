@@ -621,6 +621,13 @@ const ja = {
   "path.literacy": "対話を読み、自分の返答を書きます。",
   "path.speaking": "文を復唱し、自由に答え、ロールプレイをします。",
   "path.grammar": "規則を理解し、すぐに練習で使います。",
+  /* Kapitelplan */
+  "chapter.position": "第{{index}}章／全{{total}}章 · {{level}}",
+  "chapter.completed": "完了",
+  "chapter.words": "この章の単語 {{count}} 語",
+  "chapter.finish": "章を完了にする",
+  "chapter.all": "すべての章",
+  "chapter.doneCount": "全{{total}}章中{{done}}章完了",
 } as const;
 
 export default ja;

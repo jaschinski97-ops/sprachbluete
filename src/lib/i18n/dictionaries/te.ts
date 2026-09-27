@@ -621,6 +621,13 @@ const te = {
   "path.literacy": "సంభాషణలు చదివి మీ సొంత సమాధానాలు రాయండి.",
   "path.speaking": "వాక్యాలను అనుకరించి చెప్పండి, స్వేచ్ఛగా సమాధానమివ్వండి, పాత్రలు పోషించండి.",
   "path.grammar": "నియమాన్ని అర్థం చేసుకుని వెంటనే సాధనలో ఉపయోగించండి.",
+  /* Kapitelplan */
+  "chapter.position": "అధ్యాయం {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "పూర్తయింది",
+  "chapter.words": "ఈ అధ్యాయానికి {{count}} పదాలు",
+  "chapter.finish": "అధ్యాయం పూర్తయిందని గుర్తించండి",
+  "chapter.all": "అన్ని అధ్యాయాలు",
+  "chapter.doneCount": "{{total}}లో {{done}} పూర్తయ్యాయి",
 } as const;
 
 export default te;

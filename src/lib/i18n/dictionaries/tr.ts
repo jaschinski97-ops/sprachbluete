@@ -621,6 +621,13 @@ const tr = {
   "path.literacy": "Diyalogları oku ve kendi yanıtlarını yaz.",
   "path.speaking": "Cümleleri tekrarla, serbestçe yanıt ver ve rol yap.",
   "path.grammar": "Bir kuralı anlayıp hemen alıştırmada uygula.",
+  /* Kapitelplan */
+  "chapter.position": "Bölüm {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "Tamamlandı",
+  "chapter.words": "Bu bölüm için {{count}} sözcük",
+  "chapter.finish": "Bölümü tamamlandı olarak işaretle",
+  "chapter.all": "Tüm bölümler",
+  "chapter.doneCount": "{{total}} bölümden {{done}} tanesi tamamlandı",
 } as const;
 
 export default tr;

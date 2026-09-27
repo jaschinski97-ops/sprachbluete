@@ -6,6 +6,7 @@ import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
+import type { VocabEntry } from '@/data/vocab-types';
 import { useMicrophoneCapture } from '@/hooks/use-microphone-capture';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus, stopPronunciation } from '@/lib/audio';
 import { useLocale, type UiLanguage } from '@/lib/i18n';
@@ -27,15 +28,15 @@ export function SentenceAction({ label, onPress, disabled = false }: {
 }
 
 
-export function SentenceRunner({ mode, language, anchor = 'de', onExit }: {
-  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; onExit: () => void;
+export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }: {
+  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; onExit: () => void;
 }) {
   const { t, uiLanguage, languageName } = useLocale();
   // Die Aussaat ist ein eigener Zustand: „Neue Runde“ würfelt sie neu, damit
   // nicht dieselbe Satzfolge und Antwortmischung wie in der Runde davor
   // herauskommt.
   const [seed, setSeed] = useState(() => Date.now());
-  const tasks = useMemo(() => sentenceSession(language, seed, anchor), [language, seed, anchor]);
+  const tasks = useMemo(() => sentenceSession(language, seed, anchor, words), [language, seed, anchor, words]);
   const [index, setIndex] = useState(0);
   const [round, setRound] = useState(0);
   const [preparedAt, setPreparedAt] = useState(() => Date.now());

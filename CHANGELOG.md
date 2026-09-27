@@ -9,6 +9,7 @@ Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 
 ### Lernen
 
+- Der Lernpfad zeigt echte A1/A2-Kapitel aus den mitgelieferten Dialogsituationen. Das nächste offene Kapitel wird hervorgehoben; jedes Kapitel bietet einen thematischen Dialog, bis zu 20 passende Karteikarten, Sätze zum Hören und Nachsprechen, Lesen, Schreiben, Grammatik und Rollenspiel. Der manuelle Kapitelabschluss wird lokal pro Lernrichtung gespeichert. Fehlende Themen werden nicht als fertige Kapitel angezeigt.
 - Der Lern-Reiter öffnet jetzt eine ruhige Startseite mit einer Satzbau-Erklärung und einer geführten Folge aus Grammatik, Wortschatz, Hören, Lesen, Schreiben und Sprechen. Die Beispielwörter passen zur gewählten Lernsprache.
 - Wortschatz, Hören, Lesen & Schreiben, Sprechen und Grammatik stehen in eigenen, aufklappbaren Zeilen statt in einer gemeinsamen Chip-Leiste. Alle bisherigen Übungen bleiben erreichbar.
 - Eine Karteikartenrunde enthält höchstens 20 Wörter; bei genügend Stoff werden bis zu 20 neue Karten zugelassen, fällige Wiederholungen zuerst. Danach kann man schreibgeeignete Wörter aus derselben Runde eintippen. Die tägliche gemischte Runde bleibt erreichbar.

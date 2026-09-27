@@ -621,6 +621,13 @@ const zh = {
   "path.literacy": "阅读对话并写出自己的回答。",
   "path.speaking": "跟读句子、自由回答并进行角色扮演。",
   "path.grammar": "理解一条规则并立即在练习中运用。",
+  /* Kapitelplan */
+  "chapter.position": "第 {{index}} 章，共 {{total}} 章 · {{level}}",
+  "chapter.completed": "已完成",
+  "chapter.words": "本章有 {{count}} 个词",
+  "chapter.finish": "标记本章已完成",
+  "chapter.all": "所有章节",
+  "chapter.doneCount": "已完成 {{done}} / {{total}} 章",
 } as const;
 
 export default zh;

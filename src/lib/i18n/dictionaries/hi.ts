@@ -621,6 +621,13 @@ const hi = {
   "path.literacy": "संवाद पढ़ें और अपने उत्तर लिखें।",
   "path.speaking": "वाक्य दोहराएँ, स्वतंत्र रूप से उत्तर दें और भूमिका निभाएँ।",
   "path.grammar": "नियम समझें और उसे तुरंत अभ्यास में लागू करें।",
+  /* Kapitelplan */
+  "chapter.position": "अध्याय {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "पूरा हुआ",
+  "chapter.words": "इस अध्याय के लिए {{count}} शब्द",
+  "chapter.finish": "अध्याय को पूरा चिह्नित करें",
+  "chapter.all": "सभी अध्याय",
+  "chapter.doneCount": "{{total}} में से {{done}} पूरे",
 } as const;
 
 export default hi;

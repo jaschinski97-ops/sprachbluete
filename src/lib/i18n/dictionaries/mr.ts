@@ -621,6 +621,13 @@ const mr = {
   "path.literacy": "संवाद वाचा आणि स्वतःची उत्तरे लिहा.",
   "path.speaking": "वाक्ये पुन्हा बोला, मोकळेपणाने उत्तर द्या आणि भूमिका करा.",
   "path.grammar": "नियम समजून लगेच सरावात वापरा.",
+  /* Kapitelplan */
+  "chapter.position": "धडा {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "पूर्ण",
+  "chapter.words": "या धड्यासाठी {{count}} शब्द",
+  "chapter.finish": "धडा पूर्ण म्हणून चिन्हांकित करा",
+  "chapter.all": "सर्व धडे",
+  "chapter.doneCount": "{{total}} पैकी {{done}} पूर्ण",
 } as const;
 
 export default mr;

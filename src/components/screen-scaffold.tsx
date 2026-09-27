@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,6 +16,7 @@ type Props = {
    * dass Screens ihre Überschrift dafür umbauen müssen.
    */
   headerAction?: ReactNode;
+  scrollRef?: RefObject<ScrollView | null>;
   children?: ReactNode;
 };
 
@@ -28,11 +29,12 @@ type Props = {
  * Web-Build ist sonst die Fläche unter dem Inhalt transparent, und im
  * Dunkelmodus stand die helle Überschrift auf dem weißen Browser-Canvas.
  */
-export function ScreenScaffold({ title, subtitle, headerAction, children }: Props) {
+export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, children }: Props) {
   const theme = useTheme();
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top', 'left', 'right']}>
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}>
         <View style={styles.column}>

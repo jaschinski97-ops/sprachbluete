@@ -12,7 +12,7 @@ Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nu
 - **4 Lernsprachen:** `LANGUAGE_CODES = ['th','en','es','de']` (`src/lib/languages/types.ts`), zentral definiert in `src/lib/languages/definitions.ts`. Anleitung für neue Lernsprachen: `docs/neue-lernsprache.md`, die Checkliste ist als Test `definitions.test.ts` festgehalten.
 - **20 App-Sprachen** (`UI_LANGUAGES`, Wörterbücher `src/lib/i18n/`) sind NUR Oberflächen- und Bedeutungssprachen, **niemals Lernziele** (Nutzerentscheidung). Unbekannte Systemsprache → Englisch.
 - Lernrichtung: Die Lernsprache ist die rechte Seite (`targetLanguageOf`); Inhalte liegen je Sprache in `contentDirectionOf(code)`. Das Deutsch-Ziel ist auf deutscher Oberfläche ausgeblendet.
-- Lern-Reiter: Startseite mit Satzbau-Einstieg und 5 getrennten, aufklappbaren Kategorien (Wortschatz · Hören · Lesen & Schreiben · Sprechen · Grammatik), Logik in `src/lib/exercise-catalog.ts`; Karteikartenrunden maximal 20. Die Goethe-Prüfung ist ein Eintrag im Lern-Reiter, nur bei Deutsch-Zielen.
+- Lern-Reiter: A1/A2-Kapitel aus vorhandenen Dialogsituationen (`src/lib/learning-path.ts`), lokal gespeicherter manueller Abschluss, Satzbau-Einstieg und 5 getrennte Kategorien (Wortschatz · Hören · Lesen & Schreiben · Sprechen · Grammatik); Karteikartenrunden maximal 20. Die Goethe-Prüfung ist ein Eintrag im Lern-Reiter, nur bei Deutsch-Zielen.
 - Nutzervision: Lernsprache in der Übersicht wählen; neue Lernsprache = Vorlage kopieren + KI-Erzeugung im Studio.
 
 ## Inhaltsbestand (Katalog `src/content/catalog.json`)

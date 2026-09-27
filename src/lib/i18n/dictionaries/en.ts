@@ -719,6 +719,13 @@ const en: Partial<Record<TranslationKey, string>> = {
   "path.literacy": "Read dialogues and write your own replies.",
   "path.speaking": "Repeat sentences, answer freely and role-play.",
   "path.grammar": "Understand a rule and apply it in an exercise right away.",
+  /* Kapitelplan */
+  "chapter.position": "Chapter {{index}} of {{total}} · {{level}}",
+  "chapter.completed": "Completed",
+  "chapter.words": "{{count}} words for this chapter",
+  "chapter.finish": "Mark chapter complete",
+  "chapter.all": "All chapters",
+  "chapter.doneCount": "{{done}} of {{total}} completed",
 };
 
 export default en;

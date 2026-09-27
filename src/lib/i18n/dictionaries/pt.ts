@@ -621,6 +621,13 @@ const pt = {
   "path.literacy": "Leia diálogos e escreva suas próprias respostas.",
   "path.speaking": "Repita frases, responda livremente e participe de diálogos.",
   "path.grammar": "Entenda uma regra e aplique-a imediatamente em um exercício.",
+  /* Kapitelplan */
+  "chapter.position": "Capítulo {{index}} de {{total}} · {{level}}",
+  "chapter.completed": "Concluído",
+  "chapter.words": "{{count}} palavras para este capítulo",
+  "chapter.finish": "Marcar capítulo como concluído",
+  "chapter.all": "Todos os capítulos",
+  "chapter.doneCount": "{{done}} de {{total}} concluídos",
 } as const;
 
 export default pt;

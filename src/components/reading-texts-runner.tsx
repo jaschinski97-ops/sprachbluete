@@ -41,9 +41,11 @@ import { activeVocabularyFor } from '@/data/active-vocabulary';
  */
 export function ReadingTextsRunner({
   direction,
+  situationId,
   onExit,
 }: {
   direction: PairDirection;
+  situationId?: string;
   onExit: () => void;
 }) {
   const { t, uiLanguage } = useLocale();
@@ -52,6 +54,7 @@ export function ReadingTextsRunner({
 
   useEffect(() => {
     let cancelled = false;
+    setGewaehlt(null);
     void (async () => {
       try {
         const [situationen, cards] = await Promise.all([
@@ -59,15 +62,16 @@ export function ReadingTextsRunner({
           loadCardStatesForDirection(direction),
         ]);
         if (cancelled) return;
-        setStoff(
-          lesestoffeFuerRichtung({
+        const all = lesestoffeFuerRichtung({
             direction,
             situationen: situationen.map(s => localizedSituation(s, uiLanguage)),
             pool: activeVocabularyFor(targetLanguageOf(direction)),
             cards,
             latin: targetLanguageOf(direction) !== 'th',
-          })
-        );
+          });
+        const selected = situationId ? all.filter((entry) => entry.situation.id === situationId) : all;
+        setStoff(selected);
+        if (situationId && selected[0]?.offen) setGewaehlt(selected[0].situation);
       } catch {
         if (!cancelled) setStoff([]);
       }
@@ -76,7 +80,7 @@ export function ReadingTextsRunner({
       cancelled = true;
       void stopPronunciation();
     };
-  }, [direction, uiLanguage]);
+  }, [direction, uiLanguage, situationId]);
 
   if (stoff === null) {
     return (
@@ -92,7 +96,8 @@ export function ReadingTextsRunner({
         situation={gewaehlt}
         onExit={() => {
           void stopPronunciation();
-          setGewaehlt(null);
+          if (situationId) onExit();
+          else setGewaehlt(null);
         }}
         onBeenden={onExit}
       />

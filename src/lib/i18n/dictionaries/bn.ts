@@ -621,6 +621,13 @@ const bn = {
   "path.literacy": "সংলাপ পড়ুন এবং নিজের উত্তর লিখুন।",
   "path.speaking": "বাক্য অনুকরণ করুন, নিজের মতো উত্তর দিন এবং ভূমিকাভিনয় করুন।",
   "path.grammar": "একটি নিয়ম বুঝে সঙ্গে সঙ্গে অনুশীলনে প্রয়োগ করুন।",
+  /* Kapitelplan */
+  "chapter.position": "অধ্যায় {{index}} / {{total}} · {{level}}",
+  "chapter.completed": "সম্পন্ন",
+  "chapter.words": "এই অধ্যায়ের জন্য {{count}}টি শব্দ",
+  "chapter.finish": "অধ্যায় সম্পন্ন হিসেবে চিহ্নিত করুন",
+  "chapter.all": "সব অধ্যায়",
+  "chapter.doneCount": "{{total}}টির মধ্যে {{done}}টি সম্পন্ন",
 } as const;
 
 export default bn;

@@ -705,6 +705,13 @@ const th: Partial<Record<TranslationKey, string>> = {
   "path.literacy": "อ่านบทสนทนาและเขียนคำตอบของตนเอง",
   "path.speaking": "พูดตามประโยค ตอบอย่างอิสระ และฝึกบทบาทสมมติ",
   "path.grammar": "เข้าใจกฎแล้วนำไปใช้ในแบบฝึกหัดทันที",
+  /* Kapitelplan */
+  "chapter.position": "บทที่ {{index}} จาก {{total}} · {{level}}",
+  "chapter.completed": "เสร็จแล้ว",
+  "chapter.words": "คำศัพท์ {{count}} คำสำหรับบทนี้",
+  "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
+  "chapter.all": "ทุกบท",
+  "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
 };
 
 export default th;

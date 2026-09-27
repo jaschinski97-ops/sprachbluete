@@ -746,6 +746,13 @@ const de = {
   "path.literacy": "Dialoge lesen und eigene Antworten schreiben.",
   "path.speaking": "Sätze nachsprechen, frei antworten und Rollen spielen.",
   "path.grammar": "Eine Regel verstehen und sofort in einer Übung anwenden.",
+  /* Kapitelplan */
+  "chapter.position": "Kapitel {{index}} von {{total}} · {{level}}",
+  "chapter.completed": "Abgeschlossen",
+  "chapter.words": "{{count}} Wörter für dieses Kapitel",
+  "chapter.finish": "Kapitel als abgeschlossen markieren",
+  "chapter.all": "Alle Kapitel",
+  "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
 } as const;
 
 export default de;

@@ -149,12 +149,13 @@ function ankerSeite(entry: VocabEntry, direction: PairDirection): BridgeEntry | 
 export async function buildReviewQueue(
   direction: PairDirection,
   store?: DataStore,
-  now: number = Date.now()
+  now: number = Date.now(),
+  onlyVocabIds?: ReadonlySet<string>
 ): Promise<ReviewItem[]> {
   const { entries, cards } = await ensureCardStates(direction, store, now);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
 
-  return dueCards(cards, now)
+  return dueCards(onlyVocabIds ? cards.filter((card) => onlyVocabIds.has(card.vocabId)) : cards, now)
     .map((card) => {
       const entry = byId.get(card.vocabId);
       if (!entry) return null;

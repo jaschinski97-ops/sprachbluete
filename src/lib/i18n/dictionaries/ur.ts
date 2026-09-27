@@ -621,6 +621,13 @@ const ur = {
   "path.literacy": "مکالمے پڑھیں اور اپنے جواب لکھیں۔",
   "path.speaking": "جملے دہرائیں، آزادانہ جواب دیں اور کردار ادا کریں۔",
   "path.grammar": "قاعدہ سمجھیں اور اسے فوراً مشق میں استعمال کریں۔",
+  /* Kapitelplan */
+  "chapter.position": "باب {{index}} از {{total}} · {{level}}",
+  "chapter.completed": "مکمل",
+  "chapter.words": "اس باب کے لیے {{count}} الفاظ",
+  "chapter.finish": "باب مکمل نشان زد کریں",
+  "chapter.all": "تمام ابواب",
+  "chapter.doneCount": "{{total}} میں سے {{done}} مکمل",
 } as const;
 
 export default ur;

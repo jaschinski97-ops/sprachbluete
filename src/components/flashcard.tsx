@@ -24,13 +24,13 @@ import { useTheme } from '@/hooks/use-theme';
  * Karteikarte.
  *
  * Vorder- und Rückseite tauschen mit der Lernrichtung:
- *   th_to_de — vorne die Thai-Schrift (noch ohne Tonfarben, das ist ja die
- *              Leseaufgabe), hinten Umschrift mit Silbenfarben und Bedeutung.
+ *   th_to_de — vorne Thai-Schrift mit Umschrift, hinten zusätzlich
+ *              Silbenfarben und Bedeutung.
  *   de_to_th — vorne das deutsche Wort samt Grammatik, hinten das thailändische
  *              Wort mit Tonfarben.
  *
- * Die Tonfarben erscheinen bewusst erst beim Aufdecken: vorher wären sie die
- * halbe Antwort.
+ * Die farbige Tonkontur erscheint erst beim Aufdecken; die Umschrift mit
+ * Tonzeichen steht auf ausdrücklichen Nutzerwunsch bereits vorn.
  *
  * Das Bild (Phase 5) steht je nach Richtung an anderer Stelle, und zwar aus
  * demselben Grund:
@@ -119,15 +119,17 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null }: Pr
             <TermWord entry={entry} />
           ) : (
             <View style={styles.frontThai}>
-              {/* Gleiche Stufe und gleicher Skalierungsschutz wie in `ThaiWord`:
-                  die Vorderseite der Karte ist dasselbe Display, nur ohne
-                  Tonfarben (die wären die halbe Antwort). */}
+              {/* Gleiche Stufe und gleicher Skalierungsschutz wie in `ThaiWord`;
+                  die Umschrift steht direkt unter der Thai-Schrift. */}
               <ThemedText
                 type="thaiLarge"
                 maxFontSizeMultiplier={1.4}
                 style={{ lineHeight: displayLineHeight(56, 1.4) }}>
                 {entry.term}
               </ThemedText>
+              {entry.language === 'th' && entry.romanization && entry.romanization !== entry.term ? (
+                <ThemedText type="small" themeColor="textSecondary">{entry.romanization}</ThemedText>
+              ) : null}
             </View>
           )}
           {/* Audio nur in der Sprache, die man LERNT (Nutzerentscheidung

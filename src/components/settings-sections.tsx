@@ -6,12 +6,12 @@ import { ThemedView } from '@/components/themed-view';
 import {
   SYSTEM_LANGUAGE_SETTING,
   UI_LANGUAGES,
-  languageDisplayName,
   localeTagFor,
   useLocale,
   type LanguageSetting,
   type TranslationKey,
 } from '@/lib/i18n';
+import { settingsLanguageName } from '@/lib/i18n/settings-language-names';
 import { Spacing } from '@/constants/theme';
 import {
   BackupImportSummary,
@@ -115,9 +115,8 @@ export function PersistenceWarning() {
  * Geräts — sie ist zugleich die künftige Brückensprache. Wer will, schaltet
  * hier fest um; die Wahl wird wie das Lernprofil im `meta`-Speicher bewahrt.
  *
- * Die Sprachen stehen unter ihren ENDONYMEN („español“, „ไทย“): Eine Sprache
- * muss sich auch dann finden lassen, wenn die Oberfläche gerade in einer
- * Sprache erscheint, die man nicht liest.
+ * Native und englische Namen lassen jede Sprache unabhängig von der gerade
+ * gewählten Oberfläche finden.
  */
 export function AppLanguageSection() {
   const { t, setting, setSetting } = useLocale();
@@ -127,7 +126,7 @@ export function AppLanguageSection() {
     { value: SYSTEM_LANGUAGE_SETTING, label: t('appLanguage.system') },
     ...UI_LANGUAGES.map((language) => ({
       value: language as LanguageSetting,
-      label: languageDisplayName(language, language),
+      label: settingsLanguageName(language),
     })),
   ];
 

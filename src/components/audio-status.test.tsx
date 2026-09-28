@@ -38,6 +38,7 @@ afterEach(async () => { await act(async () => tree?.unmount()); });
 
 test('X_to_de-Karte: Brückenseite stumm; aufgedeckt liest die Gerätestimme das deutsche Wort', async () => {
   await act(async () => { tree = create(<Flashcard entry={word} direction="th_to_de" revealed={false} />); });
+  expect(JSON.stringify(tree.toJSON())).toContain(word.romanization);
   // Nutzerentscheidung 10.09.: Die Brückensprache (hier Thai) bleibt stumm —
   // auf der unverdeckten Karte gibt es keinen Audio-Knopf.
   const knoepfe = () => tree.root.findAll(node => typeof node.props.onPress === 'function' && node.props.accessibilityRole === 'button');

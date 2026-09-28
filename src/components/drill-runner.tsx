@@ -212,12 +212,12 @@ export function DrillRunner({
             {answers
               .filter((entry) => !entry.correct)
               .map((entry) => (
-                <ThemedText
-                  key={entry.question.id}
-                  type="small"
-                  themeColor="textSecondary">
-                  {entry.question.solution}
-                </ThemedText>
+                <View key={entry.question.id}>
+                  <ThemedText type="small" themeColor="textSecondary">{entry.question.solution}</ThemedText>
+                  {entry.question.solutionRoman ? (
+                    <ThemedText type="small" themeColor="textSecondary">{entry.question.solutionRoman}</ThemedText>
+                  ) : null}
+                </View>
               ))}
           </View>
         ) : null}
@@ -269,10 +269,16 @@ export function DrillRunner({
               style={{ lineHeight: displayLineHeight(32, 2) }}>
               {question.visible}
             </ThemedText>
+            {question.visibleRoman && question.visibleRoman !== question.visible ? (
+              <ThemedText type="small" themeColor="textSecondary">{question.visibleRoman}</ThemedText>
+            ) : null}
             {question.visibleHint ? (
               <ThemedText type="small" themeColor="textSecondary">
                 {question.visibleHint}
               </ThemedText>
+            ) : null}
+            {question.visibleHintRoman ? (
+              <ThemedText type="small" themeColor="textSecondary">{question.visibleHintRoman}</ThemedText>
             ) : null}
           </View>
         ) : null}
@@ -299,7 +305,7 @@ export function DrillRunner({
                 onPress={() => answer(optionIndex)}
                 disabled={answered || (drill === 'tone' && heardId !== question.id)}
                 accessibilityRole="button"
-                accessibilityLabel={option.hint ? `${option.label}, ${option.hint}` : option.label}
+                accessibilityLabel={[option.label, option.roman, option.hint].filter(Boolean).join(', ')}
                 accessibilityState={{ selected: isChosen, disabled: answered || (drill === 'tone' && heardId !== question.id) }}
                 style={({ pressed }) => [styles.optionWrap, pressed && styles.pressed]}>
                 <ThemedView
@@ -310,6 +316,9 @@ export function DrillRunner({
                   ]}>
                   {option.tone ? <ToneContour tone={option.tone} height={16} /> : null}
                   <ThemedText type="small">{option.label}</ThemedText>
+                  {option.roman && option.roman !== option.label ? (
+                    <ThemedText type="small" themeColor="textSecondary">{option.roman}</ThemedText>
+                  ) : null}
                   {/* Seit Phase 16 sichtbar: Bei der Betonungsuebung steht
                       hier die Silbennummer, bei der Ausspracheuebung ein
                       anderes Wort mit demselben Laut. Das Feld gab es seit
@@ -338,6 +347,9 @@ export function DrillRunner({
                 : t('drill.wrong')}
             </ThemedText>
             <ThemedText type="small">{question.solution}</ThemedText>
+            {question.solutionRoman && question.solutionRoman !== question.solution ? (
+              <ThemedText type="small" themeColor="textSecondary">{question.solutionRoman}</ThemedText>
+            ) : null}
             {/* Leer = die Erklärung lebt in der Herleitung bzw. gehört dem
                 Datensatz der de-Brücke (ser/estar) — dann keine leere Zeile. */}
             {question.explanation ? (

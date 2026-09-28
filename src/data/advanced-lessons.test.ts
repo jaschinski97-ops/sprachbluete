@@ -23,3 +23,19 @@ test('jede Lernsprache hat eine vollständige erste B1-Übung ohne erfundene Bew
     expect(lesson.modelAnswer).toBeTruthy();
   }
 });
+
+test('Thai-B1-Text und alle Antworten haben eine sichtbare Umschrift', () => {
+  const lesson = ADVANCED_LESSONS.th;
+  expect(lesson.roman?.title).toMatch(/[àáâǎ]/);
+  expect(lesson.roman?.paragraphs).toHaveLength(lesson.paragraphs.length);
+  expect(lesson.roman?.paragraphs.every(Boolean)).toBe(true);
+  expect(lesson.roman?.writingPrompt).toBeTruthy();
+  expect(lesson.roman?.speakingPrompt).toBeTruthy();
+  expect(lesson.roman?.modelAnswer).toBeTruthy();
+  for (const question of lesson.questions) {
+    expect(question.roman?.prompt).toBeTruthy();
+    expect(question.roman?.options).toHaveLength(question.options.length);
+    expect(question.roman?.options.every(Boolean)).toBe(true);
+    expect(question.roman?.explanation).toBeTruthy();
+  }
+});

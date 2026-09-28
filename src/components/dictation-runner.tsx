@@ -246,9 +246,12 @@ export function DictationRunner({
               {t('drill.mistakesTitle')}
             </ThemedText>
             {missed.map((entry) => (
-              <ThemedText key={entry.id} type="small">
-                {entry.text}
-              </ThemedText>
+              <View key={entry.id}>
+                <ThemedText type="small">{entry.text}</ThemedText>
+                {entry.language === 'th' && entry.roman ? (
+                  <ThemedText type="small" themeColor="textSecondary">{entry.roman}</ThemedText>
+                ) : null}
+              </View>
             ))}
           </>
         ) : null}

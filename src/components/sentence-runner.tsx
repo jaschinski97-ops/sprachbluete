@@ -245,7 +245,10 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
       {/* Die erste Antwort ist IMMER die Lösung — auf der de-Brücke die
           deutsche Bedeutung, auf anderen Brücken der gehörte Zielsatz
           (Erkennungsmodus, 21.09.2026). */}
-      {sentenceAnswers(task, seed + index).map(option => <SentenceAction key={option} label={option} disabled={!heard || answer !== null || busy}
+      {sentenceAnswers(task, seed + index).map(option => <SentenceAction key={option}
+        label={language === 'th' && task.answersRoman?.[task.answers.indexOf(option)]
+          ? `${option}\n${task.answersRoman[task.answers.indexOf(option)]}` : option}
+        disabled={!heard || answer !== null || busy}
         onPress={() => { if (!heard || answer !== null) return; setAnswer(option); if (option === task.answers[0]) setCorrect(value => value + 1); void stopPronunciation(); }} />)}
       {answer !== null && <>
         <ThemedText accessibilityLiveRegion="polite">{answer === task.answers[0] ? t('sentence.correct') : t('sentence.meant', { answer: task.answers[0] })}</ThemedText>

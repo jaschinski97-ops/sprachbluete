@@ -19,6 +19,8 @@ export type SentenceTask = {
   focus: string;
   /** Bedeutung + Ablenker für „Satz verstehen“ (erste Antwort ist richtig). */
   answers: string[];
+  /** Lesehilfe zu Zielsprachen-Optionen im Erkennungsmodus. */
+  answersRoman?: string[];
   eligible?: boolean;
   reason?: string;
   lexicalSources?: string[];
@@ -82,6 +84,7 @@ export function buildSentenceTasks(words: VocabEntry[], anchor: UiLanguage = 'de
     const bedeutung = anchor === String(word.language)
       ? word.term
       : bridgeText(word, anchor).text;
+    const answers = [loesung, ...ablenker];
     return {
       id: `sentence-${word.id}`,
       vocabId: word.id,
@@ -89,7 +92,9 @@ export function buildSentenceTasks(words: VocabEntry[], anchor: UiLanguage = 'de
       german,
       roman: (word.exampleRoman ?? '').trim(),
       focus: `${word.term} · ${bedeutung}`,
-      answers: [loesung, ...ablenker],
+      answers,
+      answersRoman: anchor === 'de' ? undefined : answers.map((answer) =>
+        basis.find((candidate) => candidate.exampleTerm?.trim() === answer)?.exampleRoman?.trim() ?? ''),
       reason: 'KI-erzeugter Beispielsatz des generierten Wortschatzbestands; mit dem Worteintrag erzeugt und kreuzgeprüft.',
       reviewMethod: 'KI-Erzeugung mit Kreuzprüfung (Studio-Pipeline)',
     };

@@ -70,6 +70,15 @@ describe('buildSentenceTasks', () => {
     expect(tasks[0].answers[0]).toBe(tasks[0].german);
   });
 
+  it('ordnet Thai-Erkennungsantworten ihre Satzumschrift zu', () => {
+    const tasks = buildSentenceTasks([
+      vokabel({ id: 'a', term: 'ก', exampleTerm: 'ประโยคหนึ่ง', exampleRoman: 'bprà-yòok nʉ̀ng' }),
+      vokabel({ id: 'b', term: 'ข', exampleTerm: 'ประโยคสอง', exampleRoman: 'bprà-yòok sɔ̌ɔng' }),
+      vokabel({ id: 'c', term: 'ค', exampleTerm: 'ประโยคสาม', exampleRoman: 'bprà-yòok sǎam' }),
+    ], 'en');
+    expect(tasks[0].answersRoman).toEqual(['bprà-yòok nʉ̀ng', 'bprà-yòok sɔ̌ɔng', 'bprà-yòok sǎam']);
+  });
+
   it('Der Fokus nennt das Kernwort — im Deutsch-Ziel mit der Thai-Bedeutung als Ankerseite', () => {
     const tasks = buildSentenceTasks([
       vokabel({ id: 'a', term: 'Bahnhof', exampleTerm: 'Der Bahnhof ist groß.', language: 'de', german: 'Bahnhof', translations: { th: 'สถานีรถไฟ' } }),

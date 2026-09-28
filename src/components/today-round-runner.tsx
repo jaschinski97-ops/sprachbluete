@@ -100,12 +100,12 @@ const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
   shadowing: 'mode.shadowing',
 };
 
-type SatzAufgabe = { id: string; german: string; text: string };
+type SatzAufgabe = { id: string; german: string; text: string; roman: string };
 
 function satzAufgaben(tasks: SentenceTask[], anzahl: number, seed: number): SatzAufgabe[] {
   return shuffled(tasks, seededRandom(seed))
     .slice(0, anzahl)
-    .map((task) => ({ id: task.id, german: task.german, text: task.text }));
+    .map((task) => ({ id: task.id, german: task.german, text: task.text, roman: task.roman }));
 }
 
 export function TodayRoundRunner({
@@ -454,10 +454,16 @@ function HoerenSegment({
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t(PROMPT_KEYS[frage.drill])}</ThemedText>
       {frage.visible ? <ThemedText type="subtitle">{frage.visible}</ThemedText> : null}
+      {frage.visibleRoman ? (
+        <ThemedText type="small" themeColor="textSecondary">{frage.visibleRoman}</ThemedText>
+      ) : null}
       {frage.visibleHint ? (
         <ThemedText type="small" themeColor="textSecondary">
           {frage.visibleHint}
         </ThemedText>
+      ) : null}
+      {frage.visibleHintRoman ? (
+        <ThemedText type="small" themeColor="textSecondary">{frage.visibleHintRoman}</ThemedText>
       ) : null}
       <View style={styles.options}>
         {frage.options.map((option, i) => (
@@ -478,15 +484,15 @@ function HoerenSegment({
               <ThemedText type="small" themeColor={chosen === i ? 'accentText' : 'text'}>
                 {option.label}
               </ThemedText>
+              {option.roman ? <ThemedText type="small" themeColor="textSecondary">{option.roman}</ThemedText> : null}
             </ThemedView>
           </Pressable>
         ))}
       </View>
-      {chosen !== null ? (
-        <ThemedText type="small" themeColor="textSecondary">
-          {frage.solution}
-        </ThemedText>
-      ) : null}
+      {chosen !== null ? <View>
+        <ThemedText type="small" themeColor="textSecondary">{frage.solution}</ThemedText>
+        {frage.solutionRoman ? <ThemedText type="small" themeColor="textSecondary">{frage.solutionRoman}</ThemedText> : null}
+      </View> : null}
     </ThemedView>
   );
 }
@@ -525,6 +531,7 @@ function SatzSegment({
     ).slice(0, 3);
     return shuffled([aufgabe.text, ...fremde], seededRandom(position + 7)).map((label) => ({
       label,
+      roman: aufgaben.find((task) => task.text === label)?.roman ?? '',
       correct: label === aufgabe.text,
     }));
   }, [aufgabe, aufgaben, position]);
@@ -567,6 +574,9 @@ function SatzSegment({
                 themeColor={chosen !== null && option.correct ? 'accentText' : 'text'}>
                 {option.label}
               </ThemedText>
+              {sprache === 'th' && option.roman ? (
+                <ThemedText type="small" themeColor="textSecondary">{option.roman}</ThemedText>
+              ) : null}
             </ThemedView>
           </Pressable>
         ))}
@@ -674,11 +684,16 @@ function DiktatSegment({
           }}
         />
       ) : (
-        <ThemedText type="small" themeColor="textSecondary">
-          {ergebnis === 'passed'
-            ? t('dictation.passed')
-            : `${t('dictation.failed')} · ${task.text}`}
-        </ThemedText>
+        <View>
+          <ThemedText type="small" themeColor="textSecondary">
+            {ergebnis === 'passed'
+              ? t('dictation.passed')
+              : `${t('dictation.failed')} · ${task.text}`}
+          </ThemedText>
+          {ergebnis === 'failed' && sprache === 'th' && task.roman ? (
+            <ThemedText type="small" themeColor="textSecondary">{task.roman}</ThemedText>
+          ) : null}
+        </View>
       )}
     </ThemedView>
   );
@@ -741,6 +756,9 @@ function ShadowingSegment({
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t('mode.shadowing')}</ThemedText>
       <ThemedText type="subtitle">{aufgabe.text}</ThemedText>
+      {sprache === 'th' && aufgabe.roman ? (
+        <ThemedText type="small" themeColor="textSecondary">{aufgabe.roman}</ThemedText>
+      ) : null}
       <ThemedText type="small" themeColor="textSecondary">
         {t('round.shadowNote')}
       </ThemedText>

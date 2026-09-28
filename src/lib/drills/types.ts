@@ -310,6 +310,7 @@ export function drillsForDirection(direction: PairDirection): DrillId[] {
 
 export type DrillOption = {
   label: string;
+  roman?: string;
   /** Zweite Zeile, etwa die Tonkontur-Beschriftung. */
   hint?: string;
   /** Nur bei der Ton-Übung gesetzt: färbt die Antwort wie in der Legende. */
@@ -327,8 +328,10 @@ export type DrillQuestion = {
    * die Thai-Schrift trägt das Tonzeichen und wäre die halbe Lösung.
    */
   visible: string | null;
+  visibleRoman?: string;
   /** Zweite Zeile unter `visible`, etwa die Bedeutung als Kontext. */
   visibleHint: string | null;
+  visibleHintRoman?: string;
   /** Wird abgespielt, sobald die Aufgabe erscheint. */
   speak: { text: string; language: SpeechLanguage } | null;
   options: DrillOption[];
@@ -337,6 +340,7 @@ export type DrillQuestion = {
   explanation: string;
   /** Die Auflösung in Klartext, für die Anzeige nach der Antwort. */
   solution: string;
+  solutionRoman?: string;
   /**
    * Die Herleitung Schritt für Schritt — nur bei „Ton herleiten" (Phase 13).
    *

@@ -209,10 +209,10 @@ export function buildToneRuleQuestion(
     drill: 'toneRule',
     direction: toTarget(entry),
     vocabId: entry.id,
-    // Hier ist die Schrift die Aufgabe, nicht die halbe Loesung: Genau aus
-    // ihr soll der Ton abgeleitet werden. Die Umschrift steht bewusst NICHT
-    // dabei - sie traegt die Tonzeichen und waere die Antwort.
+    // Die Tonzeichen der Umschrift sind auf ausdrücklichen Nutzerwunsch
+    // auch während der Aufgabe sichtbar.
     visible: entry.term,
+    visibleRoman: entry.romanization,
     visibleHint: null,
     speak: null,
     options,

@@ -39,8 +39,8 @@ function deutscheErklaerung(anker: UiLanguage): boolean {
 
 /** Die Partikel-Wahl: feste Reihenfolge, männlich zuerst — dieselbe Überlegung wie bei den Tönen. */
 const POLITE_OPTIONS: DrillOption[] = [
-  { label: 'ครับ' },
-  { label: 'ค่ะ' },
+  { label: 'ครับ', roman: 'khráp' },
+  { label: 'ค่ะ', roman: 'khâ' },
 ];
 
 export function buildPoliteQuestion(item: PoliteItem, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
@@ -50,6 +50,7 @@ export function buildPoliteQuestion(item: PoliteItem, anchor: UiLanguage = 'de',
     direction: directionForDrill('polite', 'th'),
     vocabId: item.id,
     visible: `${item.text} ___`,
+    visibleRoman: `${item.roman} ___`,
     visibleHint: item.speaker === 'male'
       ? translate(ui, 'grammar.speakerMale')
       : translate(ui, 'grammar.speakerFemale'),
@@ -59,6 +60,7 @@ export function buildPoliteQuestion(item: PoliteItem, anchor: UiLanguage = 'de',
     options: POLITE_OPTIONS,
     correctIndex: item.answer === 'ครับ' ? 0 : 1,
     solution: `${item.text} ${item.answer}`,
+    solutionRoman: `${item.roman} ${item.answer === 'ครับ' ? 'khráp' : 'khâ'}`,
     explanation: deutscheErklaerung(anchor)
       ? `${item.german} · ${translate(ui, 'grammar.particleGender')}`
       : translate(ui, 'grammar.particleGender'),
@@ -89,8 +91,12 @@ export function buildSerEstarQuestion(item: SerEstarItem, anchor: UiLanguage = '
 
 /* ---------- Zählwörter (de_to_th, Schritt 5) ---------- */
 
+const ZAEHLER_ROMAN: Record<(typeof ZAEHLER_OPTIONEN)[number], string> = {
+  คน: 'khon', ตัว: 'dtua', เล่ม: 'lêm', แก้ว: 'gâaeo', หลัง: 'lǎng',
+};
+
 export function buildZaehlerQuestion(item: ZaehlerItem, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
-  const options: DrillOption[] = ZAEHLER_OPTIONEN.map((label) => ({ label }));
+  const options: DrillOption[] = ZAEHLER_OPTIONEN.map((label) => ({ label, roman: ZAEHLER_ROMAN[label] }));
   return {
     id: `zaehler:${item.id}`,
     drill: 'zaehlerwort',
@@ -99,14 +105,17 @@ export function buildZaehlerQuestion(item: ZaehlerItem, anchor: UiLanguage = 'de
     // Die deutsche Bedeutung in Klammern nur auf der de-Brücke — andere
     // Anker haben keine Übersetzung des Datensatzes (21.09.2026).
     visible: deutscheErklaerung(anchor) ? `${item.nomen} (${item.german})` : item.nomen,
+    visibleRoman: item.roman,
     // Thai: Nomen + Zahl + Zählwort — die Lücke steht HINTER der Zahl.
     visibleHint: translate(ui, 'grammar.counterHint', { example: `${item.nomen} หนึ่ง ___` }),
+    visibleHintRoman: `${item.roman} nʉ̀ng ___`,
     speak: null,
     options,
     correctIndex: ZAEHLER_OPTIONEN.indexOf(item.answer),
     solution: deutscheErklaerung(anchor)
       ? `${item.nomen} หนึ่ง ${item.answer} — 1 × ${item.german}`
       : `${item.nomen} หนึ่ง ${item.answer}`,
+    solutionRoman: `${item.roman} nʉ̀ng ${ZAEHLER_ROMAN[item.answer]}`,
     explanation: translate(ui, 'grammar.counterBetween'),
   };
 }
@@ -129,6 +138,7 @@ export function buildKonsonantenklasseQuestion(konsonant: ThaiConsonant, anchor:
     direction: directionForDrill('konsonantenklasse', 'th'),
     vocabId: konsonant.symbol,
     visible: konsonant.name,
+    visibleRoman: konsonant.nameRtgs,
     // Die Merkwort-Bedeutung gibt es englisch (Quelle) und deutsch
     // (CONSONANT_MEANING_DE) — auf anderen Brücken bleibt die RTGS-Umschrift.
     visibleHint: konsonantBedeutung(konsonant, anchor)
@@ -138,6 +148,7 @@ export function buildKonsonantenklasseQuestion(konsonant: ThaiConsonant, anchor:
     options: optionen,
     correctIndex: optionen.findIndex((option) => option.label === richtige),
     solution: `${konsonant.name} — ${richtige}`,
+    solutionRoman: konsonant.nameRtgs,
     explanation: translate(ui, 'grammar.classIntro'),
   };
 }

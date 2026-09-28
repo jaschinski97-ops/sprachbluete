@@ -88,6 +88,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
 
   return <View style={styles.root}>
     <ThemedText type="subtitle">{lesson.title}</ThemedText>
+    {lesson.roman ? <RomanLine text={lesson.roman.title} /> : null}
     <ThemedText type="small" themeColor="textSecondary">{t('advanced.intro')}</ThemedText>
 
     {phase === 'listen' ? <ThemedView type="backgroundElement" style={styles.card}>
@@ -102,6 +103,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
       {audioUnavailable ? <>
         <ThemedText type="small" themeColor="textSecondary">{t('advanced.unavailable')}</ThemedText>
         <ThemedText type="default">{lesson.paragraphs[listenIndex]}</ThemedText>
+        {lesson.roman ? <RomanLine text={lesson.roman.paragraphs[listenIndex]} /> : null}
       </> : null}
       <ThemedButton label={t('common.next')} onPress={() => {
         void stopPronunciation();
@@ -113,6 +115,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     {phase === 'questions' ? <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t('advanced.questions')} · {questionIndex + 1}/{lesson.questions.length}</ThemedText>
       <ThemedText type="default">{lesson.questions[questionIndex].prompt}</ThemedText>
+      {lesson.questions[questionIndex].roman ? <RomanLine text={lesson.questions[questionIndex].roman.prompt} /> : null}
       {lesson.questions[questionIndex].options.map((option, index) => <Pressable
         key={option}
         accessibilityRole="button"
@@ -120,6 +123,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
         onPress={() => setSelected(index)}>
         <ThemedView type={selected === index ? 'backgroundSelected' : 'background'} style={styles.option}>
           <ThemedText type="default">{option}</ThemedText>
+          {lesson.questions[questionIndex].roman ? <RomanLine text={lesson.questions[questionIndex].roman.options[index]} /> : null}
         </ThemedView>
       </Pressable>)}
       {selected !== null ? <>
@@ -127,6 +131,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
           {selected === lesson.questions[questionIndex].correctIndex ? t('sentence.correct') : t('drill.wrong')}
         </ThemedText>
         <ThemedText type="small">{lesson.questions[questionIndex].explanation}</ThemedText>
+        {lesson.questions[questionIndex].roman ? <RomanLine text={lesson.questions[questionIndex].roman.explanation} /> : null}
         <ThemedButton label={t('common.next')} onPress={nextQuestion} />
       </> : null}
     </ThemedView> : null}
@@ -138,6 +143,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
       </ThemedText>
       {lesson.paragraphs.map((paragraph, index) => <View key={index} style={styles.paragraph}>
         <ThemedText type="default">{paragraph}</ThemedText>
+        {lesson.roman ? <RomanLine text={lesson.roman.paragraphs[index]} /> : null}
         <ThemedButton label={t('advanced.listen', { index: index + 1, total: lesson.paragraphs.length })} onPress={() => play(paragraph)} />
       </View>)}
       {audioUnavailable ? <ThemedText type="small" themeColor="textSecondary">{t('advanced.unavailable')}</ThemedText> : null}
@@ -147,6 +153,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     {phase === 'produce' ? <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t('advanced.write')}</ThemedText>
       <ThemedText type="default">{lesson.writingPrompt}</ThemedText>
+      {lesson.roman ? <RomanLine text={lesson.roman.writingPrompt} /> : null}
       <TextInput
         multiline
         accessibilityLabel={t('advanced.write')}
@@ -165,9 +172,11 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
       {saveError ? <ThemedText type="small" themeColor="textSecondary">{t('common.loadFailed', { message: saveError })}</ThemedText> : null}
       <ThemedText type="smallBold">{t('advanced.speak')}</ThemedText>
       <ThemedText type="default">{lesson.speakingPrompt}</ThemedText>
+      {lesson.roman ? <RomanLine text={lesson.roman.speakingPrompt} /> : null}
       <ThemedText type="small" themeColor="textSecondary">{t('advanced.selfCheck')}</ThemedText>
       <ThemedButton label={t('advanced.model')} onPress={() => setShowModel((value) => !value)} />
       {showModel ? <ThemedText type="default">{lesson.modelAnswer}</ThemedText> : null}
+      {showModel && lesson.roman ? <RomanLine text={lesson.roman.modelAnswer} /> : null}
       <ThemedButton label={completed ? t('advanced.done') : t('advanced.complete')}
         disabled={completed || !draft.trim()}
         variant="primary"
@@ -187,6 +196,10 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     </ThemedView> : null}
     <ThemedButton label={t('common.back')} onPress={onExit} />
   </View>;
+}
+
+function RomanLine({ text }: { text: string }) {
+  return <ThemedText type="small" themeColor="textSecondary">{text}</ThemedText>;
 }
 
 const styles = StyleSheet.create({

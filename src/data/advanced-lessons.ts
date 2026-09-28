@@ -5,6 +5,7 @@ export type AdvancedQuestion = {
   options: [string, string, string];
   correctIndex: 0 | 1 | 2;
   explanation: string;
+  roman?: { prompt: string; options: [string, string, string]; explanation: string };
 };
 
 export type AdvancedLesson = {
@@ -16,6 +17,13 @@ export type AdvancedLesson = {
   writingPrompt: string;
   speakingPrompt: string;
   modelAnswer: string;
+  roman?: {
+    title: string;
+    paragraphs: [string, string, string];
+    writingPrompt: string;
+    speakingPrompt: string;
+    modelAnswer: string;
+  };
 };
 
 /** An authored first B1 practice unit per target language, bundled for offline use.
@@ -31,13 +39,24 @@ export const ADVANCED_LESSONS: Record<LanguageCode, AdvancedLesson> = {
       'ครูตอบว่ากลุ่มวันเสาร์ยังมีที่ว่างหนึ่งที่ แต่เริ่มเรียนเร็วกว่ากลุ่มเดิมหนึ่งชั่วโมง มินาต้องตัดสินใจก่อนวันศุกร์ เธอคิดว่าการตื่นเช้าคงไม่ง่าย แต่ดีกว่าการพลาดบทเรียนทุกสัปดาห์',
     ],
     questions: [
-      { prompt: 'ทำไมมินาจึงไปเรียนสาย?', options: ['รถไฟหยุดวิ่ง', 'เวลาประชุมที่บริษัทเปลี่ยน', 'ครูเปลี่ยนห้องเรียน'], correctIndex: 1, explanation: 'บริษัทเปลี่ยนเวลาประชุม ทำให้เธอไปถึงห้องเรียนช้า' },
-      { prompt: 'มินาขอทางเลือกอะไรถ้าย้ายกลุ่มไม่ได้?', options: ['ขอเงินคืน', 'เรียนกับครูคนใหม่', 'ขอเอางานไปทำที่บ้าน'], correctIndex: 2, explanation: 'เธอของานที่เรียนในวันอังคารไปทำที่บ้าน' },
-      { prompt: 'ทำไมมินาจึงคิดจะเรียนวันเสาร์?', options: ['เธอไม่อยากพลาดบทเรียนทุกสัปดาห์', 'เธออยากตื่นเช้า', 'เพื่อนทุกคนย้ายไปแล้ว'], correctIndex: 0, explanation: 'เธอคิดว่าการตื่นเช้าดีกว่าการพลาดบทเรียนทุกสัปดาห์' },
+      { prompt: 'ทำไมมินาจึงไปเรียนสาย?', options: ['รถไฟหยุดวิ่ง', 'เวลาประชุมที่บริษัทเปลี่ยน', 'ครูเปลี่ยนห้องเรียน'], correctIndex: 1, explanation: 'บริษัทเปลี่ยนเวลาประชุม ทำให้เธอไปถึงห้องเรียนช้า', roman: { prompt: 'tham-mai Mii-naa jʉng bpai riian sǎai?', options: ['rót-fai yùt wîng', 'wee-laa bprà-chum thîi bɔɔ-rí-sàt bplìian', 'khruu bplìian hɔ̂ng-riian'], explanation: 'bɔɔ-rí-sàt bplìian wee-laa bprà-chum tham hâi thəə bpai thʉ̌ng hɔ̂ng-riian cháa' } },
+      { prompt: 'มินาขอทางเลือกอะไรถ้าย้ายกลุ่มไม่ได้?', options: ['ขอเงินคืน', 'เรียนกับครูคนใหม่', 'ขอเอางานไปทำที่บ้าน'], correctIndex: 2, explanation: 'เธอของานที่เรียนในวันอังคารไปทำที่บ้าน', roman: { prompt: 'Mii-naa khɔ̌ɔ thaang-lʉ̂ak à-rai thâa yáai glùm mâi dâi?', options: ['khɔ̌ɔ ngən khʉʉn', 'riian gàp khruu khon mài', 'khɔ̌ɔ ao ngaan bpai tham thîi bâan'], explanation: 'thəə khɔ̌ɔ ngaan thîi riian nai wan ang-khaan bpai tham thîi bâan' } },
+      { prompt: 'ทำไมมินาจึงคิดจะเรียนวันเสาร์?', options: ['เธอไม่อยากพลาดบทเรียนทุกสัปดาห์', 'เธออยากตื่นเช้า', 'เพื่อนทุกคนย้ายไปแล้ว'], correctIndex: 0, explanation: 'เธอคิดว่าการตื่นเช้าดีกว่าการพลาดบทเรียนทุกสัปดาห์', roman: { prompt: 'tham-mai Mii-naa jʉng khít jà riian wan sǎo?', options: ['thəə mâi yàak phlâat bòt-riian thúk sàp-daa', 'thəə yàak dtʉ̀ʉn cháo', 'phʉ̂an thúk khon yáai bpai láew'], explanation: 'thəə khít wâa gaan dtʉ̀ʉn cháo dii gwàa gaan phlâat bòt-riian thúk sàp-daa' } },
     ],
     writingPrompt: 'เขียนอีเมลถึงครู: อธิบายปัญหา เสนอทางเลือกหนึ่งอย่าง และบอกว่าทำไมทางเลือกนั้นจึงเหมาะกับคุณ',
     speakingPrompt: 'เล่าให้เพื่อนฟังว่ามินามีปัญหาอะไร และคุณจะตัดสินใจอย่างไร เพราะอะไร',
     modelAnswer: 'เรียนคุณครู ฉันอยากเรียนต่อ แต่มีประชุมที่ทำงานทุกวันอังคาร ทำให้ไปถึงห้องเรียนสาย ฉันขอย้ายไปกลุ่มวันเสาร์ได้ไหมคะ เพราะจะได้เข้าร่วมกิจกรรมตั้งแต่ต้น ขอบคุณค่ะ',
+    roman: {
+      title: 'bplìian wee-laa riian phaa-sǎa',
+      paragraphs: [
+        'Mii-naa riian phaa-sǎa thai dton yen maa sǎam dʉan láew. Thəə chɔ̂ɔp khruu láe phʉ̂an rûam chán, phrɔ́ thúk khon chûay gan fʉ̀k phûut. Mɛ́ɛ baang khráng jà phûut phìt, dtàe chûang níi bɔɔ-rí-sàt khɔ̌ɔng thəə bplìian wee-laa bprà-chum, tham hâi thəə bpai thʉ̌ng hɔ̂ng-riian cháa thúk wan ang-khaan.',
+        'Sàp-daa thîi láew Mii-naa phlâat gìt-jà-gam glùm thîi sǎm-khan. Thəə jʉng khǐian ii-meel thʉ̌ng khruu, à-thí-baai wâa thəə yang yàak riian dtɔ̀ɔ, láe thǎam wâa jà yáai bpai riian glùm wan sǎo dâi mái. Thâa mâi mii thîi wâang, thəə yàak dâi ngaan thîi riian nai wan ang-khaan bpai tham thîi bâan.',
+        'Khruu dtɔ̀ɔp wâa glùm wan sǎo yang mii thîi wâang nʉ̀ng thîi, dtàe rə̂əm riian reo gwàa glùm dəəm nʉ̀ng chûa-moong. Mii-naa dtɔ̂ng dtàt-sǐn-jai gɔ̀ɔn wan sùk. Thəə khít wâa gaan dtʉ̀ʉn cháo khong mâi ngâai, dtàe dii gwàa gaan phlâat bòt-riian thúk sàp-daa.',
+      ],
+      writingPrompt: 'khǐian ii-meel thʉ̌ng khruu: à-thí-baai bpan-hǎa, sa-nə̌ə thaang-lʉ̂ak nʉ̀ng yàang, láe bɔ̀ɔk wâa tham-mai thaang-lʉ̂ak nán jʉng mɔ̌ɔ gàp khun',
+      speakingPrompt: 'lâo hâi phʉ̂an fang wâa Mii-naa mii bpan-hǎa à-rai, láe khun jà dtàt-sǐn-jai yàang-rai, phrɔ́ à-rai',
+      modelAnswer: 'Riian khun khruu, chǎn yàak riian dtɔ̀ɔ, dtàe mii bprà-chum thîi tham-ngaan thúk wan ang-khaan, tham hâi bpai thʉ̌ng hɔ̂ng-riian sǎai. Chǎn khɔ̌ɔ yáai bpai glùm wan sǎo dâi mái khá? Phrɔ́ jà dâi khâo rûam gìt-jà-gam dtâng-dtàe dtôn. Khɔ̀ɔp-khun khâ.',
+    },
   },
   en: {
     id: 'course-time-en-001', language: 'en', title: 'Changing the time of a language course',

@@ -191,7 +191,7 @@ function TextAnsicht({
       tokenisiereFuerAntippen(zeile.thai, pool, sprache !== 'th', uiLanguage)
     );
   }, [situation, sprache, uiLanguage]);
-  const [woerter, setWoerter] = useState<{ text: string; german: string }[]>([]);
+  const [woerter, setWoerter] = useState<{ text: string; roman: string; german: string }[]>([]);
   const [uebersetzt, setUebersetzt] = useState<Set<number>>(new Set());
   const [fragenStufe, setFragenStufe] = useState<number | null>(null);
 
@@ -213,7 +213,7 @@ function TextAnsicht({
     if (!token.entry) return;
     setWoerter((liste) => {
       const ohne = liste.filter((w) => w.text !== token.text);
-      return [{ text: token.text, german: token.entry!.german }, ...ohne].slice(0, 3);
+      return [{ text: token.text, roman: token.entry!.roman, german: token.entry!.german }, ...ohne].slice(0, 3);
     });
   };
 
@@ -319,7 +319,7 @@ function TextAnsicht({
                   .filter((w) => zeile.thai.includes(w.text))
                   .map((w) => (
                     <ThemedText key={w.text} type="small">
-                      {w.text} — {w.german}
+                      {w.text}{sprache === 'th' && w.roman ? ` · ${w.roman}` : ''} — {w.german}
                     </ThemedText>
                   ))}
               </View>
@@ -375,6 +375,9 @@ function FrageAnsicht({ frage, weiter }: { frage: VerstaendnisFrage; weiter: () 
       <ThemedText type="subtitle" maxFontSizeMultiplier={2}>
         {frage.frage}
       </ThemedText>
+      {frage.frageRoman && frage.frageRoman !== frage.frage ? (
+        <ThemedText type="small" themeColor="textSecondary">{frage.frageRoman}</ThemedText>
+      ) : null}
       <View style={styles.options}>
         {optionenMitLabels.map((option, i) => (
           <Pressable
@@ -401,6 +404,9 @@ function FrageAnsicht({ frage, weiter }: { frage: VerstaendnisFrage; weiter: () 
                 numberOfLines={2}>
                 {option.label}
               </ThemedText>
+              {frage.optionenRoman?.[i] && frage.optionenRoman[i] !== option.label ? (
+                <ThemedText type="small" themeColor="textSecondary">{frage.optionenRoman[i]}</ThemedText>
+              ) : null}
             </ThemedView>
           </Pressable>
         ))}

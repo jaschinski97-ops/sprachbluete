@@ -57,6 +57,9 @@ describe('Höflichkeitspartikel (ครับ/ค่ะ)', () => {
     expect(frage.speak).toBeNull();
     expect(frage.options.map((option) => option.label)).toEqual(['ครับ', 'ค่ะ']);
     expect(frage.options[frage.correctIndex].label).toBe(POLITE_ITEMS[0].answer);
+    expect(frage.visibleRoman).toContain(POLITE_ITEMS[0].roman);
+    expect(frage.options.every((option) => option.roman)).toBe(true);
+    expect(frage.solutionRoman).toContain(POLITE_ITEMS[0].roman);
   });
 });
 

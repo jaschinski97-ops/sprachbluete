@@ -37,7 +37,7 @@ const SCHWELLE: Record<string, number> = { A1: 20, A2: 50 };
 export type TextToken = {
   text: string;
   /** Geprüfter Bestandseintrag hinter dem Wort — tippbar, wenn gesetzt. */
-  entry?: { id: string; term: string; german: string };
+  entry?: { id: string; term: string; roman: string; german: string };
 };
 
 export type VerstaendnisFrage = {
@@ -45,6 +45,9 @@ export type VerstaendnisFrage = {
   art: 'bedeutung' | 'sprecher';
   frage: string;
   optionen: string[];
+  /** Romanization of Thai question text or Thai answer options. */
+  frageRoman?: string;
+  optionenRoman?: string[];
   correctIndex: number;
 };
 
@@ -94,7 +97,7 @@ export function tokenisiereFuerAntippen(
       }
       const bloß = wort.replace(/[\p{P}\p{S}]/gu, '').toLowerCase();
       const entry = pool.find((e) => e.term.toLowerCase() === bloß);
-      tokens.push(entry ? { text: wort, entry: { id: entry.id, term: entry.term, german: bedeutung(entry) } } : { text: wort });
+      tokens.push(entry ? { text: wort, entry: { id: entry.id, term: entry.term, roman: entry.romanization, german: bedeutung(entry) } } : { text: wort });
     }
     return tokens;
   }
@@ -121,7 +124,7 @@ export function tokenisiereFuerAntippen(
       flushRest();
       tokens.push({
         text: gefunden.term,
-        entry: { id: gefunden.id, term: gefunden.term, german: bedeutung(gefunden) },
+        entry: { id: gefunden.id, term: gefunden.term, roman: gefunden.romanization, german: bedeutung(gefunden) },
       });
       i += gefunden.term.length;
     } else {
@@ -180,6 +183,7 @@ export function verstaendnisFragen(
         art: 'bedeutung' as const,
         frage: zeile.german,
         optionen,
+        optionenRoman: optionen.map((text) => zeilen.find((turn) => turn.thai === text)?.roman ?? ''),
         correctIndex: optionen.indexOf(zeile.thai),
       };
     }
@@ -188,6 +192,7 @@ export function verstaendnisFragen(
       id: `${situation.id}-sprecher-${i}`,
       art: 'sprecher' as const,
       frage: zeile.thai,
+      frageRoman: zeile.roman,
       optionen: [],
       correctIndex: richtig,
     };

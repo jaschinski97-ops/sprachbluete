@@ -9,6 +9,8 @@ Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 
 ### Lernen
 
+- Thai-Wörter, Sätze und Antwortmöglichkeiten zeigen in den Lernübungen die vorhandene Umschrift mit Tonzeichen direkt unter der Thai-Schrift; das gilt auch für Karteikarten, Satz- und Grammatikübungen, Lesefragen, Tagesrunde und die neue B1-Einheit. Verdeckte Lösungen in Hör- und Schreibaufgaben bleiben bis zur Auswertung verdeckt. Die Umschrift der neuen B1-Texte ist neu ergänzt und benötigt wie die Texte noch eine unabhängige Sprachprüfung.
+- Die App-Sprachwahl in den Einstellungen zeigt neben jedem Eigennamen auch den englischen Sprachnamen. Übersetzungen innerhalb der Aufgaben bleiben unverändert.
 - Je eine erste B1-Vertiefung ist für Thai, Englisch, Spanisch und Deutsch verfügbar: längerer Text in drei Abschnitten, Hörversuch ohne eingeblendeten Text, drei Verständnisfragen, anschließendes Lesen, freie Schreibaufgabe und mündliche Antwort. Das Zielniveau ist eine Übungsorientierung und keine GER-Zertifizierung; die neuen Texte benötigen noch eine unabhängige Sprachprüfung.
 - Freie Antworten bleiben lokal auf dem Gerät. Die App zeigt eine Beispielantwort und Kriterien zur Selbstprüfung, vergibt dafür aber keine vorgetäuschte automatische Punktzahl. Die Hörfunktion verwendet nur eine verfügbare Systemstimme; ohne Stimme erscheint der jeweilige Abschnitt als Text. Für diese neuen Texte sind noch keine geprüften Audioclips gebündelt.
 - Eine fehlerhafte Formulierung im bestehenden deutschen B1-Lesetext wurde korrigiert.

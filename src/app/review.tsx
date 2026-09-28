@@ -471,6 +471,7 @@ const SENTENCE_EXAMPLES = {
   es: ['Yo', 'como', 'arroz'],
   de: ['Ich', 'esse', 'Reis'],
 } as const;
+const THAI_SENTENCE_EXAMPLE_ROMAN = ['chǎn', 'gin', 'khâao'] as const;
 
 function LearnPath({
   direction,
@@ -526,6 +527,9 @@ function LearnPath({
           <ThemedText type="small" themeColor="textSecondary">{translated.setting}</ThemedText>
           {turn ? <ThemedView type="background" style={styles.chapterExample}>
             <ThemedText type="smallBold">{spokenText(chapter.situation, turn)}</ThemedText>
+            {targetLanguageOf(direction) === 'th' && turn.roman ? (
+              <ThemedText type="small" themeColor="textSecondary">{turn.roman}</ThemedText>
+            ) : null}
             <ThemedText type="small" themeColor="textSecondary">{translated.turns[turnIndex]}</ThemedText>
           </ThemedView> : null}
           <ThemedText type="small" themeColor="textSecondary">{t('path.sequence')}</ThemedText>
@@ -551,6 +555,9 @@ function LearnPath({
             {example.map((word, index) => (
               <ThemedView key={`${word}:${index}`} type="background" style={styles.sentencePart}>
                 <ThemedText type="default" style={styles.exampleWord}>{word}</ThemedText>
+                {targetLanguageOf(direction) === 'th' ? (
+                  <ThemedText type="small" themeColor="textSecondary">{THAI_SENTENCE_EXAMPLE_ROMAN[index]}</ThemedText>
+                ) : null}
                 <ThemedText type="small" themeColor="textSecondary">
                   {t((['path.subject', 'path.verb', 'path.object'] as const)[index])}
                 </ThemedText>

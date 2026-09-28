@@ -628,6 +628,22 @@ const ar = {
   "chapter.finish": "تحديد الفصل كمكتمل",
   "chapter.all": "جميع الفصول",
   "chapter.doneCount": "اكتمل {{done}} من {{total}}",
+  "advanced.title": "تدريب B1 · البداية",
+  "advanced.intro": "نص أطول وأسئلة وإجابتك الخاصة. هذا التمرين لا يمنح شهادة بمستوى CEFR.",
+  "advanced.listen": "استمع إلى الجزء {{index}} من {{total}}",
+  "advanced.audioNote": "صوت النظام إن توفر؛ لم يُتحقق من النطق.",
+  "advanced.questions": "افهم النص",
+  "advanced.read": "اقرأ النص",
+  "advanced.score": "{{correct}} من {{total}} صحيحة",
+  "advanced.write": "اكتب إجابتك",
+  "advanced.speak": "قل إجابتك بصوت عالٍ",
+  "advanced.selfCheck": "راجع بنفسك: هل شرحت المشكلة واقترحت حلاً وذكرت سبباً؟",
+  "advanced.model": "اعرض إجابة نموذجية",
+  "advanced.save": "احفظ على هذا الجهاز",
+  "advanced.saved": "تم الحفظ على هذا الجهاز",
+  "advanced.complete": "أنهِ التدريب",
+  "advanced.done": "اكتمل التدريب",
+  "advanced.unavailable": "الصوت غير متاح على هذا الجهاز",
 } as const;
 
 export default ar;

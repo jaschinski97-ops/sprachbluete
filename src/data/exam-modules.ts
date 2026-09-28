@@ -504,7 +504,7 @@ export const BUILTIN_EXAM_MODULES: ExamModule[] = [
         'im Stau. Fährst du mit dem Rad, bist du in einer Viertelstunde da.\n\n' +
         'Am Kulturzentrum vorbei, dann links in die Gartenstraße. Der Eingang zum Kursraum ist ' +
         'nicht vorne, sondern im Innenhof — man sieht ihn leicht nicht, das Schild hängt erst ' +
-        'seit letzter Woche. Fragen du am besten an der Theke im Erdgeschoss nach Frau Berger, ' +
+        'seit letzter Woche. Frag am besten an der Theke im Erdgeschoss nach Frau Berger, ' +
         'sie leitet den Kurs und weiß, dass du kommst.\n\n' +
         'Bring bitte deinen Sprachpass mit, den möchten sie dort kopieren. Und: Der Kurs beginnt ' +
         'erst um Viertel nach sieben, du musst also nicht rennen.\n\n' +

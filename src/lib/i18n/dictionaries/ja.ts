@@ -628,6 +628,22 @@ const ja = {
   "chapter.finish": "章を完了にする",
   "chapter.all": "すべての章",
   "chapter.doneCount": "全{{total}}章中{{done}}章完了",
+  "advanced.title": "B1練習・入門",
+  "advanced.intro": "少し長い文章を読み、質問に答え、自分の答えを書きます。この練習はCEFRレベルの認定ではありません。",
+  "advanced.listen": "{{total}}のうち{{index}}番目を聞く",
+  "advanced.audioNote": "利用可能な場合は端末の音声を使用します。発音は検証されていません。",
+  "advanced.questions": "文章を理解する",
+  "advanced.read": "文章を読む",
+  "advanced.score": "{{total}}問中{{correct}}問正解",
+  "advanced.write": "自分の答えを書く",
+  "advanced.speak": "答えを声に出す",
+  "advanced.selfCheck": "自己確認：問題を説明し、解決策と理由を述べましたか？",
+  "advanced.model": "回答例を表示",
+  "advanced.save": "この端末に保存",
+  "advanced.saved": "この端末に保存しました",
+  "advanced.complete": "練習を終える",
+  "advanced.done": "練習完了",
+  "advanced.unavailable": "この端末では音声を利用できません",
 } as const;
 
 export default ja;

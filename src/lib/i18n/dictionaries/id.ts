@@ -628,6 +628,22 @@ const id = {
   "chapter.finish": "Tandai bab selesai",
   "chapter.all": "Semua bab",
   "chapter.doneCount": "{{done}} dari {{total}} selesai",
+  "advanced.title": "Latihan B1 · awal",
+  "advanced.intro": "Teks lebih panjang, pertanyaan, dan jawabanmu sendiri. Latihan ini tidak menyatakan tingkat CEFR.",
+  "advanced.listen": "Dengarkan bagian {{index}} dari {{total}}",
+  "advanced.audioNote": "Suara sistem jika tersedia; pengucapan belum diperiksa.",
+  "advanced.questions": "Pahami teks",
+  "advanced.read": "Baca teks",
+  "advanced.score": "{{correct}} dari {{total}} benar",
+  "advanced.write": "Tulis jawabanmu",
+  "advanced.speak": "Ucapkan jawabanmu",
+  "advanced.selfCheck": "Periksa sendiri: Sudahkah kamu menjelaskan masalah, mengusulkan solusi, dan memberi alasan?",
+  "advanced.model": "Tampilkan contoh jawaban",
+  "advanced.save": "Simpan di perangkat ini",
+  "advanced.saved": "Tersimpan di perangkat ini",
+  "advanced.complete": "Selesaikan latihan",
+  "advanced.done": "Latihan selesai",
+  "advanced.unavailable": "Audio tidak tersedia di perangkat ini",
 } as const;
 
 export default id;

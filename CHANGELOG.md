@@ -5,6 +5,14 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 [`docs/arbeitsverlauf-bis-2026-09-25.md`](docs/arbeitsverlauf-bis-2026-09-25.md).
 
+## [Unveröffentlicht] – 28.09.2026
+
+### Lernen
+
+- Je eine erste B1-Vertiefung ist für Thai, Englisch, Spanisch und Deutsch verfügbar: längerer Text in drei Abschnitten, Hörversuch ohne eingeblendeten Text, drei Verständnisfragen, anschließendes Lesen, freie Schreibaufgabe und mündliche Antwort. Das Zielniveau ist eine Übungsorientierung und keine GER-Zertifizierung; die neuen Texte benötigen noch eine unabhängige Sprachprüfung.
+- Freie Antworten bleiben lokal auf dem Gerät. Die App zeigt eine Beispielantwort und Kriterien zur Selbstprüfung, vergibt dafür aber keine vorgetäuschte automatische Punktzahl. Die Hörfunktion verwendet nur eine verfügbare Systemstimme; ohne Stimme erscheint der jeweilige Abschnitt als Text. Für diese neuen Texte sind noch keine geprüften Audioclips gebündelt.
+- Eine fehlerhafte Formulierung im bestehenden deutschen B1-Lesetext wurde korrigiert.
+
 ## [Unveröffentlicht] – 27.09.2026
 
 ### Lernen

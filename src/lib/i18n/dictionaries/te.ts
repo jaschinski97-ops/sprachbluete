@@ -628,6 +628,22 @@ const te = {
   "chapter.finish": "అధ్యాయం పూర్తయిందని గుర్తించండి",
   "chapter.all": "అన్ని అధ్యాయాలు",
   "chapter.doneCount": "{{total}}లో {{done}} పూర్తయ్యాయి",
+  "advanced.title": "B1 అభ్యాసం · ప్రారంభం",
+  "advanced.intro": "పొడవైన పాఠం, ప్రశ్నలు, మీ స్వంత సమాధానం. ఈ అభ్యాసం CEFR స్థాయిని ధృవీకరించదు.",
+  "advanced.listen": "{{total}}లో {{index}}వ భాగం వినండి",
+  "advanced.audioNote": "అందుబాటులో ఉంటే పరికర స్వరం; ఉచ్చారణ తనిఖీ కాలేదు.",
+  "advanced.questions": "పాఠం అర్థం చేసుకోండి",
+  "advanced.read": "పాఠం చదవండి",
+  "advanced.score": "{{total}}లో {{correct}} సరైనవి",
+  "advanced.write": "మీ సమాధానం రాయండి",
+  "advanced.speak": "సమాధానం బిగ్గరగా చెప్పండి",
+  "advanced.selfCheck": "మీరే చూసుకోండి: సమస్య వివరించి, పరిష్కారం సూచించి, కారణం చెప్పారా?",
+  "advanced.model": "నమూనా సమాధానం చూపు",
+  "advanced.save": "ఈ పరికరంలో సేవ్ చేయి",
+  "advanced.saved": "ఈ పరికరంలో సేవ్ అయింది",
+  "advanced.complete": "అభ్యాసం ముగించు",
+  "advanced.done": "అభ్యాసం పూర్తయింది",
+  "advanced.unavailable": "ఈ పరికరంలో ఆడియో అందుబాటులో లేదు",
 } as const;
 
 export default te;

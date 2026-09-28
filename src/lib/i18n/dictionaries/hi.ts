@@ -628,6 +628,22 @@ const hi = {
   "chapter.finish": "अध्याय को पूरा चिह्नित करें",
   "chapter.all": "सभी अध्याय",
   "chapter.doneCount": "{{total}} में से {{done}} पूरे",
+  "advanced.title": "B1 अभ्यास · शुरुआत",
+  "advanced.intro": "लंबा पाठ, प्रश्न और आपका अपना उत्तर। यह अभ्यास CEFR स्तर प्रमाणित नहीं करता।",
+  "advanced.listen": "भाग {{index}} / {{total}} सुनें",
+  "advanced.audioNote": "उपलब्ध हो तो सिस्टम की आवाज़; उच्चारण की जाँच नहीं हुई है।",
+  "advanced.questions": "पाठ समझें",
+  "advanced.read": "पाठ पढ़ें",
+  "advanced.score": "{{total}} में से {{correct}} सही",
+  "advanced.write": "अपना उत्तर लिखें",
+  "advanced.speak": "अपना उत्तर ज़ोर से बोलें",
+  "advanced.selfCheck": "स्वयं जाँचें: क्या आपने समस्या बताई, समाधान सुझाया और कारण दिया?",
+  "advanced.model": "उदाहरण उत्तर दिखाएँ",
+  "advanced.save": "इस डिवाइस पर सहेजें",
+  "advanced.saved": "इस डिवाइस पर सहेजा गया",
+  "advanced.complete": "अभ्यास पूरा करें",
+  "advanced.done": "अभ्यास पूरा हुआ",
+  "advanced.unavailable": "इस डिवाइस पर ऑडियो उपलब्ध नहीं है",
 } as const;
 
 export default hi;

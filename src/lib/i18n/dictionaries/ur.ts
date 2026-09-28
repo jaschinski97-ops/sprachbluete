@@ -628,6 +628,22 @@ const ur = {
   "chapter.finish": "باب مکمل نشان زد کریں",
   "chapter.all": "تمام ابواب",
   "chapter.doneCount": "{{total}} میں سے {{done}} مکمل",
+  "advanced.title": "B1 مشق · آغاز",
+  "advanced.intro": "طویل متن، سوالات اور آپ کا اپنا جواب۔ یہ مشق CEFR سطح کی سند نہیں دیتی۔",
+  "advanced.listen": "حصہ {{index}} از {{total}} سنیں",
+  "advanced.audioNote": "دستیاب ہو تو سسٹم کی آواز؛ تلفظ کی جانچ نہیں ہوئی۔",
+  "advanced.questions": "متن سمجھیں",
+  "advanced.read": "متن پڑھیں",
+  "advanced.score": "{{total}} میں سے {{correct}} درست",
+  "advanced.write": "اپنا جواب لکھیں",
+  "advanced.speak": "جواب بلند آواز سے کہیں",
+  "advanced.selfCheck": "خود جانچیں: کیا آپ نے مسئلہ سمجھایا، حل تجویز کیا اور وجہ بتائی؟",
+  "advanced.model": "نمونہ جواب دکھائیں",
+  "advanced.save": "اس آلے پر محفوظ کریں",
+  "advanced.saved": "اس آلے پر محفوظ ہو گیا",
+  "advanced.complete": "مشق مکمل کریں",
+  "advanced.done": "مشق مکمل ہو گئی",
+  "advanced.unavailable": "اس آلے پر آڈیو دستیاب نہیں",
 } as const;
 
 export default ur;

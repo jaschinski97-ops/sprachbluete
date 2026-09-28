@@ -628,6 +628,22 @@ const fr = {
   "chapter.finish": "Marquer le chapitre comme terminé",
   "chapter.all": "Tous les chapitres",
   "chapter.doneCount": "{{done}} sur {{total}} terminés",
+  "advanced.title": "Exercice B1 · début",
+  "advanced.intro": "Un texte plus long, des questions et votre propre réponse. Cet exercice ne certifie pas un niveau du CECR.",
+  "advanced.listen": "Écouter la partie {{index}} sur {{total}}",
+  "advanced.audioNote": "Voix du système si disponible ; la prononciation n'est pas vérifiée.",
+  "advanced.questions": "Comprendre le texte",
+  "advanced.read": "Lire le texte",
+  "advanced.score": "{{correct}} sur {{total}} correctes",
+  "advanced.write": "Écrire votre réponse",
+  "advanced.speak": "Dire votre réponse à voix haute",
+  "advanced.selfCheck": "Vérifiez : avez-vous expliqué le problème, proposé une solution et donné une raison ?",
+  "advanced.model": "Afficher un exemple de réponse",
+  "advanced.save": "Enregistrer sur cet appareil",
+  "advanced.saved": "Enregistré sur cet appareil",
+  "advanced.complete": "Terminer l'exercice",
+  "advanced.done": "Exercice terminé",
+  "advanced.unavailable": "Audio indisponible sur cet appareil",
 } as const;
 
 export default fr;

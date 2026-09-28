@@ -726,6 +726,22 @@ const en: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Mark chapter complete",
   "chapter.all": "All chapters",
   "chapter.doneCount": "{{done}} of {{total}} completed",
+  "advanced.title": "B1 practice · starting point",
+  "advanced.intro": "A longer text, questions and your own answer. This exercise does not certify a CEFR level.",
+  "advanced.listen": "Listen to part {{index}} of {{total}}",
+  "advanced.audioNote": "System voice if available; pronunciation has not been checked.",
+  "advanced.questions": "Understand the text",
+  "advanced.read": "Read the text",
+  "advanced.score": "{{correct}} of {{total}} correct",
+  "advanced.write": "Write your own answer",
+  "advanced.speak": "Say your answer aloud",
+  "advanced.selfCheck": "Check yourself: Did you explain the problem, suggest a solution and give a reason?",
+  "advanced.model": "Show example answer",
+  "advanced.save": "Save on this device",
+  "advanced.saved": "Saved on this device",
+  "advanced.complete": "Finish practice",
+  "advanced.done": "Practice finished",
+  "advanced.unavailable": "Audio is unavailable on this device",
 };
 
 export default en;

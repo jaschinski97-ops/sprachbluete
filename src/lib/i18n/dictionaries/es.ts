@@ -732,6 +732,22 @@ const es: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Marcar capítulo como completado",
   "chapter.all": "Todos los capítulos",
   "chapter.doneCount": "{{done}} de {{total}} completados",
+  "advanced.title": "Práctica B1 · inicio",
+  "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta. Este ejercicio no certifica un nivel del MCER.",
+  "advanced.listen": "Escuchar la parte {{index}} de {{total}}",
+  "advanced.audioNote": "Voz del sistema si está disponible; la pronunciación no se ha verificado.",
+  "advanced.questions": "Comprender el texto",
+  "advanced.read": "Leer el texto",
+  "advanced.score": "{{correct}} de {{total}} correctas",
+  "advanced.write": "Escribir tu respuesta",
+  "advanced.speak": "Decir tu respuesta en voz alta",
+  "advanced.selfCheck": "Comprueba: ¿Explicaste el problema, propusiste una solución y diste una razón?",
+  "advanced.model": "Mostrar respuesta de ejemplo",
+  "advanced.save": "Guardar en este dispositivo",
+  "advanced.saved": "Guardado en este dispositivo",
+  "advanced.complete": "Terminar práctica",
+  "advanced.done": "Práctica terminada",
+  "advanced.unavailable": "Audio no disponible en este dispositivo",
 };
 
 export default es;

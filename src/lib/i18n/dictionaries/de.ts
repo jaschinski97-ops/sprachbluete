@@ -753,6 +753,22 @@ const de = {
   "chapter.finish": "Kapitel als abgeschlossen markieren",
   "chapter.all": "Alle Kapitel",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
+  "advanced.title": "B1-Übung · Einstieg",
+  "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort. Diese Übung bescheinigt keine GER-Stufe.",
+  "advanced.listen": "Abschnitt {{index}} von {{total}} anhören",
+  "advanced.audioNote": "Systemstimme, falls vorhanden; die Aussprache ist nicht geprüft.",
+  "advanced.questions": "Text verstehen",
+  "advanced.read": "Text lesen",
+  "advanced.score": "{{correct}} von {{total}} richtig",
+  "advanced.write": "Eigene Antwort schreiben",
+  "advanced.speak": "Antwort laut formulieren",
+  "advanced.selfCheck": "Prüfe selbst: Hast du das Problem erklärt, eine Lösung vorgeschlagen und einen Grund genannt?",
+  "advanced.model": "Beispielantwort anzeigen",
+  "advanced.save": "Auf diesem Gerät speichern",
+  "advanced.saved": "Auf diesem Gerät gespeichert",
+  "advanced.complete": "Übung abschließen",
+  "advanced.done": "Übung abgeschlossen",
+  "advanced.unavailable": "Audio auf diesem Gerät nicht verfügbar",
 } as const;
 
 export default de;

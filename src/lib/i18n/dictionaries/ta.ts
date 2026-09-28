@@ -628,6 +628,22 @@ const ta = {
   "chapter.finish": "அத்தியாயத்தை முடிந்ததாகக் குறிக்கவும்",
   "chapter.all": "அனைத்து அத்தியாயங்கள்",
   "chapter.doneCount": "{{total}} இல் {{done}} முடிந்தது",
+  "advanced.title": "B1 பயிற்சி · தொடக்கம்",
+  "advanced.intro": "நீளமான உரை, கேள்விகள், உங்கள் சொந்த பதில். இந்தப் பயிற்சி CEFR நிலையைச் சான்றளிக்காது.",
+  "advanced.listen": "{{total}} பகுதிகளில் {{index}} ஆம் பகுதியைக் கேளுங்கள்",
+  "advanced.audioNote": "இருந்தால் சாதனக் குரல்; உச்சரிப்பு சரிபார்க்கப்படவில்லை.",
+  "advanced.questions": "உரையைப் புரிந்துகொள்ளுங்கள்",
+  "advanced.read": "உரையைப் படியுங்கள்",
+  "advanced.score": "{{total}} இல் {{correct}} சரி",
+  "advanced.write": "உங்கள் பதிலை எழுதுங்கள்",
+  "advanced.speak": "பதிலை உரக்கச் சொல்லுங்கள்",
+  "advanced.selfCheck": "நீங்களே சரிபார்க்கவும்: சிக்கலை விளக்கி, தீர்வு கூறி, காரணம் சொன்னீர்களா?",
+  "advanced.model": "மாதிரி பதிலைக் காட்டு",
+  "advanced.save": "இந்தச் சாதனத்தில் சேமி",
+  "advanced.saved": "இந்தச் சாதனத்தில் சேமிக்கப்பட்டது",
+  "advanced.complete": "பயிற்சியை முடி",
+  "advanced.done": "பயிற்சி முடிந்தது",
+  "advanced.unavailable": "இந்தச் சாதனத்தில் ஒலி இல்லை",
 } as const;
 
 export default ta;

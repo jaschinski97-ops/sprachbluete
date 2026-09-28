@@ -50,6 +50,7 @@ import { TodayRoundRunner } from '@/components/today-round-runner';
 import { ProductionRunner } from '@/components/production-runner';
 import { RoleplayRunner } from '@/components/roleplay-runner';
 import { ReadingTextsRunner } from '@/components/reading-texts-runner';
+import { AdvancedLessonRunner } from '@/components/advanced-lesson-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { finishChapter, finishedChapterIds, chaptersForDirection, type LearningChapter } from '@/lib/learning-path';
@@ -395,6 +396,8 @@ function ReviewBody({
           size={writingPack || practiceChapter ? 20 : undefined}
           onExit={onExit}
         />
+      ) : mode === 'advanced' ? (
+        <AdvancedLessonRunner key={`${direction}:advanced`} direction={direction} onExit={onExit} />
       ) : mode === 'dictation' ? (
         <DictationRunner
           key={`${direction}:dictation`}
@@ -616,6 +619,11 @@ function LearnPath({
           })}
         </View>
       </> : null}
+      <ThemedView type="backgroundElement" style={styles.pathHero}>
+        <ThemedText type="smallBold" themeColor="accent">{t('advanced.title')}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{t('advanced.intro')}</ThemedText>
+        <ThemedButton label={t('path.open')} onPress={() => onOpen('advanced')} />
+      </ThemedView>
     </View>
   );
 }

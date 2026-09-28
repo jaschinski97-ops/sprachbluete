@@ -712,6 +712,22 @@ const th: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
   "chapter.all": "ทุกบท",
   "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
+  "advanced.title": "แบบฝึก B1 · เริ่มต้น",
+  "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ แบบฝึกนี้ไม่ใช่การรับรองระดับภาษา",
+  "advanced.listen": "ฟังส่วนที่ {{index}} จาก {{total}}",
+  "advanced.audioNote": "ใช้เสียงของระบบหากมี ยังไม่ได้ตรวจสอบการออกเสียง",
+  "advanced.questions": "เข้าใจเนื้อหา",
+  "advanced.read": "อ่านข้อความ",
+  "advanced.score": "ถูก {{correct}} จาก {{total}} ข้อ",
+  "advanced.write": "เขียนคำตอบของคุณ",
+  "advanced.speak": "พูดคำตอบออกเสียง",
+  "advanced.selfCheck": "ตรวจเอง: คุณอธิบายปัญหา เสนอทางแก้ และให้เหตุผลหรือไม่",
+  "advanced.model": "แสดงตัวอย่างคำตอบ",
+  "advanced.save": "บันทึกในอุปกรณ์นี้",
+  "advanced.saved": "บันทึกในอุปกรณ์นี้แล้ว",
+  "advanced.complete": "จบแบบฝึก",
+  "advanced.done": "จบแบบฝึกแล้ว",
+  "advanced.unavailable": "ไม่มีเสียงในอุปกรณ์นี้",
 };
 
 export default th;

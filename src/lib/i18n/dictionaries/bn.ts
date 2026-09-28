@@ -628,6 +628,22 @@ const bn = {
   "chapter.finish": "অধ্যায় সম্পন্ন হিসেবে চিহ্নিত করুন",
   "chapter.all": "সব অধ্যায়",
   "chapter.doneCount": "{{total}}টির মধ্যে {{done}}টি সম্পন্ন",
+  "advanced.title": "B1 অনুশীলন · শুরু",
+  "advanced.intro": "দীর্ঘ পাঠ, প্রশ্ন ও আপনার নিজের উত্তর। এই অনুশীলন CEFR স্তরের সনদ নয়।",
+  "advanced.listen": "{{total}}টির মধ্যে {{index}} নম্বর অংশ শুনুন",
+  "advanced.audioNote": "পাওয়া গেলে সিস্টেমের কণ্ঠ; উচ্চারণ যাচাই করা হয়নি।",
+  "advanced.questions": "পাঠ বুঝুন",
+  "advanced.read": "পাঠ পড়ুন",
+  "advanced.score": "{{total}}টির মধ্যে {{correct}}টি সঠিক",
+  "advanced.write": "নিজের উত্তর লিখুন",
+  "advanced.speak": "উত্তরটি জোরে বলুন",
+  "advanced.selfCheck": "নিজে যাচাই করুন: সমস্যা বুঝিয়েছেন, সমাধান প্রস্তাব করেছেন এবং কারণ দিয়েছেন?",
+  "advanced.model": "নমুনা উত্তর দেখান",
+  "advanced.save": "এই ডিভাইসে সংরক্ষণ করুন",
+  "advanced.saved": "এই ডিভাইসে সংরক্ষিত",
+  "advanced.complete": "অনুশীলন শেষ করুন",
+  "advanced.done": "অনুশীলন শেষ",
+  "advanced.unavailable": "এই ডিভাইসে অডিও নেই",
 } as const;
 
 export default bn;

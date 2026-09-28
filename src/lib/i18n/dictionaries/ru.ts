@@ -628,6 +628,22 @@ const ru = {
   "chapter.finish": "Отметить главу завершённой",
   "chapter.all": "Все главы",
   "chapter.doneCount": "Завершено {{done}} из {{total}}",
+  "advanced.title": "Практика B1 · начало",
+  "advanced.intro": "Более длинный текст, вопросы и ваш ответ. Это упражнение не подтверждает уровень CEFR.",
+  "advanced.listen": "Прослушать часть {{index}} из {{total}}",
+  "advanced.audioNote": "Системный голос, если доступен; произношение не проверено.",
+  "advanced.questions": "Понять текст",
+  "advanced.read": "Прочитать текст",
+  "advanced.score": "Верно: {{correct}} из {{total}}",
+  "advanced.write": "Написать свой ответ",
+  "advanced.speak": "Произнести ответ вслух",
+  "advanced.selfCheck": "Проверьте себя: вы объяснили проблему, предложили решение и назвали причину?",
+  "advanced.model": "Показать пример ответа",
+  "advanced.save": "Сохранить на устройстве",
+  "advanced.saved": "Сохранено на устройстве",
+  "advanced.complete": "Завершить упражнение",
+  "advanced.done": "Упражнение завершено",
+  "advanced.unavailable": "Аудио недоступно на этом устройстве",
 } as const;
 
 export default ru;

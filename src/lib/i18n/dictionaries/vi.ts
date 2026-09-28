@@ -628,6 +628,22 @@ const vi = {
   "chapter.finish": "Đánh dấu chương đã hoàn thành",
   "chapter.all": "Tất cả các chương",
   "chapter.doneCount": "Đã hoàn thành {{done}} / {{total}}",
+  "advanced.title": "Bài tập B1 · bắt đầu",
+  "advanced.intro": "Một bài đọc dài hơn, câu hỏi và câu trả lời của bạn. Bài tập này không chứng nhận trình độ CEFR.",
+  "advanced.listen": "Nghe phần {{index}} trên {{total}}",
+  "advanced.audioNote": "Dùng giọng hệ thống nếu có; phát âm chưa được kiểm chứng.",
+  "advanced.questions": "Hiểu bài đọc",
+  "advanced.read": "Đọc bài",
+  "advanced.score": "Đúng {{correct}} trên {{total}} câu",
+  "advanced.write": "Viết câu trả lời của bạn",
+  "advanced.speak": "Nói to câu trả lời",
+  "advanced.selfCheck": "Tự kiểm tra: Bạn đã giải thích vấn đề, đề xuất cách giải quyết và nêu lý do chưa?",
+  "advanced.model": "Xem câu trả lời mẫu",
+  "advanced.save": "Lưu trên thiết bị này",
+  "advanced.saved": "Đã lưu trên thiết bị này",
+  "advanced.complete": "Hoàn thành bài tập",
+  "advanced.done": "Đã hoàn thành bài tập",
+  "advanced.unavailable": "Không có âm thanh trên thiết bị này",
 } as const;
 
 export default vi;

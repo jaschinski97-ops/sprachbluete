@@ -628,6 +628,22 @@ const mr = {
   "chapter.finish": "धडा पूर्ण म्हणून चिन्हांकित करा",
   "chapter.all": "सर्व धडे",
   "chapter.doneCount": "{{total}} पैकी {{done}} पूर्ण",
+  "advanced.title": "B1 सराव · सुरुवात",
+  "advanced.intro": "मोठा मजकूर, प्रश्न आणि तुमचे स्वतःचे उत्तर. हा सराव CEFR स्तराचे प्रमाणपत्र नाही.",
+  "advanced.listen": "{{total}} पैकी भाग {{index}} ऐका",
+  "advanced.audioNote": "उपलब्ध असल्यास प्रणालीचा आवाज; उच्चार तपासलेले नाहीत.",
+  "advanced.questions": "मजकूर समजून घ्या",
+  "advanced.read": "मजकूर वाचा",
+  "advanced.score": "{{total}} पैकी {{correct}} बरोबर",
+  "advanced.write": "स्वतःचे उत्तर लिहा",
+  "advanced.speak": "उत्तर मोठ्याने बोला",
+  "advanced.selfCheck": "स्वतः तपासा: समस्या समजावली, उपाय सुचवला आणि कारण दिले का?",
+  "advanced.model": "नमुना उत्तर दाखवा",
+  "advanced.save": "या उपकरणावर जतन करा",
+  "advanced.saved": "या उपकरणावर जतन झाले",
+  "advanced.complete": "सराव पूर्ण करा",
+  "advanced.done": "सराव पूर्ण",
+  "advanced.unavailable": "या उपकरणावर ऑडिओ उपलब्ध नाही",
 } as const;
 
 export default mr;

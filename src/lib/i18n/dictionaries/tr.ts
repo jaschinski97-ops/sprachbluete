@@ -628,6 +628,22 @@ const tr = {
   "chapter.finish": "Bölümü tamamlandı olarak işaretle",
   "chapter.all": "Tüm bölümler",
   "chapter.doneCount": "{{total}} bölümden {{done}} tanesi tamamlandı",
+  "advanced.title": "B1 alıştırması · başlangıç",
+  "advanced.intro": "Daha uzun bir metin, sorular ve kendi yanıtın. Bu alıştırma CEFR düzeyi belgelemez.",
+  "advanced.listen": "{{total}} bölümden {{index}}. bölümü dinle",
+  "advanced.audioNote": "Varsa sistem sesi kullanılır; telaffuz doğrulanmadı.",
+  "advanced.questions": "Metni anla",
+  "advanced.read": "Metni oku",
+  "advanced.score": "{{total}} sorudan {{correct}} doğru",
+  "advanced.write": "Kendi yanıtını yaz",
+  "advanced.speak": "Yanıtını yüksek sesle söyle",
+  "advanced.selfCheck": "Kendini kontrol et: Sorunu açıkladın, çözüm önerdin ve gerekçe sundun mu?",
+  "advanced.model": "Örnek yanıtı göster",
+  "advanced.save": "Bu cihaza kaydet",
+  "advanced.saved": "Bu cihaza kaydedildi",
+  "advanced.complete": "Alıştırmayı bitir",
+  "advanced.done": "Alıştırma tamamlandı",
+  "advanced.unavailable": "Bu cihazda ses kullanılamıyor",
 } as const;
 
 export default tr;

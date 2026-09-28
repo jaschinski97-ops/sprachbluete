@@ -628,6 +628,22 @@ const zh = {
   "chapter.finish": "标记本章已完成",
   "chapter.all": "所有章节",
   "chapter.doneCount": "已完成 {{done}} / {{total}} 章",
+  "advanced.title": "B1 练习 · 起步",
+  "advanced.intro": "阅读较长文章、回答问题，并写出自己的答案。本练习不认证 CEFR 等级。",
+  "advanced.listen": "收听第 {{index}} / {{total}} 部分",
+  "advanced.audioNote": "如可用则使用设备语音；发音未经核验。",
+  "advanced.questions": "理解文章",
+  "advanced.read": "阅读文章",
+  "advanced.score": "答对 {{correct}} / {{total}} 题",
+  "advanced.write": "写下自己的答案",
+  "advanced.speak": "大声说出答案",
+  "advanced.selfCheck": "自查：你解释了问题、提出了解决办法并说明理由吗？",
+  "advanced.model": "显示示例答案",
+  "advanced.save": "保存到本设备",
+  "advanced.saved": "已保存到本设备",
+  "advanced.complete": "完成练习",
+  "advanced.done": "练习已完成",
+  "advanced.unavailable": "此设备无法播放音频",
 } as const;
 
 export default zh;

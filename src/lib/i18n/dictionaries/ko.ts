@@ -628,6 +628,22 @@ const ko = {
   "chapter.finish": "이 장을 완료로 표시",
   "chapter.all": "전체 장",
   "chapter.doneCount": "{{total}}장 중 {{done}}장 완료",
+  "advanced.title": "B1 연습 · 시작",
+  "advanced.intro": "긴 글을 읽고 질문에 답한 뒤 직접 답을 씁니다. 이 연습은 CEFR 등급을 인증하지 않습니다.",
+  "advanced.listen": "{{total}}개 중 {{index}}번째 부분 듣기",
+  "advanced.audioNote": "가능하면 기기 음성을 사용합니다. 발음은 검증되지 않았습니다.",
+  "advanced.questions": "글 이해하기",
+  "advanced.read": "글 읽기",
+  "advanced.score": "{{total}}개 중 {{correct}}개 정답",
+  "advanced.write": "직접 답 쓰기",
+  "advanced.speak": "답을 소리 내어 말하기",
+  "advanced.selfCheck": "스스로 확인하세요: 문제를 설명하고 해결책과 이유를 제시했나요?",
+  "advanced.model": "예시 답변 보기",
+  "advanced.save": "이 기기에 저장",
+  "advanced.saved": "이 기기에 저장됨",
+  "advanced.complete": "연습 마치기",
+  "advanced.done": "연습 완료",
+  "advanced.unavailable": "이 기기에서 오디오를 사용할 수 없습니다",
 } as const;
 
 export default ko;

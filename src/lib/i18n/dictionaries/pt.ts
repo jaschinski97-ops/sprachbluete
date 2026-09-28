@@ -628,6 +628,22 @@ const pt = {
   "chapter.finish": "Marcar capítulo como concluído",
   "chapter.all": "Todos os capítulos",
   "chapter.doneCount": "{{done}} de {{total}} concluídos",
+  "advanced.title": "Prática B1 · início",
+  "advanced.intro": "Um texto mais longo, perguntas e a sua resposta. Este exercício não certifica um nível do QECR.",
+  "advanced.listen": "Ouvir a parte {{index}} de {{total}}",
+  "advanced.audioNote": "Voz do sistema, se disponível; a pronúncia não foi verificada.",
+  "advanced.questions": "Compreender o texto",
+  "advanced.read": "Ler o texto",
+  "advanced.score": "{{correct}} de {{total}} corretas",
+  "advanced.write": "Escrever a sua resposta",
+  "advanced.speak": "Dizer a resposta em voz alta",
+  "advanced.selfCheck": "Confira: explicou o problema, sugeriu uma solução e deu um motivo?",
+  "advanced.model": "Mostrar resposta de exemplo",
+  "advanced.save": "Guardar neste dispositivo",
+  "advanced.saved": "Guardado neste dispositivo",
+  "advanced.complete": "Concluir prática",
+  "advanced.done": "Prática concluída",
+  "advanced.unavailable": "Áudio indisponível neste dispositivo",
 } as const;
 
 export default pt;

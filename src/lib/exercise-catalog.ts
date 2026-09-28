@@ -25,6 +25,7 @@ import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 /** Karteikarten oder eine der richtungseigenen Übungen — plus „Heutige Runde“ als Sammelmodus. */
 export type Mode =
   | 'path'
+  | 'advanced'
   | 'cards'
   | DrillId
   | 'speaking'
@@ -69,6 +70,7 @@ export function modesForDirection(direction: PairDirection): Mode[] {
   const language = targetLanguageOf(direction);
   return [
     'cards',
+    'advanced',
     ...drillsForDirection(direction),
     // Wortübung laut Definition: Tonkontur-Messung (Thai) oder Nachsprechen.
     ...(learningLanguage(language).wordSpeaking ? (['speaking'] as const) : []),
@@ -86,6 +88,7 @@ export function modesForDirection(direction: PairDirection): Mode[] {
 
 export function modeKey(mode: Mode): TranslationKey {
   if (mode === 'path') return 'tabs.learn';
+  if (mode === 'advanced') return 'advanced.title';
   if (mode === 'cards') return 'mode.cards';
   if (mode === 'heute') return 'mode.heute';
   if (mode === 'speaking') return 'mode.speaking';
@@ -130,6 +133,7 @@ export function groupsForDirection(direction: PairDirection): Group[] {
   // Längere Texte (Schritt 4): die Situationen als Lese-/Hörtexte.
   lesenSchreiben.push('lesestoffe');
   if (modes.includes('writing')) lesenSchreiben.push('writing');
+  lesenSchreiben.push('advanced');
   const sprechen: Mode[] = [];
   if (modes.includes('speaking')) sprechen.push('speaking');
   // „Sag es auf …“ und das Rollenspiel gehören zu jeder Richtung (Schritt 3):

@@ -86,6 +86,7 @@ export async function produktionsAufgaben(options: {
   const anzahl = options.anzahl ?? PRODUKTION_ANZAHL;
   const random = seededRandom(options.seed ?? Date.now());
   const sprache = targetLanguageOf(options.direction);
+  const { entries, cards } = await ensureCardStates(options.direction, options.store, Date.now());
 
   // Sätze zuerst — wo geprüfte Sätze liegen, werden sie gebildet. Der
   // Satzbestand trägt seine Bedeutungen NUR auf Deutsch (`exampleGerman`) —
@@ -94,7 +95,12 @@ export async function produktionsAufgaben(options: {
   if (anchorOf(options.direction) === 'de') {
     const saetze = SENTENCE_TASKS_BY_LANGUAGE[sprache] ?? [];
     if (saetze.length >= Math.min(anzahl, 4)) {
-      return shuffled([...saetze], random)
+      const byVocabId = new Map(saetze.map((task) => [task.vocabId, task]));
+      const started = new Set(cards.filter((card) => card.state !== 'new').map((card) => card.vocabId));
+      const ordered = [...entries.filter((entry) => started.has(entry.id)),
+        ...entries.filter((entry) => !started.has(entry.id))]
+        .flatMap((entry) => byVocabId.has(entry.id) ? [byVocabId.get(entry.id)!] : []);
+      if (ordered.length >= Math.min(anzahl, 4)) return shuffled(ordered.slice(0, Math.max(anzahl, anzahl * FENSTER)), random)
         .slice(0, anzahl)
         .map((task) => ({
           id: `produktion-satz-${task.vocabId}`,
@@ -108,6 +114,5 @@ export async function produktionsAufgaben(options: {
   }
 
   // Wörter: schwächste zuerst, aus einem Fenster gezogen.
-  const { entries, cards } = await ensureCardStates(options.direction, options.store, Date.now());
   return wortAufgaben(entries, cards, anzahl, random, anchorOf(options.direction));
 }

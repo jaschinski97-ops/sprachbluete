@@ -183,6 +183,16 @@ export function ProductionRunner({
   }
 
   if (!aufgabe) {
+    if (aufgaben && aufgaben.length > 0 && index >= aufgaben.length) {
+      return <ThemedView type="backgroundElement" style={styles.card}>
+        <ThemedText type="smallBold">{t('production.done')}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{t('production.doneNote')}</ThemedText>
+        <View style={styles.actions}>
+          <ThemedButton label={t('drill.newRound')} onPress={laden} />
+          <ThemedButton label={t('common.back')} onPress={onExit} />
+        </View>
+      </ThemedView>;
+    }
     const leer = aufgaben !== null;
     return leer ? (
       <ThemedView type="backgroundElement" style={styles.card}>
@@ -222,25 +232,6 @@ export function ProductionRunner({
       </Pressable>
     </View>
   );
-
-  // Runde fertig?
-  if (index >= aufgaben!.length) {
-    return (
-      <>
-        {kopf}
-        <ThemedView type="backgroundElement" style={styles.card}>
-          <ThemedText type="smallBold">{t('production.done')}</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {t('production.doneNote')}
-          </ThemedText>
-          <View style={styles.actions}>
-            <ThemedButton label={t('drill.newRound')} onPress={laden} />
-            <ThemedButton label={t('common.back')} onPress={onExit} />
-          </View>
-        </ThemedView>
-      </>
-    );
-  }
 
   return (
     <>

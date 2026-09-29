@@ -242,7 +242,7 @@ function TextAnsicht({
         </>
       );
     }
-    return <FrageAnsicht frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
+    return <FrageAnsicht key={frage.id} frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
   }
 
   return (

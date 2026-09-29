@@ -501,11 +501,15 @@ function LearnPath({
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
   const groups = groupsForDirection(direction);
-  const grammar = groups[4].modes[0];
   const example = SENTENCE_EXAMPLES[targetLanguageOf(direction)];
   const chapter = chapters?.find((item) => item.id === selectedChapterId)
     ?? chapters?.find((item) => !finished.includes(item.id))
     ?? chapters?.[0];
+  const grammar = targetLanguageOf(direction) === 'th'
+    ? chapter?.situation.topic === 'market' ? 'zaehlerwort'
+      : chapter?.situation.topic === 'travel' ? 'konsonantenklasse'
+        : 'polite'
+    : groups[4].modes[0];
   const position = chapter ? chapters!.findIndex((item) => item.id === chapter.id) + 1 : 0;
   const translated = chapter ? situationTranslation(chapter.situation, uiLanguage) : null;
   const turnIndex = chapter?.situation.scriptTurns.findIndex((turn) => turn.speaker === 'learner') ?? -1;

@@ -5,6 +5,17 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 [`docs/arbeitsverlauf-bis-2026-09-25.md`](docs/arbeitsverlauf-bis-2026-09-25.md).
 
+## [Unveröffentlicht] – 29.09.2026
+
+### Lernen
+
+- Das Lesequiz setzt die Auswahl bei jeder neuen Frage zurück. Thai-Worthilfen markieren nur noch Treffer an Wortgrenzen; zufällige Teiltreffer in Namen und längeren Wörtern verschwinden.
+- Das Rollenspiel zählt getippte und gesprochene eigene Zeilen neutral als „Eigene Zeilen“.
+- Die geführten Thai-Kapitel wechseln bei Markt- und Unterwegs-Szenen die Grammatikübung; die Höflichkeitspartikel-Runde umfasst fünf statt zehn gleichartige Fragen.
+- Die Tagesrunde nutzt für Hören, Satzbildung, Diktat und Shadowing vorrangig die Wörter ihrer Karten. Shadowing bietet einen sichtbaren Knopf zum erneuten Hören.
+- „Sag es“ zieht Sätze zuerst aus begonnenen und häufigen Wörtern statt zufällig aus dem gesamten Satzbestand.
+- „Sag es“ zeigt nach der letzten Antwort wieder den echten Rundenabschluss statt „Kein Wortmaterial“. Übersprungene Nachsprech-Sätze werden nicht mehr als bearbeitet gezählt.
+
 ## [Unveröffentlicht] – 28.09.2026
 
 ### Lernen

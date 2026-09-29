@@ -107,7 +107,7 @@ export function DrillRunner({
     setChosen(null);
     setAnswers([]);
     setHeardId(null);
-    buildDrillSession({ drill, language, direction, anchor, uiLanguage, ...(drill === 'tone' ? {
+    buildDrillSession({ drill, language, direction, anchor, uiLanguage, size: drill === 'polite' ? 5 : undefined, ...(drill === 'tone' ? {
       isEligible: (entry: import('@/data/vocab-types').VocabEntry) => hasPronunciationClip({ text: entry.term, language: 'th', purpose: 'tone' }),
     } : {}) }).then((built) => {
       if (!cancelled) setSession(built);

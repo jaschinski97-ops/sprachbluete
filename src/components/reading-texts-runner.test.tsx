@@ -98,4 +98,27 @@ describe('ReadingTextsRunner — der ganze Weg', () => {
     // Und die Fragen stehen am Ende bereit.
     expect(text).toContain(d('texts.questionsTitle'));
   });
+
+  it('setzt die Auswahl vor jeder neuen Verständnisfrage zurück', async () => {
+    const renderer = await rendere(<ReadingTextsRunner direction="de_to_th" onExit={() => {}} />);
+    const press = async (label: string) => {
+      const button = renderer.root.findAll((n) => n.props.accessibilityRole === 'button')
+        .find((n) => n.props.accessibilityLabel === label ||
+          n.findAll((child) => child.props.children === label).length > 0);
+      expect(button).toBeTruthy();
+      await act(async () => button!.props.onPress());
+    };
+    const sceneButton = renderer.root.findAll((n) => n.props.accessibilityRole === 'button')
+      .find((n) => JSON.stringify(n.props.accessibilityLabel ?? '').includes('Leseszene'))!;
+    await act(async () => sceneButton.props.onPress());
+    await press(d('texts.questionsTitle'));
+    const firstOption = renderer.root.findAll((n) => n.props.accessibilityRole === 'button' &&
+      n.props.disabled === false && n.props.onPress &&
+      n.findAll((child) => child.props.type === 'small').length > 0)[0];
+    await act(async () => firstOption.props.onPress());
+    await press(d('common.next'));
+    expect(renderer.root.findAll((n) => n.props.accessibilityRole === 'button' && n.props.disabled === true)).toHaveLength(0);
+    expect(textVon(renderer)).not.toContain(d('sentence.correct'));
+    expect(textVon(renderer)).not.toContain(d('drill.wrong'));
+  });
 });

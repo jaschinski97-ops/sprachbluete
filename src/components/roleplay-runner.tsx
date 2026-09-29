@@ -170,7 +170,7 @@ export function RoleplayRunner({
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{t('roleplay.done')}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {t('roleplay.summary', { done: eigene, correct: sichere })}
+          {t('roleplay.score', { done: eigene, correct: sichere })}
         </ThemedText>
         <View style={styles.actions}>
           <ThemedButton

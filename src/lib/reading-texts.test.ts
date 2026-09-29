@@ -44,6 +44,17 @@ describe('tokenisiereFuerAntippen — Wörter antippen', () => {
     expect(tokens).toEqual([{ text: 'xyzq' }]);
   });
 
+  it('markiert keine Teilwörter mitten in Thai-Namen oder anderen Wörtern', () => {
+    const pool = [
+      { id: 'weben', term: 'ทอ', romanization: 'thɔɔ', german: 'weben' },
+      { id: 'topf', term: 'ไห', romanization: 'hǎi', german: 'Tontopf' },
+      { id: 'name', term: 'ทอม', romanization: 'Thɔɔm', german: 'Tom' },
+    ] as never[];
+    const tokens = tokenisiereFuerAntippen('ผมชื่อทอมครับ คุณมาจากประเทศไหนคะ', pool, false);
+    expect(tokens.map((token) => token.text).join('')).toBe('ผมชื่อทอมครับ คุณมาจากประเทศไหนคะ');
+    expect(tokens.filter((token) => token.entry).map((token) => token.entry!.id)).toEqual(['name']);
+  });
+
   it('matcht lateinische Wörter wortweise und ohne Groß-/Kleinschreibung', () => {
     const pool = [
       { id: 'a', term: 'coffee', romanization: '', german: 'Kaffee' },

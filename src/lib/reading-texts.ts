@@ -77,8 +77,8 @@ function begonnen(cards: FSRSCardState[], vocabIds: Set<string>): number {
  * Zerlegt eine Textzeile in tippbare Bestandswörter und Rest.
  *
  * Latein: ganze Wörter (Groß-/Kleinschreibung egal). Thai: Greedy-Longest-
- * Match an jeder Position — der längste Bestandsterm gewinnt, alles andere
- * bleibt ein unveränderter Rest.
+ * Match nur an Wortgrenzen — der längste Bestandsterm gewinnt, alles andere
+ * bleibt ein unveränderter Rest. Das verhindert Treffer mitten in Namen.
  */
 export function tokenisiereFuerAntippen(
   text: string,
@@ -102,7 +102,23 @@ export function tokenisiereFuerAntippen(
     return tokens;
   }
 
-  // Thai: längste Übereinstimmung an jeder Position.
+  // Thai hat keine Leerzeichen zwischen Wörtern. Die Sprachsegmentierung
+  // liefert Grenzen, damit z. B. „ทอ“ nicht im Namen „ทอม“ tippbar wird.
+  // Ohne Segmenter bleiben nur durch Leerzeichen/Satzzeichen abgegrenzte
+  // Treffer tippbar: eine fehlende Hilfe ist besser als eine falsche.
+  const grenzen = new Set<number>([0, text.length]);
+  if (typeof Intl.Segmenter === 'function') {
+    for (const teil of new Intl.Segmenter('th', { granularity: 'word' }).segment(text)) {
+      grenzen.add(teil.index);
+      grenzen.add(teil.index + teil.segment.length);
+    }
+  } else {
+    for (const match of text.matchAll(/[\s\p{P}\p{S}]+/gu)) {
+      grenzen.add(match.index);
+      grenzen.add(match.index + match[0].length);
+    }
+  }
+  // Längste Übereinstimmung nur zwischen echten Wortgrenzen.
   const sortiert = [...pool].sort((a, b) => b.term.length - a.term.length);
   let i = 0;
   let rest = '';
@@ -115,7 +131,8 @@ export function tokenisiereFuerAntippen(
   while (i < text.length) {
     let gefunden: VocabEntry | null = null;
     for (const entry of sortiert) {
-      if (entry.term.length > 0 && text.startsWith(entry.term, i)) {
+      if (entry.term.length > 0 && grenzen.has(i) &&
+          grenzen.has(i + entry.term.length) && text.startsWith(entry.term, i)) {
         gefunden = entry;
         break;
       }
@@ -152,7 +169,13 @@ export function poolWoerterDerSzene(
     );
     return pool.filter((e) => woerter.has(e.term.toLowerCase()));
   }
-  return pool.filter((e) => e.term.length > 0 && text.includes(e.term));
+  const ids = new Set(
+    situation.scriptTurns.flatMap((turn) =>
+      tokenisiereFuerAntippen(spokenText(situation, turn), pool, false)
+        .flatMap((token) => token.entry ? [token.entry.id] : [])
+    )
+  );
+  return pool.filter((entry) => ids.has(entry.id));
 }
 
 /**

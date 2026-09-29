@@ -45,6 +45,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
   const [headphones, setHeadphones] = useState(false);
   const [answer, setAnswer] = useState<string | null>(null);
   const [correct, setCorrect] = useState(0);
+  const [recorded, setRecorded] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [result, setResult] = useState<SentenceMeasurement | null>(null);
@@ -120,7 +121,9 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
     await new Promise<void>(resolve => setTimeout(resolve, 0));
     try {
       if (turn !== generation.current) return;
-      setResult(measureSentence(recording)); setStage('result');
+      setResult(measureSentence(recording));
+      setRecorded(value => value.includes(index) ? value : [...value, index]);
+      setStage('result');
     } catch { if (turn === generation.current) { setNotice(t('sentence.measureFailed')); setStage('prepare'); } }
     finally {
       if (turn === generation.current) { captureRef.current.clear(); setBusy(false); locked.current = false; }
@@ -178,9 +181,9 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
     <ThemedText type="subtitle">{t('drill.roundDone')}</ThemedText>
     <ThemedText>{listening
       ? t('sentence.listeningSummary', { correct, total: tasks.length })
-      : t('sentence.spokenSummary', { total: tasks.length })}</ThemedText>
+      : t('sentence.spokenSummary', { total: recorded.length })}</ThemedText>
     <ThemedText type="small">{t('sentence.limits')}</ThemedText>
-    <SentenceAction label={t('drill.newRound')} onPress={() => { setCorrect(0); setSeed(Date.now()); reset(0); }} />
+    <SentenceAction label={t('drill.newRound')} onPress={() => { setCorrect(0); setRecorded([]); setSeed(Date.now()); reset(0); }} />
     <SentenceAction label={t('common.back')} onPress={onExit} />
   </ThemedView>;
 

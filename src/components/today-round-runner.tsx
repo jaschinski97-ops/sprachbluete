@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { Flashcard } from './flashcard';
@@ -100,12 +100,12 @@ const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
   shadowing: 'mode.shadowing',
 };
 
-type SatzAufgabe = { id: string; german: string; text: string; roman: string };
+type SatzAufgabe = { id: string; vocabId: string; german: string; text: string; roman: string };
 
 function satzAufgaben(tasks: SentenceTask[], anzahl: number, seed: number): SatzAufgabe[] {
   return shuffled(tasks, seededRandom(seed))
     .slice(0, anzahl)
-    .map((task) => ({ id: task.id, german: task.german, text: task.text, roman: task.roman }));
+    .map((task) => ({ id: task.id, vocabId: task.vocabId, german: task.german, text: task.text, roman: task.roman }));
 }
 
 export function TodayRoundRunner({
@@ -151,7 +151,7 @@ export function TodayRoundRunner({
   }, [direction]);
 
   // Die aktuelle Stelle im Strang: Segmente abarbeiten, bis der Zeiger passt.
-  const { segment, position, segIndex } = useMemo(() => {
+  const { segment, position, segIndex } = (() => {
     if (!runde) return { segment: undefined, position: 0, segIndex: 0 };
     let rest = erledigt;
     for (let i = 0; i < runde.plan.length; i++) {
@@ -160,7 +160,12 @@ export function TodayRoundRunner({
       rest -= seg.items;
     }
     return { segment: undefined, position: 0, segIndex: runde.plan.length };
-  }, [runde, erledigt]);
+  })();
+  const roundWordIds = useMemo(
+    () => new Set(runde?.due.slice(0, runde.plan.find((part) => part.kind === 'cards')?.items ?? 0)
+      .map((item) => item.entry.id) ?? []),
+    [runde]
+  );
 
   if (loadError) {
     return (
@@ -259,6 +264,7 @@ export function TodayRoundRunner({
         <HoerenSegment
           sprache={sprache}
           direction={direction}
+          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
@@ -267,6 +273,7 @@ export function TodayRoundRunner({
         <SatzSegment
           sprache={sprache}
           anchor={anchorOf(direction)}
+          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
@@ -275,14 +282,17 @@ export function TodayRoundRunner({
         <DiktatSegment
           sprache={sprache}
           direction={direction}
+          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
         />
       ) : (
         <ShadowingSegment
+          key={`shadowing:${position}`}
           sprache={sprache}
           anchor={anchorOf(direction)}
+          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
           anzahl={segment.items}
           position={position}
           onDone={() => setErledigt((value) => value + 1)}
@@ -377,6 +387,7 @@ function KartenSegment({
 function HoerenSegment({
   sprache,
   direction,
+  onlyVocabIds,
   anzahl,
   position,
   onAnswered,
@@ -384,6 +395,7 @@ function HoerenSegment({
   sprache: SatzSprache;
   /** Die Lernrichtung der Runde — die Hörübung schreibt dieselben Karten fort. */
   direction: PairDirection;
+  onlyVocabIds?: ReadonlySet<string>;
   anzahl: number;
   position: number;
   onAnswered: () => void;
@@ -405,6 +417,7 @@ function HoerenSegment({
       language: sprache,
       direction,
       size: anzahl,
+      onlyVocabIds,
       isEligible:
         drill === 'tone'
           ? (entry) => hasPronunciationClip({ text: entry.term, language: 'th', purpose: 'tone' })
@@ -421,7 +434,7 @@ function HoerenSegment({
     return () => {
       cancelled = true;
     };
-  }, [drill, sprache, direction, anzahl]);
+  }, [drill, sprache, direction, anzahl, onlyVocabIds]);
 
   const frage = fragen && fragen.length > 0 ? fragen[position % fragen.length] : null;
   useEffect(() => setChosen(null), [position]);
@@ -502,6 +515,7 @@ function HoerenSegment({
 function SatzSegment({
   sprache,
   anchor,
+  onlyVocabIds,
   anzahl,
   position,
   onAnswered,
@@ -509,12 +523,15 @@ function SatzSegment({
   sprache: SatzSprache;
   /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */
   anchor: UiLanguage;
+  onlyVocabIds?: ReadonlySet<string>;
   anzahl: number;
   position: number;
   onAnswered: () => void;
 }) {
   const { t } = useLocale();
-  const stoff = anchor === 'de' ? satzaufgabenFuer(sprache, anchor) : [];
+  const stoff = useMemo(() => anchor === 'de'
+    ? satzaufgabenFuer(sprache, anchor).filter((task) => !onlyVocabIds || onlyVocabIds.has(task.vocabId))
+    : [], [sprache, anchor, onlyVocabIds]);
   const aufgaben = useMemo(
     () => satzAufgaben(stoff, anzahl, anzahl + sprache.length),
     [stoff, anzahl, sprache]
@@ -590,12 +607,14 @@ function SatzSegment({
 function DiktatSegment({
   sprache,
   direction,
+  onlyVocabIds,
   anzahl,
   position,
   onAnswered,
 }: {
   sprache: SatzSprache;
   direction: PairDirection;
+  onlyVocabIds?: ReadonlySet<string>;
   anzahl: number;
   position: number;
   onAnswered: () => void;
@@ -604,11 +623,13 @@ function DiktatSegment({
   const colors = useTheme();
   const tasks = useMemo(() => {
     try {
-      return dictationTasksFor(sprache, direction).slice(0, Math.max(anzahl, 1));
+      return dictationTasksFor(sprache, direction)
+        .filter((task) => !onlyVocabIds || onlyVocabIds.has(task.vocabId))
+        .slice(0, Math.max(anzahl, 1));
     } catch {
       return [];
     }
-  }, [sprache, direction, anzahl]);
+  }, [sprache, direction, anzahl, onlyVocabIds]);
   const task = tasks.length > 0 ? tasks[position % tasks.length] : null;
   const [draft, setDraft] = useState('');
   const [ergebnis, setErgebnis] = useState<'passed' | 'failed' | null>(null);
@@ -704,6 +725,7 @@ function DiktatSegment({
 function ShadowingSegment({
   sprache,
   anchor,
+  onlyVocabIds,
   anzahl,
   position,
   onDone,
@@ -711,38 +733,40 @@ function ShadowingSegment({
   sprache: SatzSprache;
   /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */
   anchor: UiLanguage;
+  onlyVocabIds?: ReadonlySet<string>;
   anzahl: number;
   position: number;
   onDone: () => void;
 }) {
   const { t } = useLocale();
-  const stoff = anchor === 'de' ? satzaufgabenFuer(sprache, anchor) : [];
+  const stoff = useMemo(() => anchor === 'de'
+    ? satzaufgabenFuer(sprache, anchor).filter((task) => !onlyVocabIds || onlyVocabIds.has(task.vocabId))
+    : [], [sprache, anchor, onlyVocabIds]);
   const aufgaben = useMemo(
     () => satzAufgaben(stoff, anzahl, anzahl * 2 + 31),
     [stoff, anzahl]
   );
   const aufgabe = aufgaben.length > 0 ? aufgaben[position % aufgaben.length] : null;
   const [fehlt, setFehlt] = useState(false);
-  const fehltRef = useRef(false);
+
+  const spiele = useCallback(async (): Promise<boolean> => {
+    if (!aufgabe) return false;
+    try {
+      const request = { text: aufgabe.text, language: sprache, purpose: 'sentence' as const };
+      if (!await hasPronunciationClip(request) && await isLanguageAvailable(sprache) === false) {
+        return false;
+      }
+      await playPronunciationWithStatus(request);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [aufgabe, sprache]);
 
   useEffect(() => {
     if (!aufgabe) return;
-    fehltRef.current = false;
-    void (async () => {
-      try {
-        const request = { text: aufgabe.text, language: sprache, purpose: 'sentence' as const };
-        if (!await hasPronunciationClip(request) && await isLanguageAvailable(sprache) === false) {
-          fehltRef.current = true;
-          setFehlt(true);
-          return;
-        }
-        await playPronunciationWithStatus(request);
-      } catch {
-        fehltRef.current = true;
-        setFehlt(true);
-      }
-    })();
-  }, [aufgabe, sprache]);
+    void spiele().then((played) => { if (!played) setFehlt(true); });
+  }, [aufgabe, spiele]);
 
   if (!aufgabe || fehlt) {
     return (
@@ -762,6 +786,7 @@ function ShadowingSegment({
       <ThemedText type="small" themeColor="textSecondary">
         {t('round.shadowNote')}
       </ThemedText>
+      <ThemedButton label={t('dictation.play')} onPress={() => { void spiele().then((played) => { if (!played) setFehlt(true); }); }} />
       <ThemedButton label={t('common.next')} onPress={onDone} />
     </ThemedView>
   );

@@ -91,6 +91,8 @@ export type DrillSessionOptions = {
   seed?: number;
   /** Runtime media eligibility, applied before ranking/windowing the candidates. */
   isEligible?: (entry: VocabEntry) => boolean | Promise<boolean>;
+  /** Optionally restrict a mixed round to the words it just reviewed. */
+  onlyVocabIds?: ReadonlySet<string>;
 };
 
 export type DrillSession = {
@@ -214,7 +216,11 @@ export async function buildDrillSession(options: DrillSessionOptions): Promise<D
   const { entries, cards } = await ensureCardStates(direction, db, now);
 
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
-  const potential = entries.filter((entry) => canBuild(drill, entry) && (drill !== 'deutschLesen' || String(entry.language) !== 'de' || Boolean(entry.translations?.[direction.split('_to_')[0] as UiLanguage])));
+  const potential = entries.filter((entry) =>
+    (!options.onlyVocabIds || options.onlyVocabIds.has(entry.id)) &&
+    canBuild(drill, entry) &&
+    (drill !== 'deutschLesen' || String(entry.language) !== 'de' || Boolean(entry.translations?.[direction.split('_to_')[0] as UiLanguage]))
+  );
   const eligibility = options.isEligible ? await Promise.all(potential.map(options.isEligible)) : potential.map(() => true);
   const candidates = potential.filter((_, i) => eligibility[i]);
 

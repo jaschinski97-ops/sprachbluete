@@ -269,6 +269,17 @@ describe('buildDrillSession', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('beschränkt Hörfragen der Tagesrunde auf ihre Kartenwörter', async () => {
+    const store = await freshStore();
+    const ids = new Set(singleSyllable().slice(0, 4).map((entry) => entry.id));
+    const session = await buildDrillSession({
+      drill: 'tone', language: 'th', store, now: T0, seed: 3,
+      onlyVocabIds: ids,
+    });
+    expect(session.questions.length).toBeGreaterThan(0);
+    expect(session.questions.every((question) => ids.has(question.vocabId))).toBe(true);
+  });
+
   it('legt keine eigenen Karten an und veraendert keine (AE-16)', async () => {
     const store = await freshStore();
     await buildDrillSession({ drill: 'article', language: 'de', store, now: T0, seed: 1 });

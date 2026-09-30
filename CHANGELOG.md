@@ -5,6 +5,20 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 [`docs/arbeitsverlauf-bis-2026-09-25.md`](docs/arbeitsverlauf-bis-2026-09-25.md).
 
+## [Unveröffentlicht] – 30.09.2026
+
+### Lernen und iPhone-Kandidat
+
+- Geführte Kapitel verwenden ausschließlich passende Szenenwörter (bis zu 20). Grammatik erklärt die tatsächlichen Regeln der Szene mit übersetzten Beispielen und führt anschließend ins Rollenspiel. Kapiteltexte sind ohne vorgeschaltete Karteikarten-Sperre lesbar.
+- Karteikarten und Satzübungen verwenden vollständig gelieferte Dialogübersetzungen statt einzelner Wortbedeutungen als Satzübersetzung. Nicht übersetzte fremdsprachige Beispielsätze werden ausgeblendet. Thai behält Schrift und Umschrift; lateinische Dialoge zeigen keine irreführende Pseudo-Umschrift.
+- Schreiben bietet eine Muster- und Zeichenhilfe; unterstützte Antworten schreiben keine FSRS-Wiederholung. Vollständig übersprungene Tagesrunden behaupten keine gespeicherten Wiederholungen.
+- Rollenspiele akzeptieren ausdrücklich geprüfte deutsche Namensvarianten und die englische Kurzantwort „Yes, my name is …“. Andere Formulierungen erhalten einen neutralen Vergleich mit dem Muster und können selbst eingeschätzt werden.
+- Goethe-Anweisungen, Lösungserklärungen und freie Aufgaben unterstützen Thai; deutsche Prüfungsstimuli bleiben deutsch. Teilübersichten haben thailändische und englische Lernhilfen.
+- B1 zeigt bei fehlenden gebündelten Clips unmittelbar den Lesetext und kennzeichnet die optionale Systemstimme. Geprüfte B1-Hörclips bleiben offen.
+- Neue Lernhilfen sind in allen 20 Oberflächensprachen vorhanden. Pluralbeschriftungen und das Audio-nicht-verfügbar-Label verwenden Übersetzungsschlüssel.
+- Expo-SDK-57-Pakete wurden auf kompatible Patchstände aktualisiert; der hohe npm-Audit-Befund wurde durch ein kompatibles Dependency-Update beseitigt. 15 moderate Befunde bleiben offen.
+- Lokale Produktionsprüfung für iOS, Android und Web; Freigabestatus und offene Geräte-, Inhalts- und Signierungsschritte stehen in `docs/release-candidate-2026-09-30.md`.
+
 ## [Unveröffentlicht] – 29.09.2026
 
 ### Lernen

@@ -644,6 +644,16 @@ const id = {
   "advanced.complete": "Selesaikan latihan",
   "advanced.done": "Latihan selesai",
   "advanced.unavailable": "Audio tidak tersedia di perangkat ini",
+
+  "learning.compareUnknown": "Ungkapan berbeda: bandingkan dengan contoh.",
+  "learning.copy": "Tampilkan contoh — menyalin tidak dihitung sebagai pengulangan.",
+  "learning.noReviews": "Tidak ada kartu dinilai; kemajuan pengulangan tidak disimpan.",
+  "learning.pronunciation": "Romanisasi membantu membaca. Ikuti audio dahulu.",
+  "learning.example": "Baca contoh yang sudah diselesaikan, lalu berlatih.",
+  "learning.article": "Pelajari kata benda dengan der, die, atau das: artikel menunjukkan gender gramatikal.",
+  "learning.past": "Bentuk lampau dapat tidak beraturan.",
+  "learning.perfect": "Bentuk lampau dapat tidak beraturan. Jerman: haben/sein + partisip.",
+  "learning.serEstar": "Ser: identitas/ciri. Estar: keadaan/lokasi.",
 } as const;
 
 export default id;

@@ -5,7 +5,8 @@ import { ThemedText, displayLineHeight } from './themed-text';
 import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
+import { dialogueSentenceTasks, sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
+import { situationTranslation, type ConversationSituation } from '@/lib/conversation/types';
 import type { VocabEntry } from '@/data/vocab-types';
 import { useMicrophoneCapture } from '@/hooks/use-microphone-capture';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus, stopPronunciation } from '@/lib/audio';
@@ -28,15 +29,15 @@ export function SentenceAction({ label, onPress, disabled = false }: {
 }
 
 
-export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }: {
-  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; onExit: () => void;
+export function SentenceRunner({ mode, language, anchor = 'de', words, situation, onExit }: {
+  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; situation?: ConversationSituation; onExit: () => void;
 }) {
   const { t, uiLanguage, languageName } = useLocale();
   // Die Aussaat ist ein eigener Zustand: „Neue Runde“ würfelt sie neu, damit
   // nicht dieselbe Satzfolge und Antwortmischung wie in der Runde davor
   // herauskommt.
   const [seed, setSeed] = useState(() => Date.now());
-  const tasks = useMemo(() => sentenceSession(language, seed, anchor, words), [language, seed, anchor, words]);
+  const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor) : sentenceSession(language, seed, anchor, words), [language, seed, anchor, words, situation]);
   const [index, setIndex] = useState(0);
   const [round, setRound] = useState(0);
   const [preparedAt, setPreparedAt] = useState(() => Date.now());
@@ -209,10 +210,10 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
       {/* Die deutsche Satzbedeutung nur auf der de-Brücke: Andere Anker haben
           keine Satzübersetzung im Bestand — der Fokus-Hinweis (wortweise
           übersetzt) bleibt die ehrliche Verständnishilfe (21.09.2026). */}
-      {anchor === 'de' && <ThemedText type="smallBold">{task.german}</ThemedText>}
+      {(task.meaning || anchor === 'de') && <ThemedText type="smallBold">{task.meaning ?? task.german}</ThemedText>}
       {/* Der Thai-Satz in Displaygröße: Skalierungsdeckel wie überall, sonst
           schneiden Zeilenhöhe und Tonzeichen einander (UI-Review 2026-09-07). */}
-      {(stage !== 'record' || mode === 'shadowing') && <><ThemedText type="subtitle" maxFontSizeMultiplier={2} style={{ lineHeight: displayLineHeight(32, 2) }}>{task.text}</ThemedText>{task.roman && task.roman !== task.text && <ThemedText>{task.roman}</ThemedText>}</>}
+      {(stage !== 'record' || mode === 'shadowing') && <><ThemedText type="subtitle" maxFontSizeMultiplier={2} style={{ lineHeight: displayLineHeight(32, 2) }}>{task.text}</ThemedText>{language === 'th' && task.roman && task.roman !== task.text && <ThemedText>{task.roman}</ThemedText>}</>}
       {stage === 'prepare' && <>
         <ThemedText type="smallBold">{t('sentence.prepare', { seconds: Math.ceil(remaining / 1000) })}</ThemedText>
         <ThemedText type="small">{t('sentence.prepareBody', { focus: task.focus })}</ThemedText>
@@ -256,12 +257,12 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, onExit }:
       {answer !== null && <>
         <ThemedText accessibilityLiveRegion="polite">{answer === task.answers[0] ? t('sentence.correct') : t('sentence.meant', { answer: task.answers[0] })}</ThemedText>
         <ThemedText>{task.text}</ThemedText>
-        {task.roman && task.roman !== task.text ? <ThemedText>{task.roman}</ThemedText> : null}
+        {language === 'th' && task.roman && task.roman !== task.text ? <ThemedText>{task.roman}</ThemedText> : null}
         <ThemedText type="small">{task.focus}</ThemedText>
         <SentenceAction label={t('sentence.nextSentence')} onPress={() => reset(index + 1)} />
       </>}
     </>}
-    <ThemedText type="small">{sentenceFootnote(language, uiLanguage)}</ThemedText>
+    <ThemedText type="small">{situation ? situationTranslation(situation, uiLanguage).title : anchor !== 'de' ? t('tabs.conversation') : sentenceFootnote(language, uiLanguage)}</ThemedText>
   </ThemedView>;
 }
 

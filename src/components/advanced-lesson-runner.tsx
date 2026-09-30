@@ -40,8 +40,15 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
   const [saveError, setSaveError] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
   const [showModel, setShowModel] = useState(false);
-  const [audioUnavailable, setAudioUnavailable] = useState(false);
+  const [audioUnavailable, setAudioUnavailable] = useState(true);
   const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void hasPronunciationClip({ text: lesson.paragraphs[listenIndex], language: lesson.language, purpose: 'sentence' })
+      .then(available => { if (!cancelled) setAudioUnavailable(!available); });
+    return () => { cancelled = true; };
+  }, [lesson.language, lesson.paragraphs, listenIndex]);
 
   useEffect(() => {
     let cancelled = false;
@@ -101,7 +108,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
         onPress={() => play(lesson.paragraphs[listenIndex])}
       />
       {audioUnavailable ? <>
-        <ThemedText type="small" themeColor="textSecondary">{t('advanced.unavailable')}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{t('advanced.read')} · {t('advanced.audioNote')}</ThemedText>
         <ThemedText type="default">{lesson.paragraphs[listenIndex]}</ThemedText>
         {lesson.roman ? <RomanLine text={lesson.roman.paragraphs[listenIndex]} /> : null}
       </> : null}

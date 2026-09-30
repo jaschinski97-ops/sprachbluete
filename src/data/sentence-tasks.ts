@@ -1,5 +1,6 @@
 import { translate, type UiLanguage } from '@/lib/i18n';
 import { bridgeText } from '@/lib/languages/bridge';
+import { spokenText, situationTranslation, type ConversationSituation } from '@/lib/conversation/types';
 import { LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
 
 import { activeVocabulary } from './active-vocabulary';
@@ -13,6 +14,8 @@ export type SentenceTask = {
   text: string;
   /** Deutsche Bedeutung des Satzes. */
   german: string;
+  /** A complete, supplied translation; never assembled from word meanings. */
+  meaning?: string;
   /** Lesehilfe (Thai: Umschrift; lateinische Sprachen: der Satz selbst). */
   roman: string;
   /** Hinweis unter der Aufgabe — beim generierten Bestand das Kernwort. */
@@ -31,6 +34,21 @@ export type SentenceTask = {
 
 /** Die Satzsprachen = alle Lernsprachen. */
 export type SatzSprache = LanguageCode;
+
+/** Guided lessons use their own dialogue, including its complete translations. */
+export function dialogueSentenceTasks(situation: ConversationSituation, anchor: UiLanguage): SentenceTask[] {
+  const translation = situationTranslation(situation, anchor);
+  // A missing foreign translation must not silently become German.
+  if (anchor !== 'de' && !situation.translations?.[anchor]) return [];
+  const meanings = [...new Set(translation.turns.filter(Boolean))];
+  return situation.scriptTurns.flatMap((turn, index) => {
+    const meaning = translation.turns[index];
+    if (!meaning || meanings.length < 2) return [];
+    return [{ id: `${situation.id}:${index}`, vocabId: '', text: spokenText(situation, turn),
+      german: turn.german, meaning, roman: turn.roman, focus: meaning,
+      answers: [meaning, ...meanings.filter(value => value !== meaning).slice(0, 3)] }];
+  });
+}
 
 /**
  * Baut Satz-Aufgaben aus dem AKTIVEN Wortschatzbestand (18.09.2026).

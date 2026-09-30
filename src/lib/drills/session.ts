@@ -153,7 +153,7 @@ function buildQuestion(
     case 'toneRule':
       return buildToneRuleQuestion(entry, anchor, ui);
     case 'article':
-      return buildArticleQuestion(entry, anchor);
+      return buildArticleQuestion(entry, anchor, ui);
     case 'verbForms':
       return buildVerbFormQuestion(entry, pool, random, anchor, ui);
     case 'deutschLesen':

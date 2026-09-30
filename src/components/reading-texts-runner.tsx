@@ -69,9 +69,9 @@ export function ReadingTextsRunner({
             cards,
             latin: targetLanguageOf(direction) !== 'th',
           });
-        const selected = situationId ? all.filter((entry) => entry.situation.id === situationId) : all;
+        const selected = situationId ? all.filter((entry) => entry.situation.id === situationId).map(entry => ({ ...entry, offen: true })) : all;
         setStoff(selected);
-        if (situationId && selected[0]?.offen) setGewaehlt(selected[0].situation);
+        if (situationId && selected[0]) setGewaehlt(selected[0].situation);
       } catch {
         if (!cancelled) setStoff([]);
       }
@@ -309,9 +309,9 @@ function TextAnsicht({
                 )
               )}
             </View>
-            <ThemedText type="small" themeColor="textSecondary">
+            {sprache === 'th' ? <ThemedText type="small" themeColor="textSecondary">
               {zeile.roman}
-            </ThemedText>
+            </ThemedText> : null}
 
             {woerter.filter((w) => zeile.thai.includes(w.text)).length > 0 ? (
               <View style={styles.wortKasten}>
@@ -344,6 +344,10 @@ function TextAnsicht({
         );
       })}
 
+      {situation.corrections.map((hint, index) => <ThemedView key={index} type="backgroundElement" style={styles.card}>
+        <ThemedText type="smallBold">{hint.issue}</ThemedText>
+        <ThemedText type="small">{hint.explanation}</ThemedText>
+      </ThemedView>)}
       {fragen.length > 0 ? (
         <ThemedButton
           label={t('texts.questionsTitle')}

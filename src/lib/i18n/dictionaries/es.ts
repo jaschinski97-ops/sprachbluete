@@ -748,6 +748,16 @@ const es: Partial<Record<TranslationKey, string>> = {
   "advanced.complete": "Terminar práctica",
   "advanced.done": "Práctica terminada",
   "advanced.unavailable": "Audio no disponible en este dispositivo",
+
+  "learning.compareUnknown": "Otra formulación: compara con el modelo.",
+  "learning.copy": "Mostrar modelo: copiar no cuenta como repaso.",
+  "learning.noReviews": "No se evaluaron tarjetas; no se guardó progreso de repaso.",
+  "learning.pronunciation": "La romanización ayuda a leer. Guíate primero por el audio.",
+  "learning.example": "Lee primero el ejemplo resuelto. Después practica.",
+  "learning.article": "Aprende los sustantivos con der, die o das: el artículo indica el género gramatical.",
+  "learning.past": "El pasado puede ser irregular.",
+  "learning.perfect": "El pasado puede ser irregular. Alemán: haben/sein + participio.",
+  "learning.serEstar": "Ser: identidad/características. Estar: estado/ubicación.",
 };
 
 export default es;

@@ -250,7 +250,7 @@ export function canBuildArticleQuestion(entry: VocabEntry): boolean {
   return Boolean(entry.germanNoun) && bareNoun(entry).length > 0;
 }
 
-export function buildArticleQuestion(entry: VocabEntry, anchor: UiLanguage = 'de'): DrillQuestion {
+export function buildArticleQuestion(entry: VocabEntry, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
   const noun = entry.germanNoun;
   if (!noun) {
     throw new Error(`"${entry.id}" ist kein Substantiv — kein Artikel zu üben.`);
@@ -260,7 +260,7 @@ export function buildArticleQuestion(entry: VocabEntry, anchor: UiLanguage = 'de
   // Feste Reihenfolge der/die/das: dieselbe Überlegung wie bei den Tönen.
   const options: DrillOption[] = ARTICLES.map((article) => ({ label: article }));
 
-  const parts = [`${noun.article} ${word}`, `Plural: ${noun.plural}`];
+  const parts = [`${noun.article} ${word}`, translate(ui, 'flashcard.plural', { plural: noun.plural })];
   if (entry.note) parts.push(entry.note);
 
   return {

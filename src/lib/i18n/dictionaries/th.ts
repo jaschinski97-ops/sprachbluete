@@ -728,6 +728,16 @@ const th: Partial<Record<TranslationKey, string>> = {
   "advanced.complete": "จบแบบฝึก",
   "advanced.done": "จบแบบฝึกแล้ว",
   "advanced.unavailable": "ไม่มีเสียงในอุปกรณ์นี้",
+
+  "learning.compareUnknown": "ใช้ถ้อยคำต่างจากตัวอย่าง: เปรียบเทียบคำตอบของคุณกับตัวอย่าง",
+  "learning.copy": "แสดงตัวอย่าง — การคัดลอกไม่นับเป็นการทบทวน",
+  "learning.noReviews": "ยังไม่ได้ให้คะแนนบัตรคำ จึงไม่มีความคืบหน้าการทบทวนที่บันทึกไว้",
+  "learning.pronunciation": "อักษรโรมันเป็นตัวช่วยอ่าน ให้ฟังเสียงเป็นหลัก",
+  "learning.example": "อ่านตัวอย่างที่เฉลยแล้วก่อน จากนั้นลองฝึกเอง",
+  "learning.article": "เรียนคำนามพร้อม der, die หรือ das คำนำหน้านามบอกเพศทางไวยากรณ์ ไม่ใช่เพศของผู้พูด",
+  "learning.past": "รูปอดีตอาจเปลี่ยนไม่เป็นกฎ",
+  "learning.perfect": "รูปอดีตอาจเปลี่ยนไม่เป็นกฎ ภาษาเยอรมันใช้ haben/sein + Partizip ใน Perfekt",
+  "learning.serEstar": "Ser บอกตัวตนหรือลักษณะ ส่วน estar บอกสภาพหรือสถานที่",
 };
 
 export default th;

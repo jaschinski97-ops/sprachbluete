@@ -214,7 +214,7 @@ export function TodayRoundRunner({
           </ThemedText>
         ) : null}
         <ThemedText type="small" themeColor="textSecondary">
-          {t('round.note')}
+          {t(runde.plan.some(p => !uebersprungen.includes(p.kind) && ['cards', 'diktat'].includes(p.kind)) ? 'round.note' : 'learning.noReviews')}
         </ThemedText>
         <View style={styles.actions}>
           <ThemedButton label={t('drill.newRound')} onPress={restart} />

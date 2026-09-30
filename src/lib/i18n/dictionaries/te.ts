@@ -644,6 +644,16 @@ const te = {
   "advanced.complete": "అభ్యాసం ముగించు",
   "advanced.done": "అభ్యాసం పూర్తయింది",
   "advanced.unavailable": "ఈ పరికరంలో ఆడియో అందుబాటులో లేదు",
+
+  "learning.compareUnknown": "వేరే పదప్రయోగం: నమూనాతో పోల్చండి.",
+  "learning.copy": "నమూనా చూపించు — చూసి రాయడం పునశ్చరణ కాదు.",
+  "learning.noReviews": "కార్డులకు రేటింగ్ ఇవ్వలేదు; పురోగతి సేవ్ కాలేదు.",
+  "learning.pronunciation": "రోమన్ లిపి చదవడానికి సహాయం. ముందుగా ఆడియో వినండి.",
+  "learning.example": "ముందుగా పరిష్కరించిన ఉదాహరణ చదవండి. తరువాత సాధన చేయండి.",
+  "learning.article": "నామవాచకాలను der, die లేదా dasతో నేర్చుకోండి: ఆర్టికల్ వ్యాకరణ లింగాన్ని సూచిస్తుంది.",
+  "learning.past": "గత రూపాలు క్రమరహితంగా ఉండవచ్చు.",
+  "learning.perfect": "గత రూపాలు క్రమరహితంగా ఉండవచ్చు. జర్మన్: haben/sein + పార్టిసిపల్.",
+  "learning.serEstar": "Ser: గుర్తింపు లేదా లక్షణాలు. Estar: స్థితి లేదా ప్రదేశం.",
 } as const;
 
 export default te;

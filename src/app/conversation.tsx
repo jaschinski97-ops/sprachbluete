@@ -317,9 +317,9 @@ function SituationCard({
                 />
               </View>
               <ThemedText>{spokenText(situation, turn)}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
+              {sprechSprache === 'th' ? <ThemedText type="small" themeColor="textSecondary">
                 {turn.roman}
-              </ThemedText>
+              </ThemedText> : null}
               <ThemedText type="small">{translated.turns[index]}</ThemedText>
             </View>
           ))}

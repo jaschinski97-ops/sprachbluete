@@ -644,6 +644,16 @@ const ja = {
   "advanced.complete": "練習を終える",
   "advanced.done": "練習完了",
   "advanced.unavailable": "この端末では音声を利用できません",
+
+  "learning.compareUnknown": "別の表現です。例と比べてください。",
+  "learning.copy": "例を表示：書き写しは復習に数えません。",
+  "learning.noReviews": "カードの評価なし。復習の進捗は保存されません。",
+  "learning.pronunciation": "ローマ字は読み方の補助です。まず音声を参考にしてください。",
+  "learning.example": "まず解答例を読み、次に練習しましょう。",
+  "learning.article": "名詞は der、die、das と一緒に覚えます。冠詞は文法上の性を示します。",
+  "learning.past": "過去形は不規則な場合があります。",
+  "learning.perfect": "過去形は不規則な場合があります。ドイツ語：haben/sein + 分詞。",
+  "learning.serEstar": "Ser：身元や特徴。Estar：状態や場所。",
 } as const;
 
 export default ja;

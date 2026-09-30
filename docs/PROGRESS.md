@@ -5609,3 +5609,11 @@ Neu: `npm run pipeline:release` (scripts/release-pipeline.cjs).
 Bewertungsreihe bleibt auf 360-dp-Telefonen einzeilig (vier gleiche Viertel).
 
 TypeScript und Testreihe grün (siehe Commit).
+
+## 30.09.2026 — Endnutzerkorrekturen und iPhone-Quellkandidat
+
+Vier Lernziele und Thai→Deutsch geprüft. Kapitel nutzen Szenenwortschatz/-grammatik; vollständige Dialogübersetzungen, direkter Lesestart, assistiertes Schreiben ohne FSRS, en/de-Dialogvarianten, Thai-Goethe-Hilfen, B1-Lesefallback und 20-Sprachen-Lernhilfen umgesetzt. Expo-57-Patchpakete aktualisiert, hoher Audit-Befund behoben.
+
+Verifikation: tsc grün; Jest 97 Suites/1260 Tests, gezielte Nachtests 12/178, Pipeline 14 Tests. Integrität errors=[] bei 22727 Einträgen. Produktions-Export iOS/Android/Web, keine Entwickler-/Anbieter-/Schlüsselmodule; 15197 Medienreferenzen/45591 identische Bytevergleiche. Browser 390×844 und vier Lernziele stichprobenartig geprüft. Thai-Zeichentasten nach Browserfund auf targets[0] korrigiert und erneut typgeprüft/exportiert.
+
+Restarbeit: native iPhone-Kompilierung/Signierung und physisches Audio-/Flugmodus-Testing, geprüfte B1-Clips/Sprachprüfung; Vollplanlücken 4868 Audio/3745 Bilder/996 Situationen, 2010 Thai-Audios unchecked; bestehende Lintfehler 29/50 Warnungen, npm 15 moderate. Kein bezahlter KI-Lauf, Cloud-Build, Push oder Upload. Details: docs/release-candidate-2026-09-30.md; lokales Quellarchiv und Manifest unter build-verification/rc-2026-09-30/.

@@ -644,6 +644,16 @@ const hi = {
   "advanced.complete": "अभ्यास पूरा करें",
   "advanced.done": "अभ्यास पूरा हुआ",
   "advanced.unavailable": "इस डिवाइस पर ऑडियो उपलब्ध नहीं है",
+
+  "learning.compareUnknown": "अलग अभिव्यक्ति: नमूने से तुलना करें।",
+  "learning.copy": "नमूना दिखाएँ — नकल करना पुनरावृत्ति नहीं है।",
+  "learning.noReviews": "किसी कार्ड को अंक नहीं दिए; प्रगति नहीं सहेजी गई।",
+  "learning.pronunciation": "रोमन लिपि पढ़ने में सहायता है। पहले ऑडियो सुनें।",
+  "learning.example": "पहले हल किया हुआ उदाहरण पढ़ें। फिर अभ्यास करें।",
+  "learning.article": "संज्ञाएँ der, die या das के साथ सीखें: आर्टिकल व्याकरणिक लिंग बताता है।",
+  "learning.past": "भूतकाल अनियमित हो सकता है।",
+  "learning.perfect": "भूतकाल अनियमित हो सकता है। जर्मन: haben/sein + कृदंत।",
+  "learning.serEstar": "Ser: पहचान या गुण। Estar: अवस्था या स्थान।",
 } as const;
 
 export default hi;

@@ -12,7 +12,7 @@ function scene(id: string, topic: ConversationSituation['topic'], level: Convers
   };
 }
 
-test('Kapitel nutzen vorhandene Dialoge und 20 schreibbare Wörter je Szene', () => {
+test('Kapitel nutzen nur Dialogwörter und füllen nicht mit fremdem Wortschatz auf', () => {
   const chapters = chaptersForDirection('de_to_th', [
     scene('restaurant-A2', 'restaurant', 'A2'),
     scene('market-A1', 'market', 'A1'),
@@ -21,8 +21,9 @@ test('Kapitel nutzen vorhandene Dialoge und 20 schreibbare Wörter je Szene', ()
   ], VOCABULARY_TH);
 
   expect(chapters.map((chapter) => chapter.id)).toEqual(['greeting-A1', 'market-A1', 'restaurant-A2']);
-  expect(chapters.every((chapter) => chapter.vocabulary.length === 20)).toBe(true);
-  expect(chapters.every((chapter) => new Set(chapter.vocabulary.map((word) => word.id)).size === 20)).toBe(true);
+  expect(chapters.every((chapter) => chapter.vocabulary.length > 0 && chapter.vocabulary.length <= 20)).toBe(true);
+  expect(chapters.every((chapter) => new Set(chapter.vocabulary.map((word) => word.id)).size === chapter.vocabulary.length)).toBe(true);
+  expect(chapters.every(chapter => chapter.vocabulary.every(word => chapter.situation.scriptTurns[0].thai.includes(word.term)))).toBe(true);
   expect(chapters[0].vocabulary.map((word) => word.id)).toEqual(chapters[1].vocabulary.map((word) => word.id));
 });
 

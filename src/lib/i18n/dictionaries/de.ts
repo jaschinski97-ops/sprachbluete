@@ -769,6 +769,16 @@ const de = {
   "advanced.complete": "Übung abschließen",
   "advanced.done": "Übung abgeschlossen",
   "advanced.unavailable": "Audio auf diesem Gerät nicht verfügbar",
+
+  "learning.compareUnknown": "Andere Formulierung: Vergleiche mit dem Muster.",
+  "learning.copy": "Muster zeigen – Abschreiben zählt nicht als Wiederholung.",
+  "learning.noReviews": "Keine Karten bewertet; kein Wiederholungsfortschritt gespeichert.",
+  "learning.pronunciation": "Umschrift ist eine Lesehilfe. Orientiere dich zuerst am Audio.",
+  "learning.example": "Lies zuerst das gelöste Beispiel. Danach übst du selbst.",
+  "learning.article": "Lerne Nomen mit der, die oder das: Der Artikel zeigt das grammatische Geschlecht.",
+  "learning.past": "Vergangenheitsformen können unregelmäßig sein.",
+  "learning.perfect": "Vergangenheitsformen können unregelmäßig sein. Deutsch: haben/sein + Partizip.",
+  "learning.serEstar": "Ser: Identität/Eigenschaften. Estar: Zustand/Ort.",
 } as const;
 
 export default de;

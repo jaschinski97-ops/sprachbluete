@@ -1,3 +1,5 @@
+import { learningExample } from '@/lib/learning-example';
+import type { ConversationSituation } from '@/lib/conversation/types';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -44,6 +46,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 type Props = {
   entry: VocabEntry;
+  situation?: ConversationSituation;
   /**
    * SEIT DEN KREUZRICHTUNGEN AUF `PairDirection`: Die Karte liest nur die
    * Form der Richtung (`_to_de`); alle de-geankerten Werte verhalten sich
@@ -66,7 +69,7 @@ type Props = {
   bridgeEntry?: VocabEntry | BridgeEntry | null;
 };
 
-export function Flashcard({ entry, direction, revealed, bridgeEntry = null }: Props) {
+export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situation }: Props) {
   // SEIT PHASE 16 AUS DER RICHTUNG STATT AUS EINEM LITERAL: Vorher stand hier
   // `direction === 'th_to_de'`, und eine spanische Karte waere in beiden
   // Richtungen gleich gelaufen.
@@ -105,7 +108,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null }: Pr
             />
           </>
         ) : null}
-        {revealed ? <ExampleBlock entry={entry} anchor={anchor} /> : null}
+        {revealed ? <ExampleBlock entry={entry} anchor={anchor} situation={situation} /> : null}
         {revealed ? <VerificationBadge entry={entry} /> : null}
       </ThemedView>
     );
@@ -169,7 +172,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null }: Pr
         </>
       )}
 
-      {revealed ? <ExampleBlock entry={entry} anchor={anchor} /> : null}
+      {revealed ? <ExampleBlock entry={entry} anchor={anchor} situation={situation} /> : null}
       {revealed ? <VerificationBadge entry={entry} /> : null}
     </ThemedView>
   );
@@ -224,34 +227,20 @@ function GermanBlock({ entry, headline = false }: { entry: VocabEntry; headline?
  * Fuer Englisch und Spanisch gibt es keine erfundenen Saetze; die Karte zeigt
  * dort stattdessen nichts, statt eine leere Zeile mit Lautsprechersymbol.
  */
-function ExampleBlock({ entry, anchor }: { entry: VocabEntry; anchor: UiLanguage }) {
+function ExampleBlock({ entry, anchor, situation }: { entry: VocabEntry; anchor: UiLanguage; situation?: ConversationSituation }) {
   const { t } = useLocale();
-  if (!entry.exampleTerm) return null;
-  return (
-    <ThemedView type="backgroundSelected" style={styles.example}>
-      <View style={styles.exampleRow}>
-        <View style={styles.exampleText}>
-          <ThemedText type="small">{entry.exampleTerm}</ThemedText>
-          {entry.exampleRoman && entry.exampleRoman !== entry.exampleTerm ? (
-            <ThemedText type="small" themeColor="textSecondary">{entry.exampleRoman}</ThemedText>
-          ) : null}
-          {/* Die Satzübersetzung existiert nur als `exampleGerman` — sie gehört
-              daher auf die de-Brücke und nirgendwohin sonst (21.09.2026, en-UI
-              zeigte „Ich habe zehn Euro …" unter englischer Oberfläche). */}
-          {anchor === 'de' && entry.exampleGerman && entry.exampleGerman !== entry.exampleTerm && entry.exampleGerman !== entry.exampleRoman ? (
-            <ThemedText type="small" themeColor="textSecondary">{entry.exampleGerman}</ThemedText>
-          ) : null}
-        </View>
-        <SpeakButton
-          label="▶"
-          spokenLabel={t('flashcard.listenExampleA11y')}
-          text={entry.exampleTerm}
-          language={entry.language}
-          compact
-        />
+  const example = learningExample(entry, anchor, situation);
+  if (!example) return null;
+  return <ThemedView type="backgroundSelected" style={styles.example}>
+    <View style={styles.exampleRow}>
+      <View style={styles.exampleText}>
+        <ThemedText type="small">{example.text}</ThemedText>
+        {entry.language === 'th' && example.roman ? <ThemedText type="small">{example.roman}</ThemedText> : null}
+        {example.meaning !== example.text ? <ThemedText type="small" themeColor="textSecondary">{example.meaning}</ThemedText> : null}
       </View>
-    </ThemedView>
-  );
+      <SpeakButton label="▶" spokenLabel={t('flashcard.listenExampleA11y')} text={example.text} language={entry.language} compact />
+    </View>
+  </ThemedView>;
 }
 
 /**
@@ -298,7 +287,7 @@ function SpeakButton({
           // Absichtlich ohne await: die Karte soll nicht auf die Sprachausgabe
           // warten. Fehler (z. B. keine Thai-Stimme installiert) dürfen den
           // Lernfluss nicht unterbrechen.
-          playPronunciationWithStatus({ text, language, audioAssetId: assetId, purpose: 'vocabulary' })
+          playPronunciationWithStatus({ text, language, audioAssetId: assetId, purpose: compact ? 'sentence' : 'vocabulary' })
             .then(result => setPlayed({ text, result }))
             .catch(() => {});
         }}

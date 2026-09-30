@@ -8,7 +8,7 @@ import { ThemedView } from './themed-view';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
-import { learningLanguage, writingPromptKey } from '@/lib/languages/definitions';
+import { writingPromptKey } from '@/lib/languages/definitions';
 import type { VocabEntry } from '@/data/vocab-types';
 
 import { type Rating } from '@/lib/fsrs/types';
@@ -67,6 +67,9 @@ export function WritingRunner({
   const [result, setResult] = useState<WritingResult | null>(null);
   const [results, setResults] = useState<WritingResult[]>([]);
   const [busy, setBusy] = useState(false);
+  const [assisted, setAssisted] = useState(false);
+  const [assistedCount, setAssistedCount] = useState(0);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,6 +78,7 @@ export function WritingRunner({
     setDraft('');
     setResult(null);
     setResults([]);
+    setAssisted(false); setAssistedCount(0); setPaletteOpen(false);
     buildWritingSession({ direction, entries, size }).then((next) => {
       if (!cancelled) setSession(next);
     });
@@ -89,17 +93,19 @@ export function WritingRunner({
     if (!prompt || busy || result) return;
     setBusy(true);
     try {
-      const next = await submitWriting(prompt, draft);
+      const next = await submitWriting(prompt, draft, { assisted });
+      if (assisted) setAssistedCount(value => value + 1);
       setResult(next);
       setResults((previous) => [...previous, next]);
     } finally {
       setBusy(false);
     }
-  }, [prompt, draft, busy, result]);
+  }, [prompt, draft, busy, result, assisted]);
 
   const next = useCallback(() => {
     setResult(null);
     setDraft('');
+    setAssisted(false); setPaletteOpen(false);
     setIndex((current) => current + 1);
   }, []);
 
@@ -134,7 +140,7 @@ export function WritingRunner({
           {t('writing.summary', { correct: score.correct, total: score.total, exact: score.exact })}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {t('writing.countsAsReview')}
+          {t(assistedCount === results.length ? 'learning.noReviews' : 'writing.countsAsReview')}
         </ThemedText>
         {missed.length > 0 ? (
           <>
@@ -196,7 +202,7 @@ export function WritingRunner({
           onChangeText={setDraft}
           onSubmitEditing={submit}
           editable={!answered}
-          placeholder={learningLanguage(prompt.language).placeholders.word}
+          placeholder={t('writing.inputA11y')}
           placeholderTextColor={theme.textSecondary}
           autoCapitalize="none"
           autoCorrect={false}
@@ -211,7 +217,26 @@ export function WritingRunner({
             Thai braucht eine ganze Belegung, Deutsch die Umlaute, Spanisch die
             Akzentzeichen. Englisch braucht keine — dort steht jedes Zeichen
             der Zielform auf jeder lateinischen Tastatur. */}
-        {!answered ? <LanguagePalette
+        {!answered ? <>
+          <Pressable accessibilityRole="button" onPress={() => setAssisted(true)} style={styles.wide}>
+            <ThemedText type="small">{t('learning.copy')}</ThemedText>
+          </Pressable>
+          {assisted ? <>
+            <ThemedText type="subtitle">{prompt.solution}</ThemedText>
+            {prompt.language === 'th' ? <View style={styles.row}>
+              {[...new Set(Array.from(prompt.targets[0] ?? ''))].filter(character => character.trim()).map(character => (
+                <Pressable key={character} accessibilityRole="button" accessibilityLabel={`${t('writing.inputA11y')}: ${character}`}
+                  onPress={() => setDraft(value => value + character)} style={styles.copyKey}>
+                  <ThemedText>{/\p{M}/u.test(character) ? `◌${character}` : character}</ThemedText>
+                </Pressable>
+              ))}
+            </View> : null}
+          </> : null}
+          <Pressable accessibilityRole="button" accessibilityState={{ expanded: paletteOpen }} onPress={() => setPaletteOpen(value => !value)} style={styles.wide}>
+            <ThemedText type="small">{t('writing.inputA11y')} · {paletteOpen ? '−' : '+'}</ThemedText>
+          </Pressable>
+        </> : null}
+        {!answered && paletteOpen ? <LanguagePalette
             language={prompt.language}
             onInsert={(character) => setDraft((current) => current + character)}
           /> : null}
@@ -279,14 +304,14 @@ function Feedback({
       <ThemedText type="small">{prompt.solution}</ThemedText>
       {prompt.extras.map((extra) => (
         <ThemedText key={extra} type="small" themeColor="textSecondary">
-          {extra}
+          {extra.startsWith('Plural: ') ? t('flashcard.plural', { plural: extra.slice(8) }) : extra}
         </ThemedText>
       ))}
 
       {/* Sichtbar machen, was die Antwort mit der Wiederholung macht - sonst
           bliebe unerklaerlich, warum eine Vokabel frueher wiederkommt. */}
       <ThemedText type="small" themeColor="textSecondary">
-        {t('rating.ratedAs', { rating: t(RATING_KEYS[rating]), explanation: t(ratingExplanation(rating)) })}
+        {result.assisted ? t('learning.noReviews') : t('rating.ratedAs', { rating: t(RATING_KEYS[rating]), explanation: t(ratingExplanation(rating)) })}
       </ThemedText>
     </ThemedView>
   );
@@ -307,6 +332,7 @@ function ExitButton({ onExit, label }: { onExit: () => void; label: string }) {
 }
 
 const styles = StyleSheet.create({
+  copyKey: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   /** Mindestgroesse eines Tippziels, wie in Phase 9 festgelegt. */
   tapTarget: {
     minHeight: 44,

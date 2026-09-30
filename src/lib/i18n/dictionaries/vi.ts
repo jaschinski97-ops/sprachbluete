@@ -644,6 +644,16 @@ const vi = {
   "advanced.complete": "Hoàn thành bài tập",
   "advanced.done": "Đã hoàn thành bài tập",
   "advanced.unavailable": "Không có âm thanh trên thiết bị này",
+
+  "learning.compareUnknown": "Cách diễn đạt khác: so sánh với mẫu.",
+  "learning.copy": "Hiện mẫu — chép lại không tính là ôn tập.",
+  "learning.noReviews": "Chưa đánh giá thẻ nào; chưa lưu tiến độ.",
+  "learning.pronunciation": "Chữ La-tinh hỗ trợ đọc. Hãy nghe âm thanh trước.",
+  "learning.example": "Đọc ví dụ đã giải trước, rồi luyện tập.",
+  "learning.article": "Học danh từ cùng der, die hoặc das: mạo từ thể hiện giống ngữ pháp.",
+  "learning.past": "Dạng quá khứ có thể bất quy tắc.",
+  "learning.perfect": "Dạng quá khứ có thể bất quy tắc. Tiếng Đức: haben/sein + phân từ.",
+  "learning.serEstar": "Ser: danh tính/đặc điểm. Estar: trạng thái/vị trí.",
 } as const;
 
 export default vi;

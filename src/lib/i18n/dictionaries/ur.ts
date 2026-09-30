@@ -644,6 +644,16 @@ const ur = {
   "advanced.complete": "مشق مکمل کریں",
   "advanced.done": "مشق مکمل ہو گئی",
   "advanced.unavailable": "اس آلے پر آڈیو دستیاب نہیں",
+
+  "learning.compareUnknown": "مختلف انداز: نمونے سے موازنہ کریں۔",
+  "learning.copy": "نمونہ دکھائیں — نقل کرنا دہرائی نہیں ہے۔",
+  "learning.noReviews": "کسی کارڈ کی درجہ بندی نہیں ہوئی؛ پیش رفت محفوظ نہیں ہوئی۔",
+  "learning.pronunciation": "رومن رسم الخط پڑھنے میں مدد ہے۔ پہلے آڈیو سنیں۔",
+  "learning.example": "پہلے حل شدہ مثال پڑھیں، پھر مشق کریں۔",
+  "learning.article": "اسم der، die یا das کے ساتھ سیکھیں: آرٹیکل قواعد کی جنس بتاتا ہے۔",
+  "learning.past": "ماضی بے قاعدہ ہو سکتا ہے۔",
+  "learning.perfect": "ماضی بے قاعدہ ہو سکتا ہے۔ جرمن: haben/sein + فعل کی تیسری شکل۔",
+  "learning.serEstar": "Ser: شناخت یا خصوصیات۔ Estar: حالت یا جگہ۔",
 } as const;
 
 export default ur;

@@ -19,10 +19,10 @@ import { targetLanguageOf, type LanguageCode, type PairDirection } from '@/lib/l
 import { loadSituations } from '@/lib/repository';
 import {
   bewertungFuerErgebnis,
-  vergleicheProduktion,
   type ProduktionsErgebnis,
 } from '@/lib/production/compare';
 import { spracherkennung, type ErkennungsNaht } from '@/lib/speaking/recognition';
+import { compareDialogue } from '@/lib/production/dialogue-compare';
 
 /**
  * Rollenspiel aus den vorhandenen Situationen (Schritt 3, Lern-Reiter-Ausbau).
@@ -266,7 +266,7 @@ function SzeneZeile({
     if (!erkenne) return;
     void (async () => {
       const text = await erkenne({ language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE' }[sprache], onHoeren: setHoert });
-      if (text) setErgebnis(vergleicheProduktion(text, zeile.thai, sprache));
+      if (text) setErgebnis(compareDialogue(text, zeile.thai, sprache));
       else setHoert(false);
     })();
   };
@@ -280,7 +280,7 @@ function SzeneZeile({
         <>
           <ThemedText type="subtitle">{zeile.thai}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {zeile.roman} · {zeile.german}
+            {sprache === 'th' ? `${sprache === 'th' ? zeile.roman : ''} · ` : ''}{zeile.german}
           </ThemedText>
           <View style={styles.actions}>
             <Pressable
@@ -312,7 +312,7 @@ function SzeneZeile({
               <View style={styles.actions}>
                 <ThemedButton
                   label={t('dictation.check')}
-                  onPress={() => setErgebnis(vergleicheProduktion(eingabe, zeile.thai, sprache))}
+                  onPress={() => setErgebnis(compareDialogue(eingabe, zeile.thai, sprache))}
                 />
                 {hatErkennung ? (
                   <ThemedButton
@@ -336,26 +336,28 @@ function SzeneZeile({
             <>
               <ThemedText type="smallBold">
                 {ergebnis.bewertung === 'wrong'
-                  ? t('drill.wrong')
+                  ? t('learning.compareUnknown')
                   : ergebnis.bewertung === 'accent'
                     ? t('production.accentHint', { target: ergebnis.ziel })
-                    : t('drill.exact')}
+                    : t('sentence.correct')}
               </ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {zeile.roman}
+                {sprache === 'th' ? zeile.roman : ''}
               </ThemedText>
               <ThemedButton
                 label={t('common.next')}
                 onPress={() => onWeiter(bewertungFuerErgebnis(ergebnis.bewertung))}
               />
+              {ergebnis.bewertung === 'wrong' ? <ThemedButton label={t('production.selfRate')}
+                onPress={() => { setErgebnis(null); setSelbstOffen(true); }} /> : null}
             </>
           ) : null}
           {selbstOffen && ergebnis === null ? (
             <>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {zeile.roman}
+                {sprache === 'th' ? zeile.roman : ''}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {t('production.selfRatingTitle')}

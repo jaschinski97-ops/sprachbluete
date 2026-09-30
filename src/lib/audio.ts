@@ -188,7 +188,7 @@ async function playPronunciationNow(
   request: PronunciationRequest
 ): Promise<PlaybackResult> {
   const text = request.text.trim();
-  const unavailable: PlaybackResult = { kind: 'unavailable', label: 'Kein zulässiger Hörclip verfügbar' };
+  const unavailable: PlaybackResult = { kind: 'unavailable', label: 'advanced.unavailable' };
   if (!text) return unavailable;
 
   await backend.stop().catch(() => {

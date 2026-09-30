@@ -6,6 +6,7 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { Spacing } from '@/constants/theme';
+import { examSupport } from '@/data/exam-thai-support';
 import { useTheme } from '@/hooks/use-theme';
 import { playPronunciation } from '@/lib/audio';
 import { scoreExamModule } from '@/lib/exam/session';
@@ -53,7 +54,7 @@ export function ExamRunner({ module, onExit }: { module: ExamModule; onExit: () 
   );
   const [checked, setChecked] = useState(false);
   const theme = useTheme();
-  const { t } = useLocale();
+  const { t, uiLanguage } = useLocale();
   const [showModel, setShowModel] = useState(false);
 
   const score = useMemo(
@@ -101,7 +102,7 @@ export function ExamRunner({ module, onExit }: { module: ExamModule; onExit: () 
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{module.title}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {module.instruction}
+          {examSupport(module.instruction, uiLanguage)}
         </ThemedText>
 
         {module.stimulus ? (
@@ -160,7 +161,7 @@ export function ExamRunner({ module, onExit }: { module: ExamModule; onExit: () 
                     themeColor={answers[itemIndex] === item.correctIndex ? 'success' : 'error'}>
                     {answers[itemIndex] === item.correctIndex ? '✓ ' : '✗ '}
                   </ThemedText>
-                  {item.explanation}
+                  {examSupport(item.explanation, uiLanguage)}
                 </ThemedText>
               ) : null}
             </View>
@@ -275,15 +276,15 @@ function ProductionTask({
   onShowModel: () => void;
 }) {
   const production = module.production;
-  const { t } = useLocale();
+  const { t, uiLanguage } = useLocale();
 
   return (
     <>
       <ThemedView type="backgroundSelected" style={styles.stimulus}>
-        <ThemedText type="small">{production.task}</ThemedText>
+        <ThemedText type="small">{examSupport(production.task, uiLanguage)}</ThemedText>
         {production.bullets.map((bullet) => (
           <ThemedText key={bullet} type="small" themeColor="textSecondary">
-            • {bullet}
+            • {examSupport(bullet, uiLanguage)}
           </ThemedText>
         ))}
       </ThemedView>
@@ -317,7 +318,7 @@ function ProductionTask({
             <ThemedText type="smallBold">{t('exam.selfCheck')}</ThemedText>
             {production.checklist.map((point) => (
               <ThemedText key={point} type="small" themeColor="textSecondary">
-                ☐ {point}
+                ☐ {examSupport(point, uiLanguage)}
               </ThemedText>
             ))}
           </View>

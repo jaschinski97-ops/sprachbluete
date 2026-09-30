@@ -98,6 +98,7 @@ export function DrillRunner({
   const [answers, setAnswers] = useState<DrillAnswer[]>([]);
   const [voiceMissing, setVoiceMissing] = useState(false);
   const [heardId, setHeardId] = useState<string | null>(null);
+  const [introduced, setIntroduced] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -228,6 +229,24 @@ export function DrillRunner({
       </ThemedView>
     );
   }
+
+  const grammarIntro: Partial<Record<DrillId, TranslationKey>> = {
+    article: 'learning.article', verbForms: 'learning.perfect', irregularPast: 'learning.past',
+    serEstar: 'learning.serEstar', polite: 'grammar.particleGender',
+    zaehlerwort: 'grammar.counterBetween', konsonantenklasse: 'grammar.classIntro',
+  };
+  const intro = grammarIntro[drill];
+  if (intro && !introduced) return <ThemedView type="backgroundElement" style={styles.card}>
+    <ThemedText type="smallBold">{t(DRILL_LABEL_KEYS[drill])}</ThemedText>
+    <ThemedText>{t(intro)}</ThemedText>
+    <ThemedText type="small">{t('learning.example')}</ThemedText>
+    <ThemedText>{question.visible}</ThemedText>
+    {question.visibleHint ? <ThemedText type="small">{question.visibleHint}</ThemedText> : null}
+    <ThemedText type="subtitle">{question.solution}</ThemedText>
+    {question.solutionRoman ? <ThemedText type="small">{question.solutionRoman}</ThemedText> : null}
+    <ThemedButton label={t('common.next')} onPress={() => { setIntroduced(true); next(); }} />
+    <ThemedButton label={t('common.back')} onPress={onExit} />
+  </ThemedView>;
 
   return (
     <>

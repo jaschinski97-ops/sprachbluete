@@ -644,6 +644,16 @@ const zh = {
   "advanced.complete": "完成练习",
   "advanced.done": "练习已完成",
   "advanced.unavailable": "此设备无法播放音频",
+
+  "learning.compareUnknown": "另一种表达：与范例比较。",
+  "learning.copy": "显示范例：抄写不计为复习。",
+  "learning.noReviews": "未评分卡片；未保存复习进度。",
+  "learning.pronunciation": "罗马字辅助阅读，请优先参考音频。",
+  "learning.example": "先阅读已解答的例子，再自己练习。",
+  "learning.article": "名词与 der、die 或 das 一起学习：冠词表示语法性别。",
+  "learning.past": "过去式可能不规则。",
+  "learning.perfect": "过去式可能不规则。德语：haben/sein + 分词。",
+  "learning.serEstar": "Ser：身份或特征。Estar：状态或位置。",
 } as const;
 
 export default zh;

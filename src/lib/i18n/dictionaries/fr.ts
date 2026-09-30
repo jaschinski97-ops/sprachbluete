@@ -644,6 +644,16 @@ const fr = {
   "advanced.complete": "Terminer l'exercice",
   "advanced.done": "Exercice terminé",
   "advanced.unavailable": "Audio indisponible sur cet appareil",
+
+  "learning.compareUnknown": "Autre formulation : comparez au modèle.",
+  "learning.copy": "Afficher le modèle : recopier ne compte pas comme révision.",
+  "learning.noReviews": "Aucune carte évaluée ; aucune progression enregistrée.",
+  "learning.pronunciation": "La romanisation aide à lire. Suivez d’abord l’audio.",
+  "learning.example": "Lisez d’abord l’exemple résolu, puis pratiquez.",
+  "learning.article": "Apprenez les noms avec der, die ou das : l’article indique le genre grammatical.",
+  "learning.past": "Le passé peut être irrégulier.",
+  "learning.perfect": "Le passé peut être irrégulier. Allemand : haben/sein + participe.",
+  "learning.serEstar": "Ser : identité/caractéristiques. Estar : état/lieu.",
 } as const;
 
 export default fr;

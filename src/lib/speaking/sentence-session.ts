@@ -1,6 +1,8 @@
 import type { CapturedPcm } from './microphone-capture';
 import { analyzeToneContour, type ToneContourMeasurement } from './analysis';
-import { buildSentenceTasks, satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
+import { buildSentenceTasks, dialogueSentenceTasks, satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
+import { bundledDocuments } from '../content/bundled';
+import { targetLanguageOf } from '../languages/types';
 import type { VocabEntry } from '@/data/vocab-types';
 import type { UiLanguage } from '@/lib/i18n/types';
 import { shuffled, seededRandom } from '../drills/random';
@@ -30,7 +32,11 @@ export function sentenceSession(
   anchor: UiLanguage = 'de',
   words?: VocabEntry[]
 ): SentenceTask[] {
-  return shuffled(words ? buildSentenceTasks(words, anchor) : satzaufgabenFuer(language, anchor), seededRandom(seed))
+  const tasks = anchor !== 'de' && !words
+    ? bundledDocuments('situations').filter(scene => targetLanguageOf(scene.direction) === language)
+      .flatMap(scene => dialogueSentenceTasks(scene, anchor))
+    : words ? buildSentenceTasks(words, anchor) : satzaufgabenFuer(language, anchor);
+  return shuffled(tasks, seededRandom(seed))
     .slice(0, SENTENCE_SESSION_SIZE);
 }
 export function sentenceAnswers(task: SentenceTask, seed: number): string[] {

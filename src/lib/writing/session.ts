@@ -95,6 +95,7 @@ export async function buildWritingSession(
 }
 
 export type WritingResult = {
+  assisted?: boolean;
   prompt: WritingPrompt;
   given: string;
   verdict: WritingVerdict;
@@ -114,7 +115,7 @@ export type WritingResult = {
 export async function submitWriting(
   prompt: WritingPrompt,
   given: string,
-  options: { store?: DataStore; now?: number } = {}
+  options: { store?: DataStore; now?: number; assisted?: boolean } = {}
 ): Promise<WritingResult> {
   const now = options.now ?? Date.now();
   const verdict = compareWriting(given, { language: prompt.language, targets: prompt.targets });
@@ -122,9 +123,9 @@ export async function submitWriting(
 
   const db = options.store ?? (await getStore());
   const card = await loadOrCreateCardState(prompt.vocabId, prompt.direction, db, now);
-  const updated = await rateCard(card, rating, db, now);
+  const updated = options.assisted ? card : await rateCard(card, rating, db, now);
 
-  return { prompt, given, verdict, rating, card: updated };
+  return { prompt, given, verdict, rating, card: updated, ...(options.assisted ? { assisted: true } : {}) };
 }
 
 export function summarizeWriting(results: WritingResult[]): {

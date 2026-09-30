@@ -644,6 +644,16 @@ const ko = {
   "advanced.complete": "연습 마치기",
   "advanced.done": "연습 완료",
   "advanced.unavailable": "이 기기에서 오디오를 사용할 수 없습니다",
+
+  "learning.compareUnknown": "다른 표현입니다. 예문과 비교하세요.",
+  "learning.copy": "예문 보기: 베껴 쓰기는 복습으로 계산하지 않습니다.",
+  "learning.noReviews": "평가한 카드가 없습니다. 복습 진도를 저장하지 않았습니다.",
+  "learning.pronunciation": "로마자는 읽기 보조 자료입니다. 먼저 음성을 참고하세요.",
+  "learning.example": "먼저 풀이 예시를 읽고 연습하세요.",
+  "learning.article": "명사는 der, die, das와 함께 배우세요. 관사는 문법적 성을 나타냅니다.",
+  "learning.past": "과거형은 불규칙할 수 있습니다.",
+  "learning.perfect": "과거형은 불규칙할 수 있습니다. 독일어: haben/sein + 분사.",
+  "learning.serEstar": "Ser: 정체성이나 특성. Estar: 상태나 위치.",
 } as const;
 
 export default ko;

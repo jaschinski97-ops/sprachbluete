@@ -644,6 +644,16 @@ const mr = {
   "advanced.complete": "सराव पूर्ण करा",
   "advanced.done": "सराव पूर्ण",
   "advanced.unavailable": "या उपकरणावर ऑडिओ उपलब्ध नाही",
+
+  "learning.compareUnknown": "वेगळी मांडणी: नमुन्याशी तुलना करा.",
+  "learning.copy": "नमुना दाखवा — नक्कल करणे उजळणी नाही.",
+  "learning.noReviews": "कार्डला गुण दिले नाहीत; प्रगती जतन केलेली नाही.",
+  "learning.pronunciation": "रोमन लिपी वाचण्यासाठी मदत आहे. प्रथम ऑडिओ ऐका.",
+  "learning.example": "आधी सोडवलेले उदाहरण वाचा. मग सराव करा.",
+  "learning.article": "नामे der, die किंवा das सोबत शिका: उपपद व्याकरणिक लिंग दर्शवते.",
+  "learning.past": "भूतकाळ अनियमित असू शकतो.",
+  "learning.perfect": "भूतकाळ अनियमित असू शकतो. जर्मन: haben/sein + कृदंत.",
+  "learning.serEstar": "Ser: ओळख किंवा गुण. Estar: स्थिती किंवा स्थान.",
 } as const;
 
 export default mr;

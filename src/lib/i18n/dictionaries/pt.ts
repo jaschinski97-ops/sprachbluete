@@ -644,6 +644,16 @@ const pt = {
   "advanced.complete": "Concluir prática",
   "advanced.done": "Prática concluída",
   "advanced.unavailable": "Áudio indisponível neste dispositivo",
+
+  "learning.compareUnknown": "Outra formulação: compare com o modelo.",
+  "learning.copy": "Mostrar modelo: copiar não conta como revisão.",
+  "learning.noReviews": "Nenhum cartão avaliado; nenhum progresso salvo.",
+  "learning.pronunciation": "A romanização ajuda a ler. Siga primeiro o áudio.",
+  "learning.example": "Leia primeiro o exemplo resolvido. Depois pratique.",
+  "learning.article": "Aprenda os nomes com der, die ou das: o artigo indica o gênero gramatical.",
+  "learning.past": "O passado pode ser irregular.",
+  "learning.perfect": "O passado pode ser irregular. Alemão: haben/sein + particípio.",
+  "learning.serEstar": "Ser: identidade/características. Estar: estado/localização.",
 } as const;
 
 export default pt;

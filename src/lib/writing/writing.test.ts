@@ -325,6 +325,19 @@ describe('Die Anbindung schreibt in dieselbe Karte wie die Karteikarte', () => {
     expect(nachGut!.due).toBeGreaterThan(nachSchwer!.due);
   });
 
+  it('ändert beim Abschreiben weder FSRS noch das Wiederholungsprotokoll', async () => {
+    const store = await freshStore();
+    const entry = deutsch('บ้าน');
+    const before = await loadCardState(entry.id, 'th_to_de', store);
+    const result = await submitWriting(buildWritingPrompt(entry, 'th_to_de'), 'das Haus', { store, now: T0, assisted: true });
+    expect(result.verdict.correct).toBe(true);
+    expect(result.assisted).toBe(true);
+    const after = await loadCardState(entry.id, 'th_to_de', store);
+    expect(after?.reps ?? 0).toBe(before?.reps ?? 0);
+    expect(after?.state).toBe('new');
+    expect(await loadReviewLog(store)).toEqual([]);
+  });
+
   it('zählt als Wiederholung, nicht als Übung', async () => {
     // Weil rateCard das Tagesprotokoll fortschreibt. Doppelt zu zaehlen -
     // einmal als Wiederholung, einmal als Uebung - wuerde die Zahlen

@@ -20,6 +20,7 @@ import {
 } from '@/lib/exam/types';
 import { isPairDirection } from '@/lib/languages/types';
 import { TranslationKey, useLocale } from '@/lib/i18n';
+import { examPartSupport } from '@/data/exam-thai-support';
 
 /**
  * Prüfungsmodul.
@@ -67,7 +68,7 @@ function ZurueckZumLernen() {
 }
 
 export default function ExamScreen() {
-  const { t } = useLocale();
+  const { t, uiLanguage } = useLocale();
   const params = useLocalSearchParams<{ level?: string; module?: string; direction?: string }>();
   const router = useRouter();
 
@@ -214,7 +215,7 @@ export default function ExamScreen() {
               </ThemedText>
             </View>
             <ThemedText type="small" themeColor="textSecondary">
-              {part.description}
+              {examPartSupport(part.skill, part.description, uiLanguage)}
             </ThemedText>
           </View>
         ))}

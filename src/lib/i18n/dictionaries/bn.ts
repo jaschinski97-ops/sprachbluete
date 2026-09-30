@@ -644,6 +644,16 @@ const bn = {
   "advanced.complete": "অনুশীলন শেষ করুন",
   "advanced.done": "অনুশীলন শেষ",
   "advanced.unavailable": "এই ডিভাইসে অডিও নেই",
+
+  "learning.compareUnknown": "ভিন্নভাবে বলা হয়েছে: নমুনার সঙ্গে মিলিয়ে দেখুন।",
+  "learning.copy": "নমুনা দেখান — নকল করা পুনরাবৃত্তি নয়।",
+  "learning.noReviews": "কোনো কার্ড মূল্যায়ন করা হয়নি; অগ্রগতি সংরক্ষিত হয়নি।",
+  "learning.pronunciation": "রোমান লিপি পড়ার সহায়ক। প্রথমে অডিও শুনুন।",
+  "learning.example": "প্রথমে সমাধান করা উদাহরণ পড়ুন। তারপর অনুশীলন করুন।",
+  "learning.article": "বিশেষ্য der, die বা das-এর সঙ্গে শিখুন: আর্টিকেল ব্যাকরণগত লিঙ্গ নির্দেশ করে।",
+  "learning.past": "অতীতকাল অনিয়মিত হতে পারে।",
+  "learning.perfect": "অতীতকাল অনিয়মিত হতে পারে। জার্মান: haben/sein + কৃদন্ত।",
+  "learning.serEstar": "Ser: পরিচয় বা বৈশিষ্ট্য। Estar: অবস্থা বা অবস্থান।",
 } as const;
 
 export default bn;

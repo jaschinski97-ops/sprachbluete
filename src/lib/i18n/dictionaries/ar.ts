@@ -644,6 +644,16 @@ const ar = {
   "advanced.complete": "أنهِ التدريب",
   "advanced.done": "اكتمل التدريب",
   "advanced.unavailable": "الصوت غير متاح على هذا الجهاز",
+
+  "learning.compareUnknown": "صياغة أخرى: قارن بالنموذج.",
+  "learning.copy": "عرض النموذج: النسخ لا يُحسب مراجعة.",
+  "learning.noReviews": "لم تُقيّم أي بطاقات؛ لم يُحفظ تقدم المراجعة.",
+  "learning.pronunciation": "الحروف اللاتينية تساعد على القراءة. اتبع الصوت أولًا.",
+  "learning.example": "اقرأ المثال المحلول أولًا، ثم تدرب.",
+  "learning.article": "تعلّم الأسماء مع der أو die أو das: الأداة تدل على الجنس النحوي.",
+  "learning.past": "قد يكون الماضي غير منتظم.",
+  "learning.perfect": "قد يكون الماضي غير منتظم. الألمانية: haben/sein + اسم المفعول.",
+  "learning.serEstar": "Ser: الهوية أو الصفات. Estar: الحالة أو المكان.",
 } as const;
 
 export default ar;

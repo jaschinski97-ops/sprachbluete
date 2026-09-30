@@ -51,11 +51,12 @@ import { ProductionRunner } from '@/components/production-runner';
 import { RoleplayRunner } from '@/components/roleplay-runner';
 import { ReadingTextsRunner } from '@/components/reading-texts-runner';
 import { AdvancedLessonRunner } from '@/components/advanced-lesson-runner';
+import { ChapterGrammarRunner } from '@/components/chapter-grammar-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { finishChapter, finishedChapterIds, chaptersForDirection, type LearningChapter } from '@/lib/learning-path';
 import { loadSituations } from '@/lib/repository';
-import { situationTranslation, spokenText } from '@/lib/conversation/types';
+import { situationTranslation, spokenText, type ConversationSituation } from '@/lib/conversation/types';
 
 const RATINGS: Rating[] = [1, 2, 3, 4];
 
@@ -373,15 +374,18 @@ function ReviewBody({
       ) : (
         <>
           <ThemedButton label={t('common.back')} onPress={onExit} />
-          <ThemedText type="smallBold">{t(modeKey(mode))}</ThemedText>
+          <ThemedText type="smallBold">{t(practiceChapter && ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse'].includes(mode) ? 'skill.grammatik' : modeKey(mode))}</ThemedText>
           {practiceChapter ? <ThemedText type="small" themeColor="textSecondary">
             {situationTranslation(practiceChapter.situation, uiLanguage).title}
           </ThemedText> : null}
 
-          {mode === 'cards' ? (
+          {practiceChapter && ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse'].includes(mode) ? (
+        <ChapterGrammarRunner key={practiceChapter.id} situation={practiceChapter.situation} direction={direction} onExit={onExit} />
+      ) : mode === 'cards' ? (
         <CardSession
           direction={direction}
           onlyVocabIds={chapterWordIds}
+          situation={practiceChapter?.situation}
           onWrite={(entries) => {
             setWritingPack(entries);
             onOpen(direction, 'writing');
@@ -412,6 +416,7 @@ function ReviewBody({
           language={targetLanguageOf(direction)}
           anchor={anchorOf(direction)}
           words={practiceChapter?.vocabulary}
+          situation={practiceChapter?.situation}
           onExit={onExit}
         />
       ) : mode === 'lesestoffe' ? (
@@ -465,14 +470,6 @@ function HeutigeRundeKnopf({ onPress }: { onPress: () => void }) {
   );
 }
 
-const SENTENCE_EXAMPLES = {
-  th: ['ฉัน', 'กิน', 'ข้าว'],
-  en: ['I', 'eat', 'rice'],
-  es: ['Yo', 'como', 'arroz'],
-  de: ['Ich', 'esse', 'Reis'],
-} as const;
-const THAI_SENTENCE_EXAMPLE_ROMAN = ['chǎn', 'gin', 'khâao'] as const;
-
 function LearnPath({
   direction,
   chapters,
@@ -501,7 +498,6 @@ function LearnPath({
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
   const groups = groupsForDirection(direction);
-  const example = SENTENCE_EXAMPLES[targetLanguageOf(direction)];
   const chapter = chapters?.find((item) => item.id === selectedChapterId)
     ?? chapters?.find((item) => !finished.includes(item.id))
     ?? chapters?.[0];
@@ -553,27 +549,25 @@ function LearnPath({
 
       {lessonOpen && chapter ? (
         <ThemedView type="backgroundElement" style={styles.lessonPanel}>
-          <ThemedText type="smallBold">{t('path.sentenceStructure')}</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">{t('path.structureNote')}</ThemedText>
-          <View style={styles.sentenceParts}>
-            {example.map((word, index) => (
-              <ThemedView key={`${word}:${index}`} type="background" style={styles.sentencePart}>
-                <ThemedText type="default" style={styles.exampleWord}>{word}</ThemedText>
-                {targetLanguageOf(direction) === 'th' ? (
-                  <ThemedText type="small" themeColor="textSecondary">{THAI_SENTENCE_EXAMPLE_ROMAN[index]}</ThemedText>
-                ) : null}
-                <ThemedText type="small" themeColor="textSecondary">
-                  {t((['path.subject', 'path.verb', 'path.object'] as const)[index])}
-                </ThemedText>
-              </ThemedView>
-            ))}
-          </View>
+          <ThemedText type="smallBold">{chapter.situation.level} · {translated?.title}</ThemedText>
+          <ThemedText type="small">{translated?.setting}</ThemedText>
+          {chapter.situation.scriptTurns.slice(0, chapter.situation.level === 'A2' ? 4 : 2).map((turn, index) => (
+            <View key={index} style={styles.sentenceParts}>
+              <ThemedText>{spokenText(chapter.situation, turn)}</ThemedText>
+              {targetLanguageOf(direction) === 'th' ? <ThemedText type="small">{turn.roman}</ThemedText> : null}
+              <ThemedText type="small" themeColor="textSecondary">{translated?.turns[index]}</ThemedText>
+            </View>
+          ))}
+          {translated?.corrections.map((hint, index) => <View key={index}>
+            <ThemedText type="smallBold">{hint.issue}</ThemedText>
+            <ThemedText type="small">{hint.explanation}</ThemedText>
+          </View>)}
           <ThemedText type="small" themeColor="textSecondary">{t('path.practiceNote')}</ThemedText>
           <ThemedText type="smallBold">
             {t('chapter.words', { count: chapter.vocabulary.length })}
           </ThemedText>
           {([
-            [grammar, modeKey(grammar)],
+            [grammar, 'skill.grammatik'],
             ['cards', 'mode.cards'],
             ['sentenceListening', 'mode.sentenceListening'],
             ['lesestoffe', 'mode.lesestoffe'],
@@ -810,10 +804,12 @@ function DirectionBar({ onSwitch }: { onSwitch: () => void }) {
 function CardSession({
   direction,
   onlyVocabIds,
+  situation,
   onWrite,
 }: {
   direction: PairDirection;
   onlyVocabIds?: ReadonlySet<string>;
+  situation?: ConversationSituation;
   onWrite: (entries: VocabEntry[]) => void;
 }) {
   const { t } = useLocale();
@@ -932,6 +928,7 @@ function CardSession({
         direction={direction}
         revealed={revealed}
         bridgeEntry={item.bridgeEntry}
+        situation={situation}
       />
 
       {revealed ? (

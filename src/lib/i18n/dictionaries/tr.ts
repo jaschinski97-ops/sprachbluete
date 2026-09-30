@@ -644,6 +644,16 @@ const tr = {
   "advanced.complete": "Alıştırmayı bitir",
   "advanced.done": "Alıştırma tamamlandı",
   "advanced.unavailable": "Bu cihazda ses kullanılamıyor",
+
+  "learning.compareUnknown": "Farklı ifade: örnekle karşılaştır.",
+  "learning.copy": "Örneği göster — kopyalamak tekrar sayılmaz.",
+  "learning.noReviews": "Kartlara puan verilmedi; tekrar ilerlemesi kaydedilmedi.",
+  "learning.pronunciation": "Latin harfleri okumaya yardımcıdır. Önce sesi dinle.",
+  "learning.example": "Önce çözümlü örneği oku, sonra çalış.",
+  "learning.article": "İsimleri der, die veya das ile öğren: artikel dil bilgisel cinsiyeti gösterir.",
+  "learning.past": "Geçmiş zaman düzensiz olabilir.",
+  "learning.perfect": "Geçmiş zaman düzensiz olabilir. Almanca: haben/sein + ortaç.",
+  "learning.serEstar": "Ser: kimlik/özellik. Estar: durum/konum.",
 } as const;
 
 export default tr;

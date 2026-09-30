@@ -42,7 +42,7 @@ export function chaptersForDirection(
     // incidental one-character substrings do not push scene words out.
     if (target === 'th') sceneWords.sort((a, b) => b.term.length - a.term.length);
     const vocabulary: VocabEntry[] = [];
-    for (const word of [...sceneWords, ...candidates]) {
+    for (const word of sceneWords) {
       if (vocabulary.length >= CHAPTER_WORDS) break;
       if (vocabulary.some((entry) => entry.id === word.id)) continue;
       vocabulary.push(word);

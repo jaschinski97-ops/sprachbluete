@@ -628,7 +628,7 @@ const ar = {
   "chapter.finish": "تحديد الفصل كمكتمل",
   "chapter.all": "جميع الفصول",
   "chapter.doneCount": "اكتمل {{done}} من {{total}}",
-  "advanced.title": "تدريب B1 · البداية",
+  "advanced.title": "متمرس",
   "advanced.intro": "نص أطول وأسئلة وإجابتك الخاصة. هذا التمرين لا يمنح شهادة بمستوى CEFR.",
   "advanced.listen": "استمع إلى الجزء {{index}} من {{total}}",
   "advanced.audioNote": "صوت النظام إن توفر؛ لم يُتحقق من النطق.",
@@ -655,6 +655,11 @@ const ar = {
   "learning.perfect": "قد يكون الماضي غير منتظم. الألمانية: haben/sein + اسم المفعول.",
   "learning.serEstar": "Ser: الهوية أو الصفات. Estar: الحالة أو المكان.",
   "roleplay.answer": "إجابتك",
+  "level.beginner": "مبتدئ",
+  "level.experienced": "متمرس",
+  "level.pro": "خبير",
+  "level.choose": "مستوى التعلم",
+  "studio.localText": "نموذج نص محلي · دون مفتاح API",
 } as const;
 
 export default ar;

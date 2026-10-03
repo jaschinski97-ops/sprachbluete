@@ -1,3 +1,4 @@
+import { levelLabelKey } from '@/lib/learning-stages';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -284,7 +285,7 @@ function SituationCard({
             {/* WHY: Das Thema steht einmal am Abschnittslabel — die Karte
                 trägt nur noch Stufe und Varianten-Anhang. */}
             <ThemedText type="small" themeColor="textSecondary">
-              {situation.level}
+              {t(levelLabelKey(situation.level))}
               {variantSuffix}
             </ThemedText>
           </View>

@@ -628,7 +628,7 @@ const pt = {
   "chapter.finish": "Marcar capítulo como concluído",
   "chapter.all": "Todos os capítulos",
   "chapter.doneCount": "{{done}} de {{total}} concluídos",
-  "advanced.title": "Prática B1 · início",
+  "advanced.title": "Experiente",
   "advanced.intro": "Um texto mais longo, perguntas e a sua resposta. Este exercício não certifica um nível do QECR.",
   "advanced.listen": "Ouvir a parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz do sistema, se disponível; a pronúncia não foi verificada.",
@@ -655,6 +655,11 @@ const pt = {
   "learning.perfect": "O passado pode ser irregular. Alemão: haben/sein + particípio.",
   "learning.serEstar": "Ser: identidade/características. Estar: estado/localização.",
   "roleplay.answer": "Sua resposta",
+  "level.beginner": "Iniciante",
+  "level.experienced": "Experiente",
+  "level.pro": "Especialista",
+  "level.choose": "Nível de aprendizagem",
+  "studio.localText": "Modelo de texto local · sem chave API",
 } as const;
 
 export default pt;

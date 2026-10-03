@@ -628,7 +628,7 @@ const ja = {
   "chapter.finish": "章を完了にする",
   "chapter.all": "すべての章",
   "chapter.doneCount": "全{{total}}章中{{done}}章完了",
-  "advanced.title": "B1練習・入門",
+  "advanced.title": "経験者",
   "advanced.intro": "少し長い文章を読み、質問に答え、自分の答えを書きます。この練習はCEFRレベルの認定ではありません。",
   "advanced.listen": "{{total}}のうち{{index}}番目を聞く",
   "advanced.audioNote": "利用可能な場合は端末の音声を使用します。発音は検証されていません。",
@@ -655,6 +655,11 @@ const ja = {
   "learning.perfect": "過去形は不規則な場合があります。ドイツ語：haben/sein + 分詞。",
   "learning.serEstar": "Ser：身元や特徴。Estar：状態や場所。",
   "roleplay.answer": "あなたの回答",
+  "level.beginner": "初心者",
+  "level.experienced": "経験者",
+  "level.pro": "上級者",
+  "level.choose": "学習レベル",
+  "studio.localText": "ローカルテキストモデル · APIキー不要",
 } as const;
 
 export default ja;

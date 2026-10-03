@@ -628,7 +628,7 @@ const fr = {
   "chapter.finish": "Marquer le chapitre comme terminé",
   "chapter.all": "Tous les chapitres",
   "chapter.doneCount": "{{done}} sur {{total}} terminés",
-  "advanced.title": "Exercice B1 · début",
+  "advanced.title": "Expérimenté",
   "advanced.intro": "Un texte plus long, des questions et votre propre réponse. Cet exercice ne certifie pas un niveau du CECR.",
   "advanced.listen": "Écouter la partie {{index}} sur {{total}}",
   "advanced.audioNote": "Voix du système si disponible ; la prononciation n'est pas vérifiée.",
@@ -655,6 +655,11 @@ const fr = {
   "learning.perfect": "Le passé peut être irrégulier. Allemand : haben/sein + participe.",
   "learning.serEstar": "Ser : identité/caractéristiques. Estar : état/lieu.",
   "roleplay.answer": "Votre réponse",
+  "level.beginner": "Débutant",
+  "level.experienced": "Expérimenté",
+  "level.pro": "Expert",
+  "level.choose": "Niveau d’apprentissage",
+  "studio.localText": "Modèle de texte local · sans clé API",
 } as const;
 
 export default fr;

@@ -7,6 +7,12 @@ Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 
 ## [Unveröffentlicht] – 03.10.2026
 
+### Lokale Textanbieter und verständliche Lernstufen — separat vorbereitet
+
+- Qwen3.5-9B Q5_K_M und Gemma 4 12B IT Q4_K_M als zusätzliche lokale Anbieter für Wortschatz, Prüfung und Gespräche. Loopback-Helper, begrenzte JSON-Ausgaben und Fehler bei falschem Modell/abgeschnittener Antwort; keine Cloud-Ausweichlogik. Setup mit geprüften Modelldateien und Start mit höchstens einem geladenen Textmodell. Audio unverändert.
+- Anfänger, Erfahren und Profi in allen 20 App-Sprachen, mit interner A/B/C-Zuordnung. Vokabeln tragen die neue Gruppe; Ziele zählen gruppenweise. Gesprächspläne und Prompts passen zur Gruppe. Kapitel, Dialoge, Lesetexte und Vertiefung zeigen verständliche Namen. Alte Inhalte/IDs bleiben kompatibel; offizielle Goethe-Namen unverändert, B2 weiter zuletzt.
+- Während des aktiven Bildlaufs ausschließlich im separaten Worktree vorbereitet. Aktivierung und echte Modellproben erst nach dem Bildlauf; keine Änderung am laufenden App-/Helper-Prozess.
+
 ### Endnutzerkorrekturen und lokale Bilder
 
 - Lokale Bildgenerierung beschleunigt: ComfyUI verwaltet den Bild-Prompt-Encoder auf GPU mit Speicher-Auslagerung; 768×768 statt 1024×1024 vor der unveränderten 512-WebP-Ausgabe. Nur lokal entfällt die 800-ms-Pause; fertige Aufträge werden alle 250 ms abgeholt. Gemessene Motivproben etwa 3 s statt 14 s; Text- und Audiogenerierung unverändert.

@@ -1,3 +1,4 @@
+import { levelLabelKey } from '@/lib/learning-stages';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -153,7 +154,7 @@ export function ReadingTextsRunner({
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {eintrag.offen
-                  ? `${eintrag.situation.level} · ${t('texts.knownOf', {
+                  ? `${t(levelLabelKey(eintrag.situation.level))} · ${t('texts.knownOf', {
                       known: eintrag.bekannt,
                       total: eintrag.poolWoerter,
                     })}`

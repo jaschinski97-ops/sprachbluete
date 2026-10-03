@@ -628,7 +628,7 @@ const bn = {
   "chapter.finish": "অধ্যায় সম্পন্ন হিসেবে চিহ্নিত করুন",
   "chapter.all": "সব অধ্যায়",
   "chapter.doneCount": "{{total}}টির মধ্যে {{done}}টি সম্পন্ন",
-  "advanced.title": "B1 অনুশীলন · শুরু",
+  "advanced.title": "অভিজ্ঞ",
   "advanced.intro": "দীর্ঘ পাঠ, প্রশ্ন ও আপনার নিজের উত্তর। এই অনুশীলন CEFR স্তরের সনদ নয়।",
   "advanced.listen": "{{total}}টির মধ্যে {{index}} নম্বর অংশ শুনুন",
   "advanced.audioNote": "পাওয়া গেলে সিস্টেমের কণ্ঠ; উচ্চারণ যাচাই করা হয়নি।",
@@ -655,6 +655,11 @@ const bn = {
   "learning.perfect": "অতীতকাল অনিয়মিত হতে পারে। জার্মান: haben/sein + কৃদন্ত।",
   "learning.serEstar": "Ser: পরিচয় বা বৈশিষ্ট্য। Estar: অবস্থা বা অবস্থান।",
   "roleplay.answer": "আপনার উত্তর",
+  "level.beginner": "শিক্ষানবিশ",
+  "level.experienced": "অভিজ্ঞ",
+  "level.pro": "দক্ষ",
+  "level.choose": "শেখার স্তর",
+  "studio.localText": "স্থানীয় টেক্সট মডেল · API কী লাগে না",
 } as const;
 
 export default bn;

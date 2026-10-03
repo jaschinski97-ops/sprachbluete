@@ -628,7 +628,7 @@ const hi = {
   "chapter.finish": "अध्याय को पूरा चिह्नित करें",
   "chapter.all": "सभी अध्याय",
   "chapter.doneCount": "{{total}} में से {{done}} पूरे",
-  "advanced.title": "B1 अभ्यास · शुरुआत",
+  "advanced.title": "अनुभवी",
   "advanced.intro": "लंबा पाठ, प्रश्न और आपका अपना उत्तर। यह अभ्यास CEFR स्तर प्रमाणित नहीं करता।",
   "advanced.listen": "भाग {{index}} / {{total}} सुनें",
   "advanced.audioNote": "उपलब्ध हो तो सिस्टम की आवाज़; उच्चारण की जाँच नहीं हुई है।",
@@ -655,6 +655,11 @@ const hi = {
   "learning.perfect": "भूतकाल अनियमित हो सकता है। जर्मन: haben/sein + कृदंत।",
   "learning.serEstar": "Ser: पहचान या गुण। Estar: अवस्था या स्थान।",
   "roleplay.answer": "आपका उत्तर",
+  "level.beginner": "शुरुआती",
+  "level.experienced": "अनुभवी",
+  "level.pro": "विशेषज्ञ",
+  "level.choose": "सीखने का स्तर",
+  "studio.localText": "स्थानीय टेक्स्ट मॉडल · API कुंजी की जरूरत नहीं",
 } as const;
 
 export default hi;

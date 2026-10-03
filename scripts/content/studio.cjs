@@ -3,6 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { Readable } = require('node:stream');
 const { generateLocalImage } = require('./local-image.cjs');
+const { generateLocalText } = require('./local-text.cjs');
 const { ContentPipeline } = require('./pipeline.cjs');
 const { tryWriteProtocol } = require('../pipeline/protocol.cjs');
 const { loadEnvLocal } = require('../pipeline/env.cjs');
@@ -178,6 +179,14 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
         catch (error) { if (error.code !== 'ENOENT') throw error; bytes = await fs.readFile(path.join(root, 'assets/content', name)); }
         res.writeHead(200, { 'Content-Type': name.endsWith('.mp3') ? 'audio/mpeg' : 'image/' + name.split('.').pop(), 'Content-Length': bytes.length });
         res.end(bytes); return;
+      }
+      if (req.method === 'POST' && req.url === '/api/local/text') {
+        if (!originAllowed(req.headers.origin) || req.headers['content-type'] !== 'application/json') { json(403, {error:'Nur die lokale Entwickler-App darf Texte erzeugen.'}); return; }
+        let size=0; const parts=[];
+        for await (const chunk of req) { size+=chunk.length; if(size>1024*1024){json(413,{error:'Textauftrag zu groß.'});return;}parts.push(chunk); }
+        const data=JSON.parse(Buffer.concat(parts).toString('utf8'));
+        const operation=queue.then(()=>generateLocalText(data)); queue=operation.catch(()=>{});
+        json(200, await operation); return;
       }
       if (req.method === 'POST' && req.url === '/api/comfyui/image') {
         if (!originAllowed(req.headers.origin) || req.headers['content-type'] !== 'application/json') { json(403, { error: 'Nur die lokale Entwickler-App darf Bilder erzeugen.' }); return; }

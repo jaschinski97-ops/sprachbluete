@@ -628,7 +628,7 @@ const mr = {
   "chapter.finish": "धडा पूर्ण म्हणून चिन्हांकित करा",
   "chapter.all": "सर्व धडे",
   "chapter.doneCount": "{{total}} पैकी {{done}} पूर्ण",
-  "advanced.title": "B1 सराव · सुरुवात",
+  "advanced.title": "अनुभवी",
   "advanced.intro": "मोठा मजकूर, प्रश्न आणि तुमचे स्वतःचे उत्तर. हा सराव CEFR स्तराचे प्रमाणपत्र नाही.",
   "advanced.listen": "{{total}} पैकी भाग {{index}} ऐका",
   "advanced.audioNote": "उपलब्ध असल्यास प्रणालीचा आवाज; उच्चार तपासलेले नाहीत.",
@@ -655,6 +655,11 @@ const mr = {
   "learning.perfect": "भूतकाळ अनियमित असू शकतो. जर्मन: haben/sein + कृदंत.",
   "learning.serEstar": "Ser: ओळख किंवा गुण. Estar: स्थिती किंवा स्थान.",
   "roleplay.answer": "तुमचे उत्तर",
+  "level.beginner": "नवशिक्या",
+  "level.experienced": "अनुभवी",
+  "level.pro": "तज्ज्ञ",
+  "level.choose": "शिकण्याची पातळी",
+  "studio.localText": "स्थानिक मजकूर मॉडेल · API की आवश्यक नाही",
 } as const;
 
 export default mr;

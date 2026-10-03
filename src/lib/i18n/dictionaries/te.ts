@@ -628,7 +628,7 @@ const te = {
   "chapter.finish": "అధ్యాయం పూర్తయిందని గుర్తించండి",
   "chapter.all": "అన్ని అధ్యాయాలు",
   "chapter.doneCount": "{{total}}లో {{done}} పూర్తయ్యాయి",
-  "advanced.title": "B1 అభ్యాసం · ప్రారంభం",
+  "advanced.title": "అనుభవజ్ఞుడు",
   "advanced.intro": "పొడవైన పాఠం, ప్రశ్నలు, మీ స్వంత సమాధానం. ఈ అభ్యాసం CEFR స్థాయిని ధృవీకరించదు.",
   "advanced.listen": "{{total}}లో {{index}}వ భాగం వినండి",
   "advanced.audioNote": "అందుబాటులో ఉంటే పరికర స్వరం; ఉచ్చారణ తనిఖీ కాలేదు.",
@@ -655,6 +655,11 @@ const te = {
   "learning.perfect": "గత రూపాలు క్రమరహితంగా ఉండవచ్చు. జర్మన్: haben/sein + పార్టిసిపల్.",
   "learning.serEstar": "Ser: గుర్తింపు లేదా లక్షణాలు. Estar: స్థితి లేదా ప్రదేశం.",
   "roleplay.answer": "మీ సమాధానం",
+  "level.beginner": "ప్రారంభ స్థాయి",
+  "level.experienced": "అనుభవజ్ఞుడు",
+  "level.pro": "నిపుణుడు",
+  "level.choose": "అభ్యాస స్థాయి",
+  "studio.localText": "స్థానిక టెక్స్ట్ మోడల్ · API కీ అవసరం లేదు",
 } as const;
 
 export default te;

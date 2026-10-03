@@ -185,6 +185,13 @@ export function createGeminiTextClient(apiKey: string, model: string): TextClien
 
 export function createTextClient(provider: ProviderId, apiKey: string, model: string): TextClient {
   switch (provider) {
+    case 'local-qwen':
+    case 'local-gemma':
+      return { provider, model, async complete(request) {
+        const payload = await postJson({ url:'http://localhost:8082/api/local/text', timeoutMs:600000,
+          headers:{}, body:{provider, model, ...request} });
+        return parseOpenAiText(payload, model);
+      }};
     case 'chatgpt':
       return createOpenAiTextClient(apiKey, model);
     case 'gemini':

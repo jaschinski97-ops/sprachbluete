@@ -753,7 +753,7 @@ const de = {
   "chapter.finish": "Kapitel als abgeschlossen markieren",
   "chapter.all": "Alle Kapitel",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
-  "advanced.title": "B1-Übung · Einstieg",
+  "advanced.title": "Erfahren",
   "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort. Diese Übung bescheinigt keine GER-Stufe.",
   "advanced.listen": "Abschnitt {{index}} von {{total}} anhören",
   "advanced.audioNote": "Systemstimme, falls vorhanden; die Aussprache ist nicht geprüft.",
@@ -780,6 +780,11 @@ const de = {
   "learning.perfect": "Vergangenheitsformen können unregelmäßig sein. Deutsch: haben/sein + Partizip.",
   "learning.serEstar": "Ser: Identität/Eigenschaften. Estar: Zustand/Ort.",
   "roleplay.answer": "Deine Antwort",
+  "level.beginner": "Anfänger",
+  "level.experienced": "Erfahren",
+  "level.pro": "Profi",
+  "level.choose": "Lernstufe",
+  "studio.localText": "Lokales Textmodell · kein API-Schlüssel",
 } as const;
 
 export default de;

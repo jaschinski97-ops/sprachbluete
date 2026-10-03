@@ -1,3 +1,6 @@
+import { LearningStagePicker } from '@/components/learning-stage-picker';
+import { type LearningStage, STAGE_KEYS } from '@/lib/learning-stages';
+import { useLocale } from '@/lib/i18n';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
@@ -155,7 +158,7 @@ function baueWortschatzPrompt(options: {
   ].join('\n');
 }
 
-type StudioDokument = { language?: string; term?: string };
+type StudioDokument = { language?: string; term?: string; learningStage?: LearningStage };
 type StudioBestand = { zahlen: Partial<Record<string, number>>; dokumente: StudioDokument[] };
 
 /** Zustand vom HELPER (Katalog auf der Platte + Stage) — der gebündelte
@@ -179,6 +182,8 @@ async function leseStudioBestand(): Promise<StudioBestand> {
 export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }: { onFinished: () => void; onRunningChange?: (running: boolean) => void; blocked?: boolean }) {
   const theme = useTheme();
   const toneColor = useToneColor();
+  const { t } = useLocale();
+  const [stage, setStage] = useState<LearningStage>('beginner');
   const [sprache, setSprache] = useState<VocabSprache>('th');
   const [alleSprachen, setAlleSprachen] = useState(false);
   const [ziele, setZiele] = useState<Partial<Record<string, number>>>({});
@@ -215,9 +220,9 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
 
   const ladeBestand = useCallback(async (): Promise<StudioBestand> => {
     const bestand = await leseStudioBestand();
-    setBestand(bestand.zahlen);
+    setBestand(Object.fromEntries(SPRACHEN.map(({code}) => [code, bestand.dokumente.filter(d => d.language === code && (d.learningStage ?? 'beginner') === stage).length])));
     return bestand;
-  }, []);
+  }, [stage]);
 
   useEffect(() => {
     void Promise.resolve().then(ladeBestand).catch(error => setMeldung(error instanceof Error ? error.message : String(error)));
@@ -243,7 +248,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   };
   const zielSetzen = (wert: number) => zielSetzenFuer(sprache, wert);
 
-  const paket = Math.max(1, Number.parseInt(paketText, 10) || 50);
+  const paket = Math.max(1, Math.min(wahl.provider.startsWith('local-') ? 5 : Infinity, Number.parseInt(paketText, 10) || 50));
   /** Der nächste Lauf je Sprache — vom Paket und vom Sprach-Ziel begrenzt. */
   const mengeFuer = (code: VocabSprache) =>
     Math.min(paket, Math.max(0, (ziele[code] ?? 250) - (bestand?.[code] ?? 0)));
@@ -263,22 +268,25 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       const label = SPRACHEN.find(sprache => sprache.code === code)?.label ?? code;
       status(`${label}: Bestand wird geladen …`);
       const bestandJetzt = await ladeBestand();
-      const vorhandenJetzt = bestandJetzt.zahlen[code] ?? 0;
+      const vorhandenJetzt = bestandJetzt.dokumente.filter(d => d.language === code && (d.learningStage ?? 'beginner') === stage).length;
       const zielJetzt = ziele[code] ?? 250;
-      const anzahl = Math.min(paket, Math.max(0, zielJetzt - vorhandenJetzt));
+      const local = wahl.provider.startsWith('local-');
+      const anzahl = Math.min(local ? Math.min(paket, 5) : paket, Math.max(0, zielJetzt - vorhandenJetzt));
       if (anzahl <= 0) return null;
 
       const settings = await loadGeneratorSettings();
       const { provider, model, checkModel } = settings.vocabulary;
       const checkProvider = settings.vocabulary.checkProvider ?? provider;
       const apiKey = (await loadApiKey(provider)) ?? '';
-      if (!apiKey) throw Error('Bitte unter Anbieter & Schlüssel den Erzeuger-Schlüssel hinterlegen.');
+      if (!apiKey && PROVIDER_INFO[provider].needsKey !== false) throw Error('Bitte unter Anbieter & Schlüssel den Erzeuger-Schlüssel hinterlegen.');
       const client = createTextClient(provider, apiKey, model);
       // Der ausgewählte Prüfer und sein Modell gelten verbindlich.
       const schluessel: Partial<Record<string, string | null>> = {
         gemini: await loadApiKey('gemini'),
         chatgpt: await loadApiKey('chatgpt'),
         'chatgpt-helper': 'serverseitig',
+        'local-qwen': 'lokal',
+        'local-gemma': 'lokal',
       };
       if (!schluessel[checkProvider]) throw Error('Bitte unter Anbieter & Schlüssel den Prüfer-Schlüssel hinterlegen.');
       const hatSchluessel = (anbieter: string): boolean => Boolean(schluessel[anbieter]);
@@ -298,7 +306,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
         ...basis,
         complete: async (request) => {
           const antwort = await basis.complete(request);
-          if (antwort.usage) verbrauch.usd += paketUsd(basis.model, antwort.usage.inputTokens, antwort.usage.outputTokens);
+          if (antwort.usage && !basis.provider.startsWith('local-')) verbrauch.usd += paketUsd(basis.model, antwort.usage.inputTokens, antwort.usage.outputTokens);
           return antwort;
         },
       });
@@ -332,7 +340,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       const antwort = await zaehl(client).complete({
         system:
           'Du erzeugst Lernwortschatz als JSON und hältst dich EXAKT an das geforderte Schema. Keine Duplikate, keine Eigennamen, häufige Wörter zuerst.',
-        user: baueWortschatzPrompt({ sprache: code, anzahl, thema, bekannte, abgelehnt: blacklistBegriffe }),
+        user: baueWortschatzPrompt({ sprache: code, anzahl, thema, bekannte:local ? bekannte.slice(-500) : bekannte, abgelehnt: blacklistBegriffe.slice(-200) }) + '\nSchwierigkeitsgruppe: ' + stage + '. ' + (stage === 'beginner' ? 'Häufige grundlegende Wörter und kurze einfache Beispielsätze.' : stage === 'experienced' ? 'Wortschatz für selbstständige Alltagsgespräche, Meinungen, Arbeit; abwechslungsreiche Satzstrukturen.' : 'Differenzierter idiomatischer Wortschatz, abstrakte Themen und komplexe natürliche Beispielsätze. Keine seltenen Wörter nur um Schwierigkeit zu erzeugen.'),
         maxTokens: 32768,
       });
 
@@ -382,6 +390,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           // Quellenangabe — sonst lehnt der Publish das Wort ab (52
           // steckengebliebene Wörter, 16.09.). Die Kreuzprüfung steht in
           // der verificationNote, und das Wort läuft als „ungeprüft".
+          learningStage: stage,
           sourceVerified: false,
           verificationNote: 'KI-Erzeugung, einfach geprüft (Schema + Schrift + Regeln).',
           syllables: Array.isArray(kandidat.syllables) ? (kandidat.syllables as VocabEntry['syllables']) : [],
@@ -409,7 +418,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
         try {
           resultate = await pruefeVocabKreuzBatch(
             paket.map((kandidat) => kandidat.eintrag),
-            undefined,
+            t(STAGE_KEYS[stage]),
             provider,
             hatSchluessel,
             (anbieter) => zaehl(clientFuer(anbieter)),
@@ -471,7 +480,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       }
       resultat.usd = verbrauch.usd;
       return resultat;
-  }, [ziele, paket, thema, ladeBestand]);
+  }, [ziele, paket, thema, ladeBestand, stage, wahl.provider, t]);
 
   const erzeugen = async () => {
     if (starting.current || blocked) return;
@@ -610,7 +619,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
 
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
-      <ThemedText type="smallBold">Wortschatz — Zielgröße je Sprache</ThemedText>
+      <LearningStagePicker value={stage} onChange={value => { setBestand(null); setStage(value); }} disabled={running || blocked} />
+      <ThemedText type="smallBold">Wortschatz — {t(STAGE_KEYS[stage])} · Zielgröße je Sprache</ThemedText>
 
       <View style={styles.zeile}>
         {SPRACHEN.map(({ code, label }) => (

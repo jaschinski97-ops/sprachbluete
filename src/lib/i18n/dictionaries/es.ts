@@ -732,7 +732,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Marcar capítulo como completado",
   "chapter.all": "Todos los capítulos",
   "chapter.doneCount": "{{done}} de {{total}} completados",
-  "advanced.title": "Práctica B1 · inicio",
+  "advanced.title": "Experimentado",
   "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta. Este ejercicio no certifica un nivel del MCER.",
   "advanced.listen": "Escuchar la parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz del sistema si está disponible; la pronunciación no se ha verificado.",
@@ -759,6 +759,11 @@ const es: Partial<Record<TranslationKey, string>> = {
   "learning.perfect": "El pasado puede ser irregular. Alemán: haben/sein + participio.",
   "learning.serEstar": "Ser: identidad/características. Estar: estado/ubicación.",
   "roleplay.answer": "Tu respuesta",
+  "level.beginner": "Principiante",
+  "level.experienced": "Experimentado",
+  "level.pro": "Experto",
+  "level.choose": "Nivel de aprendizaje",
+  "studio.localText": "Modelo de texto local · sin clave API",
 };
 
 export default es;

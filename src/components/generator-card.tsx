@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocale } from '@/lib/i18n';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from './themed-text';
@@ -227,6 +228,7 @@ export function GeneratorCard({
   onFinished,
   allRun,
 }: Props) {
+  const { t } = useLocale();
   const theme = useTheme();
 
   const [advanced, setAdvanced] = useState(false);
@@ -562,7 +564,7 @@ export function GeneratorCard({
       </> : null}
       {managedKeys ? <View style={styles.field}>
         <ThemedText type="small" themeColor="textSecondary">{providerInfo.needsKey === false
-          ? provider === 'comfyui' ? 'Lokales FLUX-Modell · kein API-Schlüssel' : 'Schlüssel wird vom lokalen Helper bereitgestellt.'
+          ? provider === 'comfyui' ? 'Lokales FLUX-Modell · kein API-Schlüssel' : provider.startsWith('local-') ? t('studio.localText') : 'Schlüssel wird vom lokalen Helper bereitgestellt.'
           : keyStored ? `${providerInfo.vendor} · Schlüssel gespeichert` : `${providerInfo.vendor} · Noch kein Schlüssel`}</ThemedText>
         {providerInfo.needsKey !== false && onManageKeys ? <Button label="Anbieter & Schlüssel" onPress={() => onManageKeys?.()} disabled={running || blocked} /> : null}
       </View> : (

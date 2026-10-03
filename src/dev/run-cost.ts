@@ -7,6 +7,7 @@ export type RunEstimate = { count: number; usd: number | null; basis: string;
 export function estimateRunCost(group: GeneratorGroupId, provider: ProviderId, model: string,
   specs: { text?: string }[]): RunEstimate {
   const count = specs.length;
+  if (provider === 'local-qwen' || provider === 'local-gemma') return {count,usd:0,basis:'Lokale Textgenerierung ohne API-Gebühr; benötigt Zeit und Strom.'};
   const source = 'ai.google.dev/gemini-api/docs/pricing, 05.09.2026';
   if (!count) return { count, usd: 0, basis: 'Alle Einträge vorhanden; keine Anbieteraufrufe.' };
   if (provider === 'gemini' && group === 'audio' && model === 'gemini-3.1-flash-tts-preview') {

@@ -628,7 +628,7 @@ const id = {
   "chapter.finish": "Tandai bab selesai",
   "chapter.all": "Semua bab",
   "chapter.doneCount": "{{done}} dari {{total}} selesai",
-  "advanced.title": "Latihan B1 · awal",
+  "advanced.title": "Berpengalaman",
   "advanced.intro": "Teks lebih panjang, pertanyaan, dan jawabanmu sendiri. Latihan ini tidak menyatakan tingkat CEFR.",
   "advanced.listen": "Dengarkan bagian {{index}} dari {{total}}",
   "advanced.audioNote": "Suara sistem jika tersedia; pengucapan belum diperiksa.",
@@ -655,6 +655,11 @@ const id = {
   "learning.perfect": "Bentuk lampau dapat tidak beraturan. Jerman: haben/sein + partisip.",
   "learning.serEstar": "Ser: identitas/ciri. Estar: keadaan/lokasi.",
   "roleplay.answer": "Jawaban Anda",
+  "level.beginner": "Pemula",
+  "level.experienced": "Berpengalaman",
+  "level.pro": "Ahli",
+  "level.choose": "Tingkat belajar",
+  "studio.localText": "Model teks lokal · tanpa kunci API",
 } as const;
 
 export default id;

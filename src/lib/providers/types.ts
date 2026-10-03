@@ -47,7 +47,7 @@ import { SpeechLanguage } from '../audio';
  * (providers/settings.ts) fällt dann nachsichtig auf den Gruppen-Default
  * zurück (AE-25-Muster) — ein alter Speicherstand darf nicht crashen.
  */
-export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui'] as const;
+export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui', 'local-qwen', 'local-gemma'] as const;
 export type ProviderId = (typeof PROVIDERS)[number];
 
 /** Der Hörclip-Anbieter für den lokalen Helper des Studios. */
@@ -98,6 +98,14 @@ export type ProviderInfo = {
 };
 
 export const PROVIDER_INFO: Record<ProviderId, ProviderInfo> = {
+  'local-qwen': {
+    id:'local-qwen', label:'Qwen (lokal)', vendor:'Qwen', can:{text:true,image:false,audio:false}, needsKey:false,
+    keyPlaceholder:'', keySource:'Lokales Modell', modelPlaceholder:{text:'qwen3.5-9b',image:'',audio:''}, voicePlaceholder:'', webWarning:null,
+  },
+  'local-gemma': {
+    id:'local-gemma', label:'Gemma (lokal)', vendor:'Google', can:{text:true,image:false,audio:false}, needsKey:false,
+    keyPlaceholder:'', keySource:'Lokales Modell', modelPlaceholder:{text:'gemma-4-12b',image:'',audio:''}, voicePlaceholder:'', webWarning:null,
+  },
   comfyui: {
     id: 'comfyui', label: 'ComfyUI (lokal)', vendor: 'Black Forest Labs',
     can: { text: false, image: true, audio: false },

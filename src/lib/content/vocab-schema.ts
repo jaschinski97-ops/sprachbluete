@@ -67,6 +67,7 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
   // 'de' ist zulässig: der abgeleitete de-Pool trägt language 'de'.
   if (typeof d.language !== 'string' || !(DATASPRACHEN as readonly string[]).includes(d.language)) return false;
   if (typeof d.term !== 'string' || !d.term.trim()) return false;
+  if (d.learningStage !== undefined && !['beginner', 'experienced', 'pro'].includes(String(d.learningStage))) return false;
   if (typeof d.german !== 'string' || !d.german.trim()) return false;
   if (typeof d.romanization !== 'string' || !d.romanization.trim()) return false;
   if (typeof d.partOfSpeech !== 'string' || !PARTS.includes(d.partOfSpeech)) return false;

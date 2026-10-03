@@ -122,6 +122,8 @@ export const BYTES_PER_SECOND: Record<ProviderId, number | null> = {
   // Derselbe OpenAI-Weg wie `chatgpt`, nur über den Helper des Studios
   // geleitet — dasselbe mp3, also dieselbe Größenordnung.
   'chatgpt-helper': 6000,
+  'local-qwen': null,
+  'local-gemma': null,
   comfyui: null, // Image-only provider.
 };
 

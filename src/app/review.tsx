@@ -1,3 +1,4 @@
+import { levelLabelKey } from '@/lib/learning-stages';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { VocabEntry } from '@/data/vocab-types';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
@@ -521,7 +522,7 @@ function LearnPath({
             {finished.includes(chapter.id) ? t('chapter.completed') : t('path.next')}
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {t('chapter.position', { index: position, total: chapters.length, level: chapter.situation.level })}
+            {t('chapter.position', { index: position, total: chapters.length, level: t(levelLabelKey(chapter.situation.level)) })}
           </ThemedText>
           <ThemedText type="subtitle">{translated.title}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">{translated.setting}</ThemedText>
@@ -549,7 +550,7 @@ function LearnPath({
 
       {lessonOpen && chapter ? (
         <ThemedView type="backgroundElement" style={styles.lessonPanel}>
-          <ThemedText type="smallBold">{chapter.situation.level} · {translated?.title}</ThemedText>
+          <ThemedText type="smallBold">{t(levelLabelKey(chapter.situation.level))} · {translated?.title}</ThemedText>
           <ThemedText type="small">{translated?.setting}</ThemedText>
           <ThemedButton label={t('common.back')} onPress={() => setLessonOpen(false)} />
           <ThemedText type="smallBold">
@@ -601,7 +602,7 @@ function LearnPath({
               <ThemedView type={current ? 'backgroundSelected' : 'backgroundElement'} style={styles.chapterRow}>
                 <View style={styles.skillText}>
                   <ThemedText type="smallBold">
-                    {t('chapter.position', { index: index + 1, total: chapters.length, level: item.situation.level })}
+                    {t('chapter.position', { index: index + 1, total: chapters.length, level: t(levelLabelKey(item.situation.level)) })}
                   </ThemedText>
                   <ThemedText type="default">{label}</ThemedText>
                 </View>

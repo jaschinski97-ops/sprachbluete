@@ -628,7 +628,7 @@ const zh = {
   "chapter.finish": "标记本章已完成",
   "chapter.all": "所有章节",
   "chapter.doneCount": "已完成 {{done}} / {{total}} 章",
-  "advanced.title": "B1 练习 · 起步",
+  "advanced.title": "有经验者",
   "advanced.intro": "阅读较长文章、回答问题，并写出自己的答案。本练习不认证 CEFR 等级。",
   "advanced.listen": "收听第 {{index}} / {{total}} 部分",
   "advanced.audioNote": "如可用则使用设备语音；发音未经核验。",
@@ -655,6 +655,11 @@ const zh = {
   "learning.perfect": "过去式可能不规则。德语：haben/sein + 分词。",
   "learning.serEstar": "Ser：身份或特征。Estar：状态或位置。",
   "roleplay.answer": "你的回答",
+  "level.beginner": "初学者",
+  "level.experienced": "有经验者",
+  "level.pro": "高手",
+  "level.choose": "学习阶段",
+  "studio.localText": "本地文本模型 · 无需API密钥",
 } as const;
 
 export default zh;

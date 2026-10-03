@@ -628,7 +628,7 @@ const ur = {
   "chapter.finish": "باب مکمل نشان زد کریں",
   "chapter.all": "تمام ابواب",
   "chapter.doneCount": "{{total}} میں سے {{done}} مکمل",
-  "advanced.title": "B1 مشق · آغاز",
+  "advanced.title": "تجربہ کار",
   "advanced.intro": "طویل متن، سوالات اور آپ کا اپنا جواب۔ یہ مشق CEFR سطح کی سند نہیں دیتی۔",
   "advanced.listen": "حصہ {{index}} از {{total}} سنیں",
   "advanced.audioNote": "دستیاب ہو تو سسٹم کی آواز؛ تلفظ کی جانچ نہیں ہوئی۔",
@@ -655,6 +655,11 @@ const ur = {
   "learning.perfect": "ماضی بے قاعدہ ہو سکتا ہے۔ جرمن: haben/sein + فعل کی تیسری شکل۔",
   "learning.serEstar": "Ser: شناخت یا خصوصیات۔ Estar: حالت یا جگہ۔",
   "roleplay.answer": "آپ کا جواب",
+  "level.beginner": "ابتدائی",
+  "level.experienced": "تجربہ کار",
+  "level.pro": "ماہر",
+  "level.choose": "سیکھنے کی سطح",
+  "studio.localText": "مقامی ٹیکسٹ ماڈل · API کلید کی ضرورت نہیں",
 } as const;
 
 export default ur;

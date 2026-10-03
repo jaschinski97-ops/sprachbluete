@@ -65,7 +65,7 @@ export function userPrompt(spec: SituationSpec): string {
   return `Erstelle eine natürliche Dialogsituation zum Üben von ${name}.
 Thema: ${TOPIC_LABELS[spec.topic]}. Niveau: ${spec.level}. Variante: ${spec.variant}.
 6 bis 10 abwechselnde Gesprächszüge (speaker: learner oder partner), mindestens eine learner-Zeile.
-Benutze häufigen Alltagswortschatz, kurze vollständige Sätze, idiomatische Formulierungen.
+${spec.level.startsWith('A') ? 'Benutze häufigen Alltagswortschatz und kurze vollständige Sätze.' : spec.level.startsWith('B') ? 'Selbstständige Alltagsgespräche, Meinungen und Begründungen mit abwechslungsreicher Grammatik.' : 'Differenzierte Diskussion, präzise idiomatische Formulierungen und komplexe Satzstrukturen.'}
 Alle targetText-Zeilen sind ausschließlich auf ${name}, unabhängig vom Sprecher.
 ${LEARNING_LANGUAGES[language].dialogRules}
 german ist die deutsche Bedeutung. thai ist die Thai-Übersetzung (bei Thai gleich targetText).

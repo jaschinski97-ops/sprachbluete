@@ -712,7 +712,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
   "chapter.all": "ทุกบท",
   "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
-  "advanced.title": "แบบฝึก B1 · เริ่มต้น",
+  "advanced.title": "ผู้มีประสบการณ์",
   "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ แบบฝึกนี้ไม่ใช่การรับรองระดับภาษา",
   "advanced.listen": "ฟังส่วนที่ {{index}} จาก {{total}}",
   "advanced.audioNote": "ใช้เสียงของระบบหากมี ยังไม่ได้ตรวจสอบการออกเสียง",
@@ -739,6 +739,11 @@ const th: Partial<Record<TranslationKey, string>> = {
   "learning.perfect": "รูปอดีตอาจเปลี่ยนไม่เป็นกฎ ภาษาเยอรมันใช้ haben/sein + Partizip ใน Perfekt",
   "learning.serEstar": "Ser บอกตัวตนหรือลักษณะ ส่วน estar บอกสภาพหรือสถานที่",
   "roleplay.answer": "คำตอบของคุณ",
+  "level.beginner": "ผู้เริ่มต้น",
+  "level.experienced": "ผู้มีประสบการณ์",
+  "level.pro": "ผู้เชี่ยวชาญ",
+  "level.choose": "ระดับการเรียนรู้",
+  "studio.localText": "โมเดลข้อความในเครื่อง · ไม่ต้องใช้คีย์ API",
 };
 
 export default th;

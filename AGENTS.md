@@ -54,6 +54,9 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 ## Lokale Bilder
 
+- Lokale Textanbieter `local-qwen`/`local-gemma`: Setup/Start unter `scripts/content/*local-text*`, Einrichtung `docs/lokale-texte.md`. llama.cpp-Router auf 127.0.0.1:8090, höchstens ein Modell geladen. Textserver erst nach Bildlauf und Freigabe des GPU-Speichers starten; Audio bleibt unverändert.
+- Sichtbare Inhaltsgruppen Anfänger/Erfahren/Profi entsprechen intern A1/A2, B1/B2, C1/C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger. Goethe-Prüfungsnamen behalten ihre offiziellen Stufen.
+
 - Bildanbieter `comfyui`: FLUX.2 klein 4B distilled FP8, ComfyUI nur auf 127.0.0.1:8188, Helper 8082. Encoder-Gerät `default` (GPU mit ComfyUI-Auslagerung), 768-Pixel-Erzeugung → 512-WebP, vier Schritte, seriell ohne Cloud-Pause. Start: `scripts/content/start-local-images.ps1`; Einrichtung/Probelauf: `docs/lokale-bilder.md`. Runtime/Modelle unter `_Local/` sind gitignored.
 - Lokale Bildläufe legen nur Bildentwürfe im Stage ab; vor Veröffentlichung Motiv und 512-MiB-Gesamtbudget prüfen. Text und Audio behalten ihre bisherigen Anbieter. Goethe B2 ist bis nach der Bilderrunde zurückgestellt.
 

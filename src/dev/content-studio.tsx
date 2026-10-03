@@ -1,3 +1,5 @@
+import { LearningStagePicker } from '@/components/learning-stage-picker';
+import { STAGE_LEVELS, type LearningStage } from '@/lib/learning-stages';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ApiKeysCard } from '@/components/api-keys-card';
@@ -276,6 +278,7 @@ export default function ContentStudio() {
   // (X_to_de-Rückseiten, abgeleiteter de-Pool) — siehe `ALLE_SPRACHEN`.
   const [mediaLanguage, setMediaLanguage] = useState<Lang>('th');
 
+  const [situationStage, setSituationStage] = useState<LearningStage>('beginner');
   const refreshSituations = useCallback(async () => {
     const [count, nachRichtung] = await Promise.all([countSituations(), countSituationsByDirection()]);
     setSituations(count);
@@ -426,6 +429,7 @@ export default function ContentStudio() {
       (key) => planSituations({
         ...(optionId === 'full' ? FULL_RUN : { variantsPerCombo: 1 }),
         targetLanguage: key as LanguageCode,
+        levels: STAGE_LEVELS[situationStage],
       }),
       (specs) => missingSpecs(specs),
       maxNew
@@ -468,7 +472,7 @@ export default function ContentStudio() {
     await exportDrafts(setExportMessage);
     setReportRevision(value => value + 1);
   },
-    []
+    [situationStage]
   );
 
   const startImages = useCallback(
@@ -617,6 +621,7 @@ export default function ContentStudio() {
       {section === 'text' ? (
       <>
         <VocabZieleCard blocked={running} onRunningChange={setRunning} onFinished={() => { setReportRevision((v) => v + 1); void refreshStock(); }} />
+      <LearningStagePicker value={situationStage} onChange={setSituationStage} disabled={running} />
       <GeneratorCard
         blocked={running} managedKeys onRunningChange={setRunning}
         language={situationLanguage} onLanguageChange={setSituationLanguage}

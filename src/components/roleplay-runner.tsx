@@ -1,3 +1,4 @@
+import { levelLabelKey } from '@/lib/learning-stages';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
@@ -153,7 +154,7 @@ export function RoleplayRunner({
                   {situation.title}
                 </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  {situation.level} · {situation.setting}
+                  {t(levelLabelKey(situation.level))} · {situation.setting}
                 </ThemedText>
               </ThemedView>
             </Pressable>

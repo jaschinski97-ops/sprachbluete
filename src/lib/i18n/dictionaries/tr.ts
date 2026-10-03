@@ -628,7 +628,7 @@ const tr = {
   "chapter.finish": "Bölümü tamamlandı olarak işaretle",
   "chapter.all": "Tüm bölümler",
   "chapter.doneCount": "{{total}} bölümden {{done}} tanesi tamamlandı",
-  "advanced.title": "B1 alıştırması · başlangıç",
+  "advanced.title": "Deneyimli",
   "advanced.intro": "Daha uzun bir metin, sorular ve kendi yanıtın. Bu alıştırma CEFR düzeyi belgelemez.",
   "advanced.listen": "{{total}} bölümden {{index}}. bölümü dinle",
   "advanced.audioNote": "Varsa sistem sesi kullanılır; telaffuz doğrulanmadı.",
@@ -655,6 +655,11 @@ const tr = {
   "learning.perfect": "Geçmiş zaman düzensiz olabilir. Almanca: haben/sein + ortaç.",
   "learning.serEstar": "Ser: kimlik/özellik. Estar: durum/konum.",
   "roleplay.answer": "Yanıtınız",
+  "level.beginner": "Başlangıç",
+  "level.experienced": "Deneyimli",
+  "level.pro": "Uzman",
+  "level.choose": "Öğrenme seviyesi",
+  "studio.localText": "Yerel metin modeli · API anahtarı gerekmez",
 } as const;
 
 export default tr;

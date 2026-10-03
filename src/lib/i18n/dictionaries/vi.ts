@@ -628,7 +628,7 @@ const vi = {
   "chapter.finish": "Đánh dấu chương đã hoàn thành",
   "chapter.all": "Tất cả các chương",
   "chapter.doneCount": "Đã hoàn thành {{done}} / {{total}}",
-  "advanced.title": "Bài tập B1 · bắt đầu",
+  "advanced.title": "Có kinh nghiệm",
   "advanced.intro": "Một bài đọc dài hơn, câu hỏi và câu trả lời của bạn. Bài tập này không chứng nhận trình độ CEFR.",
   "advanced.listen": "Nghe phần {{index}} trên {{total}}",
   "advanced.audioNote": "Dùng giọng hệ thống nếu có; phát âm chưa được kiểm chứng.",
@@ -655,6 +655,11 @@ const vi = {
   "learning.perfect": "Dạng quá khứ có thể bất quy tắc. Tiếng Đức: haben/sein + phân từ.",
   "learning.serEstar": "Ser: danh tính/đặc điểm. Estar: trạng thái/vị trí.",
   "roleplay.answer": "Câu trả lời của bạn",
+  "level.beginner": "Người mới",
+  "level.experienced": "Có kinh nghiệm",
+  "level.pro": "Chuyên gia",
+  "level.choose": "Cấp độ học",
+  "studio.localText": "Mô hình văn bản cục bộ · không cần khóa API",
 } as const;
 
 export default vi;

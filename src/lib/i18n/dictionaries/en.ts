@@ -726,7 +726,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Mark chapter complete",
   "chapter.all": "All chapters",
   "chapter.doneCount": "{{done}} of {{total}} completed",
-  "advanced.title": "B1 practice · starting point",
+  "advanced.title": "Experienced",
   "advanced.intro": "A longer text, questions and your own answer. This exercise does not certify a CEFR level.",
   "advanced.listen": "Listen to part {{index}} of {{total}}",
   "advanced.audioNote": "System voice if available; pronunciation has not been checked.",
@@ -753,6 +753,11 @@ const en: Partial<Record<TranslationKey, string>> = {
   "learning.perfect": "Past forms can be irregular. German: haben/sein + participle.",
   "learning.serEstar": "Ser: identity/characteristics. Estar: state/location.",
   "roleplay.answer": "Your answer",
+  "level.beginner": "Beginner",
+  "level.experienced": "Experienced",
+  "level.pro": "Pro",
+  "level.choose": "Learning stage",
+  "studio.localText": "Local text model · no API key",
 };
 
 export default en;

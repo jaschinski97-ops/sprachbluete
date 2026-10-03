@@ -127,7 +127,7 @@ describe('Fähigkeiten der Anbieter', () => {
     // gefallen — die zwei verbliebenen decken Text, Bild und Audio ab.
     // `chatgpt-helper` ist kein Cloud-Anbieter, sondern der lokale Durchgang
     // des Inhaltsstudios (Roadmap v2, Phase 2) — nur für Sprachausgabe.
-    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui']);
+    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui', 'local-qwen', 'local-gemma']);
   });
 
   it('kennt die entfernten Anbieter nicht mehr', () => {
@@ -144,7 +144,7 @@ describe('Fähigkeiten der Anbieter', () => {
     expect(PROVIDER_INFO['chatgpt-helper'].needsKey).toBe(false);
     // Nur der Helper braucht keinen Schlüssel im Gerät.
     for (const id of PROVIDERS) {
-      if (id === 'chatgpt-helper' || id === 'comfyui') continue;
+      if (id === 'chatgpt-helper' || id === 'comfyui' || id.startsWith('local-')) continue;
       expect(PROVIDER_INFO[id].needsKey ?? true).toBe(true);
     }
   });

@@ -5638,3 +5638,15 @@ Nutzer hat den Vollbildlauf bei 23 erfolgreichen Bildern angehalten. Nur Bildweg
 
 Typprüfung, fokussiertes ESLint, fünf Helper-Tests bestanden; vollständige Jest-Suite zur Abschlussprüfung gestartet.
 Abschluss: Jest 98/98 Suites, 1264/1264 Tests bestanden (355 s); tsc und ESLint bestanden. Nur die Optimierungspfade sichern; Nutzer-Katalog und gelöschte Medien nicht mitnehmen.
+
+## 03.10.2026 — Lokale Texte und drei Lernstufen separat vorbereitet
+
+Auf Nutzerwunsch während des Bildlaufs ausschließlich im managed Worktree local-text-levels ab 18786103 gearbeitet. Aktiven Checkout, Metro 8081, Helper 8082 und ComfyUI nicht verändert. Modell-Setup installiert llama.cpp b11379 CUDA12.4 sowie Qwen3.5-9B Q5_K_M (6577841376 Byte) und Gemma 4 12B IT Q4_K_M (7662533088 Byte), HF-Revision/SHA256 geprüft, unter _Local/text. Kein Textmodell geladen/ausgeführt; Startschutz bei aktivem ComfyUI-Auftrag tatsächlich geprüft.
+
+Anbieter text-only/keyless; Helper-Route fest Loopback8090, Modellidentität und abgeschnittene Ausgabe geprüft, JSON-Modus, kein Cloud-Fallback. Router models-max1; Vokabelpakete lokal maximal5, lokale API-Kosten0. Neue Gruppen Anfänger=A1/A2, Erfahren=B1/B2, Profi=C1/C2, 20-Sprachen-Parität; Gesprächspläne/Prompts gruppenabhängig, neue Vokabeln learningStage mit gruppenweisen Zielzahlen. Alte IDs/Bestände bleiben, Goethe-Level bleiben fachlich korrekt, B2 zuletzt. Audio unverändert.
+
+Verifikation: erste vollständige Jest-Runde 99 Suites/1266 Tests grün; lokale Helper/Bild/Pipeline 22 Tests grün; tsc und fokussiertes ESLint grün. Browser in separater temporärer Vorschau auf 8083 mit eigenem Helper8084: Qwen/Gemma in Erzeuger und Prüfer, Profi/Erfahren-Auswahl, lokale Modellnamen und separate Zielzahlen sowie 5-Wort-Pakete sichtbar. Nach Browserkorrekturen gezielte Tests und Typen erneut prüfen. Temporäre Preview-Portänderungen vor Commit wieder entfernen; aktive Original-App nicht neu laden.
+
+Noch ausstehend: Nach Ende des Bildlaufs Code/Dokumentation pfadgenau übernehmen und gitignored Runtime/Modelle separat erhalten, erst dann Helper neu starten. Echte Qualität/Geschwindigkeit beider Textmodelle mit Studio-Prompts, insbesondere Thai und 20 Übersetzungen, noch nicht geprüft. Native iPhone-Abnahme offen.
+
+Abschluss nach Browserkorrekturen: tsc bestanden; gezielte Jest-Runde 7 Suites/92 Tests bestanden; Helper/Bild/Pipeline erneut 22 Tests bestanden. Breites ESLint der geänderten TS-Pfade: 4 Fehler/3 Warnungen in review, reading-texts-runner, roleplay-runner bereits im HEAD nachgewiesen (identische Regeln/Meldungen, nur Zeilenversatz); übrige Änderungspfade ohne Befund. Temporäre Vorschau beendet und Portänderungen entfernt. Aktiver Bildlauf zuletzt 768/3785, null Fehler; echte Textinferenz weiterhin ausstehend.

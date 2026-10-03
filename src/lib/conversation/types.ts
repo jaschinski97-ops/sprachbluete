@@ -19,7 +19,7 @@ import type { UiLanguage } from '../i18n/types';
  */
 
 export const LEVELS = ['A1', 'A2'] as const;
-export type Level = (typeof LEVELS)[number];
+export type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 /**
  * Sprachcode eines Gesprächs-Eintrags. Deutsch ist als Dialogsprache dabei,

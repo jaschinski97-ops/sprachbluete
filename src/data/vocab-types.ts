@@ -35,6 +35,7 @@ export type Register = 'neutral' | 'formal' | 'informal';
 
 export type VocabEntry = {
   id: string;
+  learningStage?: import('@/lib/learning-stages').LearningStage;
   /** Zeitpunkt einer KI-Erzeugung; feste Grundstock-Einträge brauchen keinen. */
   generatedAt?: number;
   /**

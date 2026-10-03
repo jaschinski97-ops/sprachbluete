@@ -628,7 +628,7 @@ const ko = {
   "chapter.finish": "이 장을 완료로 표시",
   "chapter.all": "전체 장",
   "chapter.doneCount": "{{total}}장 중 {{done}}장 완료",
-  "advanced.title": "B1 연습 · 시작",
+  "advanced.title": "경험자",
   "advanced.intro": "긴 글을 읽고 질문에 답한 뒤 직접 답을 씁니다. 이 연습은 CEFR 등급을 인증하지 않습니다.",
   "advanced.listen": "{{total}}개 중 {{index}}번째 부분 듣기",
   "advanced.audioNote": "가능하면 기기 음성을 사용합니다. 발음은 검증되지 않았습니다.",
@@ -655,6 +655,11 @@ const ko = {
   "learning.perfect": "과거형은 불규칙할 수 있습니다. 독일어: haben/sein + 분사.",
   "learning.serEstar": "Ser: 정체성이나 특성. Estar: 상태나 위치.",
   "roleplay.answer": "내 답변",
+  "level.beginner": "초보자",
+  "level.experienced": "경험자",
+  "level.pro": "전문가",
+  "level.choose": "학습 단계",
+  "studio.localText": "로컬 텍스트 모델 · API 키 불필요",
 } as const;
 
 export default ko;

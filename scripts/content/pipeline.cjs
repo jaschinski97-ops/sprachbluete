@@ -58,7 +58,7 @@ async function atomicJson(file, value) {
 }
 function assertDocument(kind, doc, vocabulary = []) {
   if (!KINDS.includes(kind) || !doc || !/^[a-zA-Z0-9_-]{1,180}$/.test(doc.id)) throw Error('Ungültige Inhaltsart oder ID.');
-  const valid = kind === 'situations' ? isValidSituation(doc) && ['A1','A2'].includes(doc.level) && ['greeting','market','restaurant','travel'].includes(doc.topic) && Number.isFinite(doc.generatedAt) && typeof doc.modelUsed === 'string' :
+  const valid = kind === 'situations' ? isValidSituation(doc) && ['A1','A2','B1','B2','C1','C2'].includes(doc.level) && ['greeting','market','restaurant','travel'].includes(doc.topic) && Number.isFinite(doc.generatedAt) && typeof doc.modelUsed === 'string' :
     kind === 'exam' ? isValidExamModule(doc) && doc.source === 'generated' :
     // 17.09.: 'chatgpt-helper' ergänzt — der Helper-Weg der Audio-Karte erzeugt
     // Clips mit genau diesem Provider; ohne ihn verwarf der Stage-Export jeden

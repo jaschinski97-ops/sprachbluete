@@ -628,7 +628,7 @@ const ru = {
   "chapter.finish": "Отметить главу завершённой",
   "chapter.all": "Все главы",
   "chapter.doneCount": "Завершено {{done}} из {{total}}",
-  "advanced.title": "Практика B1 · начало",
+  "advanced.title": "Опытный",
   "advanced.intro": "Более длинный текст, вопросы и ваш ответ. Это упражнение не подтверждает уровень CEFR.",
   "advanced.listen": "Прослушать часть {{index}} из {{total}}",
   "advanced.audioNote": "Системный голос, если доступен; произношение не проверено.",
@@ -655,6 +655,11 @@ const ru = {
   "learning.perfect": "Прошедшее время может быть неправильным. Немецкий: haben/sein + причастие.",
   "learning.serEstar": "Ser: личность/свойства. Estar: состояние/местоположение.",
   "roleplay.answer": "Ваш ответ",
+  "level.beginner": "Начинающий",
+  "level.experienced": "Опытный",
+  "level.pro": "Профи",
+  "level.choose": "Уровень обучения",
+  "studio.localText": "Локальная текстовая модель · без ключа API",
 } as const;
 
 export default ru;

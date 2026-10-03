@@ -6,7 +6,8 @@ const mockAudioUri = jest.fn(async (_key?: string): Promise<string | null> => nu
 jest.mock('@/lib/storage', () => ({ getStore: async () => ({ getAll: mockGetAll, put: mockPut }) }));
 jest.mock('@/lib/content/developer', () => ({ isContentDeveloper: () => true }));
 jest.mock('@/lib/clips/blob-store', () => ({ getAudioBlobStore: async () => ({ uri: mockAudioUri }) }));
-jest.mock('@/lib/images/blob-store', () => ({ getImageBlobStore: async () => ({ uri: async () => null }) }));
+const mockImageUri = jest.fn(async () => null as string | null);
+jest.mock('@/lib/images/blob-store', () => ({ getImageBlobStore: async () => ({ uri: mockImageUri }) }));
 
 test('invalid local records and missing media do not prevent later drafts from exporting', async () => {
   const originalFetch = global.fetch;
@@ -81,5 +82,28 @@ test('schlauer Export: unveränderte Stage-Zwillinge werden übersprungen, Neue 
     global.fetch = originalFetch;
     mockAudioUri.mockReset();
     mockAudioUri.mockImplementation(async () => null);
+  }
+});
+
+test('local image preview stages only images and never publishes existing stage or touches audio', async () => {
+  const originalFetch = global.fetch;
+  const urls: string[] = [];
+  global.fetch = jest.fn(async (url) => {
+    urls.push(String(url));
+    return { ok: true, json: async () => ({ shipped: { version: 2, entries: [] }, stage: { version: 2, entries: [] } }) } as Response;
+  });
+  mockGetAll.mockClear();
+  mockGetAll.mockImplementation(async () => [{ id: 'preview', blobKey: 'preview.webp' }]);
+  mockImageUri.mockResolvedValue('data:image/webp;base64,UklGRg==');
+  const progress = jest.fn();
+  try {
+    await exportDrafts(progress, { kinds: ['images'], publish: false });
+    expect(mockGetAll.mock.calls.map(call => call[0])).toEqual(['images']);
+    expect(urls.some(url => url.endsWith('/stage'))).toBe(true);
+    expect(urls.some(url => url.endsWith('/publish'))).toBe(false);
+    expect(progress.mock.calls.at(-1)?.[0]).toContain('Bildentwürfe im Stage');
+  } finally {
+    global.fetch = originalFetch;
+    mockImageUri.mockReset(); mockImageUri.mockResolvedValue(null);
   }
 });

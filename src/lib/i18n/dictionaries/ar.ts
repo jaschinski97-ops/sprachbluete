@@ -212,7 +212,7 @@ const ar = {
   "settings.development": "تطوير",
   "settings.studioDevOnly": "استوديو المطورين ينتمي فقط إلى بناء التطوير وليس جزءًا من التطبيق المثبت.",
   "settings.studioOrigin": "هذه النافذة تعمل خارج منفذ الاستوديو. افتح بناء التطوير على localhost:8081 لإنشاء المحتويات.",
-  "settings.materialCount": "{{count}} كلمات · تايلاندي، إنجليزي وإسباني",
+  "settings.materialCount": "{{count}} كلمات · {{languages}}",
   "settings.materialBody": "المواد التعليمية تتبع للتطبيق. كلمات جديدة، حوارات وتمارين تأتي مع تحديثات التطبيق. سيبقى تقدمك التعليمي على هذا الجهاز.",
   "settings.warningTitle": "تقدم التعلم سيتم حفظه فقط حتى إغلاق التطبيق",
   "settings.warningBody": "لم يتم فتح التخزين الدائم على هذا الجهاز. كل ما تتعلمه الآن سيفقد بعد إغلاق التطبيق. احفظ تقدمك أدناه كملف، طالما أنه لا يزال موجودًا.",
@@ -654,6 +654,7 @@ const ar = {
   "learning.past": "قد يكون الماضي غير منتظم.",
   "learning.perfect": "قد يكون الماضي غير منتظم. الألمانية: haben/sein + اسم المفعول.",
   "learning.serEstar": "Ser: الهوية أو الصفات. Estar: الحالة أو المكان.",
+  "roleplay.answer": "إجابتك",
 } as const;
 
 export default ar;

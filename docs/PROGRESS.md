@@ -5617,3 +5617,15 @@ Vier Lernziele und Thai→Deutsch geprüft. Kapitel nutzen Szenenwortschatz/-gra
 Verifikation: tsc grün; Jest 97 Suites/1260 Tests, gezielte Nachtests 12/178, Pipeline 14 Tests. Integrität errors=[] bei 22727 Einträgen. Produktions-Export iOS/Android/Web, keine Entwickler-/Anbieter-/Schlüsselmodule; 15197 Medienreferenzen/45591 identische Bytevergleiche. Browser 390×844 und vier Lernziele stichprobenartig geprüft. Thai-Zeichentasten nach Browserfund auf targets[0] korrigiert und erneut typgeprüft/exportiert.
 
 Restarbeit: native iPhone-Kompilierung/Signierung und physisches Audio-/Flugmodus-Testing, geprüfte B1-Clips/Sprachprüfung; Vollplanlücken 4868 Audio/3745 Bilder/996 Situationen, 2010 Thai-Audios unchecked; bestehende Lintfehler 29/50 Warnungen, npm 15 moderate. Kein bezahlter KI-Lauf, Cloud-Build, Push oder Upload. Details: docs/release-candidate-2026-09-30.md; lokales Quellarchiv und Manifest unter build-verification/rc-2026-09-30/.
+
+## 03.10.2026 — Erneute Endnutzerprüfung und lokale Bildproben
+
+Fünf Befunde der erneuten Lernrunde korrigiert: Latin-Lesequiz ohne Roman-Felder; kompakte Kapitel; eigene Rollenspielantwort neben Muster; B1-Verständnisfragen im Tageslog ohne FSRS; vier Lernsprachen in App-Info. Goethe B2 ausdrücklich ausgelassen.
+
+ComfyUI 0.38.0 portable lokal installiert; FLUX.2 klein 4B distilled FP8, Qwen-Encoder auf CPU, Batch 1. Helper-Bildroute nur Loopback/App-Origin, ohne Schlüssel/Cloud-Fallback; neue Bilder als 512×512-WebP. Drei 1024-PNG-Proben: Apfel 20,5 s, Stuhl/Fahrrad je 16,3 s. Zwei Studio-Aufträge je ein Bild: Soße als PNG, Flugzeug als WebP (4626 Byte). Sichtprüfung: drei Grundmotive erkennbar, Stil variiert; Flugzeug sehr vereinfacht, vor Veröffentlichung Motiv prüfen. Ausgaben unter _Local/image-trial. Text-/Audioauswahl nicht verändert, nur Bilder im Browser auf ComfyUI umgestellt.
+
+Bestehender Stage hätte schon vor den Proben 707,7 MiB ergeben, ausgelieferter Katalog 411,1 MiB. Ein erster automatischer Publish scheiterte ohne Katalogänderung. Lokaler Bildweg exportiert jetzt ausschließlich Bildentwürfe ohne Publish; zweiter Browser-Lauf fertig, 1/1 erzeugt, null Exportfehler. Keine alten Entwürfe gelöscht oder automatisch ausgeliefert.
+
+Verifikation: tsc; Jest 98 Suites/1262 Tests, nach abschließender Exportkorrektur 3 Suites/58 Tests; lokale Helper-/WebP-Tests 5, Pipeline 14. Integrität: 22727 Einträge, errors=[], 431027734 Inhaltsbytes. Browser Thai→Deutsch: Rollenspielvergleich, Lesequiz (Optionen und Sprecher), Kapitel 390×844, vier Sprachen in App-Info; B1 zeigt heute 3 Übungen/100%, 0 Wiederholungen. Kein bezahlter KI-Lauf, Push oder App-Upload. Native iPhone-Abnahme bleibt offen; Produktions-Export dieser Nachkorrektur noch nicht erneut erstellt. Einrichtung: docs/lokale-bilder.md.
+
+Abschließend das neue CLI-Probeskript vollständig ausgeführt: drei 512-WebPs, je 14–15 s, 6/6/21 kB, alle visuell geprüft. Anbieter-Nachtest 49 Tests grün; gezieltes ESLint der neuen Logik ohne Befund.

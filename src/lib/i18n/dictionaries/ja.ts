@@ -212,7 +212,7 @@ const ja = {
   "settings.development": "開発",
   "settings.studioDevOnly": "開発者スタジオは開発ビルド専用で、インストールされたアプリの一部ではありません。",
   "settings.studioOrigin": "このウィンドウはスタジオポートの外で実行されています。コンテンツを生成するにはlocalhost:8081で開発ビルドを開いてください。",
-  "settings.materialCount": "{{count}} 語 · タイ語、英語、スペイン語",
+  "settings.materialCount": "{{count}} 語 · {{languages}}",
   "settings.materialBody": "学習素材はアプリに属します。新しい単語、対話、練習はアプリのアップデートで追加されます。あなたの学習進捗はこのデバイスに残ります。",
   "settings.warningTitle": "学習進捗はアプリを閉じるまで保存されます",
   "settings.warningBody": "このデバイスの永続的なストレージを開くことができませんでした。今学んでいるすべてはアプリを閉じると失われます。まだあるうちに下のファイルとして進捗をバックアップしてください。",
@@ -654,6 +654,7 @@ const ja = {
   "learning.past": "過去形は不規則な場合があります。",
   "learning.perfect": "過去形は不規則な場合があります。ドイツ語：haben/sein + 分詞。",
   "learning.serEstar": "Ser：身元や特徴。Estar：状態や場所。",
+  "roleplay.answer": "あなたの回答",
 } as const;
 
 export default ja;

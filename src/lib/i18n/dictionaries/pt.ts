@@ -212,7 +212,7 @@ const pt = {
   "settings.development": "Desenvolvimento",
   "settings.studioDevOnly": "O estúdio de desenvolvimento pertence apenas à versão de desenvolvimento e não faz parte do app instalado.",
   "settings.studioOrigin": "Esta janela está rodando fora da porta do estúdio. Abra a versão de desenvolvimento em localhost:8081 para gerar conteúdos.",
-  "settings.materialCount": "{{count}} palavras · Tailandês, Inglês e Espanhol",
+  "settings.materialCount": "{{count}} palavras · {{languages}}",
   "settings.materialBody": "O material de aprendizado pertence ao app. Novas palavras, diálogos e exercícios vêm com atualizações do app. Seu progresso de aprendizado permanece neste dispositivo.",
   "settings.warningTitle": "O progresso de aprendizado será salvo apenas até o fechamento do app",
   "settings.warningBody": "O armazenamento permanente neste dispositivo não pôde ser aberto. Tudo que você aprender agora será perdido após o fechamento do app. Salve seu progresso abaixo como um arquivo, enquanto ainda está disponível.",
@@ -654,6 +654,7 @@ const pt = {
   "learning.past": "O passado pode ser irregular.",
   "learning.perfect": "O passado pode ser irregular. Alemão: haben/sein + particípio.",
   "learning.serEstar": "Ser: identidade/características. Estar: estado/localização.",
+  "roleplay.answer": "Sua resposta",
 } as const;
 
 export default pt;

@@ -422,7 +422,7 @@ function WeakAreas({ stats, direction }: { stats: LearningStats; direction: Pair
           return (
             <View key={area.art} style={styles.weakRow}>
               <View style={styles.weakText}>
-                <ThemedText type="small">{modus ? modeLabel(modus, t) : area.art}</ThemedText>
+                <ThemedText type="small">{area.art === 'advanced' ? t('advanced.questions') : modus ? modeLabel(modus, t) : area.art}</ThemedText>
                 <View style={styles.meterTrack}>
                   <View style={[styles.meterFill, { width: `${Math.round(quote * 100)}%`, backgroundColor: farbe }]} />
                 </View>

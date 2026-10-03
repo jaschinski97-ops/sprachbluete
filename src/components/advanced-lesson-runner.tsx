@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ADVANCED_LESSONS } from '@/data/advanced-lessons';
@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { useLocale } from '@/lib/i18n';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus, stopPronunciation } from '@/lib/audio';
 import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
+import { recordDrill } from '@/lib/review-log';
 import { readMeta, writeMeta } from '@/lib/repository';
 import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
@@ -42,6 +43,8 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
   const [showModel, setShowModel] = useState(false);
   const [audioUnavailable, setAudioUnavailable] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const answerInFlight = useRef(false);
+  const [recordingAnswer, setRecordingAnswer] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,11 +87,24 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     })();
   }, [lesson.language]);
 
-  const nextQuestion = () => {
-    if (selected === lesson.questions[questionIndex].correctIndex) setCorrect((value) => value + 1);
-    setSelected(null);
-    if (questionIndex + 1 < lesson.questions.length) setQuestionIndex((value) => value + 1);
-    else setPhase('read');
+  const nextQuestion = async () => {
+    if (selected === null || answerInFlight.current) return;
+    answerInFlight.current = true;
+    setRecordingAnswer(true);
+    setSaveError(null);
+    try {
+      const answerCorrect = selected === lesson.questions[questionIndex].correctIndex;
+      await recordDrill(answerCorrect, Date.now(), undefined, 'advanced', direction);
+      if (answerCorrect) setCorrect((value) => value + 1);
+      setSelected(null);
+      if (questionIndex + 1 < lesson.questions.length) setQuestionIndex((value) => value + 1);
+      else setPhase('read');
+    } catch (error) {
+      setSaveError(String(error));
+    } finally {
+      answerInFlight.current = false;
+      setRecordingAnswer(false);
+    }
   };
 
   if (!ready) return <ThemedText type="small" themeColor="textSecondary">{t('round.assembling')}</ThemedText>;
@@ -139,7 +155,8 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
         </ThemedText>
         <ThemedText type="small">{lesson.questions[questionIndex].explanation}</ThemedText>
         {lesson.questions[questionIndex].roman ? <RomanLine text={lesson.questions[questionIndex].roman.explanation} /> : null}
-        <ThemedButton label={t('common.next')} onPress={nextQuestion} />
+        {saveError ? <ThemedText>{t('common.loadFailed', { message: saveError })}</ThemedText> : null}
+        <ThemedButton label={t('common.next')} disabled={recordingAnswer} onPress={() => { void nextQuestion(); }} />
       </> : null}
     </ThemedView> : null}
 

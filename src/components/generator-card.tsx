@@ -76,6 +76,7 @@ export type RunOption = {
   id: string;
   label: string;
   hint: string;
+  localHint?: string;
 };
 
 /**
@@ -561,7 +562,7 @@ export function GeneratorCard({
       </> : null}
       {managedKeys ? <View style={styles.field}>
         <ThemedText type="small" themeColor="textSecondary">{providerInfo.needsKey === false
-          ? 'Schlüssel wird vom lokalen Helper bereitgestellt.'
+          ? provider === 'comfyui' ? 'Lokales FLUX-Modell · kein API-Schlüssel' : 'Schlüssel wird vom lokalen Helper bereitgestellt.'
           : keyStored ? `${providerInfo.vendor} · Schlüssel gespeichert` : `${providerInfo.vendor} · Noch kein Schlüssel`}</ThemedText>
         {providerInfo.needsKey !== false && onManageKeys ? <Button label="Anbieter & Schlüssel" onPress={() => onManageKeys?.()} disabled={running || blocked} /> : null}
       </View> : (
@@ -621,7 +622,7 @@ export function GeneratorCard({
           ))}
         </ChoiceRow>
         <ThemedText type="small" themeColor="textSecondary">
-          {activeOption.hint}
+          {provider === 'comfyui' ? activeOption.localHint ?? activeOption.hint : activeOption.hint}
           {maxNew ? ` — begrenzt auf max. ${maxNew} neue` : ''}
         </ThemedText>
         <ThemedText type="small">Max. neue erzeugen</ThemedText>

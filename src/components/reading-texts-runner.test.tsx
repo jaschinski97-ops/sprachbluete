@@ -40,7 +40,10 @@ const mockSzene: ConversationSituation = {
 
 const mockKarten = () => VOCABULARY_TH.map((entry) => ({ vocabId: entry.id, state: 'review' }));
 jest.mock('@/lib/repository', () => ({
-  loadSituations: async () => [mockSzene],
+  loadSituations: async () => [mockSzene, {
+    ...mockSzene, id: 'latin-scene', direction: 'th_to_de', title: 'Latin scene',
+    scriptTurns: mockSzene.scriptTurns.map((turn, i) => ({ ...turn, german: ['Hallo', 'Mein Name ist Alex', 'Ich mag Kaffee', 'Danke'][i], roman: 'legacy-roman-' + i })),
+  }],
   loadCardStatesForDirection: async () => mockKarten(),
 }));
 jest.mock('@/lib/audio', () => ({
@@ -121,4 +124,24 @@ describe('ReadingTextsRunner — der ganze Weg', () => {
     expect(textVon(renderer)).not.toContain(d('sentence.correct'));
     expect(textVon(renderer)).not.toContain(d('drill.wrong'));
   });
+  it('hides legacy Roman text in both Latin quiz options and speaker prompts', async () => {
+    const renderer = await rendere(<ReadingTextsRunner direction="th_to_de" onExit={() => {}} />);
+    const press = async (label: string) => {
+      const button = renderer.root.findAll(n => n.props.accessibilityRole === 'button')
+        .find(n => String(n.props.accessibilityLabel).includes(label) || n.findAll(child => child.props.children === label).length > 0);
+      expect(button).toBeTruthy();
+      await act(async () => button!.props.onPress());
+    };
+    await press('Latin scene');
+    await press(d('texts.questionsTitle'));
+    expect(textVon(renderer)).not.toContain('legacy-roman-');
+    const option = renderer.root.findAll(n => n.props.accessibilityRole === 'button' && n.props.disabled === false &&
+      n.findAll(child => child.props.type === 'small').length > 0)[0];
+    await act(async () => option.props.onPress());
+    await press(d('common.next'));
+    expect(textVon(renderer)).toContain(d('texts.questionSpeaker'));
+    expect(textVon(renderer)).not.toContain('legacy-roman-');
+    await act(async () => renderer.unmount());
+  });
+
 });

@@ -212,7 +212,7 @@ const vi = {
   "settings.development": "Phát triển",
   "settings.studioDevOnly": "Studio phát triển chỉ thuộc về phiên bản phát triển và không phải là một phần của ứng dụng đã cài đặt.",
   "settings.studioOrigin": "Cửa sổ này chạy bên ngoài cổng Studio. Mở phiên bản phát triển trên localhost:8081 để tạo nội dung.",
-  "settings.materialCount": "{{count}} từ · Thái, Anh và Tây Ban Nha",
+  "settings.materialCount": "{{count}} từ · {{languages}}",
   "settings.materialBody": "Tài liệu học thuộc về ứng dụng. Từ mới, đối thoại và bài tập sẽ có trong các bản cập nhật ứng dụng. Tiến trình học của bạn sẽ được giữ trên thiết bị này.",
   "settings.warningTitle": "Tiến trình học chỉ được lưu cho đến khi đóng ứng dụng",
   "settings.warningBody": "Bộ nhớ vĩnh viễn trên thiết bị này không thể mở. Tất cả những gì bạn học bây giờ sẽ bị mất sau khi đóng ứng dụng. Hãy sao lưu tiến trình của bạn bên dưới dưới dạng tệp, khi nó còn ở đây.",
@@ -654,6 +654,7 @@ const vi = {
   "learning.past": "Dạng quá khứ có thể bất quy tắc.",
   "learning.perfect": "Dạng quá khứ có thể bất quy tắc. Tiếng Đức: haben/sein + phân từ.",
   "learning.serEstar": "Ser: danh tính/đặc điểm. Estar: trạng thái/vị trí.",
+  "roleplay.answer": "Câu trả lời của bạn",
 } as const;
 
 export default vi;

@@ -212,7 +212,7 @@ const tr = {
   "settings.development": "Geliştirme",
   "settings.studioDevOnly": "Geliştirici stüdyosu yalnızca geliştirme yapımı içindir ve kurulu uygulamanın bir parçası değildir.",
   "settings.studioOrigin": "Bu pencere stüdyo bağlantısının dışında çalışıyor. İçerik oluşturmak için localhost:8081'de geliştirme yapımını aç.",
-  "settings.materialCount": "{{count}} kelime · Tayca, İngilizce ve İspanyolca",
+  "settings.materialCount": "{{count}} kelime · {{languages}}",
   "settings.materialBody": "Öğrenme materyali uygulamaya aittir. Yeni kelimeler, diyaloglar ve alıştırmalar uygulama güncellemeleriyle gelir. Öğrenme ilerlemen bu cihazda kalır.",
   "settings.warningTitle": "Öğrenme ilerlemesi yalnızca uygulama kapatılana kadar kaydedilir",
   "settings.warningBody": "Bu cihazda kalıcı depolama açılamadı. Şu anda öğrendiğin her şey, uygulama kapatıldığında kaybolacaktır. Aşağıda ilerlemeni dosya olarak yedekle, henüz varken.",
@@ -654,6 +654,7 @@ const tr = {
   "learning.past": "Geçmiş zaman düzensiz olabilir.",
   "learning.perfect": "Geçmiş zaman düzensiz olabilir. Almanca: haben/sein + ortaç.",
   "learning.serEstar": "Ser: kimlik/özellik. Estar: durum/konum.",
+  "roleplay.answer": "Yanıtınız",
 } as const;
 
 export default tr;

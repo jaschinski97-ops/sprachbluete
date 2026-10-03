@@ -9,7 +9,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { useLocale } from '@/lib/i18n';
+import { languageDisplayName, useLocale } from '@/lib/i18n';
+import { LANGUAGE_CODES } from '@/lib/languages/types';
 import { activeVocabulary } from '@/data/active-vocabulary';
 
 /**
@@ -18,7 +19,7 @@ import { activeVocabulary } from '@/data/active-vocabulary';
  * nur Platz weggenommen hätten, weil man dort nichts an ihnen einstellt.
  */
 export default function AboutScreen() {
-  const { t } = useLocale();
+  const { t, uiLanguage } = useLocale();
   const theme = useTheme();
   const version = Constants.expoConfig?.version;
 
@@ -37,7 +38,7 @@ export default function AboutScreen() {
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{t('settings.version', { version: version ?? '—' })}</ThemedText>
         <ThemedText type="small">
-          {t('settings.materialCount', { count: activeVocabulary().length })}
+          {t('settings.materialCount', { count: activeVocabulary().length, languages: LANGUAGE_CODES.map(code => languageDisplayName(code, uiLanguage)).join(', ') })}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {t('settings.materialBody')}

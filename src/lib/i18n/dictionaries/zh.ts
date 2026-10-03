@@ -212,7 +212,7 @@ const zh = {
   "settings.development": "开发",
   "settings.studioDevOnly": "开发者工作室仅属于开发版本，不是已安装应用的一部分。",
   "settings.studioOrigin": "此窗口在工作室端口之外运行。请在localhost:8081上打开开发版本以生成内容。",
-  "settings.materialCount": "{{count}} 个单词 · 泰语、英语和西班牙语",
+  "settings.materialCount": "{{count}} 个单词 · {{languages}}",
   "settings.materialBody": "学习材料属于应用。新单词、对话和练习会随应用更新而来。你的学习进度保留在此设备上。",
   "settings.warningTitle": "学习进度仅在应用关闭前保存",
   "settings.warningBody": "此设备上的永久存储无法打开。你现在学习的所有内容在关闭应用后将丢失。请在下面将你的进度备份为文件，趁它还在。",
@@ -654,6 +654,7 @@ const zh = {
   "learning.past": "过去式可能不规则。",
   "learning.perfect": "过去式可能不规则。德语：haben/sein + 分词。",
   "learning.serEstar": "Ser：身份或特征。Estar：状态或位置。",
+  "roleplay.answer": "你的回答",
 } as const;
 
 export default zh;

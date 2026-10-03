@@ -18,7 +18,6 @@ import {
   createImageClient,
   IMAGE_ASPECT_RATIO,
   IMAGE_FORMAT,
-  IMAGE_MODEL,
   NEGATIVE_PROMPT,
 } from '../images/generator';
 import { planImages } from '../images/plan';
@@ -123,12 +122,12 @@ function fakeImageClient() {
 // ---------------------------------------------------------------------------
 
 describe('Fähigkeiten der Anbieter', () => {
-  it('führt genau die zwei Cloud-Anbieter und den Studio-Helper', () => {
+  it('führt zwei Cloud-Anbieter, Audio-Helper und lokalen Bildanbieter', () => {
     // NUTZERENTSCHEIDUNG 10.09.: Claude und Stability sind aus der Auswahl
     // gefallen — die zwei verbliebenen decken Text, Bild und Audio ab.
     // `chatgpt-helper` ist kein Cloud-Anbieter, sondern der lokale Durchgang
     // des Inhaltsstudios (Roadmap v2, Phase 2) — nur für Sprachausgabe.
-    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini']);
+    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui']);
   });
 
   it('kennt die entfernten Anbieter nicht mehr', () => {
@@ -145,13 +144,13 @@ describe('Fähigkeiten der Anbieter', () => {
     expect(PROVIDER_INFO['chatgpt-helper'].needsKey).toBe(false);
     // Nur der Helper braucht keinen Schlüssel im Gerät.
     for (const id of PROVIDERS) {
-      if (id === 'chatgpt-helper') continue;
+      if (id === 'chatgpt-helper' || id === 'comfyui') continue;
       expect(PROVIDER_INFO[id].needsKey ?? true).toBe(true);
     }
   });
 
-  it('bietet Bilder für beide Cloud-Anbieter an', () => {
-    expect(providersFor('image').map((info) => info.id)).toEqual(['chatgpt', 'gemini']);
+  it('bietet Bilder für Cloud-Anbieter und ComfyUI an', () => {
+    expect(providersFor('image').map((info) => info.id)).toEqual(['chatgpt', 'gemini', 'comfyui']);
   });
 
   it('bietet in jeder Gruppe nur Anbieter an, die die Aufgabe können', () => {
@@ -200,7 +199,7 @@ describe('Voreinstellungen nach der Anbieter-Entfernung (10.09.)', () => {
   });
 
   it('startet mit Gemini für Bilder', () => {
-    expect(defaultChoiceFor('images')).toEqual({ provider: 'gemini', model: IMAGE_MODEL });
+    expect(defaultChoiceFor('images')).toEqual({ provider: 'comfyui', model: 'flux-2-klein-4b-fp8' });
   });
 });
 
@@ -255,7 +254,7 @@ describe('Einstellungen je Generator-Gruppe', () => {
 
     expect(gelesen.situations).toEqual({ provider: 'gemini', model: 'gemini-9.9-pro' });
     // Die anderen Gruppen bleiben unberuehrt.
-    expect(gelesen.images.provider).toBe('gemini');
+    expect(gelesen.images.provider).toBe('comfyui');
   });
 
   it('zieht beim Anbieterwechsel den Modellnamen mit', async () => {
@@ -291,7 +290,7 @@ describe('Einstellungen je Generator-Gruppe', () => {
     // Ein gespeichertes „Bilder vom Helper" wuerde sonst bei jedem Lauf
     // scheitern, ohne dass in der Auswahl zu sehen waere, warum.
     expect(normalizeChoice({ provider: 'chatgpt-helper', model: 'x' }, 'images').provider).toBe(
-      'gemini'
+      'comfyui'
     );
   });
 
@@ -658,4 +657,15 @@ describe('Die Generatoren hinter der Abstraktion', () => {
     await expect(createImageClient(client).generate(gefaelscht)).rejects.toThrow(/nicht konkret/);
     expect(seen).toHaveLength(0);
   });
+});
+
+test('changing only images to local preserves audio, vocabulary and conversation choices', async () => {
+  const store = new MemoryDataStore(); await store.init();
+  await setGeneratorChoice('audio', { provider: 'chatgpt-helper', model: 'existing-tts', voice: 'onyx' }, store);
+  await setGeneratorChoice('vocabulary', { provider: 'chatgpt', model: 'existing-text' }, store);
+  await setGeneratorChoice('situations', { provider: 'gemini', model: 'existing-dialogue' }, store);
+  const before = await loadGeneratorSettings(store);
+  const after = await setGeneratorProvider('images', 'comfyui', store);
+  expect(after.images.provider).toBe('comfyui');
+  for (const group of ['audio', 'vocabulary', 'situations'] as const) expect(after[group]).toEqual(before[group]);
 });

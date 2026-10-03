@@ -65,10 +65,8 @@ export const GENERATOR_GROUP_INFO: Record<GeneratorGroupId, GeneratorGroupInfo> 
     id: 'images',
     label: 'Bilder',
     needs: 'image',
-    // NUTZERENTSCHEIDUNG 10.09.: Der Bild-Default Stability ist aus der
-    // Auswahl gefallen — Gemini ist der gemessene Bildweg aus dem Web-Build
-    // (AE-27-Nachmessung; ChatGPT-Bilder laufen über denselben CORS-Befund).
-    defaultProvider: 'gemini',
+    // Lokale Bilder, ohne Änderung der Text- oder Audio-Wahl.
+    defaultProvider: 'comfyui',
   },
   audio: {
     id: 'audio',

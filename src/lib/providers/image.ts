@@ -183,6 +183,19 @@ export function createImageProvider(
   model: string
 ): ImageClient {
   switch (provider) {
+    case 'comfyui':
+      return {
+        provider, model,
+        async create(request) {
+          const payload = await postJson({
+            url: 'http://localhost:8082/api/comfyui/image',
+            headers: {},
+            body: { prompt: withPromptFallbacks(request), model },
+            timeoutMs: 600_000,
+          });
+          return parseOpenAiImage(payload, 'webp', model);
+        },
+      };
     case 'gemini':
       return createGeminiImageProvider(apiKey, model);
     case 'chatgpt':

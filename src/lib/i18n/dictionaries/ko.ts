@@ -212,7 +212,7 @@ const ko = {
   "settings.development": "개발",
   "settings.studioDevOnly": "개발자 스튜디오는 개발 빌드에만 해당하며 설치된 앱의 일부가 아닙니다.",
   "settings.studioOrigin": "이 창은 스튜디오 포트 외부에서 실행됩니다. localhost:8081에서 개발 빌드를 열어 콘텐츠를 생성하세요.",
-  "settings.materialCount": "{{count}} 단어 · 태국어, 영어 및 스페인어",
+  "settings.materialCount": "{{count}} 단어 · {{languages}}",
   "settings.materialBody": "학습 자료는 앱에 포함되어 있습니다. 새로운 단어, 대화 및 연습은 앱 업데이트와 함께 제공됩니다. 당신의 학습 진행 상황은 이 장치에 유지됩니다.",
   "settings.warningTitle": "학습 진행 상황은 앱 종료 시까지 저장됩니다.",
   "settings.warningBody": "이 장치의 영구 저장소를 열 수 없습니다. 지금 배우는 모든 내용은 앱 종료 후 사라집니다. 아래에서 파일로 진행 상황을 백업하세요.",
@@ -654,6 +654,7 @@ const ko = {
   "learning.past": "과거형은 불규칙할 수 있습니다.",
   "learning.perfect": "과거형은 불규칙할 수 있습니다. 독일어: haben/sein + 분사.",
   "learning.serEstar": "Ser: 정체성이나 특성. Estar: 상태나 위치.",
+  "roleplay.answer": "내 답변",
 } as const;
 
 export default ko;

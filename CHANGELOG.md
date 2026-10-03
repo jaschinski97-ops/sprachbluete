@@ -5,6 +5,16 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 [`docs/arbeitsverlauf-bis-2026-09-25.md`](docs/arbeitsverlauf-bis-2026-09-25.md).
 
+## [Unveröffentlicht] – 03.10.2026
+
+### Endnutzerkorrekturen und lokale Bilder
+
+- Lesequiz zeigt Umschrift ausschließlich bei Thai, auch in Sprecherfragen und Auswahlantworten. Kapitel zeigen ihre sieben Übungsschritte ohne doppelte Beispiele und Regeln oberhalb der Übungen.
+- Rollenspiel hält getippte und erkannte Antworten beim Mustervergleich und der Selbsteinschätzung sichtbar; Beschriftung in allen 20 App-Sprachen.
+- B1-Verständnisfragen zählen im Tagesfortschritt, ohne FSRS-Wiederholung oder Bewertung freier Antworten. Doppelte Weiter-Klicks zählen nicht doppelt. App-Informationen nennen alle vier Lernsprachen aus der zentralen Liste.
+- ComfyUI als Bildanbieter ohne Schlüssel, mit lokalem FLUX.2 klein 4B distilled FP8, CPU-Textencoder und kompakten 512×512-WebP-Karten. Kein Cloud-Fallback. Lokale Bildläufe exportieren ausschließlich Bildentwürfe in den Stage; der bestehende, übergroße Stage wird nicht automatisch veröffentlicht. Text- und Audioauswahl bleiben unverändert.
+- Drei lokale Motivproben und zwei einzelne Studio-Läufe ausgeführt; Start- und Probeskript sowie Einrichtung unter `docs/lokale-bilder.md`. Goethe B2 bleibt ausdrücklich zurückgestellt.
+
 ## [Unveröffentlicht] – 30.09.2026
 
 ### Lernen und iPhone-Kandidat

@@ -201,7 +201,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   'settings.development': 'การพัฒนา',
   'settings.studioDevOnly': 'สตูดิโอนักพัฒนามีเฉพาะในตัวบิลด์สำหรับพัฒนา ไม่รวมอยู่ในแอปที่ติดตั้ง',
   'settings.studioOrigin': 'หน้าต่างนี้ไม่ได้เปิดที่พอร์ตของสตูดิโอ เปิดตัวบิลด์พัฒนาที่ localhost:8081 เพื่อสร้างเนื้อหา',
-  'settings.materialCount': '{{count}} คำ · ไทย อังกฤษ และสเปน',
+  'settings.materialCount': '{{count}} คำ · {{languages}}',
   'settings.materialBody':
     'เนื้อหาการเรียนมาพร้อมแอป คำ บทสนทนา และแบบฝึกใหม่มาพร้อมอัปเดต ความก้าวหน้าอยู่บนเครื่องนี้',
   'settings.warningTitle': 'ความก้าวหน้าเก็บได้จนถึงตอนปิดแอปเท่านั้น',
@@ -738,6 +738,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "learning.past": "รูปอดีตอาจเปลี่ยนไม่เป็นกฎ",
   "learning.perfect": "รูปอดีตอาจเปลี่ยนไม่เป็นกฎ ภาษาเยอรมันใช้ haben/sein + Partizip ใน Perfekt",
   "learning.serEstar": "Ser บอกตัวตนหรือลักษณะ ส่วน estar บอกสภาพหรือสถานที่",
+  "roleplay.answer": "คำตอบของคุณ",
 };
 
 export default th;

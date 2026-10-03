@@ -47,7 +47,7 @@ import { SpeechLanguage } from '../audio';
  * (providers/settings.ts) fällt dann nachsichtig auf den Gruppen-Default
  * zurück (AE-25-Muster) — ein alter Speicherstand darf nicht crashen.
  */
-export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini'] as const;
+export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui'] as const;
 export type ProviderId = (typeof PROVIDERS)[number];
 
 /** Der Hörclip-Anbieter für den lokalen Helper des Studios. */
@@ -98,6 +98,13 @@ export type ProviderInfo = {
 };
 
 export const PROVIDER_INFO: Record<ProviderId, ProviderInfo> = {
+  comfyui: {
+    id: 'comfyui', label: 'ComfyUI (lokal)', vendor: 'Black Forest Labs',
+    can: { text: false, image: true, audio: false },
+    keyPlaceholder: '', keySource: 'Lokales FLUX-Modell, kein API-Schlüssel',
+    modelPlaceholder: { text: '', image: 'flux-2-klein-4b-fp8', audio: '' },
+    voicePlaceholder: '', webWarning: null, needsKey: false,
+  },
   chatgpt: {
     id: 'chatgpt',
     label: 'ChatGPT',

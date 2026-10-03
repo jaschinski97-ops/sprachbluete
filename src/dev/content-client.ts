@@ -92,7 +92,10 @@ export function stableStringify(value: unknown): string {
 }
 
 /** One item at a time; never collect the complete PCM corpus in memory/JSON. */
-export async function exportDrafts(onProgress: (message: string) => void): Promise<void> {
+export async function exportDrafts(onProgress: (message: string) => void, options?: {
+  kinds?: readonly ('situations' | 'exam' | 'images' | 'audio')[];
+  publish?: boolean;
+}): Promise<void> {
   const state = await studioRequest<StudioState>('/state');
   setLiveCatalog(state.shipped);
   const db = await getStore();
@@ -117,6 +120,7 @@ export async function exportDrafts(onProgress: (message: string) => void): Promi
 
   const failures: string[] = [];
   for (const kind of ['situations', 'exam', 'images', 'audio'] as const) {
+    if (options?.kinds && !options.kinds.includes(kind)) continue;
     const docs = await db.getAll<unknown>(kind);
     for (const document of docs) {
       let id = '(ungültiger Eintrag)';
@@ -146,8 +150,8 @@ export async function exportDrafts(onProgress: (message: string) => void): Promi
       } catch (error) { failures.push(`${kind}:${id}: ${error instanceof Error ? error.message : String(error)}`); }
     }
   }
-  await studioRequest('/publish', {});
+  if (options?.publish !== false) await studioRequest('/publish', {});
   await studioRequest('/state');
-  onProgress(`${exported} exportiert · Prüfbericht aktualisiert · ${failures.length} Exportfehler` + (failures.length ? `\n${failures.join('\n')}` : ''));
+  onProgress(`${exported} exportiert · ${options?.publish === false ? 'Bildentwürfe im Stage; vor Veröffentlichung in der Diagnose prüfen' : 'Prüfbericht aktualisiert'} · ${failures.length} Exportfehler` + (failures.length ? `\n${failures.join('\n')}` : ''));
   if (failures.length) throw new Error(failures.join('\n'));
 }

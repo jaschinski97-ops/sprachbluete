@@ -119,6 +119,7 @@ function imageRunOptions(language: Lang): RunOption[] {
       id: 'full',
       label: 'Alle konkreten Vokabeln',
       hint: `${alle} Bilder (${LANGUAGE_LABELS[language]}) — kostet echtes Geld und dauert`,
+      localHint: `${alle} Bilder (${LANGUAGE_LABELS[language]}) — läuft lokal; benötigt Zeit und Strom`,
     },
   ];
 }
@@ -495,7 +496,7 @@ export default function ContentStudio() {
         // entsprechend größer sein.
         delayMs: 800,
       }));
-    await exportDrafts(setExportMessage);
+    await exportDrafts(setExportMessage, provider === 'comfyui' ? { kinds: ['images'], publish: false } : undefined);
     setReportRevision(value => value + 1);
   },
     []

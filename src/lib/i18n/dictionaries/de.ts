@@ -271,7 +271,7 @@ const de = {
   'settings.development': 'Entwicklung',
   'settings.studioDevOnly': 'Das Entwicklerstudio gehört nur zum Entwicklungsbau und ist nicht Teil der installierten App.',
   'settings.studioOrigin': 'Dieses Fenster läuft außerhalb des Studio-Ports. Öffne den Entwicklungsbau auf localhost:8081, um Inhalte zu erzeugen.',
-  'settings.materialCount': '{{count}} Wörter · Thai, Englisch und Spanisch',
+  'settings.materialCount': '{{count}} Wörter · {{languages}}',
   'settings.materialBody':
     'Lernmaterial gehört zur App. Neue Wörter, Dialoge und Übungen kommen mit App-Updates. Dein Lernfortschritt bleibt auf diesem Gerät.',
   'settings.warningTitle': 'Lernfortschritt wird nur bis zum Schließen der App gespeichert',
@@ -779,6 +779,7 @@ const de = {
   "learning.past": "Vergangenheitsformen können unregelmäßig sein.",
   "learning.perfect": "Vergangenheitsformen können unregelmäßig sein. Deutsch: haben/sein + Partizip.",
   "learning.serEstar": "Ser: Identität/Eigenschaften. Estar: Zustand/Ort.",
+  "roleplay.answer": "Deine Antwort",
 } as const;
 
 export default de;

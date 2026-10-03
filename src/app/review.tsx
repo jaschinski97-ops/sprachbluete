@@ -515,7 +515,7 @@ function LearnPath({
     <View style={styles.learnHome}>
       {chapters === null ? <ThemedText type="small" themeColor="textSecondary">
         {t('round.assembling')}
-      </ThemedText> : chapter && translated ? (
+      </ThemedText> : chapter && translated ? (lessonOpen ? null : (
         <ThemedView type="backgroundElement" style={styles.pathHero}>
           <ThemedText type="smallBold" themeColor="accent">
             {finished.includes(chapter.id) ? t('chapter.completed') : t('path.next')}
@@ -539,7 +539,7 @@ function LearnPath({
             variant="primary"
           />
         </ThemedView>
-      ) : <ThemedText type="small" themeColor="textSecondary">
+      )) : <ThemedText type="small" themeColor="textSecondary">
         {t('conversation.noneForDirection')}
       </ThemedText>}
 
@@ -551,18 +551,7 @@ function LearnPath({
         <ThemedView type="backgroundElement" style={styles.lessonPanel}>
           <ThemedText type="smallBold">{chapter.situation.level} · {translated?.title}</ThemedText>
           <ThemedText type="small">{translated?.setting}</ThemedText>
-          {chapter.situation.scriptTurns.slice(0, chapter.situation.level === 'A2' ? 4 : 2).map((turn, index) => (
-            <View key={index} style={styles.sentenceParts}>
-              <ThemedText>{spokenText(chapter.situation, turn)}</ThemedText>
-              {targetLanguageOf(direction) === 'th' ? <ThemedText type="small">{turn.roman}</ThemedText> : null}
-              <ThemedText type="small" themeColor="textSecondary">{translated?.turns[index]}</ThemedText>
-            </View>
-          ))}
-          {translated?.corrections.map((hint, index) => <View key={index}>
-            <ThemedText type="smallBold">{hint.issue}</ThemedText>
-            <ThemedText type="small">{hint.explanation}</ThemedText>
-          </View>)}
-          <ThemedText type="small" themeColor="textSecondary">{t('path.practiceNote')}</ThemedText>
+          <ThemedButton label={t('common.back')} onPress={() => setLessonOpen(false)} />
           <ThemedText type="smallBold">
             {t('chapter.words', { count: chapter.vocabulary.length })}
           </ThemedText>

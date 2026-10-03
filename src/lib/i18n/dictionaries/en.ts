@@ -204,7 +204,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   'settings.development': 'Development',
   'settings.studioDevOnly': 'The developer studio belongs to the development build only — it is not part of the installed app.',
   'settings.studioOrigin': 'This window is running outside the studio port. Open the development build on localhost:8081 to generate content.',
-  'settings.materialCount': '{{count}} words · Thai, English and Spanish',
+  'settings.materialCount': '{{count}} words · {{languages}}',
   'settings.materialBody':
     'Learning material belongs to the app. New words, dialogs and exercises arrive with app updates. Your learning progress stays on this device.',
   'settings.warningTitle': 'Progress is only saved until the app is closed',
@@ -752,6 +752,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   "learning.past": "Past forms can be irregular.",
   "learning.perfect": "Past forms can be irregular. German: haben/sein + participle.",
   "learning.serEstar": "Ser: identity/characteristics. Estar: state/location.",
+  "roleplay.answer": "Your answer",
 };
 
 export default en;

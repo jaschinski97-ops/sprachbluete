@@ -212,7 +212,7 @@ const fr = {
   "settings.development": "Développement",
   "settings.studioDevOnly": "Le studio de développement appartient uniquement à la version de développement et ne fait pas partie de l'application installée.",
   "settings.studioOrigin": "Cette fenêtre s'exécute en dehors du port du studio. Ouvre la version de développement sur localhost:8081 pour générer des contenus.",
-  "settings.materialCount": "{{count}} mots · Thaï, Anglais et Espagnol",
+  "settings.materialCount": "{{count}} mots · {{languages}}",
   "settings.materialBody": "Le matériel d'apprentissage appartient à l'application. De nouveaux mots, dialogues et exercices arrivent avec les mises à jour de l'application. Tes progrès d'apprentissage restent sur cet appareil.",
   "settings.warningTitle": "Les progrès d'apprentissage ne seront sauvegardés que jusqu'à la fermeture de l'application",
   "settings.warningBody": "Le stockage permanent sur cet appareil n'a pas pu être ouvert. Tout ce que tu apprends maintenant sera perdu après la fermeture de l'application. Sauvegarde tes progrès ci-dessous en tant que fichier, tant qu'ils sont encore là.",
@@ -654,6 +654,7 @@ const fr = {
   "learning.past": "Le passé peut être irrégulier.",
   "learning.perfect": "Le passé peut être irrégulier. Allemand : haben/sein + participe.",
   "learning.serEstar": "Ser : identité/caractéristiques. Estar : état/lieu.",
+  "roleplay.answer": "Votre réponse",
 } as const;
 
 export default fr;

@@ -57,6 +57,7 @@ const KEY_NAMES: Record<Provider, string> = {
   // auch wenn ihn niemand nützen sollte.
   'chatgpt-helper': 'openai-helper-api-key',
   gemini: 'gemini-api-key',
+  comfyui: 'comfyui-unused-key',
 };
 
 /** Nur für die laufende Sitzung, wenn keine sichere Ablage vorhanden ist. */
@@ -64,6 +65,7 @@ const sessionOnlyKeys: Record<Provider, string | null> = {
   chatgpt: null,
   'chatgpt-helper': null,
   gemini: null,
+  comfyui: null,
 };
 
 export type KeyStorageMode = 'secure-store' | 'local-dev' | 'session-only';

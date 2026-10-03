@@ -212,7 +212,7 @@ const ur = {
   "settings.development": "ترقی",
   "settings.studioDevOnly": "ڈویلپر اسٹوڈیو صرف ترقیاتی ورژن کا حصہ ہے اور انسٹال کردہ ایپ کا حصہ نہیں ہے۔",
   "settings.studioOrigin": "یہ ونڈو اسٹوڈیو پورٹ سے باہر چل رہی ہے۔ مواد پیدا کرنے کے لیے localhost:8081 پر ترقیاتی ورژن کھولیں۔",
-  "settings.materialCount": "{{count}} الفاظ · تھائی، انگریزی اور ہسپانوی",
+  "settings.materialCount": "{{count}} الفاظ · {{languages}}",
   "settings.materialBody": "سیکھنے کا مواد ایپ کا حصہ ہے۔ نئے الفاظ، مکالمے اور مشقیں ایپ کی تازہ کاریوں کے ساتھ آئیں گی۔ آپ کی سیکھنے کی ترقی اس ڈیوائس پر رہے گی۔",
   "settings.warningTitle": "سیکھنے کی ترقی صرف ایپ بند ہونے تک محفوظ کی جائے گی",
   "settings.warningBody": "اس ڈیوائس پر مستقل ذخیرہ نہیں کھولا جا سکا۔ جو کچھ آپ اب سیکھتے ہیں، وہ ایپ بند ہونے کے بعد ضائع ہو جائے گا۔ نیچے اپنی ترقی کو فائل کے طور پر محفوظ کریں، جب تک کہ یہ ابھی موجود ہے۔",
@@ -654,6 +654,7 @@ const ur = {
   "learning.past": "ماضی بے قاعدہ ہو سکتا ہے۔",
   "learning.perfect": "ماضی بے قاعدہ ہو سکتا ہے۔ جرمن: haben/sein + فعل کی تیسری شکل۔",
   "learning.serEstar": "Ser: شناخت یا خصوصیات۔ Estar: حالت یا جگہ۔",
+  "roleplay.answer": "آپ کا جواب",
 } as const;
 
 export default ur;

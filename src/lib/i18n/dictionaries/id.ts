@@ -212,7 +212,7 @@ const id = {
   "settings.development": "Pengembangan",
   "settings.studioDevOnly": "Studio pengembang hanya untuk versi pengembangan dan bukan bagian dari aplikasi yang terinstal.",
   "settings.studioOrigin": "Jendela ini berjalan di luar port studio. Buka versi pengembangan di localhost:8081 untuk menghasilkan konten.",
-  "settings.materialCount": "{{count}} kata · Thai, Inggris, dan Spanyol",
+  "settings.materialCount": "{{count}} kata · {{languages}}",
   "settings.materialBody": "Materi belajar adalah bagian dari aplikasi. Kata-kata baru, dialog, dan latihan akan datang dengan pembaruan aplikasi. Kemajuan belajarmu tetap di perangkat ini.",
   "settings.warningTitle": "Kemajuan belajar hanya disimpan hingga aplikasi ditutup",
   "settings.warningBody": "Penyimpanan permanen di perangkat ini tidak dapat dibuka. Semua yang kamu pelajari sekarang akan hilang setelah aplikasi ditutup. Amankan kemajuanmu di bawah ini sebagai file, selama masih ada.",
@@ -654,6 +654,7 @@ const id = {
   "learning.past": "Bentuk lampau dapat tidak beraturan.",
   "learning.perfect": "Bentuk lampau dapat tidak beraturan. Jerman: haben/sein + partisip.",
   "learning.serEstar": "Ser: identitas/ciri. Estar: keadaan/lokasi.",
+  "roleplay.answer": "Jawaban Anda",
 } as const;
 
 export default id;

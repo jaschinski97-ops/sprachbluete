@@ -242,7 +242,7 @@ function TextAnsicht({
         </>
       );
     }
-    return <FrageAnsicht key={frage.id} frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
+    return <FrageAnsicht key={frage.id} showRoman={sprache === 'th'} frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
   }
 
   return (
@@ -362,7 +362,7 @@ function TextAnsicht({
   );
 }
 
-function FrageAnsicht({ frage, weiter }: { frage: VerstaendnisFrage; weiter: () => void }) {
+function FrageAnsicht({ frage, weiter, showRoman }: { frage: VerstaendnisFrage; weiter: () => void; showRoman: boolean }) {
   const { t } = useLocale();
   const [gewaehlt, setGewaehlt] = useState<number | null>(null);
 
@@ -379,7 +379,7 @@ function FrageAnsicht({ frage, weiter }: { frage: VerstaendnisFrage; weiter: () 
       <ThemedText type="subtitle" maxFontSizeMultiplier={2}>
         {frage.frage}
       </ThemedText>
-      {frage.frageRoman && frage.frageRoman !== frage.frage ? (
+      {showRoman && frage.frageRoman && frage.frageRoman !== frage.frage ? (
         <ThemedText type="small" themeColor="textSecondary">{frage.frageRoman}</ThemedText>
       ) : null}
       <View style={styles.options}>
@@ -408,7 +408,7 @@ function FrageAnsicht({ frage, weiter }: { frage: VerstaendnisFrage; weiter: () 
                 numberOfLines={2}>
                 {option.label}
               </ThemedText>
-              {frage.optionenRoman?.[i] && frage.optionenRoman[i] !== option.label ? (
+              {showRoman && frage.optionenRoman?.[i] && frage.optionenRoman[i] !== option.label ? (
                 <ThemedText type="small" themeColor="textSecondary">{frage.optionenRoman[i]}</ThemedText>
               ) : null}
             </ThemedView>

@@ -266,7 +266,7 @@ function SzeneZeile({
     if (!erkenne) return;
     void (async () => {
       const text = await erkenne({ language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE' }[sprache], onHoeren: setHoert });
-      if (text) setErgebnis(compareDialogue(text, zeile.thai, sprache));
+      if (text) { setEingabe(text); setErgebnis(compareDialogue(text, zeile.thai, sprache)); }
       else setHoert(false);
     })();
   };
@@ -341,6 +341,11 @@ function SzeneZeile({
                     ? t('production.accentHint', { target: ergebnis.ziel })
                     : t('sentence.correct')}
               </ThemedText>
+              {eingabe.trim() ? <>
+                <ThemedText type="smallBold">{t('roleplay.answer')}</ThemedText>
+                <ThemedText>{eingabe}</ThemedText>
+              </> : null}
+              <ThemedText type="smallBold">{t('exam.modelAnswerTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {sprache === 'th' ? zeile.roman : ''}
@@ -355,6 +360,11 @@ function SzeneZeile({
           ) : null}
           {selbstOffen && ergebnis === null ? (
             <>
+              {eingabe.trim() ? <>
+                <ThemedText type="smallBold">{t('roleplay.answer')}</ThemedText>
+                <ThemedText>{eingabe}</ThemedText>
+              </> : null}
+              <ThemedText type="smallBold">{t('exam.modelAnswerTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {sprache === 'th' ? zeile.roman : ''}

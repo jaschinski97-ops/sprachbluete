@@ -22,7 +22,7 @@ Der Helper auf 8082 akzeptiert Bildaufträge nur von den beiden lokalen App-Orig
 node scripts/content/local-image-trial.cjs
 ```
 
-Drei kompakte 512×512-WebPs (erzeugt bei 1024×1024) mit Prompt/Modell/Laufzeit unter `_Local/image-trial/<Zeitstempel>/`. Kein Stage, Publish, Text- oder Audioaufruf. Erst Bildinhalt und Stil beurteilen, danach den größeren Studio-Lauf starten. Die Vorschau ersetzt keine Kontrolle komplexer Motive, Hände, Zahlen oder kultureller Details.
+Drei kompakte 512×512-WebPs (erzeugt bei 768×768) mit Prompt/Modell/Laufzeit unter `_Local/image-trial/<Zeitstempel>/`. Kein Stage, Publish, Text- oder Audioaufruf. Erst Bildinhalt und Stil beurteilen, danach den größeren Studio-Lauf starten. Die Vorschau ersetzt keine Kontrolle komplexer Motive, Hände, Zahlen oder kultureller Details.
 
 ## Einrichtung auf einem neuen Windows-PC
 
@@ -38,7 +38,7 @@ Nicht die Base- oder 9B-Variante nehmen. Das verwendete [4B-FP8-Modell](https://
 
 Der Helper komprimiert neue Bilder mit dem vorhandenen lokalen FFmpeg zu 512×512-WebP (Qualität 85); die PNG-Originale liegen weiterhin im ComfyUI-Ausgabeordner.
 
-Das ComfyUI-Core-Workflow nutzt vier Schritte, Euler, CFG 1, Batch 1 und den Textencoder auf CPU. Dadurch passen die Bildgewichte auf die RTX 3080 mit 12 GB VRAM. Der Qwen-Encoder braucht zusätzlich rund 8 GB Arbeitsspeicher. Dieser Encoder wird nur intern für Bild-Prompts verwendet; er ersetzt nicht die Textgenerierung der App.
+Das ComfyUI-Core-Workflow nutzt vier Schritte, Euler, CFG 1, Batch 1 und die Gerätewahl `default` für den Textencoder. ComfyUI verwaltet GPU und Speicher-Auslagerung; auf der RTX 3080 mit 12 GB VRAM erfolgreich geprüft. Dieser Encoder wird nur intern für Bild-Prompts verwendet; er ersetzt nicht die Textgenerierung der App. Lokale Aufträge bleiben seriell, ohne die zusätzliche Cloud-Pause. Der Helper fragt fertige Ergebnisse alle 250 ms ab.
 
 ## Messung vom 03.10.2026
 
@@ -49,3 +49,7 @@ Beim Studio-Probelauf war bereits vor dem Bild die Summe aus Stage und Katalog m
 Studio-Nachprobe: Flugzeugkarte als WebP mit 4626 Byte; Export als Entwurf erfolgreich. Das Motiv ist stark vereinfacht und braucht vor Veröffentlichung eine visuelle Prüfung.
 
 Der abschließende wiederholbare WebP-Probelauf brauchte 14,4/15,4/15,3 s (Apfel/Stuhl/Fahrrad), Dateien 6006/5996/20578 Byte. Visuell geprüft; Ausgaben: `_Local/image-trial/2026-10-03T16-59-59-898Z/`.
+
+### Geschwindigkeitsoptimierung am 03.10.2026
+
+Der Nutzer hat den Serienlauf bei 23 erfolgreich gespeicherten Bildern angehalten. Benchmark mit drei gleichen Motiven, festen Seeds und jeweils eigener Prompt-Verarbeitung: CPU/1024 13,4–14,6 s, GPU/1024 4,3–5,7 s, GPU/768 2,7–3,0 s, GPU/512 1,9–2,2 s. Keine Speicherfehler. 768 als Kompromiss übernommen; 512 erzeugt wurde nicht als Standard gewählt, um für komplexere Motive mehr Auflösung zu behalten. Alle Ausgaben bleiben 512-WebPs. Benchmark und Bildvergleich: `_Local/image-speed/2026-10-03T17-45-20-640Z/`. Werte sind kleine lokale Proben, keine Garantie für alle 3823 Motive. Bereits gespeicherte Bilder werden beim Fortsetzen übersprungen.

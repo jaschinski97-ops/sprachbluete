@@ -5629,3 +5629,12 @@ Bestehender Stage hätte schon vor den Proben 707,7 MiB ergeben, ausgelieferter 
 Verifikation: tsc; Jest 98 Suites/1262 Tests, nach abschließender Exportkorrektur 3 Suites/58 Tests; lokale Helper-/WebP-Tests 5, Pipeline 14. Integrität: 22727 Einträge, errors=[], 431027734 Inhaltsbytes. Browser Thai→Deutsch: Rollenspielvergleich, Lesequiz (Optionen und Sprecher), Kapitel 390×844, vier Sprachen in App-Info; B1 zeigt heute 3 Übungen/100%, 0 Wiederholungen. Kein bezahlter KI-Lauf, Push oder App-Upload. Native iPhone-Abnahme bleibt offen; Produktions-Export dieser Nachkorrektur noch nicht erneut erstellt. Einrichtung: docs/lokale-bilder.md.
 
 Abschließend das neue CLI-Probeskript vollständig ausgeführt: drei 512-WebPs, je 14–15 s, 6/6/21 kB, alle visuell geprüft. Anbieter-Nachtest 49 Tests grün; gezieltes ESLint der neuen Logik ohne Befund.
+
+## 03.10.2026 — Lokale Bildgenerierung beschleunigt
+
+Nutzer hat den Vollbildlauf bei 23 erfolgreichen Bildern angehalten. Nur Bildweg optimiert: CLIPLoader device=default statt CPU, 768 statt 1024 Pixel, weiterhin vier Schritte und 512-WebP; lokale 800-ms-Zwischenpause entfernt, Helper-Polling 250 statt 1000 ms. ComfyUI verwaltet GPU/Auslagerung, Startparameter unverändert. Helper danach neu gestartet. Kein Text-/Audioanbieter oder Goethe B2 geändert.
+
+12 lokale Vergleichsproben mit drei Motiven/festen Seeds: CPU1024 Mittel 14,01 s, GPU1024 4,90 s, GPU768 2,91 s, GPU512 2,03 s. 768 als Auflösungsreserve gewählt. Anschließender echter Helper-Probelauf 3,2/3,3/3,4 s, drei Bilder visuell geprüft, keine Speicherfehler. Nachweise unter _Local/image-speed/2026-10-03T17-45-20-640Z und _Local/image-trial/2026-10-03T17-47-37-797Z. Browser zeigt weiterhin 23 Bilder; Alle Sprachen/Alle konkreten Vokabeln/ComfyUI wieder startbereit, Serienlauf nicht gestartet. Nutzer-Löschungen an Katalog/assets unberührt.
+
+Typprüfung, fokussiertes ESLint, fünf Helper-Tests bestanden; vollständige Jest-Suite zur Abschlussprüfung gestartet.
+Abschluss: Jest 98/98 Suites, 1264/1264 Tests bestanden (355 s); tsc und ESLint bestanden. Nur die Optimierungspfade sichern; Nutzer-Katalog und gelöschte Medien nicht mitnehmen.

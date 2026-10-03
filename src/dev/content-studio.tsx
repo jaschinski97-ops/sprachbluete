@@ -492,9 +492,8 @@ export default function ContentStudio() {
         client: createImageGenerationClient(provider, apiKey, model),
         onProgress: onStepProgress,
         shouldCancel,
-        // Bildaufrufe dauern deutlich länger als Textaufrufe; die Pause darf
-        // entsprechend größer sein.
-        delayMs: 800,
+        // Local jobs are already sequential; only cloud providers need a rate-limit pause.
+        delayMs: provider === 'comfyui' ? 0 : 800,
       }));
     await exportDrafts(setExportMessage, provider === 'comfyui' ? { kinds: ['images'], publish: false } : undefined);
     setReportRevision(value => value + 1);

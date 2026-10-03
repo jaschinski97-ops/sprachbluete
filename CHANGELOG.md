@@ -9,6 +9,7 @@ Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in
 
 ### Endnutzerkorrekturen und lokale Bilder
 
+- Lokale Bildgenerierung beschleunigt: ComfyUI verwaltet den Bild-Prompt-Encoder auf GPU mit Speicher-Auslagerung; 768×768 statt 1024×1024 vor der unveränderten 512-WebP-Ausgabe. Nur lokal entfällt die 800-ms-Pause; fertige Aufträge werden alle 250 ms abgeholt. Gemessene Motivproben etwa 3 s statt 14 s; Text- und Audiogenerierung unverändert.
 - Lesequiz zeigt Umschrift ausschließlich bei Thai, auch in Sprecherfragen und Auswahlantworten. Kapitel zeigen ihre sieben Übungsschritte ohne doppelte Beispiele und Regeln oberhalb der Übungen.
 - Rollenspiel hält getippte und erkannte Antworten beim Mustervergleich und der Selbsteinschätzung sichtbar; Beschriftung in allen 20 App-Sprachen.
 - B1-Verständnisfragen zählen im Tagesfortschritt, ohne FSRS-Wiederholung oder Bewertung freier Antworten. Doppelte Weiter-Klicks zählen nicht doppelt. App-Informationen nennen alle vier Lernsprachen aus der zentralen Liste.

@@ -2,12 +2,14 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { workflow, generateLocalImage, cardImage, MODEL } = require('./local-image.cjs');
 
-test('local image workflow uses the distilled model and one image, with CPU text encoding', () => {
+test('local image workflow uses the distilled model and one image, with managed text encoding', () => {
   const graph = workflow('one apple', 42);
   assert.equal(graph['1'].inputs.unet_name, `${MODEL}.safetensors`);
-  assert.equal(graph['2'].inputs.device, 'cpu');
+  assert.equal(graph['2'].inputs.device, 'default');
   assert.equal(graph['7'].inputs.noise_seed, 42);
   assert.equal(graph['9'].inputs.steps, 4);
+  assert.equal(graph['9'].inputs.width, graph['10'].inputs.width);
+  assert.equal(graph['9'].inputs.height, graph['10'].inputs.height);
   assert.equal(graph['10'].inputs.batch_size, 1);
 });
 

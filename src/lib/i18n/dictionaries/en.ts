@@ -757,6 +757,10 @@ const en: Partial<Record<TranslationKey, string>> = {
   "level.experienced": "Experienced",
   "level.pro": "Pro",
   "level.choose": "Learning stage",
+  "studio.duplicateSituation": "A very similar dialogue is already available.",
+  "studio.deliveryFailed": "Automatic content delivery failed; generation stopped.",
+  "studio.autoDeliveryHint": "New content is added automatically after passing checks, including while generation continues.",
+  "studio.autoDelivered": "{{count}} automatically delivered",
   "studio.localText": "Local text model · no API key",
 };
 

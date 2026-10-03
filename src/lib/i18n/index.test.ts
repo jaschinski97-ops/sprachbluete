@@ -49,6 +49,14 @@ beforeEach(() => {
   mockedGetLocales.mockReset();
 });
 
+test('automatic delivery count is interpolated in all twenty UI languages', () => {
+  for (const language of UI_LANGUAGES) {
+    const text = translate(language, 'studio.autoDelivered', { count: 7 });
+    expect(text).toContain('7');
+    expect(text).not.toMatch(/[{}]/);
+  }
+});
+
 describe('detectSystemLocale — Normierung der Systemsprache', () => {
   it('erkennt jeden Kanon-Code', () => {
     for (const language of UI_LANGUAGES) expect(detectFrom(language)).toBe(language);

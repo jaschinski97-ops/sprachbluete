@@ -659,6 +659,10 @@ const te = {
   "level.experienced": "అనుభవజ్ఞుడు",
   "level.pro": "నిపుణుడు",
   "level.choose": "అభ్యాస స్థాయి",
+  "studio.duplicateSituation": "చాలా సారూప్యమైన సంభాషణ ఇప్పటికే ఉంది.",
+  "studio.deliveryFailed": "కంటెంట్ స్వయంచాలక జోడింపు విఫలమైంది; సృష్టి ఆపబడింది.",
+  "studio.autoDeliveryHint": "తనిఖీలలో ఉత్తీర్ణమైన కొత్త కంటెంట్ సృష్టి జరుగుతున్నప్పుడే స్వయంచాలకంగా జోడించబడుతుంది.",
+  "studio.autoDelivered": "{{count}} స్వయంచాలకంగా చేర్చబడ్డాయి",
   "studio.localText": "స్థానిక టెక్స్ట్ మోడల్ · API కీ అవసరం లేదు",
 } as const;
 

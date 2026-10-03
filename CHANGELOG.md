@@ -2,6 +2,8 @@
 
 ## 04.10.2026
 
+- Studio übernimmt Bilder, Dialoge, Vokabeln und Audio einzeln automatisch nach den bestehenden Prüfungen. Die Übernahme kann mit der nächsten Generierung überlappen; Medien und Live-Katalog werden sofort verfügbar. Build-Dateien werden erst am Laufende aktualisiert. Dauerhafte Sicherung und automatische Wiederherstellung bei Browser-Abbruch/Helper-Neustart; keine erneute Prüfung des gesamten Altbestands. Neue Studio-Medien umgehen die Browser-Speicherquote, Anbieter bleiben unverändert.
+
 - Bilder können gezielt über `imageIds` in den Katalog übernommen werden; andere Stage-Entwürfe bleiben erhalten. `learningStage` ist auch im Exportvertrag für Vokabeln zugelassen.
 
 - Lokale Textmodelle und drei Lernstufen nach beendetem Bildlauf aktiviert; Qwen/Gemma mit echten Vokabel- und Dialogproben geprüft. Windows-PowerShell-Preset ohne UTF-8-BOM korrigiert. Audio sowie vorhandene Bildentwürfe unverändert; Testinhalte nicht veröffentlicht.

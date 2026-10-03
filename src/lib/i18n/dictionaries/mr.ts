@@ -659,6 +659,10 @@ const mr = {
   "level.experienced": "अनुभवी",
   "level.pro": "तज्ज्ञ",
   "level.choose": "शिकण्याची पातळी",
+  "studio.duplicateSituation": "अतिशय समान संवाद आधीच उपलब्ध आहे.",
+  "studio.deliveryFailed": "सामग्री आपोआप जोडणे अयशस्वी झाले; निर्मिती थांबवली.",
+  "studio.autoDeliveryHint": "तपासणी उत्तीर्ण झालेली नवीन सामग्री आपोआप जोडली जाते, निर्मिती सुरू असतानाही.",
+  "studio.autoDelivered": "{{count}} आपोआप जोडले",
   "studio.localText": "स्थानिक मजकूर मॉडेल · API की आवश्यक नाही",
 } as const;
 

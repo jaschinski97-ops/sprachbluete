@@ -659,6 +659,10 @@ const ar = {
   "level.experienced": "متمرس",
   "level.pro": "خبير",
   "level.choose": "مستوى التعلم",
+  "studio.duplicateSituation": "يوجد حوار مشابه جدًا بالفعل.",
+  "studio.deliveryFailed": "فشلت إضافة المحتوى تلقائيًا؛ تم إيقاف التوليد.",
+  "studio.autoDeliveryHint": "تُضاف المحتويات الجديدة تلقائيًا بعد اجتياز الفحوصات، حتى أثناء استمرار التوليد.",
+  "studio.autoDelivered": "تمت إضافة {{count}} تلقائيًا",
   "studio.localText": "نموذج نص محلي · دون مفتاح API",
 } as const;
 

@@ -1,4 +1,6 @@
-import { exportDrafts, stableStringify } from './content-client';
+import { exportDrafts, stableStringify, startAutomaticDelivery } from './content-client';
+import { currentCatalog, setCurrentCatalog } from '@/lib/content/catalog-state';
+import type { ContentEntry } from '@/lib/content/types';
 
 const mockGetAll = jest.fn();
 const mockPut = jest.fn();
@@ -8,6 +10,63 @@ jest.mock('@/lib/content/developer', () => ({ isContentDeveloper: () => true }))
 jest.mock('@/lib/clips/blob-store', () => ({ getAudioBlobStore: async () => ({ uri: mockAudioUri }) }));
 const mockImageUri = jest.fn(async () => null as string | null);
 jest.mock('@/lib/images/blob-store', () => ({ getImageBlobStore: async () => ({ uri: mockImageUri }) }));
+
+test('delivery overlaps the next producer, serializes simultaneous audio workers and becomes live after acknowledgement', async () => {
+  const originalFetch = global.fetch;
+  const originalCatalog = currentCatalog();
+  setCurrentCatalog({ version: 2, entries: [] });
+  const releases: (() => void)[] = [];
+  const ids: string[] = [];
+  global.fetch = jest.fn(async (url, options) => {
+    if (String(url).endsWith('/delivery/start')) return { ok: true, json: async () => ({ token: 'run' }) } as Response;
+    if (String(url).endsWith('/delivery/item')) {
+      const payload = JSON.parse(options!.body as string);
+      ids.push(payload.document.id);
+      await new Promise<void>(resolve => releases.push(resolve));
+      return { ok: true, json: async () => ({ kind: payload.kind, id: payload.document.id, document: payload.document }) } as Response;
+    }
+    return { ok: true, json: async () => ({ count: 3 }) } as Response;
+  });
+  const delivery = await startAutomaticDelivery();
+  try {
+    await delivery.deliver('audio', { id: 'first' });
+    expect(ids).toEqual(['first']);
+    expect(currentCatalog().entries).toHaveLength(0);
+    const second = delivery.deliver('audio', { id: 'second' });
+    const third = delivery.deliver('audio', { id: 'third' });
+    releases.shift()!();
+    await second;
+    expect(ids).toEqual(['first', 'second']);
+    expect(currentCatalog().entries.map(e => e.id)).toEqual(['first']);
+    releases.shift()!();
+    await third;
+    expect(ids).toEqual(['first', 'second', 'third']);
+    releases.shift()!();
+    expect(await delivery.finish()).toBe(3);
+    expect(currentCatalog().entries.map((e: ContentEntry) => e.id)).toEqual(ids);
+  } finally { await delivery.finish().catch(() => {}); global.fetch = originalFetch; setCurrentCatalog(originalCatalog); }
+});
+
+test('failed delivery stops subsequent handoffs and finish still saves earlier acknowledged items', async () => {
+  const originalFetch = global.fetch;
+  let finishCalled = false;
+  global.fetch = jest.fn(async url => {
+    if (String(url).endsWith('/delivery/start')) return { ok: true, json: async () => ({ token: 'run' }) } as Response;
+    if (String(url).endsWith('/delivery/item')) return { ok: false, json: async () => ({ error: 'disk full' }) } as Response;
+    finishCalled = true;
+    return { ok: true, json: async () => ({ count: 0 }) } as Response;
+  });
+  const delivery = await startAutomaticDelivery();
+  try {
+    await delivery.deliver('images', { id: 'first' }, 'QUJD');
+    await expect(delivery.flush()).rejects.toThrow('disk full');
+    expect(delivery.failed).toBe(true);
+    await expect(delivery.deliver('images', { id: 'second' }, 'QUJD')).rejects.toThrow('disk full');
+    await expect(delivery.finish()).rejects.toThrow('disk full');
+    expect(finishCalled).toBe(true);
+    expect((global.fetch as jest.Mock).mock.calls.filter(([url]) => String(url).endsWith('/delivery/item'))).toHaveLength(1);
+  } finally { await delivery.finish().catch(() => {}); global.fetch = originalFetch; }
+});
 
 test('invalid local records and missing media do not prevent later drafts from exporting', async () => {
   const originalFetch = global.fetch;

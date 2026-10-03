@@ -9,10 +9,10 @@ import { ContentReport } from './content-report';
 import { VocabZieleCard } from './vocab-ziele-card';
 import { durchschnittsAnteil } from '@/lib/content/wortschatz-anteil';
 import { findeDuplikat } from '@/lib/content/aehnlichkeit';
-import { getStore } from '@/lib/storage';
+import { useLocale } from '@/lib/i18n';
 import type { ConversationSituation as Situation } from '@/lib/conversation/types';
 import { estimateRunCost } from './run-cost';
-import { clearContentSelection, exportDrafts, studioRequest, type StudioState } from './content-client';
+import { clearContentSelection, startAutomaticDelivery, studioRequest, type StudioState } from './content-client';
 import { fahreKette, planChain, type ChainStep } from './chain-run';
 import { planDeliveryAudio } from '@/lib/content/audio-plan';
 import { previewAudioDelivery } from '@/lib/content/delivery-preview';
@@ -240,6 +240,7 @@ function richtungsZaehler(counts: SituationDirectionCounts | null): CountItem[] 
 }
 
 export default function ContentStudio() {
+  const { t } = useLocale();
   // Phase 2, Schritt 2: „Inhalte erzeugen“ hat drei Unterreiter (Text /
   // Audio / Bilder); die Generator-Karten bleiben, die Navigation darüber
   // gruppiert neu. 'exam' entfällt ab Schritt 3 (Generator wird entfernt).
@@ -438,41 +439,28 @@ export default function ContentStudio() {
     // Phase 2, Schritt 6: Bestands-Snapshot vor dem Lauf — danach lassen sich
     // die NEUEN Situationen identifizieren und gegen (fast) Duplikate prüfen.
     const bestandVorher: Situation[] = await loadSituations();
-    const vorIds = new Set(bestandVorher.map((situation) => situation.id));
-    await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
-      (missing, onStepProgress) => runGenerationBatch({
-        specs: missing,
-        client: createGenerationClient(provider, apiKey, model),
-        onProgress: onStepProgress,
-        shouldCancel,
-        // Kleine Pause zwischen den Aufrufen, damit ein langer Lauf nicht
-        // unnötig ins Rate-Limit rennt.
-        delayMs: 400,
-      }));
-    // Duplikate: fast gleiche Situationen (normalisierter Text, Jaccard ab
-    // 0,85) werden aus dem Store verworfen und gezählt, BEVOR der Export sie
-    // in Stage und Katalog bringen würde.
-    const nachher = await loadSituations();
-    const neueSituationen = nachher.filter((situation) => !vorIds.has(situation.id));
     const referenz: Situation[] = [...bestandVorher];
-    const verworfen: Situation[] = [];
-    for (const kandidat of neueSituationen) {
-      const doppelt = findeDuplikat(kandidat, referenz);
-      if (doppelt) {
-        verworfen.push(kandidat);
-      } else {
-        referenz.push(kandidat);
-      }
+    const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
+    try {
+        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
+          (missing, onStepProgress) => runGenerationBatch({
+            specs: missing,
+            client: createGenerationClient(provider, apiKey, model),
+            onProgress: onStepProgress, shouldCancel: () => shouldCancel?.() || delivery.failed, delayMs: 400,
+            onProduced: async situation => {
+              if (findeDuplikat(situation, referenz)) throw Error(t('studio.duplicateSituation'));
+              await delivery.deliver('situations', situation);
+              referenz.push(situation);
+            },
+          }));
+    } finally {
+      const count = await delivery.finish();
+      setExportMessage(t('studio.autoDelivered', { count }));
+      await studioRequest('/state');
     }
-    if (verworfen.length > 0) {
-      const db = await getStore();
-      for (const situation of verworfen) await db.remove('situations', situation.id);
-      setExportMessage(`Duplikate verworfen: ${verworfen.length} (fast gleiche Situationen schon im Bestand).`);
-    }
-    await exportDrafts(setExportMessage);
     setReportRevision(value => value + 1);
   },
-    [situationStage]
+    [situationStage, t]
   );
 
   const startImages = useCallback(
@@ -490,19 +478,26 @@ export default function ContentStudio() {
       maxNew
     );
     if (!await confirmRun(estimateRunCost('images', provider, model, all.map(() => ({}))))) return;
-    await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
-      (missing, onStepProgress) => runImageBatch({
-        specs: missing,
-        client: createImageGenerationClient(provider, apiKey, model),
-        onProgress: onStepProgress,
-        shouldCancel,
-        // Local jobs are already sequential; only cloud providers need a rate-limit pause.
-        delayMs: provider === 'comfyui' ? 0 : 800,
-      }));
-    await exportDrafts(setExportMessage, provider === 'comfyui' ? { kinds: ['images'], publish: false } : undefined);
+    const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
+    try {
+      await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
+        (missing, onStepProgress) => runImageBatch({
+          specs: missing,
+          client: createImageGenerationClient(provider, apiKey, model),
+          onProgress: onStepProgress,
+          shouldCancel: () => shouldCancel?.() || delivery.failed,
+          onProduced: (document, base64) => delivery.deliver('images', document, base64),
+          // Local jobs are already sequential; only cloud providers need a rate-limit pause.
+          delayMs: provider === 'comfyui' ? 0 : 800,
+        }));
+    } finally {
+      const count = await delivery.finish();
+      setExportMessage(t('studio.autoDelivered', { count }));
+      await studioRequest('/state');
+    }
     setReportRevision(value => value + 1);
   },
-    []
+    [t]
   );
 
   const startClips = useCallback(
@@ -532,36 +527,44 @@ export default function ContentStudio() {
       // volle Rotation.
       const stimmen = voicesFor(provider).map((stimme) => stimme.name);
       const reihenfolge = (voice?.trim() ? [voice.trim()] : stimmen);
-      await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
-        async (missing, onStepProgress) => {
-          let voiceIndex = 0;
-          await runClipBatch({
-            specs: missing,
-            client: { generate: (spec) => createClipGenerationClient(provider, apiKey, model, reihenfolge[voiceIndex++ % reihenfolge.length] ?? voice ?? '').generate(spec) },
-            // 18.09.: Das Tontor liest die Solltöne je Silbe aus dem AKTIVEN
-            // Thai-Bestand (Wörter über syllables, Sätze über die Roman-Umschrift)
-            // — derselbe Stand, aus dem auch der Plan gebaut wurde. Andere
-            // Sprachen berührt das nicht (das Tor meldet dort not-applicable).
-            toneWortschatz: poolFuer('th'),
-            onProgress: onStepProgress,
-            shouldCancel,
-            // 17.09. Nacht FINAL (1400 → 500 ms): OpenAI-TTS ist auf 30 Aufrufe/
-            // Minute gedeckelt — der Helper WARTET bei vollem Fenster jetzt die
-            // genannte Sekundenzahl und stellt dann selbst durch (statt mit 429
-            // abzulehnen; siehe studio.cjs). Der Client darf deshalb flott
-            // fragen: das Fenster glättet den Lauf automatisch auf das Limit,
-            // der Durchsatz liegt damit AM Limit statt darunter.
-            delayMs: provider === 'gemini' ? 6500 : provider === 'chatgpt-helper' ? 500 : 600,
+      const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
+      try {
+        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
+          async (missing, onStepProgress) => {
+            let voiceIndex = 0;
+            await runClipBatch({
+              specs: missing,
+              client: { generate: (spec) => createClipGenerationClient(provider, apiKey, model, reihenfolge[voiceIndex++ % reihenfolge.length] ?? voice ?? '').generate(spec) },
+              // 18.09.: Das Tontor liest die Solltöne je Silbe aus dem AKTIVEN
+              // Thai-Bestand (Wörter über syllables, Sätze über die Roman-Umschrift)
+              // — derselbe Stand, aus dem auch der Plan gebaut wurde. Andere
+              // Sprachen berührt das nicht (das Tor meldet dort not-applicable).
+              toneWortschatz: poolFuer('th'),
+              onProgress: onStepProgress,
+              shouldCancel: () => shouldCancel?.() || delivery.failed,
+              onProduced: (document, base64) => delivery.deliver('audio', document, base64),
+              // 17.09. Nacht FINAL (1400 → 500 ms): OpenAI-TTS ist auf 30 Aufrufe/
+              // Minute gedeckelt — der Helper WARTET bei vollem Fenster jetzt die
+              // genannte Sekundenzahl und stellt dann selbst durch (statt mit 429
+              // abzulehnen; siehe studio.cjs). Der Client darf deshalb flott
+              // fragen: das Fenster glättet den Lauf automatisch auf das Limit,
+              // der Durchsatz liegt damit AM Limit statt darunter.
+              delayMs: provider === 'gemini' ? 6500 : provider === 'chatgpt-helper' ? 500 : 600,
+            });
           });
-        });
-      await exportDrafts(setExportMessage);
+      } finally {
+        const count = await delivery.finish();
+        setExportMessage(t('studio.autoDelivered', { count }));
+        await studioRequest('/state');
+      }
       setReportRevision(value => value + 1);
     },
-    []
+    [t]
   );
 
   return (
     <View style={{ gap: Spacing.three }}>
+      <ThemedText type="small">{t('studio.autoDeliveryHint')}</ThemedText>
       {section !== 'home' ? <ThemedButton label="Studio-Übersicht" disabled={running} onPress={() => setSection('home')} /> : null}
       {section === 'home' ? <>
         {/* Grundstock („Ich möchte einen Grundstock haben von allen“): oben,

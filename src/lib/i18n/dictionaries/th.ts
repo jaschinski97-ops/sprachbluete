@@ -743,6 +743,10 @@ const th: Partial<Record<TranslationKey, string>> = {
   "level.experienced": "ผู้มีประสบการณ์",
   "level.pro": "ผู้เชี่ยวชาญ",
   "level.choose": "ระดับการเรียนรู้",
+  "studio.duplicateSituation": "มีบทสนทนาที่คล้ายกันมากอยู่แล้ว",
+  "studio.deliveryFailed": "นำเข้าเนื้อหาอัตโนมัติไม่สำเร็จ หยุดการสร้างแล้ว",
+  "studio.autoDeliveryHint": "เนื้อหาใหม่ที่ผ่านการตรวจสอบจะถูกนำเข้าอัตโนมัติ แม้ระหว่างการสร้างเนื้อหา",
+  "studio.autoDelivered": "นำเข้าอัตโนมัติแล้ว {{count}} รายการ",
   "studio.localText": "โมเดลข้อความในเครื่อง · ไม่ต้องใช้คีย์ API",
 };
 

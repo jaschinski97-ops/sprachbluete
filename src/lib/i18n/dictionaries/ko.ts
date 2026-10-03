@@ -659,6 +659,10 @@ const ko = {
   "level.experienced": "경험자",
   "level.pro": "전문가",
   "level.choose": "학습 단계",
+  "studio.duplicateSituation": "매우 비슷한 대화가 이미 있습니다.",
+  "studio.deliveryFailed": "콘텐츠 자동 추가에 실패하여 생성을 중지했습니다.",
+  "studio.autoDeliveryHint": "검사를 통과한 새 콘텐츠는 생성이 진행되는 동안에도 자동으로 추가됩니다.",
+  "studio.autoDelivered": "{{count}}개 자동 반영됨",
   "studio.localText": "로컬 텍스트 모델 · API 키 불필요",
 } as const;
 

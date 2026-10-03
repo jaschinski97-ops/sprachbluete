@@ -659,6 +659,10 @@ const fr = {
   "level.experienced": "Expérimenté",
   "level.pro": "Expert",
   "level.choose": "Niveau d’apprentissage",
+  "studio.duplicateSituation": "Un dialogue très similaire existe déjà.",
+  "studio.deliveryFailed": "L’intégration automatique a échoué ; génération arrêtée.",
+  "studio.autoDeliveryHint": "Le nouveau contenu est intégré automatiquement après validation, même pendant la génération.",
+  "studio.autoDelivered": "{{count}} intégrés automatiquement",
   "studio.localText": "Modèle de texte local · sans clé API",
 } as const;
 

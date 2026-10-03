@@ -45,7 +45,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 ## Inhalts-Pipeline (Studio)
 
-- Ablauf: Studio erzeugt → `/stage` → `/publish` in den Katalog. Die Medien liegen unter `assets/content/` (sha256-Namen) und werden per `npm run web:content` nach `public/` gespiegelt.
+- Studio übernimmt jeden neuen Eintrag automatisch nach den bestehenden Prüfungen (`/delivery/start`, `/delivery/item`, `/delivery/finish`). Medien und Live-Katalog stehen sofort bereit; statischer Build-Katalog/Assets-Index erst am Laufende, damit HMR keinen laufenden Generator unterbricht. Sicherung `.content-studio/automatic-delivery.json`: bei Helper-Neustart oder zwei Minuten ohne Browser-Heartbeat automatisch abschließen. Legacy `/stage` → `/publish` bleibt für gezielte Übernahmen verfügbar.
 - `publish()` merged die Stage nur HINZU. Löschen läuft über die Studio-Routen (`/catalog/delete`, `/catalog/clear-selection`), die Katalog, Stage und verwaiste Medien gemeinsam bereinigen.
 - Gezielte Veröffentlichung: `/publish` nimmt entweder `imageIds` oder `vocabularyIds`; andere Stage-Entwürfe bleiben erhalten. Ohne Auswahl wird weiterhin der gesamte Stage gemerged.
 - Direkter Helper-Aufruf: `POST /publish` mit Body `{}` und Header `Origin: http://localhost:8081` (ohne Origin kommt 403). Bei großem Katalog reißt die HTTP-Antwort ab, der Publish läuft trotzdem durch; die Wahrheit steht in `pipeline/logs/…publish-N.json`.
@@ -59,7 +59,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 - Sichtbare Inhaltsgruppen Anfänger/Erfahren/Profi entsprechen intern A1/A2, B1/B2, C1/C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger. Goethe-Prüfungsnamen behalten ihre offiziellen Stufen.
 
 - Bildanbieter `comfyui`: FLUX.2 klein 4B distilled FP8, ComfyUI nur auf 127.0.0.1:8188, Helper 8082. Encoder-Gerät `default` (GPU mit ComfyUI-Auslagerung), 768-Pixel-Erzeugung → 512-WebP, vier Schritte, seriell ohne Cloud-Pause. Start: `scripts/content/start-local-images.ps1`; Einrichtung/Probelauf: `docs/lokale-bilder.md`. Runtime/Modelle unter `_Local/` sind gitignored.
-- Lokale Bildläufe legen nur Bildentwürfe im Stage ab; vor Veröffentlichung Motiv und 512-MiB-Gesamtbudget prüfen. Text und Audio behalten ihre bisherigen Anbieter. Goethe B2 ist bis nach der Bilderrunde zurückgestellt.
+- Lokale Bildläufe übernehmen technisch geprüfte Bilder automatisch, das 512-MiB-Gesamtbudget bleibt verbindlich. Die Motivpassung braucht weiterhin einen Vorschau-Blick. Anbieter für Text/Audio unverändert; Goethe B2 zurückgestellt. Studio-Läufe speichern neue Medien direkt beim Helper statt in der begrenzten Browser-Metadatenablage.
 
 ## Thai-Ton-Gate (`src/lib/content/tone-gate.ts`, Stand `f0-syllables-4`)
 

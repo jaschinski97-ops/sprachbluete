@@ -31,6 +31,7 @@ export type ImageRunOptions = {
   shouldCancel?: () => boolean;
   delayMs?: number;
   now?: () => number;
+  onProduced?: (document: VocabImage, base64: string) => Promise<void>;
 };
 
 /**
@@ -54,7 +55,8 @@ function imageTask(
   client: ImageGenerationClient,
   db: DataStore,
   blobs: ImageBlobStore,
-  now: () => number
+  now: () => number,
+  onProduced?: ImageRunOptions['onProduced']
 ): BatchTask<ImageSpec> {
   return {
     ...imageExists(db, blobs),
@@ -70,7 +72,6 @@ function imageTask(
       // die App dazwischen ab, fehlt das Dokument — der Eintrag gilt als nicht
       // vorhanden und wird beim nächsten Lauf sauber neu erzeugt. Andersherum
       // entstünde genau die Karteileiche, die `exists` oben verhindern soll.
-      await blobs.put(blobKey, image.base64);
 
       const doc: VocabImage = {
         id: spec.id,
@@ -82,6 +83,8 @@ function imageTask(
         model: image.model,
         generatedAt: now(),
       };
+      if (onProduced) { await onProduced(doc, image.base64); return; }
+      await blobs.put(blobKey, image.base64);
       await db.put('images', spec.id, doc);
     },
   };
@@ -92,7 +95,7 @@ export async function runImageBatch(options: ImageRunOptions): Promise<BatchProg
   const blobs = options.blobStore ?? (await getImageBlobStore());
   return runBatch({
     specs: options.specs,
-    task: imageTask(options.client, db, blobs, options.now ?? Date.now),
+    task: imageTask(options.client, db, blobs, options.now ?? Date.now, options.onProduced),
     onProgress: options.onProgress,
     shouldCancel: options.shouldCancel,
     delayMs: options.delayMs,

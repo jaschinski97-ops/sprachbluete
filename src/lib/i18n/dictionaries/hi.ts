@@ -659,6 +659,10 @@ const hi = {
   "level.experienced": "अनुभवी",
   "level.pro": "विशेषज्ञ",
   "level.choose": "सीखने का स्तर",
+  "studio.duplicateSituation": "बहुत मिलता-जुलता संवाद पहले से मौजूद है।",
+  "studio.deliveryFailed": "सामग्री अपने आप जोड़ना विफल हुआ; बनाना रोक दिया गया।",
+  "studio.autoDeliveryHint": "जाँच में सफल नई सामग्री अपने आप जुड़ जाती है, सामग्री बनते समय भी।",
+  "studio.autoDelivered": "{{count}} अपने आप जोड़े गए",
   "studio.localText": "स्थानीय टेक्स्ट मॉडल · API कुंजी की जरूरत नहीं",
 } as const;
 

@@ -659,6 +659,10 @@ const zh = {
   "level.experienced": "有经验者",
   "level.pro": "高手",
   "level.choose": "学习阶段",
+  "studio.duplicateSituation": "已有非常相似的对话。",
+  "studio.deliveryFailed": "自动加入内容失败，已停止生成。",
+  "studio.autoDeliveryHint": "新内容通过检查后会自动加入，生成过程中也会同步加入。",
+  "studio.autoDelivered": "已自动加入 {{count}} 项",
   "studio.localText": "本地文本模型 · 无需API密钥",
 } as const;
 

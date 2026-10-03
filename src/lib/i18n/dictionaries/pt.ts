@@ -659,6 +659,10 @@ const pt = {
   "level.experienced": "Experiente",
   "level.pro": "Especialista",
   "level.choose": "Nível de aprendizagem",
+  "studio.duplicateSituation": "Já existe um diálogo muito semelhante.",
+  "studio.deliveryFailed": "A adição automática falhou; a geração foi interrompida.",
+  "studio.autoDeliveryHint": "O conteúdo novo é adicionado automaticamente após passar nas verificações, mesmo durante a geração.",
+  "studio.autoDelivered": "{{count}} adicionados automaticamente",
   "studio.localText": "Modelo de texto local · sem chave API",
 } as const;
 

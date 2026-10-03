@@ -659,6 +659,10 @@ const ja = {
   "level.experienced": "経験者",
   "level.pro": "上級者",
   "level.choose": "学習レベル",
+  "studio.duplicateSituation": "非常によく似た会話がすでにあります。",
+  "studio.deliveryFailed": "コンテンツの自動追加に失敗しました。生成を停止しました。",
+  "studio.autoDeliveryHint": "検証に合格した新しいコンテンツは、生成中でも自動的に追加されます。",
+  "studio.autoDelivered": "{{count}}件を自動的に追加しました",
   "studio.localText": "ローカルテキストモデル · APIキー不要",
 } as const;
 

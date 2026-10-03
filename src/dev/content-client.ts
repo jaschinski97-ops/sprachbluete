@@ -6,6 +6,7 @@ import type { ContentCatalog, ContentEntry } from '@/lib/content/types';
 import { isDeletedDraft, setLiveCatalog } from '@/lib/content/bundled';
 import { invalidateClipIndex } from '@/lib/clips/lookup';
 import { loadVocabulary } from '@/lib/repository';
+import { currentCatalog } from '@/lib/content/catalog-state';
 
 export async function clearContentSelection(kind: 'vocabulary' | 'situations' | 'images' | 'audio', languages: string[]) {
   const result = await studioRequest<{ katalog: number; stage: number }>('/catalog/clear-selection', { kind, languages });
@@ -29,6 +30,49 @@ export async function clearContentSelection(kind: 'vocabulary' | 'situations' | 
 }
 
 export const STUDIO_URL = 'http://127.0.0.1:8082';
+/** One durable delivery per new item. One in-flight handoff can overlap the
+ * next model request; awaiting the previous item bounds memory and failures. */
+export async function startAutomaticDelivery(onDelivered?: (count: number) => void) {
+  const { token } = await studioRequest<{ token: string }>('/delivery/start', {});
+  let pending: Promise<void> = Promise.resolve();
+  let handoff: Promise<void> = Promise.resolve();
+  let count = 0;
+  let failure: unknown;
+  let finalized = false;
+  const heartbeat = setInterval(() => {
+    void studioRequest('/delivery/touch', { token }).catch(error => { failure = error; });
+  }, 30000);
+  return {
+    get failed() { return failure !== undefined; },
+    deliver(kind: ContentEntry['kind'], document: unknown, base64?: string) {
+      // Audio workers may arrive together: serialize enqueueing as well as HTTP.
+      handoff = handoff.then(async () => {
+        await pending;
+        if (failure) throw failure;
+        pending = studioRequest<ContentEntry>('/delivery/item', { token, kind, document, base64 }).then(entry => {
+          const catalog = currentCatalog();
+          setLiveCatalog({ ...catalog, entries: [...catalog.entries.filter(item => item.kind !== entry.kind || item.id !== entry.id), entry] });
+          invalidateClipIndex(); count += 1; onDelivered?.(count);
+        });
+        // Keep a rejection observed until finish/deliver propagates it to the UI.
+        void pending.catch(error => { failure = error; });
+      });
+      void handoff.catch(error => { failure = error; });
+      return handoff;
+    },
+    async finish() {
+      clearInterval(heartbeat);
+      try { await handoff; await pending; } catch (error) { failure = error; }
+      if (!finalized) {
+        await studioRequest('/delivery/finish', { token });
+        finalized = true;
+      }
+      if (failure) throw failure;
+      return count;
+    },
+    async flush() { await handoff; await pending; if (failure) throw failure; },
+  };
+}
 /** Ein Berichtseintrag des Live-Berichts (Phase 2, Schritt 1): Check plus
  *  die Anzeige- und Aktionsfelder, die die Pipeline aus Stage ∪ Katalog
  *  ableitet. */

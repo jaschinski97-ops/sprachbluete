@@ -659,6 +659,10 @@ const tr = {
   "level.experienced": "Deneyimli",
   "level.pro": "Uzman",
   "level.choose": "Öğrenme seviyesi",
+  "studio.duplicateSituation": "Çok benzer bir diyalog zaten mevcut.",
+  "studio.deliveryFailed": "Otomatik içerik ekleme başarısız oldu; üretim durduruldu.",
+  "studio.autoDeliveryHint": "Kontrolleri geçen yeni içerik, üretim devam ederken de otomatik olarak eklenir.",
+  "studio.autoDelivered": "{{count}} otomatik olarak eklendi",
   "studio.localText": "Yerel metin modeli · API anahtarı gerekmez",
 } as const;
 

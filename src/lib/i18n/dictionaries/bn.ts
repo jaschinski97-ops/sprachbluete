@@ -659,6 +659,10 @@ const bn = {
   "level.experienced": "অভিজ্ঞ",
   "level.pro": "দক্ষ",
   "level.choose": "শেখার স্তর",
+  "studio.duplicateSituation": "খুব কাছাকাছি একটি সংলাপ ইতিমধ্যেই আছে।",
+  "studio.deliveryFailed": "বিষয়বস্তু স্বয়ংক্রিয়ভাবে যোগ করা ব্যর্থ হয়েছে; তৈরি বন্ধ হয়েছে।",
+  "studio.autoDeliveryHint": "পরীক্ষায় উত্তীর্ণ নতুন বিষয়বস্তু স্বয়ংক্রিয়ভাবে যোগ হয়, এমনকি তৈরি চলার সময়ও।",
+  "studio.autoDelivered": "{{count}}টি স্বয়ংক্রিয়ভাবে যুক্ত হয়েছে",
   "studio.localText": "স্থানীয় টেক্সট মডেল · API কী লাগে না",
 } as const;
 

@@ -5,6 +5,7 @@ const { Readable } = require('node:stream');
 const { generateLocalImage } = require('./local-image.cjs');
 const { generateLocalText } = require('./local-text.cjs');
 const { ContentPipeline } = require('./pipeline.cjs');
+const { AutomaticDelivery } = require('./automatic-delivery.cjs');
 const { tryWriteProtocol } = require('../pipeline/protocol.cjs');
 const { loadEnvLocal } = require('../pipeline/env.cjs');
 
@@ -154,8 +155,13 @@ async function handleTtsProxy(req, res, {
 
 function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = createRateLimiter() } = {}) {
   const pipeline = new ContentPipeline(root);
+  const delivery = new AutomaticDelivery(pipeline);
+  const ready = delivery.recover();
+  void ready.catch(error => console.error('Automatische Wiederherstellung:', error.message));
   let queue = Promise.resolve();
-  return http.createServer(async (req, res) => {
+  let generationQueue = Promise.resolve();
+  let generating = 0;
+  const server = http.createServer(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     // Exact Host and Origin checks block DNS rebinding and other web origins.
@@ -171,7 +177,18 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
     if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
     const json = (code, value) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(value)); };
     try {
-      if (req.method === 'GET' && req.url === '/state') { json(200, await pipeline.state()); return; }
+      await ready;
+      if (req.method === 'POST' && ['/api/local/text', '/api/comfyui/image', '/api/openai/tts'].includes(req.url)) {
+        generating += 1;
+        // A background tab can throttle heartbeats. Never finalize build
+        // files while its outstanding model request is still running.
+        res.once('close', () => { generating -= 1; });
+      }
+      if (req.method === 'GET' && req.url === '/state') {
+        const state = await pipeline.state();
+        state.shipped = delivery.catalog() ?? state.shipped;
+        json(200, state); return;
+      }
       if (req.method === 'GET' && /^\/asset\/[a-f0-9]{64}\.(mp3|png|jpeg|webp)$/.test(req.url)) {
         const name = req.url.slice('/asset/'.length);
         let bytes;
@@ -185,7 +202,7 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
         let size=0; const parts=[];
         for await (const chunk of req) { size+=chunk.length; if(size>1024*1024){json(413,{error:'Textauftrag zu groß.'});return;}parts.push(chunk); }
         const data=JSON.parse(Buffer.concat(parts).toString('utf8'));
-        const operation=queue.then(()=>generateLocalText(data)); queue=operation.catch(()=>{});
+        const operation=generationQueue.then(()=>generateLocalText(data)); generationQueue=operation.catch(()=>{});
         json(200, await operation); return;
       }
       if (req.method === 'POST' && req.url === '/api/comfyui/image') {
@@ -197,8 +214,8 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
           parts.push(chunk);
         }
         const data = JSON.parse(Buffer.concat(parts).toString('utf8'));
-        const operation = queue.then(() => generateLocalImage(data));
-        queue = operation.catch(() => {});
+        const operation = generationQueue.then(() => generateLocalImage(data));
+        generationQueue = operation.catch(() => {});
         json(200, await operation); return;
       }
       if (req.method === 'POST' && req.url === '/api/openai/tts') {
@@ -237,7 +254,7 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
       // Die frühere Route /catalog/clear-generated („alles Generierte löschen“)
       // ist entfernt (26.09.): Seit der erzeugte Wortschatz der Grundstock ist,
       // traf ihr Stichtag-Urteil den GESAMTEN Katalog.
-      if (req.method !== 'POST' || !['/stage','/publish','/stage/delete','/catalog/delete','/catalog/clear-selection'].includes(req.url)) { json(404, { error: 'Unbekannter Pfad.' }); return; }
+      if (req.method !== 'POST' || !['/delivery/start','/delivery/item','/delivery/touch','/delivery/finish','/stage','/publish','/stage/delete','/catalog/delete','/catalog/clear-selection'].includes(req.url)) { json(404, { error: 'Unbekannter Pfad.' }); return; }
       if (!originAllowed(req.headers.origin) || req.headers['content-type'] !== 'application/json') { json(403, { error: 'Nur die lokale Entwickler-App darf schreiben.' }); return; }
       let size = 0; const parts = [];
       for await (const chunk of req) {
@@ -246,12 +263,17 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
         parts.push(chunk);
       }
       const data = JSON.parse(Buffer.concat(parts).toString('utf8'));
+      if (req.url === '/delivery/touch') { json(200, delivery.touch(data.token)); return; }
       if (req.url === '/catalog/clear-selection' && (!data || !['vocabulary','situations','images','audio'].includes(data.kind) || !Array.isArray(data.languages) || !data.languages.length)) throw Error('Inhaltsart und Sprachauswahl sind erforderlich.');
       // Phase 2, Schritt 1: die Lösch-Endpunkte des Prüfberichts. /stage/delete
       // nimmt einen Entwurf aus dem Stage, /catalog/delete löscht einen
       // ausgelieferten Eintrag (inkl. Stage-Zwilling und verwaistem Asset) —
       // beides über dieselbe Serialisierungs-Warteschlange wie Stage/Publish.
       const action = () =>
+        req.url === '/delivery/start' ? delivery.begin() :
+        req.url === '/delivery/item' ? delivery.accept(data.token, data) :
+        req.url === '/delivery/finish' ? delivery.finish(data.token) :
+        delivery.active ? Promise.reject(Error('Inhaltslauf aktiv; Änderungen erst nach dessen Ende.')) :
         req.url === '/stage' ? pipeline.stage(data) :
         req.url === '/publish' ? pipeline.publish({ vocabularyIds: data.vocabularyIds, imageIds: data.imageIds }) :
         req.url === '/stage/delete' ? pipeline.deleteFromStage(data.kind, data.id) :
@@ -262,6 +284,15 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
       json(200, await operation);
     } catch (error) { json(400, { error: error.message }); }
   });
+  const idle = setInterval(() => {
+    if (generating || !delivery.active || Date.now() - delivery.active.touched < 120000) return;
+    const token = delivery.active.token;
+    const operation = queue.then(() => !generating && delivery.active?.token === token && Date.now() - delivery.active.touched >= 120000 ? delivery.finish(token) : undefined);
+    queue = operation.catch(error => console.error('Automatische Übernahme:', error.message));
+    return operation;
+  }, 30000);
+  idle.unref(); server.on('close', () => clearInterval(idle));
+  return server;
 }
 if (require.main === module) {
   createStudio(path.resolve(__dirname, '../..')).listen(8082, '127.0.0.1', () => {

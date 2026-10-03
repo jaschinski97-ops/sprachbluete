@@ -659,6 +659,10 @@ const ta = {
   "level.experienced": "அனுபவமுள்ளவர்",
   "level.pro": "நிபுணர்",
   "level.choose": "கற்றல் நிலை",
+  "studio.duplicateSituation": "மிகவும் ஒத்த உரையாடல் ஏற்கனவே உள்ளது.",
+  "studio.deliveryFailed": "உள்ளடக்கத்தைத் தானாகச் சேர்க்க முடியவில்லை; உருவாக்கம் நிறுத்தப்பட்டது.",
+  "studio.autoDeliveryHint": "சோதனைகளில் தேர்ச்சி பெற்ற புதிய உள்ளடக்கம் உருவாக்கம் நடைபெறும்போதும் தானாகச் சேர்க்கப்படும்.",
+  "studio.autoDelivered": "{{count}} தானாகச் சேர்க்கப்பட்டன",
   "studio.localText": "உள்ளூர் உரை மாதிரி · API விசை தேவையில்லை",
 } as const;
 

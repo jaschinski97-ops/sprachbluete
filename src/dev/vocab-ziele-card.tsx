@@ -27,7 +27,7 @@ import {
   type KreuzResultat,
 } from '@/lib/content/kreuzpruefung';
 import { loadApiKey } from '@/lib/api-key';
-import { clearContentSelection, studioRequest } from './content-client';
+import { clearContentSelection, startAutomaticDelivery, studioRequest } from './content-client';
 import { readMeta, writeMeta } from '@/lib/repository';
 import {
   pruefeVocabDoc,
@@ -184,6 +184,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   const toneColor = useToneColor();
   const { t } = useLocale();
   const [stage, setStage] = useState<LearningStage>('beginner');
+  const deliveryRef = useRef<Awaited<ReturnType<typeof startAutomaticDelivery>> | null>(null);
   const [sprache, setSprache] = useState<VocabSprache>('th');
   const [alleSprachen, setAlleSprachen] = useState(false);
   const [ziele, setZiele] = useState<Partial<Record<string, number>>>({});
@@ -459,7 +460,9 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           }
           try {
             status(`${label}: „${eintrag.term}“ wird gespeichert …`);
-            await studioRequest('/stage', { kind: 'vocabulary', document: { ...eintrag } });
+            if (!deliveryRef.current) throw Error(t('studio.deliveryFailed'));
+            await deliveryRef.current.deliver('vocabulary', { ...eintrag });
+            await deliveryRef.current.flush();
           } catch (error) {
             resultat.fehler.push(`${eintrag.term}: ${error instanceof Error ? error.message : String(error)}`);
             tick(eintrag.term, 'failed');
@@ -514,6 +517,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       });
     };
     try {
+      deliveryRef.current = await startAutomaticDelivery();
       const codes = alleSprachen ? [...aktiveSprachen] : [sprache];
       const gesamt: LaufErgebnis = { erzeugt: 0, kreuzGeprueft: 0, einfachGeprueft: 0, kreuzAbgelehnt: 0, duplikate: 0, aussortiert: 0, schwarzgelistet: 0, gerettet: 0, fehler: [], usd: 0 };
       const fehler: string[] = [];
@@ -523,6 +527,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       for (const code of codes) {
         const label = SPRACHEN.find((eintrag) => eintrag.code === code)?.label ?? code;
         for (let paketNummer = 1; ; paketNummer++) {
+          if (deliveryRef.current?.failed) throw Error(t('studio.deliveryFailed'));
           status(`${label}: Paket ${paketNummer} — bisher ${usdText(gesamt.usd)} geschätzt …`);
           let teil: LaufErgebnis | null;
           try {
@@ -541,12 +546,10 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           gesamt.fehler.push(...teil.fehler);
           gesamt.usd += teil.usd;
           if (teil.erzeugt > 0) {
-            // JE Paket veröffentlichen — ein Abbruch (Seite neu laden) darf
-            // die bereits bezahlten Wörter nicht auf der Stage festsitzen
-            // lassen (Lektion „partial"-Publish, 16.09.).
+            // Die einzeln bestätigten Wörter vor dem nächsten Paket zählen.
             status(`${label}: ${teil.erzeugt} Wörter werden in den Grundstock übernommen …`);
             try {
-              await studioRequest('/publish', {});
+              await deliveryRef.current?.flush();
               await ladeBestand();
             } catch (error) {
               fehler.push(`Publish: ${error instanceof Error ? error.message : String(error)}`);
@@ -563,6 +566,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           }
         }
       }
+      await deliveryRef.current?.finish();
+      deliveryRef.current = null;
       onFinished();
       setErgebnis(gesamt);
       setLaufFehler(fehler);
@@ -590,6 +595,10 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       setLaufFehler([nachricht]);
       setMeldung(nachricht);
     } finally {
+      if (deliveryRef.current) {
+        try { await deliveryRef.current.finish(); } catch (error) { setLaufFehler(alt => [...alt, String(error)]); }
+        deliveryRef.current = null;
+      }
       setFortschritt((alt) => (alt ? { ...alt, done: true, current: null } : alt));
       starting.current = false;
       setRunning(false); onRunningChange?.(false);

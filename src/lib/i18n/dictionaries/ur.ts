@@ -659,6 +659,10 @@ const ur = {
   "level.experienced": "تجربہ کار",
   "level.pro": "ماہر",
   "level.choose": "سیکھنے کی سطح",
+  "studio.duplicateSituation": "بہت ملتا جلتا مکالمہ پہلے سے موجود ہے۔",
+  "studio.deliveryFailed": "مواد خودکار طور پر شامل نہیں ہو سکا؛ تخلیق روک دی گئی۔",
+  "studio.autoDeliveryHint": "جانچ میں کامیاب نیا مواد خودکار طور پر شامل ہوتا ہے، تخلیق جاری ہونے کے دوران بھی۔",
+  "studio.autoDelivered": "{{count}} خودکار طور پر شامل کیے گئے",
   "studio.localText": "مقامی ٹیکسٹ ماڈل · API کلید کی ضرورت نہیں",
 } as const;
 

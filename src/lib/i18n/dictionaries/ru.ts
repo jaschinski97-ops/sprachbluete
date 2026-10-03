@@ -659,6 +659,10 @@ const ru = {
   "level.experienced": "Опытный",
   "level.pro": "Профи",
   "level.choose": "Уровень обучения",
+  "studio.duplicateSituation": "Очень похожий диалог уже есть.",
+  "studio.deliveryFailed": "Не удалось автоматически добавить материалы; генерация остановлена.",
+  "studio.autoDeliveryHint": "Новые материалы автоматически добавляются после успешной проверки, в том числе во время генерации.",
+  "studio.autoDelivered": "{{count}} автоматически добавлено",
   "studio.localText": "Локальная текстовая модель · без ключа API",
 } as const;
 

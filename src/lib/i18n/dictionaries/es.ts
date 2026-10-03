@@ -763,6 +763,10 @@ const es: Partial<Record<TranslationKey, string>> = {
   "level.experienced": "Experimentado",
   "level.pro": "Experto",
   "level.choose": "Nivel de aprendizaje",
+  "studio.duplicateSituation": "Ya existe un diálogo muy similar.",
+  "studio.deliveryFailed": "La incorporación automática falló; se detuvo la generación.",
+  "studio.autoDeliveryHint": "El contenido nuevo se incorpora automáticamente tras superar las comprobaciones, incluso durante la generación.",
+  "studio.autoDelivered": "{{count}} incorporados automáticamente",
   "studio.localText": "Modelo de texto local · sin clave API",
 };
 

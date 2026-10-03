@@ -659,6 +659,10 @@ const id = {
   "level.experienced": "Berpengalaman",
   "level.pro": "Ahli",
   "level.choose": "Tingkat belajar",
+  "studio.duplicateSituation": "Dialog yang sangat mirip sudah tersedia.",
+  "studio.deliveryFailed": "Penambahan konten otomatis gagal; pembuatan dihentikan.",
+  "studio.autoDeliveryHint": "Konten baru ditambahkan otomatis setelah lolos pemeriksaan, termasuk saat pembuatan berlangsung.",
+  "studio.autoDelivered": "{{count}} ditambahkan secara otomatis",
   "studio.localText": "Model teks lokal · tanpa kunci API",
 } as const;
 

@@ -42,6 +42,7 @@ export type ClipRunOptions = {
   shouldCancel?: () => boolean;
   delayMs?: number;
   now?: () => number;
+  onProduced?: (document: AudioClip, base64: string) => Promise<void>;
 };
 
 /** Vorhanden heißt: Dokument **und** Datei — sonst Karteileiche (AE-14). */
@@ -93,7 +94,8 @@ function clipTask(
   now: () => number,
   toneWortschatz?: readonly ToneWort[],
   frueh: { geprueft: number; failed: number; notstopp: boolean } = { geprueft: 0, failed: 0, notstopp: false },
-  register: { probe: RegisterProbe; gestoppt: boolean } = { probe: leereRegisterProbe(), gestoppt: false }
+  register: { probe: RegisterProbe; gestoppt: boolean } = { probe: leereRegisterProbe(), gestoppt: false },
+  onProduced?: ClipRunOptions['onProduced']
 ): BatchTask<AudioClipSpec> {
   return {
     ...clipExists(db, blobs),
@@ -132,7 +134,6 @@ function clipTask(
 
       // Erst die Datei, dann das Dokument - bricht es dazwischen ab, gilt der
       // Clip als fehlend und wird beim naechsten Lauf sauber neu erzeugt.
-      await blobs.put(blobKey, clip.base64);
 
       const doc: AudioClip = {
         id: spec.id,
@@ -150,6 +151,8 @@ function clipTask(
         generatedAt: now(),
         synthetic: true,
       };
+      if (onProduced) { await onProduced(doc, clip.base64); return; }
+      await blobs.put(blobKey, clip.base64);
       await db.put('audio', spec.id, doc);
       invalidateClipIndex();
     },
@@ -201,7 +204,7 @@ export async function runClipBatch(options: ClipRunOptions): Promise<BatchProgre
   const basisCancel = options.shouldCancel;
   const result = await runBatch({
     specs: options.specs,
-    task: clipTask(options.client, db, blobs, tone, options.now ?? Date.now, options.toneWortschatz, frueh, register),
+    task: clipTask(options.client, db, blobs, tone, options.now ?? Date.now, options.toneWortschatz, frueh, register, options.onProduced),
     onProgress,
     shouldCancel: () => basisCancel?.() || frueh.notstopp || register.gestoppt,
     delayMs: options.delayMs,

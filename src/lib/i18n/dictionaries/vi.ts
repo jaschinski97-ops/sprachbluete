@@ -659,6 +659,10 @@ const vi = {
   "level.experienced": "Có kinh nghiệm",
   "level.pro": "Chuyên gia",
   "level.choose": "Cấp độ học",
+  "studio.duplicateSituation": "Đã có một hội thoại rất tương tự.",
+  "studio.deliveryFailed": "Tự động thêm nội dung thất bại; đã dừng tạo.",
+  "studio.autoDeliveryHint": "Nội dung mới được tự động thêm sau khi vượt qua kiểm tra, kể cả khi đang tiếp tục tạo.",
+  "studio.autoDelivered": "Đã tự động thêm {{count}}",
   "studio.localText": "Mô hình văn bản cục bộ · không cần khóa API",
 } as const;
 

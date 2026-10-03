@@ -208,6 +208,19 @@ describe('runImageBatch - das Tor haelt die Pipeline an', () => {
 });
 
 describe('runImageBatch - Ablage', () => {
+  it('uebergibt neue Bilder direkt an den Helper ohne Browser-Metadaten oder Blobablage', async () => {
+    const store = await freshStore();
+    const blobs = freshBlobs();
+    const put = jest.spyOn(store, 'put').mockRejectedValue(Error('browser quota'));
+    const blobPut = jest.spyOn(blobs, 'put').mockRejectedValue(Error('browser quota'));
+    const onProduced = jest.fn(async () => {});
+    const specs = planImages({ limit: 1 });
+    const result = await runImageBatch({ specs, client: clientThatFailsOn(), store, blobStore: blobs, onProduced, now: () => T0 });
+    expect(result.ok).toBe(1);
+    expect(onProduced).toHaveBeenCalledWith(expect.objectContaining({ id: specs[0].id, generatedAt: T0 }), FAKE_BASE64);
+    expect(put).not.toHaveBeenCalled();
+    expect(blobPut).not.toHaveBeenCalled();
+  });
   it('legt Metadaten und Bilddaten getrennt, aber vollstaendig ab', async () => {
     const store = await freshStore();
     const blobs = freshBlobs();

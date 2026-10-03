@@ -784,6 +784,10 @@ const de = {
   "level.experienced": "Erfahren",
   "level.pro": "Profi",
   "level.choose": "Lernstufe",
+  "studio.duplicateSituation": "Fast gleicher Dialog bereits im Bestand.",
+  "studio.deliveryFailed": "Automatische Inhaltsübernahme fehlgeschlagen; Lauf angehalten.",
+  "studio.autoDeliveryHint": "Neue Inhalte werden nach bestandener Prüfung automatisch übernommen — auch während des Laufs.",
+  "studio.autoDelivered": "{{count}} automatisch übernommen",
   "studio.localText": "Lokales Textmodell · kein API-Schlüssel",
 } as const;
 

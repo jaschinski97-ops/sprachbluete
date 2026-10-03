@@ -25,6 +25,7 @@ export type RunOptions = {
   onProgress?: (progress: BatchProgress) => void;
   shouldCancel?: () => boolean;
   delayMs?: number;
+  onProduced?: (document: ConversationSituation) => Promise<void>;
 };
 
 function situationExists(db: DataStore) {
@@ -37,11 +38,12 @@ function situationExists(db: DataStore) {
   };
 }
 
-function situationTask(client: GenerationClient, db: DataStore): BatchTask<SituationSpec> {
+function situationTask(client: GenerationClient, db: DataStore, onProduced?: RunOptions['onProduced']): BatchTask<SituationSpec> {
   return {
     ...situationExists(db),
     async produce(spec) {
       const situation = await client.generate(spec);
+      if (onProduced) { await onProduced(situation); return; }
       await db.put('situations', spec.id, situation);
     },
   };
@@ -51,7 +53,7 @@ export async function runGenerationBatch(options: RunOptions): Promise<BatchProg
   const db = options.store ?? (await getStore());
   return runBatch({
     specs: options.specs,
-    task: situationTask(options.client, db),
+    task: situationTask(options.client, db, options.onProduced),
     onProgress: options.onProgress,
     shouldCancel: options.shouldCancel,
     delayMs: options.delayMs,

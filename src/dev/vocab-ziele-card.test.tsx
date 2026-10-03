@@ -7,7 +7,13 @@ import { readMeta, writeMeta } from '@/lib/repository';
 import { VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 import { UI_LANGUAGES } from '@/lib/i18n/types';
 
-jest.mock('./content-client', () => ({ studioRequest: jest.fn(async () => ({})), clearContentSelection: jest.fn(async () => ({})) }));
+const mockDeliver = jest.fn(async () => {});
+const mockFlush = jest.fn(async () => {});
+const mockFinish = jest.fn(async () => 0);
+jest.mock('./content-client', () => ({
+  studioRequest: jest.fn(async () => ({})), clearContentSelection: jest.fn(async () => ({})),
+  startAutomaticDelivery: jest.fn(async () => ({ deliver: mockDeliver, flush: mockFlush, finish: mockFinish, failed: false })),
+}));
 jest.mock('@/lib/api-key', () => ({ loadApiKey: async () => 'test-only', getKeyStorageMode: async () => 'memory' }));
 jest.mock('@/lib/providers/text', () => ({ createTextClient: jest.fn(() => ({ complete: jest.fn(async () => { throw Error('Mock-Aufruf angekommen'); }) })) }));
 jest.mock('@/lib/repository', () => ({
@@ -30,6 +36,12 @@ function completeMitLoopStopp() {
 const durchgelassen = (anzahl: number) => ({
   text: JSON.stringify({ urteile: Array.from({ length: anzahl }, (_, index) => ({ index, urteil: 'bestehen', gruende: [] })) }),
   model: 'test',
+});
+
+beforeEach(() => {
+  mockDeliver.mockReset().mockResolvedValue(undefined);
+  mockFlush.mockReset().mockResolvedValue(undefined);
+  mockFinish.mockReset().mockResolvedValue(0);
 });
 
 test('one click starts word generation and deletion follows the selected language scope', async () => {
@@ -61,14 +73,14 @@ test('one click starts word generation and deletion follows the selected languag
   await act(async () => { tree.unmount(); });
 });
 
-test('loop keeps running after a first package, publishing as it goes, and stops on the next hard failure', async () => {
+test('loop delivers each word automatically, waits for acknowledgement, and stops on the next hard failure', async () => {
   jest.useFakeTimers();
   const lauf = completeMitLoopStopp();
   jest.mocked(createTextClient).mockReturnValue({ provider: 'gemini', model: 'test', complete: lauf.complete } as never);
-  jest.mocked(studioRequest).mockImplementation(async path => {
-    if (path === '/publish') await new Promise<void>(resolve => { (lauf as { finishPublish?: () => void }).finishPublish = resolve; });
-    return { shipped: { entries: [] }, stage: { entries: [] } } as never;
-  });
+  jest.mocked(studioRequest).mockResolvedValue({ shipped: { entries: [] }, stage: { entries: [] } } as never);
+  mockFlush.mockImplementationOnce(async () => {}).mockImplementationOnce(() => new Promise<void>(resolve => {
+    (lauf as { finishPublish?: () => void }).finishPublish = resolve;
+  }));
   let tree!: ReactTestRenderer;
   let run!: Promise<void>;
   try {
@@ -91,8 +103,8 @@ test('loop keeps running after a first package, publishing as it goes, and stops
     expect(tree.root.findByType(ProgressPanel).props.progress).toMatchObject({ processed: 1, ok: 1, done: false });
     // Das gestagede Wort läuft bewusst als „ungeprüft“ — sourceVerified
     // bedeutet „quellengeprüft“ und lehnt den Publish sonst ab (16.09.).
-    const stageCall = jest.mocked(studioRequest).mock.calls.find(([path]) => path === '/stage');
-    expect((stageCall?.[1] as { document: { sourceVerified: boolean; verificationNote: string } }).document.sourceVerified).toBe(false);
+    expect(mockDeliver).toHaveBeenCalledWith('vocabulary', expect.objectContaining({ sourceVerified: false, learningStage: 'beginner' }));
+    expect(jest.mocked(studioRequest).mock.calls.some(([path]) => path === '/publish')).toBe(false);
     // Das zweite Paket scheitert hart (Mock) → der Loop stoppt, statt
     // weiter Geld zu verbrennen; das erste Paket bleibt veröffentlicht.
     await act(async () => {
@@ -103,6 +115,7 @@ test('loop keeps running after a first package, publishing as it goes, and stops
     expect(JSON.stringify(tree.toJSON())).toContain('Loop beendet');
     expect(JSON.stringify(tree.toJSON())).toContain('Test-Stopp nach dem ersten Paket');
     expect(JSON.stringify(tree.toJSON())).not.toContain('Generierung läuft');
+    expect(mockFinish).toHaveBeenCalledTimes(1);
   } finally {
     await act(async () => { tree?.unmount(); });
     jest.useRealTimers();
@@ -148,6 +161,7 @@ test('blacklisted terms skip the paid check and rejected terms land on the black
     );
     // Nichts erzeugt → kein Publish, keine Kostenbestätigung nötig.
     expect(jest.mocked(studioRequest).mock.calls.some(([path]) => path === '/publish')).toBe(false);
+    expect(mockDeliver).not.toHaveBeenCalled();
     await act(async () => { tree.unmount(); });
   } finally {
     jest.useRealTimers();

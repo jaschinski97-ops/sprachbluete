@@ -5,9 +5,11 @@ const os = require('node:os');
 const path = require('node:path');
 const { ContentPipeline, BUDGET, shippingBytes } = require('./pipeline.cjs');
 const { createStudio } = require('./studio.cjs');
+const { AutomaticDelivery } = require('./automatic-delivery.cjs');
 const { checkContent } = require('./check.cjs');
 const { pruneOrphans } = require('./prune-orphans.cjs');
 const domain = require('./domain.cjs');
+const { Readable } = require('node:stream');
 const { clipIdFor } = domain.load('src/lib/clips/types');
 // Feste Fixture-Wörter (früherer Grundstock, nur noch Testdaten).
 const { VOCABULARY } = domain.load('src/test-fixtures/legacy-vocabulary');
@@ -61,6 +63,134 @@ async function setup(t) {
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   return { root, pipeline: new ContentPipeline(root, { extraVocabulary: VOCABULARY }) };
 }
+test('automatic delivery exposes each checked image before finalizing build files, preserves unrelated drafts', async t => {
+  const { root, pipeline } = await setup(t);
+  const word = VOCABULARY.find(item => item.isConcrete);
+  const bytes = await fs.readFile(path.join(__dirname, '../../assets/images/icon.png'));
+  await pipeline.stage({ kind: 'situations', document: situation });
+  const before = await pipeline.state();
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  await assert.rejects(delivery.begin(), /bereits/);
+  await assert.rejects(delivery.accept('wrong', {}), /nicht mehr aktiv/);
+  const entry = await delivery.accept(token, { kind: 'images', document: { id: word.id, vocabId: word.id,
+    format: 'png', byteSize: bytes.length, blobKey: word.id + '.png', prompt: 'TEST no text', model: 'TEST', generatedAt: 1 }, base64: bytes.toString('base64') });
+  assert.equal((await pipeline.catalog()).entries.length, 0);
+  assert.equal(delivery.catalog().entries[0].id, word.id);
+  assert.deepEqual(await fs.readFile(path.join(root, 'public/content', entry.asset)), bytes);
+  assert.equal((await delivery.readCheckpoint()).entries.length, 1);
+  // Finalizing must not run the expensive checks again on the existing corpus.
+  pipeline.checkEntry = () => { throw Error('unexpected repeated check'); };
+  assert.deepEqual(await delivery.finish(token), { count: 1 });
+  assert.equal((await pipeline.catalog()).entries[0].id, word.id);
+  assert.equal(await delivery.readCheckpoint(), null);
+  assert.deepEqual((await pipeline.state()).stage.entries.find(e => e.kind === 'situations'), before.stage.entries[0]);
+});
+test('helper restart recovers acknowledged content and restores missing public media', async t => {
+  const { root, pipeline } = await setup(t);
+  const bytes = await fs.readFile(path.join(__dirname, '../../assets/images/icon.png'));
+  const word = VOCABULARY.find(item => item.isConcrete);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  const entry = await delivery.accept(token, { kind: 'images', document: { id: word.id, vocabId: word.id,
+    format: 'png', byteSize: bytes.length, blobKey: word.id + '.png', prompt: 'TEST no text', model: 'TEST', generatedAt: 1 }, base64: bytes.toString('base64') });
+  await fs.unlink(path.join(root, 'public/content', entry.asset));
+  const restarted = new AutomaticDelivery(pipeline);
+  await restarted.recover();
+  assert.equal(restarted.active, null);
+  assert.equal((await pipeline.catalog()).entries[0].id, word.id);
+  assert.deepEqual(await fs.readFile(path.join(root, 'public/content', entry.asset)), bytes);
+  assert.equal(await restarted.readCheckpoint(), null);
+});
+test('failed checks never become live; external catalog edits retain the recovery checkpoint', async t => {
+  const { pipeline } = await setup(t);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  const word = VOCABULARY.find(item => item.id === 'kha');
+  await assert.rejects(delivery.accept(token, audio(wav(120, 240), word)));
+  assert.equal(delivery.catalog().entries.length, 0);
+  await delivery.accept(token, { kind: 'situations', document: situation });
+  await pipeline.writeCatalog({ version: 2, entries: [], deleted: { unrelated: 1 } });
+  await assert.rejects(delivery.finish(token), /extern geändert/);
+  assert.equal((await delivery.readCheckpoint()).entries.length, 1);
+  await assert.rejects(new AutomaticDelivery(pipeline).recover(), /extern geändert/);
+});
+test('finish can be retried after catalog write succeeded but checkpoint cleanup failed', async t => {
+  const { pipeline } = await setup(t);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  await delivery.accept(token, { kind: 'situations', document: situation });
+  await pipeline.writeCatalog(delivery.catalog());
+  assert.deepEqual(await delivery.finish(token), { count: 1 });
+  assert.equal(await delivery.readCheckpoint(), null);
+});
+test('automatic delivery keeps budget accounting correct for replacements and rejects overflow before exposure', async t => {
+  const { pipeline } = await setup(t);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  const first = await delivery.accept(token, { kind: 'situations', document: situation });
+  assert.equal(delivery.active.budgetBytes, shippingBytes(first));
+  const replacement = await delivery.accept(token, { kind: 'situations', document: { ...situation, setting: 'longer setting for replacement' } });
+  assert.equal(delivery.active.budgetBytes, shippingBytes(replacement));
+  delivery.active.budgetBytes = BUDGET;
+  await assert.rejects(delivery.accept(token, { kind: 'situations', document: { ...situation, id: 'greeting-A1-de_to_th-002' } }), /Budget|budget/);
+  assert.equal(delivery.catalog().entries.length, 1);
+  assert.deepEqual(await delivery.finish(token), { count: 1 });
+});
+test('delivery HTTP routes are origin-protected, expose live state, and prevent concurrent catalog mutations', async t => {
+  const { root } = await setup(t);
+  const server = createStudio(root);
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const url = `http://127.0.0.1:${server.address().port}`;
+  const post = (route, body, origin = 'http://localhost:8081') => fetch(url + route, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(origin ? { Origin: origin } : {}) }, body: JSON.stringify(body) });
+  assert.equal((await post('/delivery/start', {}, null)).status, 403);
+  const { token } = await (await post('/delivery/start', {})).json();
+  assert.equal((await post('/delivery/touch', { token })).status, 200);
+  assert.equal((await post('/delivery/item', { token, kind: 'situations', document: situation })).status, 200);
+  const state = await (await fetch(url + '/state')).json();
+  assert.equal(state.shipped.entries[0].id, situation.id);
+  assert.equal((await post('/catalog/delete', { kind: 'situations', id: situation.id })).status, 400);
+  assert.deepEqual(await (await post('/delivery/finish', { token })).json(), { count: 1 });
+  assert.equal((await post('/delivery/touch', { token })).status, 400);
+});
+test('missing background heartbeat never finalizes during a model request; idle recovery finishes afterwards', async t => {
+  const { root, pipeline } = await setup(t);
+  const realInterval = global.setInterval;
+  let idle;
+  let release;
+  let started;
+  const upstreamStarted = new Promise(resolve => { started = resolve; });
+  const upstreamHeld = new Promise(resolve => { release = resolve; });
+  global.setInterval = callback => { idle = callback; return { unref() {} }; };
+  let server;
+  try {
+    server = createStudio(root, { getApiKey: () => 'fixture-key', logRun: () => {}, openaiFetch: async () => {
+      started(); await upstreamHeld;
+      return { ok: true, headers: new Map(), body: Readable.toWeb(Readable.from([Buffer.from('fixture audio')])) };
+    } });
+  } finally { global.setInterval = realInterval; }
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const url = `http://127.0.0.1:${server.address().port}`;
+  const post = (route, body) => fetch(url + route, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:8081' }, body: JSON.stringify(body) });
+  const { token } = await (await post('/delivery/start', {})).json();
+  await post('/delivery/item', { token, kind: 'situations', document: situation });
+  const audioResponse = post('/api/openai/tts', { text: 'fixture', voice: 'onyx' });
+  await upstreamStarted;
+  const realNow = Date.now;
+  const future = realNow() + 150000;
+  Date.now = () => future;
+  try {
+    await idle();
+    assert.equal((await pipeline.catalog()).entries.length, 0);
+    release();
+    assert.equal((await audioResponse).status, 200);
+    await new Promise(resolve => setImmediate(resolve));
+    await idle();
+    assert.equal((await pipeline.catalog()).entries[0].id, situation.id);
+  } finally { Date.now = realNow; release(); await audioResponse; }
+});
 function wav(start = 200, end = start) {
   const data = Buffer.alloc(44 + 24000 * 2);
   data.write('RIFF'); data.writeUInt32LE(data.length - 8, 4); data.write('WAVEfmt ', 8);

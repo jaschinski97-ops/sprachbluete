@@ -22,4 +22,12 @@ Neue Vokabeln tragen `learningStage`; alte Wörter ohne Feld zählen als Anfäng
 
 Änderungen liegen ausschließlich im Worktree `local-text-levels`. Während der Browser-Bildlauf aktiv ist weder in den aktiven Checkout übernehmen noch App/Helper neu starten. Danach nur Code/Dokumentation übernehmen; Nutzer-Katalog und generierte Medien unberührt lassen. `_Local/text` separat übernehmen (gitignored). Anschließend Helper neu starten und echte kleine Proben beider Modelle ausführen. Native iPhone-Abnahme bleibt offen.
 
+## Aktivierung und Proben am 04.10.2026
+
+Nach Nutzerbestätigung des Bildlauf-Endes in den aktiven Checkout übernommen; Runtime/Modelle unter `_Local/text` kopiert, ComfyUI beendet und Helper/Textserver gestartet. Router-Preset wird ohne UTF-8-BOM geschrieben, damit auch Windows PowerShell 5.1 korrekt startet.
+
+Beide Modelle erzeugten über Helper 8082 zwei Thai-Vokabeln mit 20 Übersetzungen und einen deutschen Dialog, der den bestehenden Dialogparser bestand (Qwen sieben Züge/83 s, Gemma acht Züge/86 s). Vokabelausgabe ungefähr 105 Tokens/s bei Qwen, 64 bei Gemma; Modell-Ladezeit kommt hinzu. Schema-Erfolg bescheinigt keine Sprachqualität: Qwen bezeichnete den Ton von ข้าว falsch als mid und lieferte mehrere falsche Bedeutungen; Gemma war bei diesen beiden Beispielen besser. Proben ausschließlich in `_Local/text`, keine Veröffentlichung. Vor großen Läufen weiter fachlich prüfen.
+
+Studio-Auswahl: Gemma für Vokabel-Erzeugung, Qwen als Kreuzprüfer, Qwen für Dialoge. Audio unverändert. Anfänger/Erfahren/Profi im aktiven Studio geprüft. Die vorhandenen 3823 Bildentwürfe bleiben im Stage. 286 Meldungen im letzten Bildabschnitt betrafen die localStorage-Quote der Browser-Metadaten; dieser Speicherfehler ist separat offen, kein Anlass zum erneuten Erzeugen der bereits gesicherten Stage-Bilder.
+
 Quellen: [llama.cpp Router](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md#using-multiple-models), [Qwen](https://huggingface.co/unsloth/Qwen3.5-9B-GGUF), [Gemma IT](https://huggingface.co/bartowski/gemma-4-12B-it-GGUF).

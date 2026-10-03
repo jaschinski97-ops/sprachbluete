@@ -12,7 +12,7 @@ $qwen = (Join-Path $runtimePath 'models/Qwen3.5-9B-Q5_K_M.gguf').Replace('\','/'
 $gemma = (Join-Path $runtimePath 'models/gemma-4-12B-it-Q4_K_M.gguf').Replace('\','/')
 foreach ($file in @($qwen,$gemma)) { if (!(Test-Path -LiteralPath $file)) { throw "Modelldatei fehlt: $file" } }
 $presets = Join-Path $runtimePath 'models.ini'
-@"
+$presetText = @"
 version = 1
 [*]
 c = 16384
@@ -25,6 +25,7 @@ alias = qwen3.5-9b
 [gemma-4-12b]
 model = $gemma
 alias = gemma-4-12b
-"@ | Set-Content -LiteralPath $presets -Encoding utf8
+"@
+[IO.File]::WriteAllText($presets, $presetText, [Text.UTF8Encoding]::new($false))
 & $server --host 127.0.0.1 --port 8090 --models-preset $presets --models-max 1 --no-webui
 exit $LASTEXITCODE

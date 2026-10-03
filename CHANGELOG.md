@@ -1,5 +1,9 @@
 # Changelog
 
+## 04.10.2026
+
+- Lokale Textmodelle und drei Lernstufen nach beendetem Bildlauf aktiviert; Qwen/Gemma mit echten Vokabel- und Dialogproben geprüft. Windows-PowerShell-Preset ohne UTF-8-BOM korrigiert. Audio sowie vorhandene Bildentwürfe unverändert; Testinhalte nicht veröffentlicht.
+
 Alle nennenswerten Änderungen an ThaiSpeaker (Lernbegleiter). Neueste oben.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 Die ausführliche Entwicklungsgeschichte bis zum 25.09.2026 steht in

@@ -76,7 +76,7 @@ function assertDocument(kind, doc, vocabulary = []) {
     images: 'id vocabId format byteSize blobKey prompt model generatedAt',
     audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice generatedAt synthetic',
     exam: 'id certificate level skill direction title instruction stimulus minutes source generatedAt modelUsed taskType items production',
-    vocabulary: 'id generatedAt language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman sourceVerified source verificationNote note',
+    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman sourceVerified source verificationNote note',
   }[kind].split(' ');
   if (Object.keys(doc).some((key) => !fields.includes(key))) throw Error('Unbekannte Metadatenfelder; Export verweigert.');
 }
@@ -419,12 +419,14 @@ class ContentPipeline {
     const merged = new Map(state.shipped.entries.map((entry) => [keyOf(entry), entry]));
     const assetDir = path.join(this.root, 'assets/content');
     let staged = state.stage.entries;
-    const selected = options.vocabularyIds;
+    if (options.vocabularyIds !== undefined && options.imageIds !== undefined) throw Error('Nur eine Inhaltsauswahl pro Veröffentlichung.');
+    const selectedKind = options.imageIds !== undefined ? 'images' : 'vocabulary';
+    const selected = options.imageIds !== undefined ? options.imageIds : options.vocabularyIds;
     if (selected !== undefined) {
-      if (!Array.isArray(selected) || !selected.length || selected.some(id => typeof id !== 'string')) throw Error('vocabularyIds muss eine nichtleere ID-Liste sein.');
+      if (!Array.isArray(selected) || !selected.length || selected.some(id => typeof id !== 'string')) throw Error('Inhaltsauswahl muss eine nichtleere ID-Liste sein.');
       const ids = new Set(selected);
-      staged = staged.filter(entry => entry.kind === 'vocabulary' && ids.has(entry.id));
-      if (staged.length !== ids.size) throw Error('Nicht alle gewählten Vokabeln sind im Stage.');
+      staged = staged.filter(entry => entry.kind === selectedKind && ids.has(entry.id));
+      if (staged.length !== ids.size) throw Error('Nicht alle gewählten Inhalte sind im Stage.');
     }
     for (const entry of staged) merged.set(keyOf(entry), entry);
     const entries = [...merged.values()].sort((a,b) => keyOf(a).localeCompare(keyOf(b)));

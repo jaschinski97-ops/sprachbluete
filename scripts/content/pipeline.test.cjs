@@ -30,6 +30,24 @@ test('scoped vocabulary publish preserves unrelated staged drafts and budget', a
   assert.ok(root);
 });
 const { analyzeToneContour } = domain.load('src/lib/speaking/analysis');
+test('scoped image publish leaves unrelated vocabulary draft untouched', async t => {
+  const { pipeline } = await setup(t);
+  const word = VOCABULARY.find(item => item.isConcrete);
+  const bytes = await fs.readFile(path.join(__dirname, '../../assets/images/icon.png'));
+  await pipeline.stage({ kind: 'images', document: { id: word.id, vocabId: word.id, format: 'png', byteSize: bytes.length,
+    blobKey: word.id + '.png', prompt: 'TEST, no text', model: 'TEST', generatedAt: 1 }, base64: bytes.toString('base64') });
+  await pipeline.stage({ kind: 'vocabulary', document: { id: 'unrelated', language: 'en', term: 'precise', german: 'genau',
+    romanization: 'precise', partOfSpeech: 'adjective', register: 'neutral', isConcrete: false, syllables: [],
+    learningStage: 'pro', sourceVerified: false, verificationNote: 'KI-Test' } });
+  const before = await pipeline.state();
+  await pipeline.publish({ imageIds: [word.id] });
+  const after = await pipeline.state();
+  assert.deepEqual(after.shipped.entries.map(entry => entry.kind), ['images']);
+  assert.deepEqual(after.stage.entries.find(entry => entry.id === 'unrelated'), before.stage.entries.find(entry => entry.id === 'unrelated'));
+  await assert.rejects(pipeline.publish({ imageIds: ['missing'] }), /Nicht alle/);
+  await assert.rejects(pipeline.publish({ imageIds: null }), /nichtleere/);
+  await assert.rejects(pipeline.publish({ imageIds: [word.id], vocabularyIds: ['unrelated'] }), /Nur eine/);
+});
 const { decodeAudio } = require('./media.cjs');
 const situation = {
   id: 'greeting-A1-de_to_th-001', level: 'A1', topic: 'greeting', direction: 'de_to_th',

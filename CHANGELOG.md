@@ -2,6 +2,8 @@
 
 ## 04.10.2026
 
+- Bilder können gezielt über `imageIds` in den Katalog übernommen werden; andere Stage-Entwürfe bleiben erhalten. `learningStage` ist auch im Exportvertrag für Vokabeln zugelassen.
+
 - Lokale Textmodelle und drei Lernstufen nach beendetem Bildlauf aktiviert; Qwen/Gemma mit echten Vokabel- und Dialogproben geprüft. Windows-PowerShell-Preset ohne UTF-8-BOM korrigiert. Audio sowie vorhandene Bildentwürfe unverändert; Testinhalte nicht veröffentlicht.
 
 Alle nennenswerten Änderungen an ThaiSpeaker (Lernbegleiter). Neueste oben.

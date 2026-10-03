@@ -47,6 +47,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 - Ablauf: Studio erzeugt → `/stage` → `/publish` in den Katalog. Die Medien liegen unter `assets/content/` (sha256-Namen) und werden per `npm run web:content` nach `public/` gespiegelt.
 - `publish()` merged die Stage nur HINZU. Löschen läuft über die Studio-Routen (`/catalog/delete`, `/catalog/clear-selection`), die Katalog, Stage und verwaiste Medien gemeinsam bereinigen.
+- Gezielte Veröffentlichung: `/publish` nimmt entweder `imageIds` oder `vocabularyIds`; andere Stage-Entwürfe bleiben erhalten. Ohne Auswahl wird weiterhin der gesamte Stage gemerged.
 - Direkter Helper-Aufruf: `POST /publish` mit Body `{}` und Header `Origin: http://localhost:8081` (ohne Origin kommt 403). Bei großem Katalog reißt die HTTP-Antwort ab, der Publish läuft trotzdem durch; die Wahrheit steht in `pipeline/logs/…publish-N.json`.
 - Laufprotokolle und das Fehlerprotokoll `pipeline/logs/studio-failures.ndjson` sind nur lokal (gitignored).
 - Versandbudget 512 MiB. Das OpenAI-TTS-Limit von 30 Aufrufen/min ist der Flaschenhals; der Helper wartet selbst.

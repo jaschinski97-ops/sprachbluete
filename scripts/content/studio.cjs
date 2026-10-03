@@ -253,7 +253,7 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
       // beides über dieselbe Serialisierungs-Warteschlange wie Stage/Publish.
       const action = () =>
         req.url === '/stage' ? pipeline.stage(data) :
-        req.url === '/publish' ? pipeline.publish({ vocabularyIds: data.vocabularyIds }) :
+        req.url === '/publish' ? pipeline.publish({ vocabularyIds: data.vocabularyIds, imageIds: data.imageIds }) :
         req.url === '/stage/delete' ? pipeline.deleteFromStage(data.kind, data.id) :
         req.url === '/catalog/clear-selection' ? pipeline.clearGenerated({ kind: data.kind, languages: data.languages, includeBase: true }) :
         pipeline.deleteFromCatalog(data.kind, data.id);

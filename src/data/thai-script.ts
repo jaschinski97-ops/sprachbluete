@@ -223,18 +223,6 @@ export function isToneMark(character: string): character is ToneMark {
  */
 export type SyllableShape = 'live' | 'dead-short' | 'dead-long';
 
-export const SYLLABLE_SHAPE_LABEL: Record<SyllableShape, string> = {
-  live: 'lebende Silbe',
-  'dead-short': 'tote Silbe, kurz',
-  'dead-long': 'tote Silbe, lang',
-};
-
-export const SYLLABLE_SHAPE_EXPLANATION: Record<SyllableShape, string> = {
-  live: 'langer Vokal, oder Vokal mit klingendem Schlusslaut (m, n, ng, w, j)',
-  'dead-short': 'kurzer Vokal am Wortende, oder kurzer Vokal mit Verschlusslaut (k, t, p)',
-  'dead-long': 'langer Vokal mit Verschlusslaut (k, t, p)',
-};
-
 /* ------------------------------------------------------------------ *
  * Die Tonregeln                                                       *
  * ------------------------------------------------------------------ */

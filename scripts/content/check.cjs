@@ -34,7 +34,7 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
         if (vocabSeen.has(schluessel)) throw Error('Doppelter Wortschatz-Begriff (normalisiert): ' + schluessel);
         vocabSeen.add(schluessel);
       }
-      // Redaktionell geprüfte Bildmotive (repair-audit-2026-10-04.cjs) tragen einen eigenen Vermerk.
+      // Redaktionell geprüfte Bildmotive (Audit 04.10.2026) tragen einen eigenen Vermerk.
       const motivGeprueft = entry.kind === 'images' && entry.check.scope === 'schema-integrity-decode-motif-review'
         && entry.check.status === 'passed' && entry.check.label === 'Motiv redaktionell geprüft';
       if (entry.review || !isDeliverableEntry(entry) || !entry.check.checkedAt || (!motivGeprueft && (!['schema-integrity-decode', 'schema-language'].includes(entry.check.scope) ||

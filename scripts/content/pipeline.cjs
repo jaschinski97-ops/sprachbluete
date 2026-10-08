@@ -95,7 +95,7 @@ class ContentPipeline {
     this.stageFile = path.join(this.work, 'stage.json');
     this.catalogFile = path.join(root, 'src/content/catalog.json');
     // Berichte leben seit der pipeline/-Struktur (ROADMAP v2, Phase 2) unter
-    // pipeline/reports/; alte Kopien in content/ sind veraltet (content/README.md).
+    // pipeline/reports/ (lokal, nicht im Repo).
     this.reportFile = path.join(root, 'pipeline/reports/automatic-checks.json');
   }
   async catalog() { return readJson(this.catalogFile, { version: 2, entries: [] }); }

@@ -49,10 +49,3 @@ export function uniformTone(entry: VocabEntry): Tone | null {
 export function isMultiSyllable(entry: VocabEntry): boolean {
   return syllablesOf(entry).length > 1;
 }
-
-/** Was auf der Vorderseite steht, hängt an der Lernrichtung. */
-export function promptText(entry: VocabEntry, direction: string): string {
-  // Seit Phase 16 ueber die Form der Richtung statt ueber ein Literal:
-  // 'de_to_es' verlangt dieselbe Vorderseite wie 'de_to_th'.
-  return direction.startsWith('de_to_') ? entry.german : entry.term;
-}

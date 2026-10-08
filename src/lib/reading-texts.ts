@@ -4,8 +4,6 @@ import { type FSRSCardState } from './fsrs/types';
 import { bridgeText } from './languages/bridge';
 import { type PairDirection } from './languages/types';
 import { type UiLanguage } from './i18n';
-import { loadCardStatesForDirection } from './repository';
-import { type DataStore } from './storage';
 import { type VocabEntry } from '@/data/vocab-types';
 import { contextualWord, vocabularyForms } from './vocabulary-forms';
 
@@ -260,12 +258,4 @@ export function lesestoffeFuerRichtung(options: {
   return stoffe.sort((a, b) =>
     a.offen === b.offen ? a.situation.title.localeCompare(b.situation.title) : a.offen ? -1 : 1
   );
-}
-
-/** Lädt Kartenstände für die Freischaltung (liest nur). */
-export async function ladeKartenFuer(
-  direction: PairDirection,
-  store?: DataStore
-): Promise<FSRSCardState[]> {
-  return loadCardStatesForDirection(direction, store);
 }

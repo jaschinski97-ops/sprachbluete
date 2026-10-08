@@ -16,7 +16,7 @@ export type ContentCheck = {
   status: 'passed' | 'failed' | 'unchecked';
   label: 'automatisch geprüft' | 'ungeprüft' | 'aussortiert' | 'Motiv redaktionell geprüft';
   checkedAt: string;
-  /** `…-motif-review`: Bildmotiv zusätzlich redaktionell geprüft (repair-audit-2026-10-04.cjs). */
+  /** `…-motif-review`: Bildmotiv zusätzlich redaktionell geprüft (Audit 04.10.2026). */
   scope: 'schema-integrity-decode' | 'schema-language' | 'schema-integrity-decode-motif-review';
   tone?: import('./tone-gate').ToneCheck;
   /** Grund bei 'aussortiert' oder 'ungeprüft' (Phase 2, Schritt 1). */

@@ -1,72 +1,77 @@
 # ThaiLernbegleiter
 
-Eine Offline-Lern-App für Thai, Englisch, Spanisch und Deutsch: Vokabeln mit
-Bild und Hörclip, Sätze, Übungsgespräche, Prüfungssimulation — alles wird mit
-der App **komplett offline** ausgeliefert. KI-Anbieter (Text, Sprachausgabe,
-Bilder) braucht nur, wer als Admin neuen Inhalt **erzeugen** will; die Nutzer
-bekommen den fertigen Inhalt mit dem App-Build.
+Offline-Lern-App für **Thai, Englisch, Spanisch und Deutsch**: Karteikarten mit
+Bild und Hörclip, Hören und Diktat, Lesen und Schreiben, Sprechen mit
+Tonmessung, Rollenspiele und Grammatik, eingeteilt in Anfänger,
+Fortgeschritten und Profi. Die Oberfläche gibt es in 20 Sprachen; sie sind
+nur Oberflächen- und Bedeutungssprachen, keine Lernziele.
+
+Die Inhalte erzeugt der Admin selbst mit KI im Entwicklerstudio (Debug-Web-Build).
+Nutzer brauchen keinen KI-Zugang: Sie bekommen die fertigen Inhalte mit der App
+oder als Sprachpaket von GitHub Releases.
 
 Gebaut mit Expo SDK 57 / React Native. Expo Go funktioniert nicht (native
-Audio- und SQLite-Module) — siehe „Entwicklung" unten.
+Audio- und SQLite-Module), siehe „Entwicklung“.
 
 ## Ordnerstruktur
 
 ```
 ThaiSpeaker/
-├── src/                  App-Code
+├── src/
 │   ├── app/              Bildschirme (Expo Router): Übersicht, Lernen,
-│   │                     Gespräch, Prüfung, Fortschritt, Einstellungen
-│   ├── content/          Generierter Katalog (catalog.json) + Asset-Bindings
-│   ├── data/             Verifizierter Wortschatz mit Thai-Tönen
-│   ├── lib/              Fachlogik: Tonhöhenmessung, Ton-Gate, Speicher,
-│   │                     Anbieter-Clients, Übungsläufe
-│   └── components/       UI-Bausteine
+│   │                     Gespräch, Fortschritt, Einstellungen (+ Studio)
+│   ├── content/          Inhaltskatalog (catalog.json) + Asset-Bindings
+│   ├── data/             Handgepflegte Lerndaten (Grammatik, Schrift, Vertiefung)
+│   ├── lib/              Fachlogik: FSRS, Tonmessung, Ton-Gate, Speicher,
+│   │                     Übungen, Sprachpakete (lib/packs), i18n
+│   ├── components/       UI-Bausteine und Übungsläufe
+│   ├── dev/              Entwicklerstudio (nur Debug-Web)
+│   └── test-fixtures/    Fester Testkatalog für Jest
 ├── assets/
-│   ├── content/          Ausgelieferte Medien (Bilder + Hörclips,
-│   │                     sha256-Dateinamen) — gehört zum Offline-Bundle
+│   ├── content/          Ausgelieferte Medien (Bilder + Hörclips, sha256-Namen)
 │   └── images/           App-Icon, Splash
-├── content/              Mess- und Prüfberichte (generierte Qualitätshistorie)
-├── scripts/              Werkzeuge: Inhalts-Pipeline, Tonmessung,
-│                         Freigabe-Gate, Release-Pipeline
-├── docs/                 Projektgeschichte (PROGRESS.md), Audits,
-│                         PIPELINE.md (Ablauf für Admins)
-├── android/              Natives Projekt — lokal generiert, nicht im Repo
-└── _Local/, .agent/, …   Nur lokal, nie auf GitHub (siehe unten)
+├── scripts/              Inhalts-Pipeline, Studio-Helper, Pakete, Tonmessung,
+│                         Release-Pipeline
+├── docs/                 PIPELINE.md (Admin-Ablauf), Anleitungen, Audits,
+│                         Projektgeschichte (PROGRESS.md)
+└── _Local/, pipeline/, … Nur lokal, nie auf GitHub (siehe unten)
 ```
 
 ## Auf GitHub vs. nur lokal
 
-**Auf GitHub landet:** `src/`, `assets/`, `scripts/`, `content/`, `docs/`
-und die Konfigurationsdateien — also alles, was die App braucht.
+**Auf GitHub:** `src/`, `assets/`, `scripts/`, `docs/` und die
+Konfigurationsdateien. Sprachpakete hängen als Release-Assets am Repo.
 
-**Nie auf GitHub (ignoriert):** Alles, was auf `*_Local` endet bzw. im Ordner
-`_Local/` liegt, dazu die werkseigenen Ordner `.content-studio/` (Inhalt-Entwürfe),
-`.expo/`, `.agent/`, `.claude/`, `build-verification/`, `dist/`, `android/`
-(per `expo prebuild` neu erzeugbar) und `node_modules/`.
+**Nur lokal (ignoriert):** `_Local/` und alles auf `*_Local` (lokale Modelle,
+Arbeitsreste), `.content-studio/` (Studio-Arbeitsstand), `pipeline/reports/`
+und `pipeline/logs/` (Prüfberichte, Laufprotokolle), `public/` (Web-Spiegel,
+`npm run web:content`), `build-verification/`, `android/`, `ios/`, `.expo/`,
+`node_modules/`.
 
 ## Entwicklung
 
 ```bash
 npm install
-npm run android     # nativer Debug-Build (erstes Bauen dauert länger)
-npm run web         # Web-Build — Grundlage des lokalen Debug-Studios
-npm test            # Testreihe
+npx expo start --web --port 8081 --max-workers 2   # App + Studio im Browser
+node scripts/content/studio.cjs                      # Studio-Helper (Port 8082)
+npx tsc --noEmit && npx jest                         # Typen + App-Tests
+npm run test:scripts                                 # Tests der Skripte
 ```
 
-## Inhalt erzeugen (nur Admin, Debug-Modus)
+Native Builds: `npm run ios` / `npm run android` oder `eas build`
+(Profile in `eas.json`).
 
-Der Ablauf — zentrale Schlüsselverwaltung unter Einstellungen → Entwicklerstudio, Generierung im
-Studio mit automatischer Tonhöhenprüfung je Clip, Publish, Gegenmessung,
-Release — steht in [docs/PIPELINE.md](docs/PIPELINE.md). Kurzform:
+## Inhalte erzeugen und ausliefern
 
-```bash
-npm run pipeline:release   # Messkern-Check, Inhaltsprüfung, Gegenmessung, Tests
-```
+Ablauf vom Studio bis zum Release und zu den Sprachpaketen:
+[docs/PIPELINE.md](docs/PIPELINE.md). Neue Lernsprache:
+[docs/neue-lernsprache.md](docs/neue-lernsprache.md). Lokale Bild- und
+Textmodelle: [docs/lokale-bilder.md](docs/lokale-bilder.md),
+[docs/lokale-texte.md](docs/lokale-texte.md).
 
 ## Qualität der Sprachausgabe
 
-Thai-Töne werden automatisch gegen den verifizierten Sollton gemessen
-(`src/lib/speaking/analysis.ts`, F0-Kontur via normierter Autokorrelation —
+Thai-Clips werden silbenweise gegen den Sollton gemessen
+(`src/lib/content/tone-gate.ts`, F0-Kontur aus `src/lib/speaking/analysis.ts`,
 dieselbe Messung wie im Werkzeug `scripts/tone-contour.html`). Das ist ein
-Filter gegen grobe Fehler, kein Hörtest; Grenzen stehen in
-`src/lib/content/tone-gate.ts` und in den Berichten unter `content/`.
+Filter gegen grobe Tonfehler, kein Hörtest durch Muttersprachler.

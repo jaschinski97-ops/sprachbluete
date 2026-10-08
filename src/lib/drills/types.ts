@@ -282,13 +282,6 @@ export const DRILL_META: Record<DrillId, DrillMeta> = {
   },
 };
 
-/** Die vier Fertigkeiten, in der Reihenfolge, in der sie angezeigt werden. */
-export const SKILL_LABELS: Record<DrillMeta['skill'], string> = {
-  hoeren: 'Hören',
-  lesen: 'Lesen',
-  grammatik: 'Deutsche Grammatik',
-};
-
 /**
  * Welche Übungen zu welcher Richtung gehören.
  *

@@ -3,7 +3,7 @@ import type { VocabEntry } from '@/data/vocab-types';
 import { retrievability } from '../fsrs/fsrs';
 import { type FSRSCardState } from '../fsrs/types';
 import { bridgeText } from '../languages/bridge';
-import { anchorOf, type LanguageCode, type PairDirection, pairLanguageOf } from '../languages/types';
+import { anchorOf, type PairDirection } from '../languages/types';
 import { ensureCardStates } from '../review-session';
 import { seededRandom, shuffled } from '../drills/random';
 import { type DataStore } from '../storage';
@@ -85,9 +85,4 @@ export async function buildWordSpeakingSession(options: {
   const chosen = shuffled(window, random).slice(0, size);
 
   return { tasks: chosen.map((entry) => taskOf(entry, options.direction)), available: entries.length };
-}
-
-/** Die Sprache, deren Wörter gesprochen werden — für die Auswahl im Runner. */
-export function spokenLanguageOf(direction: PairDirection): LanguageCode {
-  return pairLanguageOf(direction);
 }

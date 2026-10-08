@@ -1,5 +1,7 @@
 # Roadmap v2 — Sprachlernplattform (Stand 2026-09-09)
 
+> **AMENDMENT 08.10.2026 (Nutzerentscheidung):** Die Goethe-Prüfungssimulation ist komplett entfernt; Abschnitte zu Prüfungen sind historisch. Lernstufen heißen Anfänger · Fortgeschritten · Profi (umgesetzt). Die Sprachpakete über GitHub Releases bleiben das Auslieferungsziel: Der Admin erzeugt Inhalte lokal, lädt sie als Release hoch, Nutzer laden ihre Lernsprache per Knopf.
+
 ## Offene Nutzeraufgaben — ergänzt am 03.10.2026
 
 - [ ] **Verständliche Lernstufen:** Sichtbare Bezeichnungen A1, A2 und weitere GER-Kürzel bei generierten Vokabeln, Texten, Gesprächssituationen und allen weiteren Lerninhalten durch **Anfänger · Erfahren · Profi** ersetzen. Einheitliche Einteilung in Studio-Auswahl, Lernübersicht, Filtern und Inhaltsbeschriftungen; in allen 20 App-Sprachen übersetzen. Bestehende Inhalte weiterverwenden. Feinere Schwierigkeitsabstufungen intern erhalten; konkrete Zuordnung vor Umsetzung festlegen. Offizielle Goethe-Prüfungsnamen separat behandeln; Goethe B2 bleibt bis zuletzt zurückgestellt. Die drei Gruppen sind Inhaltsstufen und bescheinigen kein erreichtes Sprachniveau. **Nur vorgemerkt, noch nicht umgesetzt.**

@@ -1,85 +1,80 @@
-# Pipeline — Inhalt erzeugen, prüfen, ausliefern (Admin-Ablauf)
+# Pipeline: Inhalte erzeugen, prüfen, ausliefern (Admin-Ablauf)
 
-Ziel: Nutzer bekommen alle Inhalte **offline mit dem App-Build**. Die
-KI-Anbieter braucht nur der Admin zum Erzeugen — auf seinem Gerät, mit seinen
-Schlüsseln. Nichts davon landet im Release.
+Nutzer brauchen keinen KI-Zugang. Der Admin erzeugt Inhalte zu Hause im
+Entwicklerstudio, die Pipeline prüft sie automatisch, und sie gehen mit dem
+App-Build oder als Sprachpaket über GitHub Releases an die Nutzer.
 
-## 1. Schlüssel hinterlegen (Einstellungen → Entwicklerstudio → Anbieter & Schlüssel)
+## 1. Studio starten
 
-Einen Anbieter öffnen, Schlüssel eintragen und speichern. Es gibt einen
-Schlüssel je Anbieter (Anthropic, OpenAI, Google, Stability AI); alle passenden
-Generatoren verwenden diesen Zugang. Der lokale OpenAI-Helper verwendet
-seinen serverseitigen Schlüssel und hat hier kein Eingabefeld.
+```bash
+npx expo start --web --port 8081 --max-workers 2   # App + Studio: localhost:8081/settings
+node scripts/content/studio.cjs                      # Helper auf 8082, liest .env.local
+```
 
-Die Anbieterwahl bleibt beim jeweiligen Generator. Gespeicherte Modelle,
-Stimmen und Schlüssel bleiben beim Umbau erhalten. Im lokalen Web-Studio
-werden Schlüssel wie bisher im Browser gespeichert und beim Öffnen sichtbar
-angezeigt (Nutzerentscheidung 09.09.2026). Das Studio ist ausschließlich im
-Debug-Web-Build auf localhost:8081 zugänglich; Release-Builds enthalten es nicht.
+Das Studio gibt es nur im Debug-Web-Build auf localhost:8081; Release-Builds
+enthalten weder Studio noch Anbieterclients noch Schlüsselfelder. Schlüssel je
+Anbieter stehen unter „Anbieter & Schlüssel“; der OpenAI-Helper nutzt
+`OPENAI_API_KEY` aus `.env.local`. Lokale Modelle: `docs/lokale-bilder.md`
+(ComfyUI/FLUX) und `docs/lokale-texte.md` (Qwen/Gemma).
 
-## 2. Generieren (Debug-Studio, localhost:8081)
+## 2. Erzeugen
 
-Im Entwicklerstudio Bilder, Audio, Dialoge oder Prüfungsaufgaben öffnen.
-Modell und Stimme stehen unter „Erweitert“. Umfang und Kostenbestätigung
-bleiben vor dem Start sichtbar. Prüfberichte und Diagnose haben einen eigenen
-Bereich in der Studio-Übersicht.
+Wortschatz, Dialoge (alle Stufen A1–C2), Bilder oder Hörclips wählen,
+Anbieter und Umfang einstellen, **Start**. Es gibt bewusst keinen
+Kostendialog. Während eines Laufs nicht am Code arbeiten: Ein HMR-Reload
+stoppt ihn.
 
-Generator-Karte starten. **Nach jedem Hörclip läuft automatisch die
-Tonhöhenprüfung** (`src/lib/clips/batch.ts` → `checkThaiTone`):
+Jeder fertige Eintrag geht sofort durch die Prüfungen und wird automatisch
+übernommen (`/delivery/item`): Schema, Integrität, Dekodierbarkeit, bei Thai
+die silbenweise Tonmessung (`src/lib/content/tone-gate.ts`). Durchgefallene
+Clips werden verworfen und beim nächsten Lauf neu erzeugt; ab 6 von 10
+Verwürfen stoppt der Lauf. Medien und Live-Katalog stehen sofort bereit,
+`src/content/catalog.json` und der Asset-Index werden am Laufende geschrieben.
 
-- **Ton bestanden / abgelehnt / ungeprüft** erscheinen im Fortschrittspanel.
-- **Abgelehnt** = die gemessene F0-Kontur widerspricht dem verifizierten
-  Sollton. Der Clip wird **nicht gespeichert** und steht mit Grund in der
-  Fehlerliste; der nächste Lauf erzeugt ihn neu.
-- **Ungeprüft** = kein verifizierter Thai-Einsilbler (Sätze, Mehrsilbler,
-  Fremdsprachen) oder mp3 ohne In-App-Decoder.
+Prüfberichte stehen im Studio unter „Berichte“, Laufprotokolle unter
+`pipeline/logs/` (lokal), das Fehlerprotokoll in
+`pipeline/logs/studio-failures.ndjson`.
 
-Grenze: Das ist eine Konturmessung, keine Hörprüfung — sie sagt, ob die
+## 3. Prüfen vor dem Release
+
+```bash
+npx tsc --noEmit && npx jest       # App-Tests
+npm run test:scripts               # Tests der Skripte (Pipeline, Pakete, Helper)
+npm run content:integrity          # Katalog ↔ Medien, Ton-Gate je Clip (~1 h); errors muss leer sein
+npm run content:check              # zusätzlich Vollständigkeit (meldet fehlende Clips/Bilder)
+npm run pipeline:release           # Messkern-Check, Integrität, Gegenmessung, Tests
+```
+
+`content:check` darf rot sein, solange Inhalte bewusst fehlen; der EAS-Hook
+(`scripts/content/eas-gate.cjs`) sperrt nur Builds, bei denen Katalog und
+Medien auseinanderliegen. Verwaiste Medien entfernt
+`node scripts/content/prune-orphans.cjs --apply`.
+
+Gegenmessung der Töne über alle Clips:
+
+```bash
+npm run content:measure-tones                          # Katalog + Referenzstimmen
+node scripts/content/measure-speaker-reference.cjs     # Sprecherreferenz ableiten
+```
+
+Ergebnisse landen in `pipeline/reports/` (lokal).
+
+## 4. Ausliefern
+
+Der Katalog ist immer im App-Build. Die Medien (Hörclips, Bilder) kommen je
+Lernsprache als Sprachpaket von GitHub Releases; der Ablauf steht in
+Abschnitt 5. Native Builds: `eas build --profile rc-ios` (Checkliste
+`docs/release-candidate-2026-09-30.md`) bzw. `--profile production`.
+
+## 5. Sprachpakete
+
+Wird im nächsten Schritt fertig verdrahtet; der Abschnitt folgt mit den
+endgültigen Befehlen.
+
+## Grenzen
+
+Die Tonmessung ist eine Konturprüfung, kein Hörtest: Sie erkennt, ob die
 Tonhöhe die erwartete Richtung nimmt, nicht ob Muttersprachler zustimmen.
-
-## 3. Publish (Studio)
-
-Beim Stage/Publish prüft die Node-Pipeline (`scripts/content/pipeline.cjs`)
-jeden Clip **erneut und verbindlich** — mit ffmpeg-Dekodierung, also auch
-mp3 — und nimmt nur bestandene bzw. ungeprüfte Thai-Clips in den Katalog
-auf. Danach: `src/content/catalog.json`, `assets/content/`,
-`content/automatic-checks.json`, `content/size-report.json`.
-
-## 4. Gegenmessung über alles
-
-```bash
-node scripts/content/measure-tones.cjs        # Katalog + Studio-Entwürfe
-npm run content:measure-tones                 # zusätzlich die Fixtures-Stimmen
-node scripts/content/measure-speaker-reference.cjs   # Sprecherreferenz ableiten
-```
-
-Ergebnis: `content/tone-calibration.json` (je Clip F0-Zusammenfassung und
-Gate-Entscheid). Offene Registerprüfungen (mittel/tief/hoch) bleiben dort
-ehrlich als „ungeprüft" markiert.
-
-## 5. Release
-
-```bash
-npm run pipeline:release   # 1) Messkern-Check  2) Integrität Katalog↔Assets
-                           # 3) Gegenmessung    4) Testreihe
-```
-
-(Vollständigkeitslücken des gestoppten Inhaltsausbaus meldet
-`npm run content:check` separat — sie sind bekannt und blockieren nicht.)
-
-Erst wenn die Pipeline durchläuft: Build (`eas build` oder lokal) und
-GitHub-Push. Das EAS-Gate (`scripts/content/eas-gate.cjs`) verhindert
-Builds, bei denen Katalog und gebundelte Assets auseinanderliegen.
-
-## 6. Auf GitHub hochladen
-
-Repo ist upload-ready: nur App, Inhalt, Werkzeuge, Docs sind verfolgt;
-alles Lokale ist ignoriert (`.gitignore`, Konvention `*_Local`). Erste
-Einrichtung:
-
-```bash
-git remote add origin git@github.com:<nutzer>/<repo>.git
-git push -u origin main
-```
-
-Vor dem Push lohnt einmalig `git gc` (verdichtet die Historie).
+Mittlerer und tiefer Ton einzelner Einsilber sind allein nicht beweisbar.
+Bilder und Texte gelten als „automatisch geprüft“ nur technisch (Schema,
+Integrität, Dekodierung), nicht inhaltlich.

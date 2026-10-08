@@ -1,5 +1,4 @@
 import type { TextClient, ProviderId } from '../providers/types';
-import type { Provider } from '@/lib/api-key';
 import type { VocabEntry } from '@/data/vocab-types';
 import { LEARNING_LANGUAGES } from '../languages/definitions';
 import { isLanguageCode } from '../languages/types';
@@ -274,18 +273,4 @@ export async function pruefeVocabKreuz(
     prueferWahl
   );
   return resultat;
-}
-
-/** Prüfer als „Provider"-Alias für Anzeigen — der Helper zählt als ChatGPT. */
-export function prueferLabel(anbieter: ProviderId): string {
-  return anbieter === 'chatgpt-helper' ? 'ChatGPT (Helper)' : anbieter;
-}
-
-/** Kleiner Adapter: Provider → API-Schlüssel-Prüfung (im Studio injiziert). */
-export function schluesselPruefer(lade: (p: Provider) => Promise<string | null>) {
-  return async (anbieter: ProviderId): Promise<boolean> => {
-    if (anbieter === 'chatgpt-helper') return true; // Helper hat serverseitig einen
-    const key = await lade(anbieter);
-    return Boolean(key);
-  };
 }

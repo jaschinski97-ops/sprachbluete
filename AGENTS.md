@@ -26,8 +26,9 @@ Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest                         # Typen + Tests (~1234 Tests)
-npm run test:content-pipeline                        # Pipeline-Tests
+npx tsc --noEmit && npx jest                         # Typen + Tests (~1238 Tests)
+npm run test:scripts                                 # alle Skript-Tests (node --test, 74)
+npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)
 ```
 

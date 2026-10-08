@@ -48,5 +48,5 @@ const result = {
   zeroIncomingScripts: files.filter(file => file.startsWith('scripts/') && !edges.some(edge => edge.to === file)),
   edges,
 };
-fs.writeFileSync(path.resolve(root, process.argv[2] ?? 'content/structure-audit.json'), JSON.stringify(result, null, 2) + '\n');
+fs.writeFileSync(path.resolve(root, process.argv[2] ?? 'pipeline/reports/structure-audit.json'), JSON.stringify(result, null, 2) + '\n');
 console.log(JSON.stringify({ sourceFiles: result.sourceFiles, importEdges: result.importEdges, candidates: result.candidates, zeroIncomingScripts: result.zeroIncomingScripts }, null, 2));

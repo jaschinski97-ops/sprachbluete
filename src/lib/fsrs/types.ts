@@ -27,13 +27,6 @@ export type { PairDirection };
  */
 export type Rating = 1 | 2 | 3 | 4;
 
-export const RATING_LABELS: Record<Rating, string> = {
-  1: 'Nochmal',
-  2: 'Schwer',
-  3: 'Gut',
-  4: 'Leicht',
-};
-
 /** Grober Lebenszyklus einer Karte, nur für Anzeige und Statistik. */
 export type CardState = 'new' | 'learning' | 'review' | 'mastered';
 

@@ -628,7 +628,7 @@ const pt = {
   "chapter.finish": "Marcar capítulo como concluído",
   "chapter.all": "Todos os capítulos",
   "chapter.doneCount": "{{done}} de {{total}} concluídos",
-  "advanced.title": "Experiente",
+  "advanced.title": "Aprofundamento: texto longo",
   "advanced.intro": "Um texto mais longo, perguntas e a sua resposta. Este exercício não certifica um nível do QECR.",
   "advanced.listen": "Ouvir a parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz do sistema, se disponível; a pronúncia não foi verificada.",
@@ -656,7 +656,7 @@ const pt = {
   "learning.serEstar": "Ser: identidade/características. Estar: estado/localização.",
   "roleplay.answer": "Sua resposta",
   "level.beginner": "Iniciante",
-  "level.experienced": "Experiente",
+  "level.experienced": "Avançado",
   "level.pro": "Especialista",
   "level.choose": "Nível de aprendizagem",
   "studio.duplicateSituation": "Já existe um diálogo muito semelhante.",
@@ -664,6 +664,9 @@ const pt = {
   "studio.autoDeliveryHint": "O conteúdo novo é adicionado automaticamente após passar nas verificações, mesmo durante a geração.",
   "studio.autoDelivered": "{{count}} adicionados automaticamente",
   "studio.localText": "Modelo de texto local · sem chave API",
+  "flashcard.ambiguous": "Várias palavras servem – procuramos: {{start}}",
+  "path.stageEmpty": "Ainda não há capítulos para “{{stage}}”.",
+  "conversation.stageEmpty": "Ainda não há conversas de “{{stage}}” neste idioma.",
 } as const;
 
 export default pt;

@@ -21,18 +21,20 @@ import { loadVocabImageUri } from '@/lib/repository';
  */
 
 export function VocabImageView({ entry }: { entry: VocabEntry }) {
-  const [uri, setUri] = useState<string | null>(null);
+  // Die Quelle haengt an der Vokabel-ID: Beim Kartenwechsel zeigt der erste
+  // Render sonst noch die URI der vorigen Karte.
+  const [loaded, setLoaded] = useState<{ id: string; uri: string | null } | null>(null);
+  const uri = loaded?.id === entry.id ? loaded.uri : null;
 
   useEffect(() => {
     let active = true;
-    setUri(null);
     // Abstrakte Einträge haben nie ein Bild - gar nicht erst nachsehen.
     if (!entry.isConcrete) return;
     // Sprache mitgeben: Ein installiertes Sprachpaket gewinnt gegen das
     // eingebettete Asset (Pack-Bild-Naht, Roadmap v2).
     loadVocabImageUri(entry.id, undefined, undefined, entry.language)
       .then((found) => {
-        if (active) setUri(found);
+        if (active) setLoaded({ id: entry.id, uri: found });
       })
       .catch(() => {
         // Kein Bild ist kein Fehler, der den Lernfluss stören darf.
@@ -45,8 +47,12 @@ export function VocabImageView({ entry }: { entry: VocabEntry }) {
   if (!uri) return null;
 
   return (
-    <View style={styles.frame}>
+    // key/recyclingKey: neue Karte = neues Bild. expo-image blendet sonst vom
+    // alten Motiv ueber, das bis zum Laden des neuen sichtbar bleibt
+    // (Testlauf 04.10.2026: „Arzt" lag ueber dem Bild von „Fenster").
+    <View key={entry.id} style={styles.frame}>
       <Image
+        recyclingKey={entry.id}
         source={{ uri }}
         style={styles.image}
         contentFit="cover"

@@ -1,3 +1,4 @@
+import { ambiguousPartners, wordStart } from '@/lib/ambiguity';
 import { learningExample } from '@/lib/learning-example';
 import type { ConversationSituation } from '@/lib/conversation/types';
 import { useState } from 'react';
@@ -95,6 +96,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
             style={[styles.bridgeLarge, { lineHeight: displayLineHeight(34, 2, 1.35) }]}>
             {bridgeEntry.term}
           </ThemedText>
+          {revealed ? null : <AmbiguityHint entry={entry} anchor={anchor} />}
         </View>
         <VocabImageView entry={entry} />
         {revealed ? (
@@ -156,6 +158,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
         <>
           <VocabImageView entry={entry} />
           <GermanBlock entry={entry} headline />
+          {revealed ? null : <AmbiguityHint entry={entry} anchor={anchor} />}
           {/* Kein Deutsch-Button auf der Vorderseite: Gehört wird nur die
               Lerntsprache (Nutzerentscheidung 10.09.). */}
           {revealed ? (
@@ -175,6 +178,18 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
       {revealed ? <ExampleBlock entry={entry} anchor={anchor} situation={situation} /> : null}
       {revealed ? <VerificationBadge entry={entry} /> : null}
     </ThemedView>
+  );
+}
+
+/** Mehrere Wörter passen zur Vorderseite: Wortanfang als Hinweis (Testlauf 04.10.2026). */
+function AmbiguityHint({ entry, anchor }: { entry: VocabEntry; anchor: ReturnType<typeof anchorOf> }) {
+  const { t } = useLocale();
+  const partners = ambiguousPartners(entry, anchor);
+  if (!partners.length) return null;
+  return (
+    <ThemedText type="small" themeColor="textSecondary" style={styles.center}>
+      {t('flashcard.ambiguous', { start: wordStart(entry, partners) })}
+    </ThemedText>
   );
 }
 

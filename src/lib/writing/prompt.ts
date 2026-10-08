@@ -141,7 +141,9 @@ export function buildWritingPrompt(
     throw new Error(`"${entry.id}" hat in Richtung ${direction} keine tippbare Zielform.`);
   }
   const language = targetLanguageOf(direction);
-  const artikel = language === 'de' && entry.germanNoun ? `${entry.germanNoun.article} ` : '';
+  // 71 Einträge tragen den Artikel schon im Wort („die Stufe“) — nicht doppeln.
+  const artikel = language === 'de' && entry.germanNoun && !entry.term.toLowerCase().startsWith(`${entry.germanNoun.article} `)
+    ? `${entry.germanNoun.article} ` : '';
   const loesung = `${artikel}${entry.term}`;
   const umschrift = entry.romanization && entry.romanization !== entry.term ? entry.romanization : null;
   const eigene = language === 'de' ? mitArtikel(zielFormen(entry), entry) : zielFormen(entry);

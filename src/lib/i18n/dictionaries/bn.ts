@@ -628,7 +628,7 @@ const bn = {
   "chapter.finish": "অধ্যায় সম্পন্ন হিসেবে চিহ্নিত করুন",
   "chapter.all": "সব অধ্যায়",
   "chapter.doneCount": "{{total}}টির মধ্যে {{done}}টি সম্পন্ন",
-  "advanced.title": "অভিজ্ঞ",
+  "advanced.title": "গভীর পাঠ: দীর্ঘ লেখা",
   "advanced.intro": "দীর্ঘ পাঠ, প্রশ্ন ও আপনার নিজের উত্তর। এই অনুশীলন CEFR স্তরের সনদ নয়।",
   "advanced.listen": "{{total}}টির মধ্যে {{index}} নম্বর অংশ শুনুন",
   "advanced.audioNote": "পাওয়া গেলে সিস্টেমের কণ্ঠ; উচ্চারণ যাচাই করা হয়নি।",
@@ -656,7 +656,7 @@ const bn = {
   "learning.serEstar": "Ser: পরিচয় বা বৈশিষ্ট্য। Estar: অবস্থা বা অবস্থান।",
   "roleplay.answer": "আপনার উত্তর",
   "level.beginner": "শিক্ষানবিশ",
-  "level.experienced": "অভিজ্ঞ",
+  "level.experienced": "উন্নত",
   "level.pro": "দক্ষ",
   "level.choose": "শেখার স্তর",
   "studio.duplicateSituation": "খুব কাছাকাছি একটি সংলাপ ইতিমধ্যেই আছে।",
@@ -664,6 +664,9 @@ const bn = {
   "studio.autoDeliveryHint": "পরীক্ষায় উত্তীর্ণ নতুন বিষয়বস্তু স্বয়ংক্রিয়ভাবে যোগ হয়, এমনকি তৈরি চলার সময়ও।",
   "studio.autoDelivered": "{{count}}টি স্বয়ংক্রিয়ভাবে যুক্ত হয়েছে",
   "studio.localText": "স্থানীয় টেক্সট মডেল · API কী লাগে না",
+  "flashcard.ambiguous": "একাধিক শব্দ মেলে – খোঁজা শব্দটি: {{start}}",
+  "path.stageEmpty": "“{{stage}}”-এর জন্য এখনও কোনো অধ্যায় নেই।",
+  "conversation.stageEmpty": "এই ভাষায় “{{stage}}”-এর জন্য এখনও কোনো কথোপকথন নেই।",
 } as const;
 
 export default bn;

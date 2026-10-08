@@ -236,8 +236,18 @@ const ARTICLES = ['der', 'die', 'das'] as const;
  * mehreren Bedeutungen (`"der Laden, der Verkaufsstand"`) wird nur die erste
  * gefragt; die zweite steht danach in der Auflösung.
  */
+/**
+ * Das deutsche Stichwort eines Eintrags. Bei deutschen Einträgen ist das
+ * `term`; `german` ist dort eine Erklärung („Trinkgefäß mit Henkel“) —
+ * 939 von 986 Artikelaufgaben fragten sonst „___ Trinkgefäß“ statt „___ Tasse“,
+ * die Stammformen „sich zu Fuß fortbewegen“ statt „gehen“ (Prüfung 04.10.2026).
+ */
+export function deutschesWort(entry: VocabEntry): string {
+  return (String(entry.language) === 'de' ? entry.term : entry.german).split(',')[0].trim();
+}
+
 export function bareNoun(entry: VocabEntry): string {
-  const first = entry.german.split(',')[0].trim();
+  const first = deutschesWort(entry);
   for (const article of ARTICLES) {
     if (first.toLowerCase().startsWith(`${article} `)) {
       return first.slice(article.length + 1).trim();
@@ -345,7 +355,7 @@ export function buildVerbFormQuestion(
 
   const options = shuffled([correct, ...distractors], random).map((label) => ({ label }));
 
-  const stems = `${entry.german.split(',')[0].trim()} — ${verb.thirdPerson} — ${verb.praeteritum} — ${verb.perfekt}`;
+  const stems = `${deutschesWort(entry)} — ${verb.thirdPerson} — ${verb.praeteritum} — ${verb.perfekt}`;
   // „unregelmäßig/regelmäßig" ist Übersichts-Chrome, nicht Stoff — localized
   // über die Wörterbücher (21.09.2026, en-UI).
   const parts = [stems, verb.irregular ? translate(ui, 'drill.irregular') : translate(ui, 'drill.regular')];
@@ -356,7 +366,7 @@ export function buildVerbFormQuestion(
     drill: 'verbForms',
     direction: toHub(entry),
     vocabId: entry.id,
-    visible: entry.german.split(',')[0].trim(),
+    visible: deutschesWort(entry),
     visibleHint: kontextFuer(entry, anchor),
     speak: null,
     options,

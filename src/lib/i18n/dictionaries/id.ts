@@ -628,7 +628,7 @@ const id = {
   "chapter.finish": "Tandai bab selesai",
   "chapter.all": "Semua bab",
   "chapter.doneCount": "{{done}} dari {{total}} selesai",
-  "advanced.title": "Berpengalaman",
+  "advanced.title": "Pendalaman: teks panjang",
   "advanced.intro": "Teks lebih panjang, pertanyaan, dan jawabanmu sendiri. Latihan ini tidak menyatakan tingkat CEFR.",
   "advanced.listen": "Dengarkan bagian {{index}} dari {{total}}",
   "advanced.audioNote": "Suara sistem jika tersedia; pengucapan belum diperiksa.",
@@ -656,7 +656,7 @@ const id = {
   "learning.serEstar": "Ser: identitas/ciri. Estar: keadaan/lokasi.",
   "roleplay.answer": "Jawaban Anda",
   "level.beginner": "Pemula",
-  "level.experienced": "Berpengalaman",
+  "level.experienced": "Lanjutan",
   "level.pro": "Ahli",
   "level.choose": "Tingkat belajar",
   "studio.duplicateSituation": "Dialog yang sangat mirip sudah tersedia.",
@@ -664,6 +664,9 @@ const id = {
   "studio.autoDeliveryHint": "Konten baru ditambahkan otomatis setelah lolos pemeriksaan, termasuk saat pembuatan berlangsung.",
   "studio.autoDelivered": "{{count}} ditambahkan secara otomatis",
   "studio.localText": "Model teks lokal · tanpa kunci API",
+  "flashcard.ambiguous": "Beberapa kata cocok – yang dicari: {{start}}",
+  "path.stageEmpty": "Belum ada bab untuk “{{stage}}”.",
+  "conversation.stageEmpty": "Belum ada percakapan “{{stage}}” dalam bahasa ini.",
 } as const;
 
 export default id;

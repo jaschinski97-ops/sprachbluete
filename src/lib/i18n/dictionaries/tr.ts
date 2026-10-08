@@ -628,7 +628,7 @@ const tr = {
   "chapter.finish": "Bölümü tamamlandı olarak işaretle",
   "chapter.all": "Tüm bölümler",
   "chapter.doneCount": "{{total}} bölümden {{done}} tanesi tamamlandı",
-  "advanced.title": "Deneyimli",
+  "advanced.title": "Derinleşme: uzun metin",
   "advanced.intro": "Daha uzun bir metin, sorular ve kendi yanıtın. Bu alıştırma CEFR düzeyi belgelemez.",
   "advanced.listen": "{{total}} bölümden {{index}}. bölümü dinle",
   "advanced.audioNote": "Varsa sistem sesi kullanılır; telaffuz doğrulanmadı.",
@@ -656,7 +656,7 @@ const tr = {
   "learning.serEstar": "Ser: kimlik/özellik. Estar: durum/konum.",
   "roleplay.answer": "Yanıtınız",
   "level.beginner": "Başlangıç",
-  "level.experienced": "Deneyimli",
+  "level.experienced": "İleri",
   "level.pro": "Uzman",
   "level.choose": "Öğrenme seviyesi",
   "studio.duplicateSituation": "Çok benzer bir diyalog zaten mevcut.",
@@ -664,6 +664,9 @@ const tr = {
   "studio.autoDeliveryHint": "Kontrolleri geçen yeni içerik, üretim devam ederken de otomatik olarak eklenir.",
   "studio.autoDelivered": "{{count}} otomatik olarak eklendi",
   "studio.localText": "Yerel metin modeli · API anahtarı gerekmez",
+  "flashcard.ambiguous": "Birden fazla kelime uyuyor – aranan: {{start}}",
+  "path.stageEmpty": "“{{stage}}” için henüz bölüm yok.",
+  "conversation.stageEmpty": "Bu dilde “{{stage}}” için henüz konuşma yok.",
 } as const;
 
 export default tr;

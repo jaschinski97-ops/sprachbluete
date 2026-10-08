@@ -12,11 +12,11 @@ Der llama.cpp-Router hält höchstens **ein geladenes Modell**. Studio- und Prü
 
 Der Helper akzeptiert nur lokale App-Origins, begrenzt Auftrag/Laufzeit und ruft einen festen Loopback-Endpunkt auf. Falsches Modell oder abgeschnittene Ausgabe schlagen fehl. JSON-Ausgaben werden eingeschränkt; bestehende Inhalts-/Schrift-/Übersetzungsprüfungen bleiben verbindlich. Lokale Vokabelpakete maximal fünf Wörter (je 20 Übersetzungen). Die lokale Prompt-Ausschlussliste ist begrenzt; der vollständige gespeicherte Bestand bleibt zur Duplikatprüfung erhalten. 8192 Ausgabetokens und 16384 Kontexttokens sind Startwerte; echte Geschwindigkeit und Sprachqualität auf diesem PC noch prüfen.
 
-## Anfänger, Erfahren, Profi
+## Anfänger, Fortgeschritten, Profi
 
-Alle 20 App-Sprachen haben die sichtbaren Bezeichnungen. Interne Zuordnung: Anfänger=A1/A2, Erfahren=B1/B2, Profi=C1/C2. Gruppen beschreiben Inhaltsschwierigkeit, kein Zertifikat. Offizielle Goethe-Prüfungsnamen bleiben fachlich korrekt; Goethe B2 weiter zuletzt.
+Alle 20 App-Sprachen haben die sichtbaren Bezeichnungen. Interne Zuordnung: Anfänger=A1/A2, Fortgeschritten=B1/B2, Profi=C1/C2 (bis 04.10.2026 hieß die mittlere Stufe „Erfahren“). Gruppen beschreiben Inhaltsschwierigkeit, kein Zertifikat. Offizielle Goethe-Prüfungsnamen bleiben fachlich korrekt; Goethe B2 weiter zuletzt.
 
-Neue Vokabeln tragen `learningStage`; alte Wörter ohne Feld zählen als Anfänger. Ziele zählen je Sprache und Gruppe. Gesprächspläne verwenden die gewählte Gruppe und unterschiedliche Prompts; vorhandene IDs, Fortschritte und Standardpläne bleiben kompatibel. Kapitel, Dialoge und abgeleitete Lesetexte zeigen die verständliche Gruppe; vorhandene B1-Vertiefung heißt Erfahren. Kein Profi-Bestand wird erfunden.
+Neue Vokabeln tragen `learningStage`; alte Wörter ohne Feld zählen als Anfänger. Ziele zählen je Sprache und Gruppe. Gesprächspläne verwenden die gewählte Gruppe und unterschiedliche Prompts; vorhandene IDs, Fortschritte und Standardpläne bleiben kompatibel. Kapitel, Dialoge und abgeleitete Lesetexte zeigen die verständliche Gruppe; die B1-Vertiefung steht unter „Fortgeschritten“. Lernen und Gespräch haben einen Stufenschalter; ein Studio-Gesprächslauf erzeugt seit 04.10.2026 alle Niveaus A1–C2 (kein Stufenwähler mehr für Dialoge, der Vokabel-Wähler bleibt). Kein Profi-Bestand wird erfunden.
 
 ## Vorbereitung während des Bildlaufs
 

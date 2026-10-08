@@ -628,7 +628,7 @@ const ja = {
   "chapter.finish": "章を完了にする",
   "chapter.all": "すべての章",
   "chapter.doneCount": "全{{total}}章中{{done}}章完了",
-  "advanced.title": "経験者",
+  "advanced.title": "深掘り：長めの文章",
   "advanced.intro": "少し長い文章を読み、質問に答え、自分の答えを書きます。この練習はCEFRレベルの認定ではありません。",
   "advanced.listen": "{{total}}のうち{{index}}番目を聞く",
   "advanced.audioNote": "利用可能な場合は端末の音声を使用します。発音は検証されていません。",
@@ -656,7 +656,7 @@ const ja = {
   "learning.serEstar": "Ser：身元や特徴。Estar：状態や場所。",
   "roleplay.answer": "あなたの回答",
   "level.beginner": "初心者",
-  "level.experienced": "経験者",
+  "level.experienced": "中級",
   "level.pro": "上級者",
   "level.choose": "学習レベル",
   "studio.duplicateSituation": "非常によく似た会話がすでにあります。",
@@ -664,6 +664,9 @@ const ja = {
   "studio.autoDeliveryHint": "検証に合格した新しいコンテンツは、生成中でも自動的に追加されます。",
   "studio.autoDelivered": "{{count}}件を自動的に追加しました",
   "studio.localText": "ローカルテキストモデル · APIキー不要",
+  "flashcard.ambiguous": "複数の語が当てはまります – 探している語：{{start}}",
+  "path.stageEmpty": "「{{stage}}」の章はまだありません。",
+  "conversation.stageEmpty": "この言語には「{{stage}}」の会話がまだありません。",
 } as const;
 
 export default ja;

@@ -628,7 +628,7 @@ const fr = {
   "chapter.finish": "Marquer le chapitre comme terminé",
   "chapter.all": "Tous les chapitres",
   "chapter.doneCount": "{{done}} sur {{total}} terminés",
-  "advanced.title": "Expérimenté",
+  "advanced.title": "Approfondissement : texte long",
   "advanced.intro": "Un texte plus long, des questions et votre propre réponse. Cet exercice ne certifie pas un niveau du CECR.",
   "advanced.listen": "Écouter la partie {{index}} sur {{total}}",
   "advanced.audioNote": "Voix du système si disponible ; la prononciation n'est pas vérifiée.",
@@ -656,7 +656,7 @@ const fr = {
   "learning.serEstar": "Ser : identité/caractéristiques. Estar : état/lieu.",
   "roleplay.answer": "Votre réponse",
   "level.beginner": "Débutant",
-  "level.experienced": "Expérimenté",
+  "level.experienced": "Avancé",
   "level.pro": "Expert",
   "level.choose": "Niveau d’apprentissage",
   "studio.duplicateSituation": "Un dialogue très similaire existe déjà.",
@@ -664,6 +664,9 @@ const fr = {
   "studio.autoDeliveryHint": "Le nouveau contenu est intégré automatiquement après validation, même pendant la génération.",
   "studio.autoDelivered": "{{count}} intégrés automatiquement",
   "studio.localText": "Modèle de texte local · sans clé API",
+  "flashcard.ambiguous": "Plusieurs mots conviennent – mot recherché : {{start}}",
+  "path.stageEmpty": "Aucun chapitre pour « {{stage}} » pour l’instant.",
+  "conversation.stageEmpty": "Aucune conversation « {{stage}} » dans cette langue pour l’instant.",
 } as const;
 
 export default fr;

@@ -502,3 +502,26 @@ describe('seededRandom / shuffled', () => {
     expect([...output].sort()).toEqual([...input].sort());
   });
 });
+
+describe('Deutsche Einträge: Übungen fragen das Wort, nicht die Erklärung (04.10.2026)', () => {
+  const tasse = {
+    id: 'ki-de-tasse', term: 'Tasse', language: 'de', german: 'Trinkgefäß mit Henkel', romanization: 'ˈtasə',
+    germanNoun: { article: 'die', plural: 'die Tassen' }, partOfSpeech: 'noun', register: 'neutral',
+    isConcrete: true, sourceVerified: false, translations: { th: 'ถ้วย' },
+  } as unknown as VocabEntry;
+
+  it('Artikelaufgabe: „___ Tasse“, nicht „___ Trinkgefäß mit Henkel“', () => {
+    expect(bareNoun(tasse)).toBe('Tasse');
+    expect(buildArticleQuestion(tasse, 'th').visible).toBe('___ Tasse');
+    expect(bareNoun({ ...tasse, term: 'die Tasse' } as VocabEntry)).toBe('Tasse');
+  });
+
+  it('Stammformen: sichtbar ist das Verb', () => {
+    const gehen = {
+      ...tasse, id: 'ki-de-gehen', term: 'gehen', german: 'sich zu Fuß fortbewegen', germanNoun: undefined,
+      partOfSpeech: 'verb', germanVerb: { thirdPerson: 'geht', praeteritum: 'ging', perfekt: 'ist gegangen', irregular: true },
+    } as unknown as VocabEntry;
+    const frage = buildVerbFormQuestion(gehen, [gehen, ...VOCABULARY], seededRandom(1), 'th');
+    expect(frage.visible).toBe('gehen');
+  });
+});

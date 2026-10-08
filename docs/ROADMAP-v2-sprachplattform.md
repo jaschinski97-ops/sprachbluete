@@ -1,5 +1,10 @@
 # Roadmap v2 — Sprachlernplattform (Stand 2026-09-09)
 
+## Offene Nutzeraufgaben — ergänzt am 03.10.2026
+
+- [ ] **Verständliche Lernstufen:** Sichtbare Bezeichnungen A1, A2 und weitere GER-Kürzel bei generierten Vokabeln, Texten, Gesprächssituationen und allen weiteren Lerninhalten durch **Anfänger · Erfahren · Profi** ersetzen. Einheitliche Einteilung in Studio-Auswahl, Lernübersicht, Filtern und Inhaltsbeschriftungen; in allen 20 App-Sprachen übersetzen. Bestehende Inhalte weiterverwenden. Feinere Schwierigkeitsabstufungen intern erhalten; konkrete Zuordnung vor Umsetzung festlegen. Offizielle Goethe-Prüfungsnamen separat behandeln; Goethe B2 bleibt bis zuletzt zurückgestellt. Die drei Gruppen sind Inhaltsstufen und bescheinigen kein erreichtes Sprachniveau. **Nur vorgemerkt, noch nicht umgesetzt.**
+- [ ] **Lokale Textgenerierung prüfen:** Für RTX 3080 12 GB, Ryzen 7 5700X und 64 GB RAM ein mehrsprachiges Modell für th/en/es/de sowie die benötigten Übersetzungen und vollständigen JSON-Inhalte vergleichen. Erste Kandidaten: Qwen3.5-9B und Gemma 4 12B in quantisierter Form. Reale Studio-Prompts, Thai-Umschrift/Töne, Bedeutungen, Dialoge und 20-Sprachen-Vollständigkeit als Abnahme; keine Qualitätsfreigabe allein aufgrund von Modell-Benchmarks. Nach dem Bilddurchgang testen, GPU nicht gleichzeitig mit beiden Modellen belegen. **Recherche/Vormerkung, keine Anbieterumstellung; Audio unverändert.**
+
 > **AMENDMENT 09.09.2026 (Nutzerentscheidung):** Französisch wurde **komplett entfernt** — als Ziel- wie als UI-Sprache. Der Sprachkanon ist jetzt **Kern 4: Englisch, Spanisch, Deutsch, Thailändisch**. Der frühere FR-Grundstoff (150 Vokabeln, Drills, UI-Übersetzungen) liegt vollständig im Git-Verlauf (Commits `0c96493`/`0bae43c`) und kann von dort jederzeit zurückgeholt werden. Alle Nennungen von „Kern 5" und Französisch in diesem Dokument sind historisch zu lesen.
 
 Vision des Nutzers, Entscheidungen und Bauplan. Quelle: Gespräch 08.09.2026 (4 Agenten-Recherche: SLA-Forschung, Store-Limits, Code-Audit, Chat-Historie).

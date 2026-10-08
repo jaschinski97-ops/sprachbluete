@@ -1,5 +1,4 @@
-import { LearningStagePicker } from '@/components/learning-stage-picker';
-import { STAGE_LEVELS, type LearningStage } from '@/lib/learning-stages';
+import { LEARNING_STAGES, STAGE_LEVELS } from '@/lib/learning-stages';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ApiKeysCard } from '@/components/api-keys-card';
@@ -33,7 +32,7 @@ import { AudioClipSpec } from '@/lib/clips/types';
 import { runGenerationBatch, missingSpecs } from '@/lib/conversation/batch';
 import { ConversationSituation } from '@/lib/conversation/types';
 import { createGenerationClient } from '@/lib/conversation/generator';
-import { FULL_RUN, planSituations } from '@/lib/conversation/plan';
+import { planSituations } from '@/lib/conversation/plan';
 import { getActiveBlobBackend, getImageBlobStore } from '@/lib/images/blob-store';
 import { runImageBatch, missingImageSpecs } from '@/lib/images/batch';
 import { createImageGenerationClient } from '@/lib/images/generator';
@@ -90,12 +89,12 @@ const SITUATION_RUNS: RunOption[] = [
   {
     id: 'test',
     label: 'Probelauf',
-    hint: '8 Situationen je Sprache — alle Themen und Niveaus je einmal',
+    hint: '24 Situationen je Sprache — jedes Thema einmal je Niveau A1–C2 (Anfänger, Fortgeschritten, Profi)',
   },
   {
     id: 'full',
     label: 'Vollständiger Lauf',
-    hint: '256 Situationen je Sprache — vorhandene werden übersprungen',
+    hint: '264 Situationen je Sprache, alle drei Stufen — vorhandene werden übersprungen',
   },
 ];
 
@@ -279,7 +278,6 @@ export default function ContentStudio() {
   // (X_to_de-Rückseiten, abgeleiteter de-Pool) — siehe `ALLE_SPRACHEN`.
   const [mediaLanguage, setMediaLanguage] = useState<Lang>('th');
 
-  const [situationStage, setSituationStage] = useState<LearningStage>('beginner');
   const refreshSituations = useCallback(async () => {
     const [count, nachRichtung] = await Promise.all([countSituations(), countSituationsByDirection()]);
     setSituations(count);
@@ -428,9 +426,12 @@ export default function ContentStudio() {
     const { steps, all } = await planChain(
       chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
       (key) => planSituations({
-        ...(optionId === 'full' ? FULL_RUN : { variantsPerCombo: 1 }),
+        // Ein Textlauf bedient alle drei Stufen (Nutzerwunsch 04.10.2026):
+        // A1–C2 je Thema; der volle Lauf hält mit 11 Varianten etwa die
+        // bisherige Menge je Sprache.
+        ...(optionId === 'full' ? { variantsPerCombo: 11 } : { variantsPerCombo: 1 }),
         targetLanguage: key as LanguageCode,
-        levels: STAGE_LEVELS[situationStage],
+        levels: LEARNING_STAGES.flatMap((stage) => [...STAGE_LEVELS[stage]]),
       }),
       (specs) => missingSpecs(specs),
       maxNew
@@ -460,7 +461,7 @@ export default function ContentStudio() {
     }
     setReportRevision(value => value + 1);
   },
-    [situationStage, t]
+    [t]
   );
 
   const startImages = useCallback(
@@ -624,7 +625,6 @@ export default function ContentStudio() {
       {section === 'text' ? (
       <>
         <VocabZieleCard blocked={running} onRunningChange={setRunning} onFinished={() => { setReportRevision((v) => v + 1); void refreshStock(); }} />
-      <LearningStagePicker value={situationStage} onChange={setSituationStage} disabled={running} />
       <GeneratorCard
         blocked={running} managedKeys onRunningChange={setRunning}
         language={situationLanguage} onLanguageChange={setSituationLanguage}

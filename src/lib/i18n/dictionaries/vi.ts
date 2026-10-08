@@ -628,7 +628,7 @@ const vi = {
   "chapter.finish": "Đánh dấu chương đã hoàn thành",
   "chapter.all": "Tất cả các chương",
   "chapter.doneCount": "Đã hoàn thành {{done}} / {{total}}",
-  "advanced.title": "Có kinh nghiệm",
+  "advanced.title": "Chuyên sâu: văn bản dài",
   "advanced.intro": "Một bài đọc dài hơn, câu hỏi và câu trả lời của bạn. Bài tập này không chứng nhận trình độ CEFR.",
   "advanced.listen": "Nghe phần {{index}} trên {{total}}",
   "advanced.audioNote": "Dùng giọng hệ thống nếu có; phát âm chưa được kiểm chứng.",
@@ -656,7 +656,7 @@ const vi = {
   "learning.serEstar": "Ser: danh tính/đặc điểm. Estar: trạng thái/vị trí.",
   "roleplay.answer": "Câu trả lời của bạn",
   "level.beginner": "Người mới",
-  "level.experienced": "Có kinh nghiệm",
+  "level.experienced": "Nâng cao",
   "level.pro": "Chuyên gia",
   "level.choose": "Cấp độ học",
   "studio.duplicateSituation": "Đã có một hội thoại rất tương tự.",
@@ -664,6 +664,9 @@ const vi = {
   "studio.autoDeliveryHint": "Nội dung mới được tự động thêm sau khi vượt qua kiểm tra, kể cả khi đang tiếp tục tạo.",
   "studio.autoDelivered": "Đã tự động thêm {{count}}",
   "studio.localText": "Mô hình văn bản cục bộ · không cần khóa API",
+  "flashcard.ambiguous": "Có nhiều từ phù hợp – từ cần tìm: {{start}}",
+  "path.stageEmpty": "Chưa có chương nào cho “{{stage}}”.",
+  "conversation.stageEmpty": "Chưa có hội thoại “{{stage}}” cho ngôn ngữ này.",
 } as const;
 
 export default vi;

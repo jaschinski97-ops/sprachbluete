@@ -628,7 +628,7 @@ const ta = {
   "chapter.finish": "அத்தியாயத்தை முடிந்ததாகக் குறிக்கவும்",
   "chapter.all": "அனைத்து அத்தியாயங்கள்",
   "chapter.doneCount": "{{total}} இல் {{done}} முடிந்தது",
-  "advanced.title": "அனுபவமுள்ளவர்",
+  "advanced.title": "ஆழமாக: நீண்ட உரை",
   "advanced.intro": "நீளமான உரை, கேள்விகள், உங்கள் சொந்த பதில். இந்தப் பயிற்சி CEFR நிலையைச் சான்றளிக்காது.",
   "advanced.listen": "{{total}} பகுதிகளில் {{index}} ஆம் பகுதியைக் கேளுங்கள்",
   "advanced.audioNote": "இருந்தால் சாதனக் குரல்; உச்சரிப்பு சரிபார்க்கப்படவில்லை.",
@@ -656,7 +656,7 @@ const ta = {
   "learning.serEstar": "Ser: அடையாளம் அல்லது பண்பு. Estar: நிலை அல்லது இடம்.",
   "roleplay.answer": "உங்கள் பதில்",
   "level.beginner": "தொடக்கநிலை",
-  "level.experienced": "அனுபவமுள்ளவர்",
+  "level.experienced": "மேம்பட்ட",
   "level.pro": "நிபுணர்",
   "level.choose": "கற்றல் நிலை",
   "studio.duplicateSituation": "மிகவும் ஒத்த உரையாடல் ஏற்கனவே உள்ளது.",
@@ -664,6 +664,9 @@ const ta = {
   "studio.autoDeliveryHint": "சோதனைகளில் தேர்ச்சி பெற்ற புதிய உள்ளடக்கம் உருவாக்கம் நடைபெறும்போதும் தானாகச் சேர்க்கப்படும்.",
   "studio.autoDelivered": "{{count}} தானாகச் சேர்க்கப்பட்டன",
   "studio.localText": "உள்ளூர் உரை மாதிரி · API விசை தேவையில்லை",
+  "flashcard.ambiguous": "பல சொற்கள் பொருந்தும் – தேடப்படும் சொல்: {{start}}",
+  "path.stageEmpty": "“{{stage}}” நிலைக்கு இன்னும் அத்தியாயங்கள் இல்லை.",
+  "conversation.stageEmpty": "இந்த மொழியில் “{{stage}}” நிலைக்கு இன்னும் உரையாடல்கள் இல்லை.",
 } as const;
 
 export default ta;

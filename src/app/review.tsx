@@ -1,4 +1,5 @@
-import { levelLabelKey } from '@/lib/learning-stages';
+import { LEARNING_STAGES, levelLabelKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
+import { LearningStagePicker } from '@/components/learning-stage-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { VocabEntry } from '@/data/vocab-types';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
@@ -499,21 +500,43 @@ function LearnPath({
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
   const groups = groupsForDirection(direction);
-  const chapter = chapters?.find((item) => item.id === selectedChapterId)
-    ?? chapters?.find((item) => !finished.includes(item.id))
-    ?? chapters?.[0];
+  // Anfänger · Fortgeschritten · Profi (Nutzerwunsch 04.10.2026): Ohne eigene
+  // Wahl gilt die Stufe des nächsten offenen Kapitels.
+  const [pickedStage, setPickedStage] = useState<LearningStage | null>(null);
+  const naechstes = chapters?.find((item) => !finished.includes(item.id)) ?? chapters?.[0];
+  const stage: LearningStage = pickedStage ?? (naechstes ? stageForLevel(naechstes.situation.level) : 'beginner');
+  const stageChapters = (chapters ?? []).filter((item) => stageForLevel(item.situation.level) === stage);
+  const stageCounts = Object.fromEntries(LEARNING_STAGES.map((value) => [
+    value, (chapters ?? []).filter((item) => stageForLevel(item.situation.level) === value).length,
+  ])) as Record<LearningStage, number>;
+  // Gleichnamige Kapitel (zweimal „Auf dem Wochenmarkt“) als Varianten kennzeichnen.
+  const titelZaehler = new Map<string, number>();
+  const titelVon = new Map(stageChapters.map((item) => {
+    const titel = situationTranslation(item.situation, uiLanguage).title;
+    const nr = (titelZaehler.get(titel) ?? 0) + 1;
+    titelZaehler.set(titel, nr);
+    return [item.id, nr === 1 ? titel : `${titel}${t('conversation.variant', { count: nr })}`];
+  }));
+  const chapter = stageChapters.find((item) => item.id === selectedChapterId)
+    ?? stageChapters.find((item) => !finished.includes(item.id))
+    ?? stageChapters[0];
   const grammar = targetLanguageOf(direction) === 'th'
     ? chapter?.situation.topic === 'market' ? 'zaehlerwort'
       : chapter?.situation.topic === 'travel' ? 'konsonantenklasse'
         : 'polite'
     : groups[4].modes[0];
-  const position = chapter ? chapters!.findIndex((item) => item.id === chapter.id) + 1 : 0;
+  const position = chapter ? stageChapters.findIndex((item) => item.id === chapter.id) + 1 : 0;
   const translated = chapter ? situationTranslation(chapter.situation, uiLanguage) : null;
   const turnIndex = chapter?.situation.scriptTurns.findIndex((turn) => turn.speaker === 'learner') ?? -1;
   const turn = turnIndex >= 0 ? chapter?.situation.scriptTurns[turnIndex] : null;
 
   return (
     <View style={styles.learnHome}>
+      <LearningStagePicker
+        value={stage}
+        counts={stageCounts}
+        onChange={(value) => { setPickedStage(value); setLessonOpen(false); }}
+      />
       {chapters === null ? <ThemedText type="small" themeColor="textSecondary">
         {t('round.assembling')}
       </ThemedText> : chapter && translated ? (lessonOpen ? null : (
@@ -522,9 +545,9 @@ function LearnPath({
             {finished.includes(chapter.id) ? t('chapter.completed') : t('path.next')}
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {t('chapter.position', { index: position, total: chapters.length, level: t(levelLabelKey(chapter.situation.level)) })}
+            {t('chapter.position', { index: position, total: stageChapters.length, level: t(levelLabelKey(chapter.situation.level)) })}
           </ThemedText>
-          <ThemedText type="subtitle">{translated.title}</ThemedText>
+          <ThemedText type="subtitle">{titelVon.get(chapter.id) ?? translated.title}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">{translated.setting}</ThemedText>
           {turn ? <ThemedView type="background" style={styles.chapterExample}>
             <ThemedText type="smallBold">{spokenText(chapter.situation, turn)}</ThemedText>
@@ -541,7 +564,7 @@ function LearnPath({
           />
         </ThemedView>
       )) : <ThemedText type="small" themeColor="textSecondary">
-        {t('conversation.noneForDirection')}
+        {chapters && chapters.length > 0 ? t('path.stageEmpty', { stage: t(STAGE_KEYS[stage]) }) : t('conversation.noneForDirection')}
       </ThemedText>}
 
       {chapterError ? <ThemedText type="small" themeColor="textSecondary">
@@ -585,13 +608,16 @@ function LearnPath({
       <HeutigeRundeKnopf onPress={() => onOpen('heute')} />
       <ThemedText type="smallBold" themeColor="textSecondary">{t('path.areas')}</ThemedText>
       <ModeBar direction={direction} onPick={onOpen} />
-      {chapters && chapters.length > 0 ? <>
+      {stageChapters.length > 0 ? <>
         <ThemedText type="smallBold" themeColor="textSecondary">
-          {t('chapter.all')} · {t('chapter.doneCount', { done: finished.length, total: chapters.length })}
+          {t(STAGE_KEYS[stage])} · {t('chapter.doneCount', {
+            done: stageChapters.filter((item) => finished.includes(item.id)).length,
+            total: stageChapters.length,
+          })}
         </ThemedText>
         <View style={styles.chapterList}>
-          {chapters.map((item, index) => {
-            const label = situationTranslation(item.situation, uiLanguage).title;
+          {stageChapters.map((item, index) => {
+            const label = titelVon.get(item.id) ?? situationTranslation(item.situation, uiLanguage).title;
             const current = item.id === chapter?.id;
             return <Pressable
               key={item.id}
@@ -602,7 +628,7 @@ function LearnPath({
               <ThemedView type={current ? 'backgroundSelected' : 'backgroundElement'} style={styles.chapterRow}>
                 <View style={styles.skillText}>
                   <ThemedText type="smallBold">
-                    {t('chapter.position', { index: index + 1, total: chapters.length, level: t(levelLabelKey(item.situation.level)) })}
+                    {t('chapter.position', { index: index + 1, total: stageChapters.length, level: t(levelLabelKey(item.situation.level)) })}
                   </ThemedText>
                   <ThemedText type="default">{label}</ThemedText>
                 </View>
@@ -614,11 +640,12 @@ function LearnPath({
           })}
         </View>
       </> : null}
-      <ThemedView type="backgroundElement" style={styles.pathHero}>
+      {/* Die B1-Vertiefung gehört zu „Fortgeschritten“. */}
+      {stage === 'experienced' ? <ThemedView type="backgroundElement" style={styles.pathHero}>
         <ThemedText type="smallBold" themeColor="accent">{t('advanced.title')}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">{t('advanced.intro')}</ThemedText>
         <ThemedButton label={t('path.open')} onPress={() => onOpen('advanced')} />
-      </ThemedView>
+      </ThemedView> : null}
     </View>
   );
 }
@@ -809,6 +836,8 @@ function CardSession({
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const ratingInFlight = useRef(false);
   const [rated, setRated] = useState(0);
   const [again, setAgain] = useState(0);
 
@@ -829,22 +858,31 @@ function CardSession({
 
   const rate = useCallback(
     async (rating: Rating) => {
-      if (busy || !queue) return;
+      if (ratingInFlight.current || !queue) return;
       const item = queue[index];
       if (!item) return;
 
+      ratingInFlight.current = true;
       setBusy(true);
-      await rateCard(item.card, rating);
-      setRated((value) => value + 1);
-      if (rating === 1) setAgain((value) => value + 1);
-      setIndex((value) => value + 1);
-      setRevealed(false);
-      setBusy(false);
+      setSaveError(null);
+      try {
+        await rateCard(item.card, rating);
+        setRated((value) => value + 1);
+        if (rating === 1) setAgain((value) => value + 1);
+        setIndex((value) => value + 1);
+        setRevealed(false);
+      } catch (error) {
+        setSaveError(messageOf(error));
+      } finally {
+        ratingInFlight.current = false;
+        setBusy(false);
+      }
     },
-    [busy, queue, index]
+    [queue, index]
   );
 
   const restart = useCallback(() => {
+    setSaveError(null);
     setQueue(null);
     setQueueError(null);
     setIndex(0);
@@ -953,6 +991,9 @@ function CardSession({
           variant="primary"
         />
       )}
+      {saveError ? <ThemedText type="small" themeColor="textSecondary">
+        {t('common.loadFailed', { message: saveError })}
+      </ThemedText> : null}
     </>
   );
 }

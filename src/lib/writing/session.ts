@@ -77,6 +77,7 @@ export async function buildWritingSession(
 
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
   const candidates = writingCandidates(direction, pool);
+  const synonymPool = pool === entries ? candidates : writingCandidates(direction, entries);
 
   // Dieselbe Auswahl wie bei den Uebungen aus Phase 6: Schwerpunkt auf dem
   // Wackligen, aber aus einem Fenster gezogen, damit sich eine Runde nicht
@@ -89,7 +90,10 @@ export async function buildWritingSession(
 
   return {
     direction,
-    prompts: chosen.map((entry) => buildWritingPrompt(entry, direction, candidates)),
+    // Synonyme aus dem ganzen Wortschatz der Sprache, nicht nur aus dem
+    // Kapitelpool: In einer 16-Wort-Runde fehlte sonst „nicht“ als gültige
+    // Antwort auf „ไม่“ (Testlauf 04.10.2026).
+    prompts: chosen.map((entry) => buildWritingPrompt(entry, direction, synonymPool)),
     available: candidates.length,
   };
 }

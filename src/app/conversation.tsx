@@ -1,4 +1,5 @@
-import { levelLabelKey } from '@/lib/learning-stages';
+import { LEARNING_STAGES, levelLabelKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
+import { LearningStagePicker } from '@/components/learning-stage-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -93,9 +94,21 @@ export default function ConversationScreen() {
     };
   }, []);
 
-  const visible = useMemo(
+  const imRichtung = useMemo(
     () => (situations ?? []).filter((s) => s.direction === direction),
     [situations, direction]
+  );
+  // Anfänger · Fortgeschritten · Profi (Nutzerwunsch 04.10.2026).
+  const [stage, setStage] = useState<LearningStage>('beginner');
+  const stageCounts = useMemo(
+    () => Object.fromEntries(LEARNING_STAGES.map((value) => [
+      value, imRichtung.filter((s) => stageForLevel(s.level) === value).length,
+    ])) as Record<LearningStage, number>,
+    [imRichtung]
+  );
+  const visible = useMemo(
+    () => imRichtung.filter((s) => stageForLevel(s.level) === stage),
+    [imRichtung, stage]
   );
 
   // Gleiche Titel sind beabsichtigte Dialogvarianten (gleiche Situation,
@@ -149,9 +162,9 @@ export default function ConversationScreen() {
   // Eine Sprache ohne eigene Situationen (heute Englisch/Spanisch) zeigt
   // ihren ehrlichen Leerzustand; sonst zählen die Untertitel den Bestand.
   const subtitle =
-    visible.length === 0
+    imRichtung.length === 0
       ? t('conversation.subtitleLanguage', { language: languageName(sprache) })
-      : t('conversation.subtitleCount', { count: visible.length });
+      : t('conversation.subtitleCount', { count: imRichtung.length });
 
   return (
     <ScreenScaffold title={t('tabs.conversation')} subtitle={subtitle}>
@@ -189,10 +202,20 @@ export default function ConversationScreen() {
       {/* Die Gegenseite der Dialoge ist keine Wahl, sondern die App-Sprache —
           solange Bedeutungen nur auf Deutsch erzeugt sind, steht das hier. */}
       <ThemedText type="small" themeColor="textSecondary">
-        {t('conversation.meaningLanguage', { language: languageName(visible.every(s => s.translations?.[uiLanguage]) ? uiLanguage : 'de') })}
+        {t('conversation.meaningLanguage', { language: languageName(imRichtung.every(s => s.translations?.[uiLanguage]) ? uiLanguage : 'de') })}
       </ThemedText>
 
-      {visible.length === 0 ? (
+      {imRichtung.length > 0 ? (
+        <LearningStagePicker value={stage} counts={stageCounts} onChange={setStage} />
+      ) : null}
+
+      {imRichtung.length > 0 && visible.length === 0 ? (
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('conversation.stageEmpty', { stage: t(STAGE_KEYS[stage]) })}
+          </ThemedText>
+        </ThemedView>
+      ) : imRichtung.length === 0 ? (
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="smallBold">
             {t('conversation.noneFor', { language: languageName(sprache) })}

@@ -628,7 +628,7 @@ const ko = {
   "chapter.finish": "이 장을 완료로 표시",
   "chapter.all": "전체 장",
   "chapter.doneCount": "{{total}}장 중 {{done}}장 완료",
-  "advanced.title": "경험자",
+  "advanced.title": "심화: 긴 글",
   "advanced.intro": "긴 글을 읽고 질문에 답한 뒤 직접 답을 씁니다. 이 연습은 CEFR 등급을 인증하지 않습니다.",
   "advanced.listen": "{{total}}개 중 {{index}}번째 부분 듣기",
   "advanced.audioNote": "가능하면 기기 음성을 사용합니다. 발음은 검증되지 않았습니다.",
@@ -656,7 +656,7 @@ const ko = {
   "learning.serEstar": "Ser: 정체성이나 특성. Estar: 상태나 위치.",
   "roleplay.answer": "내 답변",
   "level.beginner": "초보자",
-  "level.experienced": "경험자",
+  "level.experienced": "중급",
   "level.pro": "전문가",
   "level.choose": "학습 단계",
   "studio.duplicateSituation": "매우 비슷한 대화가 이미 있습니다.",
@@ -664,6 +664,9 @@ const ko = {
   "studio.autoDeliveryHint": "검사를 통과한 새 콘텐츠는 생성이 진행되는 동안에도 자동으로 추가됩니다.",
   "studio.autoDelivered": "{{count}}개 자동 반영됨",
   "studio.localText": "로컬 텍스트 모델 · API 키 불필요",
+  "flashcard.ambiguous": "여러 단어가 맞습니다 – 찾는 단어: {{start}}",
+  "path.stageEmpty": "‘{{stage}}’ 단계의 장이 아직 없습니다.",
+  "conversation.stageEmpty": "이 언어에는 아직 ‘{{stage}}’ 대화가 없습니다.",
 } as const;
 
 export default ko;

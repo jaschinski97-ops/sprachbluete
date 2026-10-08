@@ -628,7 +628,7 @@ const ur = {
   "chapter.finish": "باب مکمل نشان زد کریں",
   "chapter.all": "تمام ابواب",
   "chapter.doneCount": "{{total}} میں سے {{done}} مکمل",
-  "advanced.title": "تجربہ کار",
+  "advanced.title": "گہرائی: طویل متن",
   "advanced.intro": "طویل متن، سوالات اور آپ کا اپنا جواب۔ یہ مشق CEFR سطح کی سند نہیں دیتی۔",
   "advanced.listen": "حصہ {{index}} از {{total}} سنیں",
   "advanced.audioNote": "دستیاب ہو تو سسٹم کی آواز؛ تلفظ کی جانچ نہیں ہوئی۔",
@@ -656,7 +656,7 @@ const ur = {
   "learning.serEstar": "Ser: شناخت یا خصوصیات۔ Estar: حالت یا جگہ۔",
   "roleplay.answer": "آپ کا جواب",
   "level.beginner": "ابتدائی",
-  "level.experienced": "تجربہ کار",
+  "level.experienced": "اعلیٰ درجہ",
   "level.pro": "ماہر",
   "level.choose": "سیکھنے کی سطح",
   "studio.duplicateSituation": "بہت ملتا جلتا مکالمہ پہلے سے موجود ہے۔",
@@ -664,6 +664,9 @@ const ur = {
   "studio.autoDeliveryHint": "جانچ میں کامیاب نیا مواد خودکار طور پر شامل ہوتا ہے، تخلیق جاری ہونے کے دوران بھی۔",
   "studio.autoDelivered": "{{count}} خودکار طور پر شامل کیے گئے",
   "studio.localText": "مقامی ٹیکسٹ ماڈل · API کلید کی ضرورت نہیں",
+  "flashcard.ambiguous": "کئی الفاظ موزوں ہیں – مطلوبہ لفظ: {{start}}",
+  "path.stageEmpty": "“{{stage}}” کے لیے ابھی کوئی باب نہیں ہے۔",
+  "conversation.stageEmpty": "اس زبان میں “{{stage}}” کے لیے ابھی کوئی گفتگو نہیں ہے۔",
 } as const;
 
 export default ur;

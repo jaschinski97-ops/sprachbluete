@@ -51,6 +51,9 @@ export function TermWord({
   // als Thai, die Skala sieht dafür eigene `thai*`-Varianten vor.
   const base = size === 'large' ? 44 : 28;
   const cap = size === 'large' ? 1.4 : 2;
+  // Artikel und Plural gehören zum Wort: Die Schreibübung wertet „Haus“ ohne
+  // Artikel als Fehler, also muss die Karte ihn zeigen (Testlauf 04.10.2026).
+  const noun = entry.language === 'de' ? entry.germanNoun : entry.language === 'es' ? entry.spanishNoun : undefined;
 
   return (
     <View style={styles.wrapper}>
@@ -60,8 +63,13 @@ export function TermWord({
           size === 'large' ? styles.termLarge : styles.termMedium,
           { lineHeight: displayLineHeight(base, cap, size === 'large' ? 1.4 : 1.42) },
         ]}>
-        {entry.term}
+        {noun && !entry.term.toLowerCase().startsWith(`${noun.article} `) ? `${noun.article} ${entry.term}` : entry.term}
       </ThemedText>
+      {noun?.plural && noun.plural !== '—' ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {t('flashcard.plural', { plural: noun.plural })}
+        </ThemedText>
+      ) : null}
 
       {showsStress ? (
         <View style={styles.syllables}>
@@ -80,7 +88,9 @@ export function TermWord({
             </View>
           ))}
         </View>
-      ) : (entry.ipa ?? entry.romanization) !== entry.term ? (
+      ) : entry.language !== 'es' && (entry.ipa ?? entry.romanization) !== entry.term ? (
+        // Spanisch: Schreibung = Aussprache, gelernt wird die Betonung. Die
+        // Pseudo-Umschriften einsilbiger Wörter („pyel“, „PLAN“) blieben weg.
         <ThemedText type="small" themeColor="textSecondary">
           {entry.ipa ?? entry.romanization}
         </ThemedText>

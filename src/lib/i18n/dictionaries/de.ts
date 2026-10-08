@@ -753,7 +753,7 @@ const de = {
   "chapter.finish": "Kapitel als abgeschlossen markieren",
   "chapter.all": "Alle Kapitel",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
-  "advanced.title": "Erfahren",
+  "advanced.title": "Vertiefung: längerer Text",
   "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort. Diese Übung bescheinigt keine GER-Stufe.",
   "advanced.listen": "Abschnitt {{index}} von {{total}} anhören",
   "advanced.audioNote": "Systemstimme, falls vorhanden; die Aussprache ist nicht geprüft.",
@@ -781,7 +781,7 @@ const de = {
   "learning.serEstar": "Ser: Identität/Eigenschaften. Estar: Zustand/Ort.",
   "roleplay.answer": "Deine Antwort",
   "level.beginner": "Anfänger",
-  "level.experienced": "Erfahren",
+  "level.experienced": "Fortgeschritten",
   "level.pro": "Profi",
   "level.choose": "Lernstufe",
   "studio.duplicateSituation": "Fast gleicher Dialog bereits im Bestand.",
@@ -789,6 +789,9 @@ const de = {
   "studio.autoDeliveryHint": "Neue Inhalte werden nach bestandener Prüfung automatisch übernommen — auch während des Laufs.",
   "studio.autoDelivered": "{{count}} automatisch übernommen",
   "studio.localText": "Lokales Textmodell · kein API-Schlüssel",
+  "flashcard.ambiguous": "Mehrere Wörter passen – gesucht: {{start}}",
+  "path.stageEmpty": "Für „{{stage}}“ gibt es noch keine Kapitel.",
+  "conversation.stageEmpty": "Für „{{stage}}“ gibt es in dieser Sprache noch keine Gespräche.",
 } as const;
 
 export default de;

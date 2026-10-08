@@ -19,7 +19,7 @@ Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nu
 
 ## Inhaltsbestand (Katalog `src/content/catalog.json`)
 
-Vokabeln th/en/de je 2.000, es 1.502. Hörclips th 3.974, en 4.047, es 3.063, de 4.035. Dazu 78 Bilder und 28 Situationen. Der erzeugte Wortschatz IST der Grundstock (`vocabularySource: 'generated'`); alte feste Vokabeln gibt es nur noch als Test-Fixtures (`src/test-fixtures/`). Jest läuft gegen den festen Testkatalog `fixture-catalog.ts`.
+Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.063, de 4.035. Dazu 3.825 Bildzuordnungen und 28 Situationen; neun geprüfte Fehlmotive werden im Lernbereich ausgeblendet. Der erzeugte Wortschatz IST der Grundstock (`vocabularySource: 'generated'`); redaktionelle Ergänzungen nutzen denselben Katalog. Alte feste Vokabeln gibt es nur noch als Test-Fixtures (`src/test-fixtures/`). Jest läuft gegen den festen Testkatalog `fixture-catalog.ts`.
 
 ## Befehle
 
@@ -34,6 +34,8 @@ npm run content:integrity                            # Katalog-Integrität (erro
 Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 ## Arbeitsregeln
+
+- Web-Lernstände liegen in IndexedDB (`storage/document-persistence.web.ts`); alte localStorage-Sammlungen werden atomar mit Sicherung übernommen. Bekannte Fehlmotive werden nach Dateihash in `images/reviewed-assets.ts` unterdrückt; neue Bilddateien mit anderem Hash bleiben zulässig. Kapitel berücksichtigen gespeicherte Plurale und einfache englische Nomenplurale.
 
 - **Keine bezahlten KI-Läufe starten.** Erzeugung startet der Nutzer selbst im Studio. Es gibt bewusst KEINE Kostenbestätigungs-Dialoge; nicht wieder einbauen.
 - **Pfad-genau committen.** Parallel-Chats sind möglich; fremdes WIP nicht mitnehmen.
@@ -56,7 +58,8 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 ## Lokale Bilder
 
 - Lokale Textanbieter `local-qwen`/`local-gemma`: Setup/Start unter `scripts/content/*local-text*`, Einrichtung `docs/lokale-texte.md`. llama.cpp-Router auf 127.0.0.1:8090, höchstens ein Modell geladen. Textserver erst nach Bildlauf und Freigabe des GPU-Speichers starten; Audio bleibt unverändert.
-- Sichtbare Inhaltsgruppen Anfänger/Erfahren/Profi entsprechen intern A1/A2, B1/B2, C1/C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger. Goethe-Prüfungsnamen behalten ihre offiziellen Stufen.
+- Sichtbare Inhaltsgruppen Anfänger/Fortgeschritten/Profi entsprechen intern A1/A2, B1/B2, C1/C2. Lernen und Gespräch filtern per Stufenschalter; ein Studio-Gesprächslauf erzeugt A1–C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger. Goethe-Prüfungsnamen behalten ihre offiziellen Stufen.
+- Thai-Umschrift: Paiboon-Stil wie in den Dialogen (kh/th/ph, g/dt/bp, ɛ ɔ ə ʉ, Ton à â á ǎ; ได้ dâai, น้ำ nám). Wächtertest `src/lib/content/thai-romanization.test.ts` prüft den echten Katalog. Gleiche Vorderseiten: Karte zeigt Wortanfang (`src/lib/ambiguity.ts`), Schreiben akzeptiert Synonyme der ganzen Sprache.
 
 - Bildanbieter `comfyui`: FLUX.2 klein 4B distilled FP8, ComfyUI nur auf 127.0.0.1:8188, Helper 8082. Encoder-Gerät `default` (GPU mit ComfyUI-Auslagerung), 768-Pixel-Erzeugung → 512-WebP, vier Schritte, seriell ohne Cloud-Pause. Start: `scripts/content/start-local-images.ps1`; Einrichtung/Probelauf: `docs/lokale-bilder.md`. Runtime/Modelle unter `_Local/` sind gitignored.
 - Lokale Bildläufe übernehmen technisch geprüfte Bilder automatisch, das 512-MiB-Gesamtbudget bleibt verbindlich. Die Motivpassung braucht weiterhin einen Vorschau-Blick. Anbieter für Text/Audio unverändert; Goethe B2 zurückgestellt. Studio-Läufe speichern neue Medien direkt beim Helper statt in der begrenzten Browser-Metadatenablage.
@@ -72,6 +75,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 - iPhone zuerst: lokaler Quellkandidat und Produktions-Export; native Signierung/Geräteabnahme offen. Aktuelle Checkliste: `docs/release-candidate-2026-09-30.md`.
 - iOS am Gerät prüfen: Shadowing stellt die Audiokategorie während laufender Aufnahme um (`src/lib/audio-mode.ts`).
+- Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
 - Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
 - Testrunde 26.09.: Behobenes steht in `CHANGELOG.md`. Noch OFFEN: Stammformen mit beiden Hilfsverben (ist/hat geritten) gelten als falsch; ar „مقال“ für Artikel + Untertitel umgangssprachlich; Backup-Fehler fest deutsch; keine Pluralregeln; Studio-Export vergleicht Clips nie gleich (blobKey/byteSize), „Neu erzeugen“ überspringt vorhandene Clips. Änderungen immer auch in `CHANGELOG.md` eintragen.
 - Testrunde 29.09.: Lesequiz-Auswahl, Thai-Wortgrenzen, Rollenspiel-Zähltext und Anfänger-Stoffauswahl korrigiert (siehe `CHANGELOG.md`). B1-Hörtexte bleiben ohne gebündelte Clips; eine physische Mikrofonprüfung steht weiter aus.

@@ -628,7 +628,7 @@ const zh = {
   "chapter.finish": "标记本章已完成",
   "chapter.all": "所有章节",
   "chapter.doneCount": "已完成 {{done}} / {{total}} 章",
-  "advanced.title": "有经验者",
+  "advanced.title": "深入：较长文本",
   "advanced.intro": "阅读较长文章、回答问题，并写出自己的答案。本练习不认证 CEFR 等级。",
   "advanced.listen": "收听第 {{index}} / {{total}} 部分",
   "advanced.audioNote": "如可用则使用设备语音；发音未经核验。",
@@ -656,7 +656,7 @@ const zh = {
   "learning.serEstar": "Ser：身份或特征。Estar：状态或位置。",
   "roleplay.answer": "你的回答",
   "level.beginner": "初学者",
-  "level.experienced": "有经验者",
+  "level.experienced": "进阶",
   "level.pro": "高手",
   "level.choose": "学习阶段",
   "studio.duplicateSituation": "已有非常相似的对话。",
@@ -664,6 +664,9 @@ const zh = {
   "studio.autoDeliveryHint": "新内容通过检查后会自动加入，生成过程中也会同步加入。",
   "studio.autoDelivered": "已自动加入 {{count}} 项",
   "studio.localText": "本地文本模型 · 无需API密钥",
+  "flashcard.ambiguous": "有多个词符合 – 要找的词以 {{start}} 开头",
+  "path.stageEmpty": "「{{stage}}」暂时还没有章节。",
+  "conversation.stageEmpty": "此语言暂时还没有「{{stage}}」对话。",
 } as const;
 
 export default zh;

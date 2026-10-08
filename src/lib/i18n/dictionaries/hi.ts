@@ -628,7 +628,7 @@ const hi = {
   "chapter.finish": "अध्याय को पूरा चिह्नित करें",
   "chapter.all": "सभी अध्याय",
   "chapter.doneCount": "{{total}} में से {{done}} पूरे",
-  "advanced.title": "अनुभवी",
+  "advanced.title": "गहराई से: लंबा पाठ",
   "advanced.intro": "लंबा पाठ, प्रश्न और आपका अपना उत्तर। यह अभ्यास CEFR स्तर प्रमाणित नहीं करता।",
   "advanced.listen": "भाग {{index}} / {{total}} सुनें",
   "advanced.audioNote": "उपलब्ध हो तो सिस्टम की आवाज़; उच्चारण की जाँच नहीं हुई है।",
@@ -656,7 +656,7 @@ const hi = {
   "learning.serEstar": "Ser: पहचान या गुण। Estar: अवस्था या स्थान।",
   "roleplay.answer": "आपका उत्तर",
   "level.beginner": "शुरुआती",
-  "level.experienced": "अनुभवी",
+  "level.experienced": "उन्नत",
   "level.pro": "विशेषज्ञ",
   "level.choose": "सीखने का स्तर",
   "studio.duplicateSituation": "बहुत मिलता-जुलता संवाद पहले से मौजूद है।",
@@ -664,6 +664,9 @@ const hi = {
   "studio.autoDeliveryHint": "जाँच में सफल नई सामग्री अपने आप जुड़ जाती है, सामग्री बनते समय भी।",
   "studio.autoDelivered": "{{count}} अपने आप जोड़े गए",
   "studio.localText": "स्थानीय टेक्स्ट मॉडल · API कुंजी की जरूरत नहीं",
+  "flashcard.ambiguous": "कई शब्द सही बैठते हैं – खोजा गया शब्द: {{start}}",
+  "path.stageEmpty": "“{{stage}}” के लिए अभी कोई अध्याय नहीं है।",
+  "conversation.stageEmpty": "इस भाषा में “{{stage}}” के लिए अभी कोई बातचीत नहीं है।",
 } as const;
 
 export default hi;

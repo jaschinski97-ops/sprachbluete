@@ -628,7 +628,7 @@ const ru = {
   "chapter.finish": "Отметить главу завершённой",
   "chapter.all": "Все главы",
   "chapter.doneCount": "Завершено {{done}} из {{total}}",
-  "advanced.title": "Опытный",
+  "advanced.title": "Углубление: длинный текст",
   "advanced.intro": "Более длинный текст, вопросы и ваш ответ. Это упражнение не подтверждает уровень CEFR.",
   "advanced.listen": "Прослушать часть {{index}} из {{total}}",
   "advanced.audioNote": "Системный голос, если доступен; произношение не проверено.",
@@ -656,7 +656,7 @@ const ru = {
   "learning.serEstar": "Ser: личность/свойства. Estar: состояние/местоположение.",
   "roleplay.answer": "Ваш ответ",
   "level.beginner": "Начинающий",
-  "level.experienced": "Опытный",
+  "level.experienced": "Продвинутый",
   "level.pro": "Профи",
   "level.choose": "Уровень обучения",
   "studio.duplicateSituation": "Очень похожий диалог уже есть.",
@@ -664,6 +664,9 @@ const ru = {
   "studio.autoDeliveryHint": "Новые материалы автоматически добавляются после успешной проверки, в том числе во время генерации.",
   "studio.autoDelivered": "{{count}} автоматически добавлено",
   "studio.localText": "Локальная текстовая модель · без ключа API",
+  "flashcard.ambiguous": "Подходят несколько слов – искомое: {{start}}",
+  "path.stageEmpty": "Для уровня «{{stage}}» пока нет глав.",
+  "conversation.stageEmpty": "На этом языке пока нет диалогов уровня «{{stage}}».",
 } as const;
 
 export default ru;

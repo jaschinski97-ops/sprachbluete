@@ -180,9 +180,12 @@ export default function DashboardScreen() {
       {/* Dezent, ganz unten: welche Sprache das Gerät meldet. Sie ist die
           Brückensprache der App — wer abweichend davon lernt, sieht hier,
           worauf die Voreinstellung beruht. */}
-      <ThemedText type="small" themeColor="textSecondary">
+      {/* Nur solange die App-Sprache der Gerätesprache folgt: Bei einer
+          eigenen Wahl stand hier „Systemsprache: Deutsch“ unter einer Thai-
+          Oberfläche (Testlauf 04.10.2026). */}
+      {uiLanguage === systemLanguage ? <ThemedText type="small" themeColor="textSecondary">
         {t('home.systemLanguage', { language: languageName(systemLanguage) })}
-      </ThemedText>
+      </ThemedText> : null}
     </ScreenScaffold>
   );
 }

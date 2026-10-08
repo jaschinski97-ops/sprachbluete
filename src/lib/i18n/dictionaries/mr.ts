@@ -628,7 +628,7 @@ const mr = {
   "chapter.finish": "धडा पूर्ण म्हणून चिन्हांकित करा",
   "chapter.all": "सर्व धडे",
   "chapter.doneCount": "{{total}} पैकी {{done}} पूर्ण",
-  "advanced.title": "अनुभवी",
+  "advanced.title": "सखोल: मोठा मजकूर",
   "advanced.intro": "मोठा मजकूर, प्रश्न आणि तुमचे स्वतःचे उत्तर. हा सराव CEFR स्तराचे प्रमाणपत्र नाही.",
   "advanced.listen": "{{total}} पैकी भाग {{index}} ऐका",
   "advanced.audioNote": "उपलब्ध असल्यास प्रणालीचा आवाज; उच्चार तपासलेले नाहीत.",
@@ -656,7 +656,7 @@ const mr = {
   "learning.serEstar": "Ser: ओळख किंवा गुण. Estar: स्थिती किंवा स्थान.",
   "roleplay.answer": "तुमचे उत्तर",
   "level.beginner": "नवशिक्या",
-  "level.experienced": "अनुभवी",
+  "level.experienced": "प्रगत",
   "level.pro": "तज्ज्ञ",
   "level.choose": "शिकण्याची पातळी",
   "studio.duplicateSituation": "अतिशय समान संवाद आधीच उपलब्ध आहे.",
@@ -664,6 +664,9 @@ const mr = {
   "studio.autoDeliveryHint": "तपासणी उत्तीर्ण झालेली नवीन सामग्री आपोआप जोडली जाते, निर्मिती सुरू असतानाही.",
   "studio.autoDelivered": "{{count}} आपोआप जोडले",
   "studio.localText": "स्थानिक मजकूर मॉडेल · API की आवश्यक नाही",
+  "flashcard.ambiguous": "अनेक शब्द जुळतात – हवा असलेला शब्द: {{start}}",
+  "path.stageEmpty": "“{{stage}}” साठी अजून कोणतेही प्रकरण नाही.",
+  "conversation.stageEmpty": "या भाषेत “{{stage}}” साठी अजून संवाद नाहीत.",
 } as const;
 
 export default mr;

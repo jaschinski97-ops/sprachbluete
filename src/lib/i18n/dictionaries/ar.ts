@@ -628,7 +628,7 @@ const ar = {
   "chapter.finish": "تحديد الفصل كمكتمل",
   "chapter.all": "جميع الفصول",
   "chapter.doneCount": "اكتمل {{done}} من {{total}}",
-  "advanced.title": "متمرس",
+  "advanced.title": "تعمق: نص أطول",
   "advanced.intro": "نص أطول وأسئلة وإجابتك الخاصة. هذا التمرين لا يمنح شهادة بمستوى CEFR.",
   "advanced.listen": "استمع إلى الجزء {{index}} من {{total}}",
   "advanced.audioNote": "صوت النظام إن توفر؛ لم يُتحقق من النطق.",
@@ -656,7 +656,7 @@ const ar = {
   "learning.serEstar": "Ser: الهوية أو الصفات. Estar: الحالة أو المكان.",
   "roleplay.answer": "إجابتك",
   "level.beginner": "مبتدئ",
-  "level.experienced": "متمرس",
+  "level.experienced": "متقدم",
   "level.pro": "خبير",
   "level.choose": "مستوى التعلم",
   "studio.duplicateSituation": "يوجد حوار مشابه جدًا بالفعل.",
@@ -664,6 +664,9 @@ const ar = {
   "studio.autoDeliveryHint": "تُضاف المحتويات الجديدة تلقائيًا بعد اجتياز الفحوصات، حتى أثناء استمرار التوليد.",
   "studio.autoDelivered": "تمت إضافة {{count}} تلقائيًا",
   "studio.localText": "نموذج نص محلي · دون مفتاح API",
+  "flashcard.ambiguous": "تناسب عدة كلمات – المطلوبة تبدأ بـ: {{start}}",
+  "path.stageEmpty": "لا توجد فصول لمستوى «{{stage}}» بعد.",
+  "conversation.stageEmpty": "لا توجد محادثات لمستوى «{{stage}}» بهذه اللغة بعد.",
 } as const;
 
 export default ar;

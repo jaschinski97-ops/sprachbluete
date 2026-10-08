@@ -223,7 +223,8 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
     {/* Die ehrliche Quellen-Zeile nur, solange keine Aussage der Wiedergabe
         danebensteht — sonst stand hier zweimal fast dasselbe (Nutzerbefund
         21.09.2026, en-UI). */}
-    {!notice && <ThemedText type="small">{t('sentence.exampleNote')}</ThemedText>}
+    {/* Beim reinen Hörverstehen gibt es keine Aufnahme — dort passt der Satz nicht. */}
+    {!notice && !listening && <ThemedText type="small">{t('sentence.exampleNote')}</ThemedText>}
     <ThemedText accessibilityLiveRegion="polite" type="small">{capture.error ? t(MIC_ERROR_KEYS[capture.error.code]) : notice}</ThemedText>
     {!listening && stage === 'prepare' && <>
       {mode === 'shadowing' && <SentenceAction label={headphones ? t('sentence.headphonesOk') : t('sentence.headphones')} onPress={() => setHeadphones(value => !value)} />}

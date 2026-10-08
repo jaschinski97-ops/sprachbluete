@@ -92,7 +92,7 @@ export function buildSerEstarQuestion(item: SerEstarItem, anchor: UiLanguage = '
 /* ---------- Zählwörter (de_to_th, Schritt 5) ---------- */
 
 const ZAEHLER_ROMAN: Record<(typeof ZAEHLER_OPTIONEN)[number], string> = {
-  คน: 'khon', ตัว: 'dtua', เล่ม: 'lêm', แก้ว: 'gâaeo', หลัง: 'lǎng',
+  คน: 'khon', ตัว: 'dtua', เล่ม: 'lêm', แก้ว: 'gɛ̂ɛo', หลัง: 'lǎng',
 };
 
 export function buildZaehlerQuestion(item: ZaehlerItem, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {

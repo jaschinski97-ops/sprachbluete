@@ -712,7 +712,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
   "chapter.all": "ทุกบท",
   "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
-  "advanced.title": "ผู้มีประสบการณ์",
+  "advanced.title": "เจาะลึก: ข้อความยาว",
   "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ แบบฝึกนี้ไม่ใช่การรับรองระดับภาษา",
   "advanced.listen": "ฟังส่วนที่ {{index}} จาก {{total}}",
   "advanced.audioNote": "ใช้เสียงของระบบหากมี ยังไม่ได้ตรวจสอบการออกเสียง",
@@ -740,7 +740,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "learning.serEstar": "Ser บอกตัวตนหรือลักษณะ ส่วน estar บอกสภาพหรือสถานที่",
   "roleplay.answer": "คำตอบของคุณ",
   "level.beginner": "ผู้เริ่มต้น",
-  "level.experienced": "ผู้มีประสบการณ์",
+  "level.experienced": "ระดับกลาง",
   "level.pro": "ผู้เชี่ยวชาญ",
   "level.choose": "ระดับการเรียนรู้",
   "studio.duplicateSituation": "มีบทสนทนาที่คล้ายกันมากอยู่แล้ว",
@@ -748,6 +748,9 @@ const th: Partial<Record<TranslationKey, string>> = {
   "studio.autoDeliveryHint": "เนื้อหาใหม่ที่ผ่านการตรวจสอบจะถูกนำเข้าอัตโนมัติ แม้ระหว่างการสร้างเนื้อหา",
   "studio.autoDelivered": "นำเข้าอัตโนมัติแล้ว {{count}} รายการ",
   "studio.localText": "โมเดลข้อความในเครื่อง · ไม่ต้องใช้คีย์ API",
+  "flashcard.ambiguous": "มีหลายคำที่ตรงความหมาย – คำที่ต้องการขึ้นต้นด้วย {{start}}",
+  "path.stageEmpty": "ยังไม่มีบทเรียนสำหรับระดับ „{{stage}}“",
+  "conversation.stageEmpty": "ยังไม่มีบทสนทนาระดับ „{{stage}}“ ในภาษานี้",
 };
 
 export default th;

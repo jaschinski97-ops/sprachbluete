@@ -30,7 +30,7 @@ export const ZAEHLER_OPTIONEN = ['คน', 'ตัว', 'เล่ม', 'แก�
 
 export const ZAEHLER_ITEMS: readonly ZaehlerItem[] = [
   { id: 'zaehler-maew', nomen: 'แมว', roman: 'mɛɛo', german: 'Katze', answer: 'ตัว' },
-  { id: 'zaehler-kruu', nomen: 'ครู', roman: 'kruu', german: 'Lehrer', answer: 'คน' },
+  { id: 'zaehler-kruu', nomen: 'ครู', roman: 'khruu', german: 'Lehrer', answer: 'คน' },
   { id: 'zaehler-nangsue', nomen: 'หนังสือ', roman: 'nǎng-sʉ̌ʉ', german: 'Buch', answer: 'เล่ม' },
   { id: 'zaehler-gaafe', nomen: 'กาแฟ', roman: 'gaa-fɛɛ', german: 'Kaffee', answer: 'แก้ว' },
   { id: 'zaehler-baan', nomen: 'บ้าน', roman: 'bâan', german: 'Haus', answer: 'หลัง' },

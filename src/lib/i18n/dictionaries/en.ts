@@ -726,7 +726,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Mark chapter complete",
   "chapter.all": "All chapters",
   "chapter.doneCount": "{{done}} of {{total}} completed",
-  "advanced.title": "Experienced",
+  "advanced.title": "Deep dive: longer text",
   "advanced.intro": "A longer text, questions and your own answer. This exercise does not certify a CEFR level.",
   "advanced.listen": "Listen to part {{index}} of {{total}}",
   "advanced.audioNote": "System voice if available; pronunciation has not been checked.",
@@ -754,7 +754,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   "learning.serEstar": "Ser: identity/characteristics. Estar: state/location.",
   "roleplay.answer": "Your answer",
   "level.beginner": "Beginner",
-  "level.experienced": "Experienced",
+  "level.experienced": "Advanced",
   "level.pro": "Pro",
   "level.choose": "Learning stage",
   "studio.duplicateSituation": "A very similar dialogue is already available.",
@@ -762,6 +762,9 @@ const en: Partial<Record<TranslationKey, string>> = {
   "studio.autoDeliveryHint": "New content is added automatically after passing checks, including while generation continues.",
   "studio.autoDelivered": "{{count}} automatically delivered",
   "studio.localText": "Local text model · no API key",
+  "flashcard.ambiguous": "Several words fit – looking for: {{start}}",
+  "path.stageEmpty": "There are no chapters for “{{stage}}” yet.",
+  "conversation.stageEmpty": "There are no conversations for “{{stage}}” in this language yet.",
 };
 
 export default en;

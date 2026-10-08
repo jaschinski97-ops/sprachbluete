@@ -3,11 +3,23 @@ import type { Lang } from '@/lib/languages/types';
 import { currentCatalog } from '@/lib/content/catalog-state';
 import { isDeliverableEntry } from '@/lib/content/audio-policy';
 
+/** Zeichen, die nur echte IPA trägt — nicht „Tas-se“ oder „GOO-ten“. */
+const DEUTSCHE_IPA = /[ˈˌːɐəʁɪʊɛɔçʃŋʏøœɡʒ]/;
+
 /**
  * Der Erzeuger liefert IPA mal mit, mal ohne Schrägstriche (`/kɑːd/` neben
  * `kɑːd`). Einheitlich mit Strichen, damit jede Anzeige gleich aussieht.
  */
 export function mitIpaStrichen(word: VocabEntry): VocabEntry {
+  // Deutsch trägt seine Lautschrift im Feld `romanization`, teils in [ ]:
+  // dieselbe /…/-Schreibweise wie Englisch. 497 Einträge haben statt IPA eine
+  // Pseudo-Umschrift („Tas-se“, „dahs DOOSH-gehl“) — die wird nicht gezeigt,
+  // eine falsche Lesehilfe ist schlechter als keine (Prüfung 04.10.2026).
+  if (String(word.language) === 'de' && word.romanization && word.romanization !== word.term) {
+    const kern = word.romanization.trim().replace(/^[[/]+|[\]/]+$/g, '');
+    const romanization = DEUTSCHE_IPA.test(kern) ? `/${kern}/` : word.term;
+    if (romanization !== word.romanization) word = { ...word, romanization };
+  }
   if (!word.ipa) return word;
   const kern = word.ipa.trim().replace(/^\/+|\/+$/g, '');
   const ipa = `/${kern}/`;

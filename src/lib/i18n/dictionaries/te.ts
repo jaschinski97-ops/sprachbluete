@@ -628,7 +628,7 @@ const te = {
   "chapter.finish": "అధ్యాయం పూర్తయిందని గుర్తించండి",
   "chapter.all": "అన్ని అధ్యాయాలు",
   "chapter.doneCount": "{{total}}లో {{done}} పూర్తయ్యాయి",
-  "advanced.title": "అనుభవజ్ఞుడు",
+  "advanced.title": "లోతైన అభ్యాసం: పొడవైన పాఠ్యం",
   "advanced.intro": "పొడవైన పాఠం, ప్రశ్నలు, మీ స్వంత సమాధానం. ఈ అభ్యాసం CEFR స్థాయిని ధృవీకరించదు.",
   "advanced.listen": "{{total}}లో {{index}}వ భాగం వినండి",
   "advanced.audioNote": "అందుబాటులో ఉంటే పరికర స్వరం; ఉచ్చారణ తనిఖీ కాలేదు.",
@@ -656,7 +656,7 @@ const te = {
   "learning.serEstar": "Ser: గుర్తింపు లేదా లక్షణాలు. Estar: స్థితి లేదా ప్రదేశం.",
   "roleplay.answer": "మీ సమాధానం",
   "level.beginner": "ప్రారంభ స్థాయి",
-  "level.experienced": "అనుభవజ్ఞుడు",
+  "level.experienced": "ప్రగతిశీల",
   "level.pro": "నిపుణుడు",
   "level.choose": "అభ్యాస స్థాయి",
   "studio.duplicateSituation": "చాలా సారూప్యమైన సంభాషణ ఇప్పటికే ఉంది.",
@@ -664,6 +664,9 @@ const te = {
   "studio.autoDeliveryHint": "తనిఖీలలో ఉత్తీర్ణమైన కొత్త కంటెంట్ సృష్టి జరుగుతున్నప్పుడే స్వయంచాలకంగా జోడించబడుతుంది.",
   "studio.autoDelivered": "{{count}} స్వయంచాలకంగా చేర్చబడ్డాయి",
   "studio.localText": "స్థానిక టెక్స్ట్ మోడల్ · API కీ అవసరం లేదు",
+  "flashcard.ambiguous": "అనేక పదాలు సరిపోతాయి – కావలసిన పదం: {{start}}",
+  "path.stageEmpty": "“{{stage}}” కోసం ఇంకా అధ్యాయాలు లేవు.",
+  "conversation.stageEmpty": "ఈ భాషలో “{{stage}}” కోసం ఇంకా సంభాషణలు లేవు.",
 } as const;
 
 export default te;

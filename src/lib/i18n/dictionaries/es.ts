@@ -732,7 +732,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Marcar capítulo como completado",
   "chapter.all": "Todos los capítulos",
   "chapter.doneCount": "{{done}} de {{total}} completados",
-  "advanced.title": "Experimentado",
+  "advanced.title": "Profundización: texto largo",
   "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta. Este ejercicio no certifica un nivel del MCER.",
   "advanced.listen": "Escuchar la parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz del sistema si está disponible; la pronunciación no se ha verificado.",
@@ -760,7 +760,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "learning.serEstar": "Ser: identidad/características. Estar: estado/ubicación.",
   "roleplay.answer": "Tu respuesta",
   "level.beginner": "Principiante",
-  "level.experienced": "Experimentado",
+  "level.experienced": "Avanzado",
   "level.pro": "Experto",
   "level.choose": "Nivel de aprendizaje",
   "studio.duplicateSituation": "Ya existe un diálogo muy similar.",
@@ -768,6 +768,9 @@ const es: Partial<Record<TranslationKey, string>> = {
   "studio.autoDeliveryHint": "El contenido nuevo se incorpora automáticamente tras superar las comprobaciones, incluso durante la generación.",
   "studio.autoDelivered": "{{count}} incorporados automáticamente",
   "studio.localText": "Modelo de texto local · sin clave API",
+  "flashcard.ambiguous": "Varias palabras encajan – buscamos: {{start}}",
+  "path.stageEmpty": "Todavía no hay capítulos para «{{stage}}».",
+  "conversation.stageEmpty": "Todavía no hay conversaciones de «{{stage}}» en este idioma.",
 };
 
 export default es;

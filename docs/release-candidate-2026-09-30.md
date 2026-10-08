@@ -4,7 +4,7 @@ Status: **lokal geprüft, Veröffentlichung zurückgestellt (`hold`)**. Der Quel
 
 ## Umgesetzter Endnutzer-Durchlauf
 
-Vier Lernziele, insbesondere Thai als Oberfläche und Deutsch als Ziel: Kapitelwortschatz ohne beliebige Auffüllung, echte Szenenregeln statt fremder Grammatikfragen, vollständige Dialogbedeutungen, direkt zugängliche Kapiteltexte, Musterhilfe ohne FSRS-Gutschrift, ausgewählte gültige Rollenspielvarianten, neutrale Rückmeldung bei anderen Formulierungen, Thai-Unterstützung der Goethe-Aufgaben und ehrlicher B1-Lesestart. Alle neuen UI-Texte sind in 20 Wörterbüchern vorhanden. Einzelheiten stehen im CHANGELOG.
+Vier Lernziele, insbesondere Thai als Oberfläche und Deutsch als Ziel: Kapitelwortschatz ohne beliebige Auffüllung, echte Szenenregeln statt fremder Grammatikfragen, vollständige Dialogbedeutungen, direkt zugängliche Kapiteltexte, Musterhilfe ohne FSRS-Gutschrift, ausgewählte gültige Rollenspielvarianten, neutrale Rückmeldung bei anderen Formulierungen und ehrlicher B1-Lesestart. Die Goethe-Prüfung ist seit 08.10.2026 entfernt. Alle neuen UI-Texte sind in 20 Wörterbüchern vorhanden. Einzelheiten stehen im CHANGELOG.
 
 ## Prüfung
 
@@ -42,7 +42,7 @@ Das lokale Archiv `build-verification/rc-2026-09-30/ThaiSpeaker-iPhone-RC-source
 1. Archiv auf einem Mac entpacken; die zu SDK 57 passenden Xcode-/Node-Versionen installieren und das iPhone verbinden.
 2. Im Projekt `npm ci` ausführen. In Xcode ein eigenes Apple-Team für `com.thailernbegleiter.app` wählen.
 3. Lokal `npx expo run:ios --device --configuration Release` ausführen. Dies wurde auf dem Windows-Arbeitsplatz nicht ausgeführt.
-4. App auf dem iPhone zuerst online installieren, danach im Flugmodus neu starten. Alle vier Lernziele, Dialogclips, Karteikarten, Fortschritt nach Neustart und Thai→Deutsch samt Goethe-Hilfen prüfen.
+4. App auf dem iPhone zuerst online installieren, danach im Flugmodus neu starten. Alle vier Lernziele, Dialogclips, Karteikarten, Fortschritt nach Neustart und Thai→Deutsch prüfen.
 5. Mikrofonberechtigung, Aufnahme/Stopp, lokale Wiedergabe, Shadowing mit gleichzeitigem Hörclip, Unterbrechungen und Rückkehr aus dem Hintergrund prüfen. Besonderes Augenmerk auf den Wechsel der Audiokategorie während Aufnahme (`audio-mode.ts`).
 6. Erst nach dokumentierter Geräteabnahme die Archivierung/Signierung für App Store Connect und die Store-Unterlagen abschließen.
 

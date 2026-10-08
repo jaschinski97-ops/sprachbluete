@@ -17,7 +17,7 @@
  * BEWUSST NICHT GESICHERT: die Anbieter-Einstellungen aus
  * `./providers/settings` (Geräte-/Setup-Angelegenheit) und der API-Schlüssel
  * aus dem SecureStore — ein Schlüssel gehört nicht in eine exportierte,
- * weitergegebene Datei. Vokabeln, Situationen, Prüfungen, Bilder und Clips
+ * weitergegebene Datei. Vokabeln, Situationen, Bilder und Clips
  * sind App-Bestandteil, nicht Nutzerdaten, und kommen mit App-Updates.
  *
  * FORMAT: versioniertes JSON mit Kennung, damit fremde Dateien klar

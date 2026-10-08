@@ -28,7 +28,6 @@ const { loadEnvLocal } = require('../pipeline/env.cjs');
 loadEnvLocal();
 const { checkThaiTone } = domain.load('src/lib/content/tone-gate');
 const { planDeliveryAudio } = domain.load('src/lib/content/audio-plan');
-const { BUILTIN_EXAM_MODULES } = domain.load('src/data/exam-modules');
 const root = path.resolve(__dirname, '../..');
 
 const args = process.argv.slice(2);
@@ -68,7 +67,7 @@ if (fs.existsSync(stageFile)) {
   }
 }
 
-const specs = planDeliveryAudio(situations, BUILTIN_EXAM_MODULES)
+const specs = planDeliveryAudio(situations)
   .filter((spec) => !delivered.has(spec.id) && !stagedOk.has(spec.id))
   .slice(0, limit || undefined);
 

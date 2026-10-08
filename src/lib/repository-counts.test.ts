@@ -2,13 +2,10 @@ import { MemoryDataStore, DataStore } from './storage';
 
 import {
   countAudioClipsByLanguage,
-  countExamModulesByLevel,
   countImagesByLanguage,
   countSituationsByDirection,
 } from './repository';
 import { vocabularyFor } from '@/test-fixtures/legacy-vocabulary';
-import { BUILTIN_EXAM_MODULES } from '../data/exam-modules';
-import type { ExamModule } from './exam/types';
 
 /**
  * Die Zähler-Helfer des Grundstock-Panels (Studio-Startseite).
@@ -100,23 +97,3 @@ describe('countSituationsByDirection', () => {
   });
 });
 
-describe('countExamModulesByLevel', () => {
-  it('zählt je Stufe gesamt und erzeugt — mitgelieferte eingeschlossen', async () => {
-    const store = await freshStore();
-    const vorlage = BUILTIN_EXAM_MODULES[0];
-    const erzeugt = { ...vorlage, id: 'gen-zaehler-test', source: 'generated' } as ExamModule;
-    await store.put('exam', erzeugt.id, erzeugt);
-
-    const jeStufe = await countExamModulesByLevel(store);
-    const mitgeliefert = (level: string) =>
-      BUILTIN_EXAM_MODULES.filter((module) => module.level === level).length;
-
-    // Der Load seedet fehlende mitgelieferte Aufgaben nach (repository.ts) —
-    // die Gesamtzahl je Stufe ist also Mitgeliefertes plus der eine erzeugte.
-    expect(jeStufe.A1.total).toBe(mitgeliefert('A1') + 1);
-    expect(jeStufe.A1.generated).toBe(1);
-    expect(jeStufe.A2.total).toBe(mitgeliefert('A2'));
-    expect(jeStufe.A2.generated).toBe(0);
-    expect(jeStufe.B2.generated).toBe(0);
-  });
-});

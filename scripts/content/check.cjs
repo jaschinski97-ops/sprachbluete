@@ -3,7 +3,6 @@ const path = require('node:path');
 const { digestOf, assertDocument, BUDGET, keyOf } = require('./pipeline.cjs');
 const domain = require('./domain.cjs');
 const { planDeliveryAudio } = domain.load('src/lib/content/audio-plan');
-const { BUILTIN_EXAM_MODULES } = domain.load('src/data/exam-modules');
 const { planSituations, FULL_RUN } = domain.load('src/lib/conversation/plan');
 const { checkThaiTone } = domain.load('src/lib/content/tone-gate');
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
@@ -79,14 +78,13 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
   if (orphanKeys.length) errors.push(`${orphanKeys.length} Schlüssel in src/content/assets.ts ohne Katalogreferenz (${orphanKeys.slice(0, 3).join(', ')}${orphanKeys.length > 3 ? ' …' : ''}); die require-Map wird aus dem Katalog generiert und darf keine eigenen Einträge haben.`);
   if (contentBytes > BUDGET) errors.push(`Inhaltsbudget von ${Math.round(BUDGET / (1024 * 1024))} MiB überschritten. Keine automatische Kürzung zulässig.`);
   const situations = catalog.entries.filter((entry) => entry.kind === 'situations').map((entry) => entry.document);
-  const exams = [...BUILTIN_EXAM_MODULES, ...catalog.entries.filter((entry) => entry.kind === 'exam').map((entry) => entry.document)];
   const words = [...catalog.entries.filter(e => e.kind === 'vocabulary').map(e => e.document)];
-  const neededAudio = planDeliveryAudio(situations, exams, undefined, words);
+  const neededAudio = planDeliveryAudio(situations, undefined, words);
   const missingAudio = neededAudio.filter((spec) => !seen.has(`audio:${spec.id}`));
   const missingImages = words.filter((entry) => entry.isConcrete && !seen.has(`images:${entry.id}`));
   const missingSituations = ['th', 'en', 'es', 'de'].flatMap(targetLanguage => planSituations({ ...FULL_RUN, targetLanguage })).filter((spec) => !seen.has(`situations:${spec.id}`));
   if (!integrityOnly) {
-    if (missingAudio.length) errors.push(`${missingAudio.length}/${neededAudio.length} benötigte Hörclips fehlen (auch Deutsch und Prüfungen). System-TTS ist kein garantierter Offline-Ersatz.`);
+    if (missingAudio.length) errors.push(`${missingAudio.length}/${neededAudio.length} benötigte Hörclips fehlen (auch Deutsch). System-TTS ist kein garantierter Offline-Ersatz.`);
     if (missingImages.length) errors.push(`${missingImages.length} konkrete Vokabeln ohne automatisch geprüftes Bild.`);
     if (missingSituations.length) errors.push(`${missingSituations.length} Situationen des vollständigen Plans für Thai, Englisch, Spanisch und Deutsch fehlen. Keine Teilmenge als Vollmenge ausgeben.`);
   }

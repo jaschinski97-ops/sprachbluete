@@ -295,10 +295,10 @@ export function ProductionRunner({
               <Pressable
                 onPress={musterAbspielen}
                 accessibilityRole="button"
-                accessibilityLabel={t('exam.listenModel')}
+                accessibilityLabel={t('answer.listenModel')}
                 style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
                 <ThemedText type="small" style={{ color: colors.accent }}>
-                  {t('exam.listenModel')}
+                  {t('answer.listenModel')}
                 </ThemedText>
               </Pressable>
               {ergebnis.bewertung === 'wrong' && falschBewertung === null ? (
@@ -337,10 +337,10 @@ export function ProductionRunner({
               <Pressable
                 onPress={musterAbspielen}
                 accessibilityRole="button"
-                accessibilityLabel={t('exam.listenModel')}
+                accessibilityLabel={t('answer.listenModel')}
                 style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
                 <ThemedText type="small" style={{ color: colors.accent }}>
-                  {t('exam.listenModel')}
+                  {t('answer.listenModel')}
                 </ThemedText>
               </Pressable>
             </View>

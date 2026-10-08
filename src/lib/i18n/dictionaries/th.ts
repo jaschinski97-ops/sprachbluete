@@ -19,7 +19,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'tabs.overview': 'ภาพรวม',
   'tabs.learn': 'เรียน',
   'tabs.conversation': 'บทสนทนา',
-  'tabs.exam': 'สอบ',
   'tabs.progress': 'ความก้าวหน้า',
   'tabs.settings': 'ตั้งค่า',
   'tabs.brand': 'ผู้ช่วยเรียนภาษา',
@@ -136,23 +135,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'topic.restaurant': 'ร้านอาหาร',
   'topic.travel': 'เดินทาง',
 
-  'exam.subtitle': 'เตรียมสอบใบรับรอง Goethe',
-  'exam.subtitleModule': 'โมดูล',
-  'exam.moduleLoadFailed': 'โหลดโมดูลไม่สำเร็จ',
-  'exam.partsAsModules': 'สอบได้ทั้ง 4 โมดูลแยกกันหรือรวมกัน',
-  'exam.partsTogether': 'สอบครบทั้ง 4 ส่วนพร้อมกัน',
-  'exam.recommendation':
-    'แนะนำสำหรับอายุ {{age}} ปีขึ้นไป; ถึงระดับนี้ Goethe-Institut คิดหน่วยเรียน {{units}} หน่วย ๆ ละ 45 นาที',
-  'exam.approxPrefix': 'ประมาณ ',
-  'exam.minutes': '{{minutes}} นาที',
-  'exam.formatGroup': ' · สอบกลุ่ม',
-  'exam.formatPair': ' · สอบคู่',
-  'exam.retrievedPrefix': 'โครงสร้างการสอบอย่างเป็นทางการ ดึงเมื่อ {{date}} — ที่มา: ',
-  'exam.retrievedSuffix': '',
-  'exam.loading': 'กำลังโหลดโจทย์ …',
-  'exam.filterAll': 'ทั้งหมด',
-  'exam.noModules': 'ระดับ {{level}} ยังไม่มีโจทย์ โจทย์เพิ่มมาพร้อมอัปเดต',
-  'exam.moduleMinutes': 'ประมาณ {{minutes}} นาที',
 
   'progress.subtitle': 'ประวัติการเรียน',
   'progress.subtitleLanguage': 'ประวัติการเรียน · {{language}}',
@@ -261,28 +243,8 @@ const th: Partial<Record<TranslationKey, string>> = {
   'drill.prompt.stressHear': 'คุณได้ยินพยางค์ใดถูกเน้นเสียง',
   'drill.prompt.soundSpelling': 'คุณได้ยินคำว่าอะไร',
 
-  /* ---------- งานสอบ (exam-runner) ---------- */
-  'exam.taskMultipleChoice': 'ปรนัย (A/B/C)',
-  'exam.taskTrueFalse': 'ถูกหรือผิด',
-  'exam.taskMatching': 'จับคู่',
-  'exam.taskGapFill': 'เติมช่องว่าง',
-  'exam.taskProduction': 'แสดงออกอิสระ',
-  'exam.backA11y': 'กลับไปยังภาพรวมงาน',
-  'exam.back': 'กลับไปยังภาพรวม',
-  'exam.score': 'ถูก {{correct}} จาก {{total}} ข้อ',
-  'exam.noPassMark':
-    'นี่เป็นแบบฝึก ไม่ใช่การสอบ — จงใจไม่กำหนดเกณฑ์ผ่าน เพราะไม่มีข้อมูลนี้จากแหล่งอ้างอิง',
-  'exam.check': 'ตรวจคำตอบ',
-  'exam.checkDisabled': 'กรุณาตอบให้ครบทุกข้อ',
-  'exam.listen': 'ฟังข้อความ',
-  'exam.audioNote':
-    'ข้อความจะถูกอ่านออกเสียง ฟังได้หลายครั้งตามต้องการ อ่านได้หลังตรวจคำตอบเท่านั้น',
-  'exam.productionNote':
-    'งานนี้ไม่ได้รับการประเมินอัตโนมัติ — แอปประเมินข้อความอิสระและคำตอบที่พูดได้ไม่แม่นยำ ให้เขียนหรือพูดด้วยตัวเองก่อน แล้วจึงเทียบกับคำตอบตัวอย่าง',
-  'exam.modelAnswerTitle': 'คำตอบตัวอย่าง',
-  'exam.listenModel': 'ฟังคำตอบตัวอย่าง',
-  'exam.selfCheck': 'ตรวจด้วยตัวเอง',
-  'exam.showModel': 'แสดงคำตอบตัวอย่าง',
+  'answer.modelTitle': 'คำตอบตัวอย่าง',
+  'answer.listenModel': 'ฟังคำตอบตัวอย่าง',
 
   /* ---------- เขียนอิสระ (writing-runner) ---------- */
   'writing.promptDe': 'ภาษาเยอรมันเรียกว่าอะไร ใส่คำนำหน้าด้วยถ้ามี',

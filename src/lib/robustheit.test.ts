@@ -1,8 +1,6 @@
-import { BUILTIN_EXAM_MODULES } from '@/data/exam-modules';
 
 import { isValidSituation } from './conversation/types';
-import { isValidExamModule } from './exam/types';
-import { loadExamModules, loadSituations, seedExamModules } from './repository';
+import { loadSituations } from './repository';
 import { DataStore, MemoryDataStore } from './storage';
 
 /**
@@ -74,49 +72,6 @@ describe('isValidSituation', () => {
   });
 });
 
-describe('isValidExamModule', () => {
-  it('nimmt jede mitgelieferte Aufgabe an', () => {
-    for (const module of BUILTIN_EXAM_MODULES) {
-      expect(isValidExamModule(module)).toBe(true);
-    }
-  });
-
-  it('lehnt ein leeres Dokument ab', () => {
-    // Genau der Fall, der den Pruefungs-Screen zum Absturz brachte.
-    expect(isValidExamModule({})).toBe(false);
-  });
-
-  it('lehnt eine bewertbare Aufgabe ohne items ab', () => {
-    const module = { ...BUILTIN_EXAM_MODULES[0] } as Record<string, unknown>;
-    delete module.items;
-    expect(isValidExamModule(module)).toBe(false);
-  });
-
-  it('lehnt einen correctIndex ausserhalb der Optionen ab', () => {
-    // Eine solche Aufgabe waere nie loesbar - schlimmer als gar keine.
-    const module = JSON.parse(JSON.stringify(BUILTIN_EXAM_MODULES[0]));
-    module.items[0].correctIndex = 99;
-    expect(isValidExamModule(module)).toBe(false);
-  });
-
-  it('lehnt eine freie Aufgabe ohne Musterloesung ab', () => {
-    const frei = BUILTIN_EXAM_MODULES.find((m) => m.taskType === 'production')!;
-    const module = JSON.parse(JSON.stringify(frei));
-    delete module.production.modelAnswer;
-    expect(isValidExamModule(module)).toBe(false);
-  });
-
-  it('lehnt eine unbekannte Stufe oder Fertigkeit ab', () => {
-    const a = JSON.parse(JSON.stringify(BUILTIN_EXAM_MODULES[0]));
-    a.level = 'C3';
-    expect(isValidExamModule(a)).toBe(false);
-
-    const b = JSON.parse(JSON.stringify(BUILTIN_EXAM_MODULES[0]));
-    b.skill = 'singen';
-    expect(isValidExamModule(b)).toBe(false);
-  });
-});
-
 describe('Lesen aus dem Speicher haelt Beschaedigtes heraus', () => {
   it('laesst eine kaputte Situation aus und zeigt die uebrigen', async () => {
     const store = await freshStore();
@@ -133,19 +88,6 @@ describe('Lesen aus dem Speicher haelt Beschaedigtes heraus', () => {
       'partner',
       'learner',
     ]);
-  });
-
-  it('laesst eine kaputte Pruefungsaufgabe aus und behaelt die mitgelieferten', async () => {
-    const store = await freshStore();
-    await seedExamModules(store);
-    await store.put('exam', 'kaputt', {});
-    await store.put('exam', 'halb', { id: 'halb', level: 'A1', skill: 'lesen' });
-
-    const module = await loadExamModules(store);
-
-    expect(module).toHaveLength(BUILTIN_EXAM_MODULES.length);
-    expect(module.map((m) => m.id)).not.toContain('kaputt');
-    expect(module.map((m) => m.id)).toContain('a1-lesen-anzeige');
   });
 
   it('loescht das Beschaedigte nicht, sondern laesst es nur aus', async () => {

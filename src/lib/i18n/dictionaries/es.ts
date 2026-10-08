@@ -16,7 +16,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'tabs.overview': 'Resumen',
   'tabs.learn': 'Aprender',
   'tabs.conversation': 'Conversación',
-  'tabs.exam': 'Examen',
   'tabs.progress': 'Progreso',
   'tabs.settings': 'Ajustes',
   'tabs.brand': 'Compañero de aprendizaje',
@@ -134,24 +133,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'topic.restaurant': 'Restaurante y comida',
   'topic.travel': 'En camino',
 
-  'exam.subtitle': 'Preparación para los certificados Goethe',
-  'exam.subtitleModule': 'Módulo',
-  'exam.moduleLoadFailed': 'No se pudo cargar el módulo',
-  'exam.partsAsModules': 'Cuatro módulos que se presentan por separado o en combinación.',
-  'exam.partsTogether': 'Cuatro partes del examen que se presentan juntas.',
-  'exam.recommendation':
-    'Recomendado a partir de {{age}} años; hasta este nivel el Goethe-Institut calcula {{units}} unidades didácticas de 45 minutos.',
-  'exam.approxPrefix': 'unos ',
-  'exam.minutes': '{{minutes}} minutos',
-  'exam.formatGroup': ' · Examen en grupo',
-  'exam.formatPair': ' · Examen en pareja',
-  'exam.retrievedPrefix': 'Estructura oficial del examen, consultada el {{date}} — fuente: ',
-  'exam.retrievedSuffix': '',
-  'exam.loading': 'Cargando tareas …',
-  'exam.filterAll': 'Todas',
-  'exam.noModules':
-    'Para {{level}} aún no hay tareas. Más tareas llegan con las actualizaciones de la app.',
-  'exam.moduleMinutes': 'unos {{minutes}} min',
 
   'progress.subtitle': 'Historial de aprendizaje',
   'progress.subtitleLanguage': 'Historial de aprendizaje · {{language}}',
@@ -263,28 +244,8 @@ const es: Partial<Record<TranslationKey, string>> = {
   'drill.prompt.stressHear': '¿Qué sílaba oyes acentuada?',
   'drill.prompt.soundSpelling': '¿Qué palabra oyes?',
 
-  /* ---------- Tarea de examen (exam-runner) ---------- */
-  'exam.taskMultipleChoice': 'Opción múltiple (A/B/C)',
-  'exam.taskTrueFalse': 'Verdadero o falso',
-  'exam.taskMatching': 'Emparejamiento',
-  'exam.taskGapFill': 'Rellenar huecos',
-  'exam.taskProduction': 'Producción libre',
-  'exam.backA11y': 'Volver a la vista general de tareas',
-  'exam.back': 'Volver a la vista general',
-  'exam.score': '{{correct}} de {{total}} correctas',
-  'exam.noPassMark':
-    'Esto es una tarea de práctica, no un examen — aquí no hay deliberadamente una nota mínima, porque no se tomó de la fuente.',
-  'exam.check': 'Evaluar',
-  'exam.checkDisabled': 'Por favor, responde todas las tareas',
-  'exam.listen': 'Escuchar el texto',
-  'exam.audioNote':
-    'El texto se lee en voz alta. Puede escucharlo tantas veces como quiera; leerlo solo es posible tras la evaluación.',
-  'exam.productionNote':
-    'Esta tarea no se evalúa automáticamente — la app no puede juzgar con fiabilidad textos libres ni respuestas habladas. Escribe o habla tú primero y compara después con la solución modelo.',
-  'exam.modelAnswerTitle': 'Solución modelo',
-  'exam.listenModel': 'Escuchar la solución modelo',
-  'exam.selfCheck': 'Autocontrol',
-  'exam.showModel': 'Mostrar la solución modelo',
+  'answer.modelTitle': 'Solución modelo',
+  'answer.listenModel': 'Escuchar la solución modelo',
 
   /* ---------- Escritura libre (writing-runner) ---------- */
   'writing.promptDe': '¿Cómo se llama esto en alemán? Con artículo, si lo hay.',

@@ -137,7 +137,7 @@ export function stableStringify(value: unknown): string {
 
 /** One item at a time; never collect the complete PCM corpus in memory/JSON. */
 export async function exportDrafts(onProgress: (message: string) => void, options?: {
-  kinds?: readonly ('situations' | 'exam' | 'images' | 'audio')[];
+  kinds?: readonly ('situations' | 'images' | 'audio')[];
   publish?: boolean;
 }): Promise<void> {
   const state = await studioRequest<StudioState>('/state');
@@ -163,7 +163,7 @@ export async function exportDrafts(onProgress: (message: string) => void, option
   };
 
   const failures: string[] = [];
-  for (const kind of ['situations', 'exam', 'images', 'audio'] as const) {
+  for (const kind of ['situations', 'images', 'audio'] as const) {
     if (options?.kinds && !options.kinds.includes(kind)) continue;
     const docs = await db.getAll<unknown>(kind);
     for (const document of docs) {
@@ -175,7 +175,6 @@ export async function exportDrafts(onProgress: (message: string) => void, option
         }
         id = document.id;
         if (isDeletedDraft(kind, document as { id: string; generatedAt?: number }, state.shipped)) continue;
-        if (kind === 'exam' && 'source' in document && document.source === 'builtin') continue;
         if (unveraendertInStage(kind, document as { id: string })) continue;
         // Nur alle 20 Dokumente melden: bei 3.000 Clips wäre jede Einzel­meldung
         // ein Re-Render der ganzen Einstellungsseite. Das Endergebnis unten

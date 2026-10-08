@@ -8,7 +8,6 @@ import { MemoryBlobStore } from '../blobs/memory';
 import { AUDIO_BLOB_CONFIG, clipIdFor, isValidAudioClip } from '../clips/types';
 import { IMAGE_BLOB_CONFIG } from '../images/types';
 import { planDeliveryAudio } from './audio-plan';
-import { BUILTIN_EXAM_MODULES } from '../../data/exam-modules';
 import { VOCABULARY } from '@/test-fixtures/legacy-vocabulary';
 
 test('obsolete rejection markers cannot suppress any of the four provider clients', async () => {
@@ -30,7 +29,7 @@ test('obsolete rejection markers cannot suppress any of the four provider client
   expect(generate).toHaveBeenCalledTimes(3);
 });
 
-test('delivery audio covers every card, example, built-in hearing text and spoken model answer', () => {
+test('delivery audio covers every card, example and German meaning', () => {
   const plan = planDeliveryAudio();
   const ids = new Set(plan.map((spec) => spec.id));
   expect(ids.size).toBe(plan.length);
@@ -38,10 +37,6 @@ test('delivery audio covers every card, example, built-in hearing text and spoke
     expect(ids.has(clipIdFor(word.language, word.term))).toBe(true);
     expect(ids.has(clipIdFor('de', word.german))).toBe(true);
     if (word.exampleTerm) expect(ids.has(clipIdFor(word.language, word.exampleTerm))).toBe(true);
-  }
-  for (const exam of BUILTIN_EXAM_MODULES) {
-    if (exam.stimulus?.kind === 'audio') expect(ids.has(clipIdFor('de', exam.stimulus.body))).toBe(true);
-    if (exam.taskType === 'production' && exam.production.speakModelAnswer) expect(ids.has(clipIdFor('de', exam.production.modelAnswer))).toBe(true);
   }
 });
 

@@ -1,17 +1,15 @@
 import type { AudioClip } from '../clips/types';
 import type { ConversationSituation } from '../conversation/types';
-import type { ExamModule } from '../exam/types';
 import type { VocabImage } from '../images/types';
 import type { VocabEntry } from '@/data/vocab-types';
 
 // Phase 2, Schritt 4: 'vocabulary' ist die vierte + fünfte … Inhaltsart —
 // KI-erzeugter Wortschatz läuft über Stage UND catalog.json wie alles andere.
-export type ContentKind = 'situations' | 'images' | 'audio' | 'exam' | 'vocabulary';
+export type ContentKind = 'situations' | 'images' | 'audio' | 'vocabulary';
 export type ContentDocuments = {
   situations: ConversationSituation;
   images: VocabImage;
   audio: AudioClip;
-  exam: ExamModule;
   vocabulary: VocabEntry;
 };
 export type ContentCheck = {

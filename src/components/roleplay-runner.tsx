@@ -348,7 +348,7 @@ function SzeneZeile({
                 <ThemedText type="smallBold">{t('roleplay.answer')}</ThemedText>
                 <ThemedText>{eingabe}</ThemedText>
               </> : null}
-              <ThemedText type="smallBold">{t('exam.modelAnswerTitle')}</ThemedText>
+              <ThemedText type="smallBold">{t('answer.modelTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {sprache === 'th' ? zeile.roman : ''}
@@ -367,7 +367,7 @@ function SzeneZeile({
                 <ThemedText type="smallBold">{t('roleplay.answer')}</ThemedText>
                 <ThemedText>{eingabe}</ThemedText>
               </> : null}
-              <ThemedText type="smallBold">{t('exam.modelAnswerTitle')}</ThemedText>
+              <ThemedText type="smallBold">{t('answer.modelTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {sprache === 'th' ? zeile.roman : ''}

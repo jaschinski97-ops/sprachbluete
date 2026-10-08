@@ -23,7 +23,6 @@ const de = {
   'tabs.overview': 'Übersicht',
   'tabs.learn': 'Lernen',
   'tabs.conversation': 'Gespräch',
-  'tabs.exam': 'Prüfung',
   'tabs.progress': 'Fortschritt',
   'tabs.settings': 'Einstellungen',
   'tabs.brand': 'Lernbegleiter',
@@ -116,8 +115,7 @@ const de = {
   'skill.wortschatz': 'Wortschatz',
   'skill.hoeren': 'Hören',
   // Lern-Reiter: die einheitliche Kategorie (Schreiben gehört seit dem
-  // Umbau dazu). Die zwei getrennten Keys hierunter nutzt die Prüfung
-  // (Goethe-Prüfungsteile) und bleiben deshalb bestehen.
+  // Umbau dazu).
   'skill.lesenSchreiben': 'Lesen & Schreiben',
   'skill.lesen': 'Lesen',
   'skill.schreiben': 'Schreiben',
@@ -200,25 +198,6 @@ const de = {
   'topic.restaurant': 'Restaurant & Essen',
   'topic.travel': 'Unterwegs',
 
-  /* ---------- Prüfung (exam.tsx) ---------- */
-  'exam.subtitle': 'Vorbereitung auf die Goethe-Zertifikate',
-  'exam.subtitleModule': 'Modul',
-  'exam.moduleLoadFailed': 'Modul konnte nicht geladen werden',
-  'exam.partsAsModules': 'Vier Module, die einzeln oder in Kombination abgelegt werden können.',
-  'exam.partsTogether': 'Vier Prüfungsteile, die zusammen abgelegt werden.',
-  'exam.recommendation':
-    'Empfohlen ab {{age}} Jahren; bis zu dieser Stufe rechnet das Goethe-Institut mit {{units}} Unterrichtseinheiten à 45 Minuten.',
-  'exam.approxPrefix': 'etwa ',
-  'exam.minutes': '{{minutes}} Minuten',
-  'exam.formatGroup': ' · Gruppenprüfung',
-  'exam.formatPair': ' · Paarprüfung',
-  'exam.retrievedPrefix': 'Offizielle Prüfungsstruktur, abgerufen am {{date}} — Quelle: ',
-  'exam.retrievedSuffix': '',
-  'exam.loading': 'Aufgaben werden geladen …',
-  'exam.filterAll': 'Alle',
-  'exam.noModules':
-    'Für {{level}} liegt hier noch keine Aufgabe. Weitere Aufgaben kommen mit App-Updates dazu.',
-  'exam.moduleMinutes': 'etwa {{minutes}} Min',
 
   /* ---------- Fortschritt (progress.tsx) ---------- */
   'progress.subtitle': 'Lernverlauf',
@@ -340,28 +319,8 @@ const de = {
   'drill.prompt.praesensEndung': 'Welche Endung bekommt die Form?',
   'drill.prompt.partizip': 'Welche dritte Form gehört zu diesem Verb?',
 
-  /* ---------- Prüfungsaufgabe (exam-runner) ---------- */
-  'exam.taskMultipleChoice': 'Auswahl (A/B/C)',
-  'exam.taskTrueFalse': 'Richtig oder Falsch',
-  'exam.taskMatching': 'Zuordnung',
-  'exam.taskGapFill': 'Lücken füllen',
-  'exam.taskProduction': 'Freie Produktion',
-  'exam.backA11y': 'Zurück zur Aufgabenübersicht',
-  'exam.back': 'Zurück zur Übersicht',
-  'exam.score': '{{correct}} von {{total}} richtig',
-  'exam.noPassMark':
-    'Das ist eine Übungsaufgabe, keine Prüfung — eine Bestehensgrenze steht hier bewusst nicht, weil sie nicht aus der Quelle erhoben wurde.',
-  'exam.check': 'Auswerten',
-  'exam.checkDisabled': 'Bitte alle Aufgaben beantworten',
-  'exam.listen': 'Text anhören',
-  'exam.audioNote':
-    'Der Text wird vorgelesen. Sie können ihn beliebig oft anhören; zu lesen ist er erst nach dem Auswerten.',
-  'exam.productionNote':
-    'Diese Aufgabe wird nicht automatisch bewertet — freie Texte und gesprochene Antworten kann die App nicht zuverlässig beurteilen. Schreiben oder sprechen Sie erst selbst, vergleichen Sie dann mit der Musterlösung.',
-  'exam.modelAnswerTitle': 'Musterlösung',
-  'exam.listenModel': 'Musterlösung anhören',
-  'exam.selfCheck': 'Selbstkontrolle',
-  'exam.showModel': 'Musterlösung zeigen',
+  'answer.modelTitle': 'Musterlösung',
+  'answer.listenModel': 'Musterlösung anhören',
 
   /* ---------- Freies Schreiben (writing-runner) ---------- */
   'writing.promptDe': 'Wie heißt das auf Deutsch? Mit Artikel, falls es einen gibt.',

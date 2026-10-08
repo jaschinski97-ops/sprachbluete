@@ -71,17 +71,13 @@ export default function AppTabs() {
     </TabTrigger>
   ));
 
-  // Untergeordnete Bereiche (settings/about, settings/studio, exam): Der
+  // Untergeordnete Bereiche (settings/about, settings/studio): Der
   // UI-Tabs registriert NUR Routen mit Trigger (common.js
   // triggersToScreens baut die Screens aus den Triggern) — ohne Trigger hier
-  // fiele /settings/about oder /exam auf die Übersicht zurück. Sie hängen
-  // unsichtbar in der Leiste und werden nur per router.push erreicht (die
-  // Prüfung aus dem Lern-Reiter, beim Deutsch-Lernziel).
+  // fiele /settings/about auf die Übersicht zurück. Sie hängen unsichtbar in
+  // der Leiste und werden nur per router.push erreicht.
   const versteckteTrigger = (
     <>
-      <TabTrigger name="exam" href="/exam" asChild>
-        <View style={styles.hidden} />
-      </TabTrigger>
       <TabTrigger name="settings/about" href="/settings/about" asChild>
         <View style={styles.hidden} />
       </TabTrigger>

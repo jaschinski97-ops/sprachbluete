@@ -1,4 +1,3 @@
-import { isValidExamModule } from '../exam/types';
 import { cardKey } from '../fsrs/types';
 
 import { bridgeText } from './bridge';
@@ -146,41 +145,3 @@ describe('Der Brückentext fällt ehrlich zurück', () => {
   });
 });
 
-describe('Das Prüfungstypsystem lässt deutsch-geankerte A1-Module formell zu', () => {
-  const a1Modul = {
-    id: 'test-a1-lesen',
-    certificate: 'goethe-a1',
-    level: 'A1',
-    skill: 'lesen',
-    taskType: 'multipleChoice',
-    direction: 'th_to_de',
-    title: 'Deutsch A1 — Lesen',
-    instruction: 'Lesen Sie die Nachricht.',
-    stimulus: { kind: 'text', body: 'Der Kurs beginnt um neun Uhr.' },
-    minutes: 5,
-    source: 'builtin',
-    items: [
-      {
-        id: 'test-a1-lesen-1',
-        prompt: 'Wann beginnt der Kurs?',
-        options: ['um 8 Uhr', 'um 9 Uhr', 'um 10 Uhr'],
-        correctIndex: 1,
-        explanation: '„um neun Uhr“ — um neun Uhr.',
-      },
-    ],
-  };
-
-  it('prüft ein deutsch-geankertes A1-Modul als gültig', () => {
-    expect(isValidExamModule(a1Modul)).toBe(true);
-  });
-
-  it('lässt die klassische Richtung th_to_de unverändert gültig', () => {
-    expect(
-      isValidExamModule({ ...a1Modul, id: 'test-th-a1', direction: 'th_to_de' })
-    ).toBe(true);
-  });
-
-  it('lehnt ein Modul ohne Aufgaben weiter ab', () => {
-    expect(isValidExamModule({ ...a1Modul, items: [] })).toBe(false);
-  });
-});

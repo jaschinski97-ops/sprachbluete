@@ -185,9 +185,9 @@ export type Direction =
  * Die deutsch-geankerten Richtungen über **allen** Ziel-Grundstücken — die
  * klassischen sechs.
  *
- * WARUM WEITERHIN DEUTSCH-GEANKERT: Prüfungsmodule (Goethe-Format) und die
- * deutschen Grammatikübungen hängen an der deutschen Seite eines Paars; für
- * sie ist diese Union die vollständige Menge. Das freie Kreuzprodukt S≠T
+ * WARUM WEITERHIN DEUTSCH-GEANKERT: Die deutschen Grammatikübungen hängen
+ * an der deutschen Seite eines Paars; für sie ist diese Union die
+ * vollständige Menge. Das freie Kreuzprodukt S≠T
  * leistet separat `Pair`/`pairsFor` — ohne Erbanteil an der Bestandstypung.
  */
 export type TargetDirection = Direction;
@@ -415,8 +415,7 @@ export type LanguageDefinition = LanguageMeta & {
    */
   delivered: boolean;
   /**
-   * Trägt diese Sprache die deutschen Module — Prüfungsmodul (Goethe) und die
-   * Grammatikübungen? Sie gehören zu „X → Deutsch" und damit zu **jedem**
+   * Trägt diese Sprache die deutschen Module — die Grammatikübungen? Sie gehören zu „X → Deutsch" und damit zu **jedem**
    * Paar, nicht zu Thai allein (Pflicht 6).
    */
   hasGermanModules: true;

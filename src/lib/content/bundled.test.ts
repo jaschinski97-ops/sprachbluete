@@ -1,7 +1,7 @@
 import { Asset } from 'expo-asset';
 import { bundledAssetUri, bundledDocuments, preferBundled } from './bundled';
 import { resolveClipUri, invalidateClipIndex } from '../clips/lookup';
-import { loadSituations, loadVocabImageUri, loadExamModules } from '../repository';
+import { loadSituations, loadVocabImageUri } from '../repository';
 import { playPronunciation, setPronunciationBackend } from '../audio';
 import { installClipLookup } from '../clips/lookup';
 
@@ -37,7 +37,6 @@ test('cold production load and playback work with network, system voices and dra
   try {
     expect((await loadSituations()).map((situation) => situation.id)).toEqual(['approved']);
     expect(await loadVocabImageUri('house')).toBe('file:///embedded/2');
-    expect((await loadExamModules()).length).toBeGreaterThan(0);
     expect(await resolveClipUri({ text: 'hello', language: 'en' })).toBe('file:///embedded/1');
     expect(await playPronunciation({ text: 'hello', language: 'en' })).toBe('asset');
     expect(playAsset).toHaveBeenCalledWith('file:///embedded/1');

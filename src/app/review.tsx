@@ -370,7 +370,6 @@ function ReviewBody({
               onOpen(direction, picked);
             }}
           />
-          {ziel && goalLanguage(ziel) === 'de' ? <PruefungsEinstieg direction={direction} /> : null}
           <DirectionBar onSwitch={onSwitch} />
         </>
       ) : (
@@ -757,36 +756,6 @@ function ModeBar({ direction, onPick }: { direction: PairDirection; onPick: (mod
 }
 
 /**
- * Eigenständiger Punkt „Prüfung“ im Lern-Reiter (14.09.): Der frühere
- * Haupt-Tab ist beim Deutsch-Lernziel hierher gewandert — die mitgelieferten
- * Aufgaben folgen dem Goethe-Format. Die Richtung reist als Parameter mit,
- * damit der Prüfungs-Screen nur die Aufgaben DIESER Lernrichtung zeigt.
- */
-function PruefungsEinstieg({ direction }: { direction: PairDirection }) {
-  const { t } = useLocale();
-  const colors = useTheme();
-  return (
-    <Link href={{ pathname: '/exam', params: { direction } }} asChild>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('tabs.exam')}
-        style={({ pressed }) => pressed && styles.pressed}>
-        <ThemedView type="backgroundElement" style={styles.examRow}>
-          <Ionicons name="ribbon-outline" size={20} color={colors.textSecondary} />
-          <View style={styles.examTexte}>
-            <ThemedText type="default">{t('tabs.exam')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('exam.subtitle')}
-            </ThemedText>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
-        </ThemedView>
-      </Pressable>
-    </Link>
-  );
-}
-
-/**
  * Zurück zur Sprach- und Richtungsauswahl.
  *
  * SEIT PHASE 18 NUR NOCH EIN KNOPF. Daneben stand „☆ Als Standard merken" —
@@ -1105,19 +1074,6 @@ const styles = StyleSheet.create({
   modeBar: {
     flexDirection: 'column',
     gap: Spacing.two,
-  },
-  examRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-    minHeight: 44,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
-  },
-  examTexte: {
-    flex: 1,
-    gap: Spacing.half,
   },
   directionBar: {
     flexDirection: 'row',

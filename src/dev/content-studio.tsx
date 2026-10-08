@@ -21,7 +21,6 @@ import { DiagnosticsCard } from '@/components/diagnostics-card';
 import { CountItem, GeneratorCard, RunOption, StartArgs } from '@/components/generator-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { EXAM_LEVELS, type ExamModule } from '@/lib/exam/types';
 import { Spacing } from '@/constants/theme';
 import { runClipBatch, missingClipSpecs } from '@/lib/clips/batch';
 import { getActiveAudioBlobBackend, getAudioBlobStore } from '@/lib/clips/blob-store';
@@ -56,12 +55,8 @@ import {
 import { helperAudioAvailable } from '@/lib/providers/audio';
 import {
   loadVocabulary,
-  loadExamModules,
   countAudioClips,
   countAudioClipsByLanguage,
-  countExamModules,
-  countExamModulesByLevel,
-  countGeneratedExamModules,
   countImagesByLanguage,
   countSituations,
   countSituationsByDirection,
@@ -69,7 +64,6 @@ import {
   loadSituations,
   sumAudioClipBytes,
   ClipLanguageCounts,
-  ExamLevelCounts,
   ImageLanguageCounts,
   SituationDirectionCounts,
 } from '@/lib/repository';
@@ -134,8 +128,7 @@ function imageRunOptions(language: Lang): RunOption[] {
 function clipRunOptions(
   storedSituations: ConversationSituation[],
   provider: ProviderId,
-  language: Lang,
-  exams: ExamModule[] = []
+  language: Lang
 ): { options: RunOption[]; specsFor: (optionId: string) => AudioClipSpec[] } {
   storedSituations = storedSituations.filter(s => s.direction.endsWith(`_to_${language}`));
   const plans: Record<string, AudioClipSpec[]> = {
@@ -147,7 +140,7 @@ function clipRunOptions(
     // Nur Gesprächszüge der gewählten Zielsprache vertonen.
     turns: planClips({ includeWords: false, includeExamples: false, situations: storedSituations }),
     test: planClipTestRun(poolFuer(language)),
-    delivery: [...new Map([...planDeliveryAudio(storedSituations, exams), ...planClips({ vocabulary: poolFuer(language) })].filter(spec => spec.language === language).map(spec => [spec.id, spec])).values()],
+    delivery: [...new Map([...planDeliveryAudio(storedSituations), ...planClips({ vocabulary: poolFuer(language) })].filter(spec => spec.language === language).map(spec => [spec.id, spec])).values()],
     all: planClips({ vocabulary: poolFuer(language), situations: storedSituations }),
   };
   const size = (specs: AudioClipSpec[]) => {
@@ -166,7 +159,7 @@ function clipRunOptions(
           : `${plans.turns.length} Clips — jeder Gesprächszug auf ${LANGUAGE_LABELS[language]} der ${storedSituations.length} gespeicherten Situationen, gleiche Sätze nur einmal${size(plans.turns)}`,
     },
     { id: 'test', label: 'Probelauf', hint: `${plans.test.length} Clips — fünf Vokabeln samt Beispielsatz${size(plans.test)}` },
-    { id: 'delivery', label: 'Auslieferung: gewählte Sprache', hint: `${plans.delivery.length} Clips — Wörter, Beispiele, Dialoge und Hörtexte der Prüfungen${size(plans.delivery)}` },
+    { id: 'delivery', label: 'Auslieferung: gewählte Sprache', hint: `${plans.delivery.length} Clips — Wörter, Beispiele und Dialoge${size(plans.delivery)}` },
     { id: 'all', label: 'Alles', hint: `${plans.all.length} Clips${size(plans.all)} — kostet echtes Geld und dauert` },
   ];
   return { options, specsFor: (optionId) => plans[optionId] ?? plans.words };
@@ -262,9 +255,6 @@ export default function ContentStudio() {
   const [images, setImages] = useState<number | null>(null);
   const [imagesByLanguage, setImagesByLanguage] = useState<ImageLanguageCounts | null>(null);
   const [blobBackend, setBlobBackend] = useState<string | null>(null);
-  const [exams, setExams] = useState<{ total: number; generated: number } | null>(null);
-  const [examsByLevel, setExamsByLevel] = useState<ExamLevelCounts | null>(null);
-  const [storedExams, setStoredExams] = useState<ExamModule[]>([]);
   const [wordsByLanguage, setWordsByLanguage] = useState<ClipLanguageCounts | null>(null);
   const [generators, setGenerators] = useState<GeneratorSettings>(defaultSettings());
   /**
@@ -307,25 +297,13 @@ export default function ContentStudio() {
     setImagesByLanguage(nachSprache);
   }, []);
 
-  const refreshExams = useCallback(async () => {
-    const modules = await loadExamModules();
-    setStoredExams(modules);
-    const [total, generated, nachStufe] = await Promise.all([
-      countExamModules(),
-      countGeneratedExamModules(),
-      countExamModulesByLevel(),
-    ]);
-    setExams({ total, generated });
-    setExamsByLevel(nachStufe);
-  }, []);
-
   /** Der ganze Bestand auf einmal — der „Aktualisieren“-Knopf und onFinished. */
   const refreshStock = useCallback(async () => {
     await studioRequest('/state');
     const words = await loadVocabulary();
     setWordsByLanguage(Object.fromEntries(GENERIER_SPRACHEN.map(code => [code, words.filter(word => String(word.language) === code).length])) as ClipLanguageCounts);
-    await Promise.all([refreshSituations(), refreshClips(), refreshImages(), refreshExams()]);
-  }, [refreshSituations, refreshClips, refreshImages, refreshExams]);
+    await Promise.all([refreshSituations(), refreshClips(), refreshImages()]);
+  }, [refreshSituations, refreshClips, refreshImages]);
 
   // Phase 2, Schritt 2: die Reihenfolge-Warnung — Audio für Texte erzeugen,
   // die noch nicht geprüft sind, verschwendet Geld. Der Live-Bericht (Schritt
@@ -354,17 +332,16 @@ export default function ContentStudio() {
 
   useEffect(() => {
     let cancelled = false;
-    studioRequest('/state').then(() => Promise.all([countSituations(), loadSituations(), countVocabImages(), loadExamModules(),
-      countExamModules(), countGeneratedExamModules(), countAudioClips(), sumAudioClipBytes(),
-      countAudioClipsByLanguage(), countImagesByLanguage(), countSituationsByDirection(),
-      countExamModulesByLevel()]))
-      .then(([situationsCount, dialogs, imagesCount, modules, total, generated, count, bytes,
-          clipsNachSprache, bilderNachSprache, situationenNachRichtung, pruefungenNachStufe]) => {
+    studioRequest('/state').then(() => Promise.all([countSituations(), loadSituations(), countVocabImages(),
+      countAudioClips(), sumAudioClipBytes(),
+      countAudioClipsByLanguage(), countImagesByLanguage(), countSituationsByDirection()]))
+      .then(([situationsCount, dialogs, imagesCount, count, bytes,
+          clipsNachSprache, bilderNachSprache, situationenNachRichtung]) => {
         if (cancelled) return;
         setSituations(situationsCount); setStoredSituations(dialogs); setImages(imagesCount);
-        setStoredExams(modules); setExams({ total, generated }); setClips({ count, bytes });
+        setClips({ count, bytes });
         setClipsByLanguage(clipsNachSprache); setImagesByLanguage(bilderNachSprache);
-        setSituationsByDirection(situationenNachRichtung); setExamsByLevel(pruefungenNachStufe);
+        setSituationsByDirection(situationenNachRichtung);
       }).then(async () => {
         if (cancelled) return;
         // Phase 2, Schritt 4: der bekannte Wortschatz-Anteil auch beim
@@ -504,13 +481,12 @@ export default function ContentStudio() {
   const startClips = useCallback(
     async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, voice, onProgress, shouldCancel, confirmRun }: StartArgs) => {
       await studioRequest('/state');
-      // Die Umfänge hängen an Bestand (Situationen, Prüfungen) und je Schritt
-      // an der Sprache — einmal laden, dann je Schritt bauen.
+      // Die Umfänge hängen an Bestand (Situationen) und je Schritt an der
+      // Sprache — einmal laden, dann je Schritt bauen.
       const dialogs = await loadSituations();
-      const pruefungen = await loadExamModules();
       const { steps, all } = await planChain(
         chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
-        (key) => clipRunOptions(dialogs, provider, key as Lang, pruefungen).specsFor(optionId),
+        (key) => clipRunOptions(dialogs, provider, key as Lang).specsFor(optionId),
         (specs) => missingClipSpecs(specs),
         maxNew
       );
@@ -584,15 +560,6 @@ export default function ContentStudio() {
             Dialog-Situationen: {RICHTUNGEN.map((richtung) =>
               `${GESPROCHENE_SEITE[richtung]} ${situationsByDirection ? situationsByDirection[richtung] : '…'}`
             ).join(' · ')}
-          </ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {/* Stufen-Totals statt „davon erzeugt": Seit dem Generator- und
-                Manuell-Aus gibt es keine andere Herkunft mehr — alle Module
-                sind mitgeliefert, und die alte Zählung zeigte überall 0. */}
-            Prüfungsaufgaben: {exams === null ? '…' : `${exams.total} gesamt`}
-            {examsByLevel ? ` · ${EXAM_LEVELS.map((stufe) =>
-              `${stufe} ${examsByLevel[stufe].total}`
-            ).join(' · ')}` : ''}
           </ThemedText>
         </ThemedView>
         <ThemedText type="small" themeColor="textSecondary">Was möchtest du verwalten?</ThemedText>
@@ -688,7 +655,7 @@ export default function ContentStudio() {
         onChoiceChange={(change) => changeGenerator('audio', change)}
         statusLine={`Im Speicher: ${clips === null ? '…' : `${clips.count} Clips, ${formatBytes(clips.bytes)}`} · Ablage ${clipBackend ?? '…'}${generators.audio.provider === 'gemini' ? ' · Pause je Aufruf: 6,5 Sekunden (Gemini-Ratenlimit)' : ''}${generators.audio.provider === 'chatgpt-helper' ? ' · Pause je Aufruf: 2,2 Sekunden (Helper-Ratenlimit, 30/min) · Schlüssel serverseitig' : ''}`}
         counts={sprachZaehler(clipsByLanguage, mediaLanguage)}
-        runOptions={clipRunOptions(storedSituations, generators.audio.provider, mediaLanguage, storedExams).options}
+        runOptions={clipRunOptions(storedSituations, generators.audio.provider, mediaLanguage).options}
         onStart={startClips}
         onDelete={async (languages) => { await clearContentSelection('audio', languages); await refreshClips(); }}
         deleteLabel="Alle Clips löschen"

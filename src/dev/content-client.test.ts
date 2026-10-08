@@ -80,18 +80,17 @@ test('invalid local records and missing media do not prevent later drafts from e
   });
   mockGetAll.mockImplementation(async (kind: string) => ({
     situations: [null, 4, [], { id: 'denied' }, { id: 'valid-situation' }],
-    exam: [null, { id: 'builtin', source: 'builtin' }, { id: 'valid-exam', source: 'generated' }],
     images: [{ id: 'broken-image', blobKey: 123 }],
     audio: [{ id: 'missing-audio', blobKey: 'missing.mp3' }],
   })[kind]);
   const progress = jest.fn();
   try {
     await expect(exportDrafts(progress)).rejects.toThrow('Lokale Mediendatei fehlt');
-    expect(staged.map((item) => item.document.id)).toEqual(['denied', 'valid-situation', 'valid-exam']);
+    expect(staged.map((item) => item.document.id)).toEqual(['denied', 'valid-situation']);
     expect(mockPut).not.toHaveBeenCalled();
     const result = progress.mock.calls.at(-1)?.[0];
-    expect(result).toContain('3 exportiert · Prüfbericht aktualisiert · 6 Exportfehler');
-    expect(result).toContain('exam:(ungültiger Eintrag)');
+    expect(result).toContain('2 exportiert · Prüfbericht aktualisiert · 5 Exportfehler');
+    expect(result).toContain('situations:(ungültiger Eintrag)');
     expect(result).toContain('images:broken-image: Blob-Schlüssel fehlt.');
     expect(result).toContain('audio:missing-audio: Lokale Mediendatei fehlt.');
   } finally { global.fetch = originalFetch; }
@@ -122,7 +121,7 @@ test('schlauer Export: unveränderte Stage-Zwillinge werden übersprungen, Neue 
     }) } as Response;
   });
   mockGetAll.mockImplementation(async (kind: string) => ({
-    situations: [], exam: [], images: [],
+    situations: [], images: [],
     audio: [bekannterClip, { id: 'en-neu', text: 'world', blobKey: 'en-neu.mp3' }],
   })[kind]);
   // Nur für den NEUEN Clip liegt eine Mediendatei bereit — der bekannte darf

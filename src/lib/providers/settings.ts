@@ -34,9 +34,6 @@ import {
 
 const SETTINGS_KEY = 'generators';
 
-// Phase 2, Schritt 3: 'exam' ist aus den Generator-Gruppen gefallen —
-// der Prüfungsaufgaben-Generator ist entfernt, die Prüfungen sind
-// mitgeliefert (src/data/exam-modules.ts).
 // Nutzerwunsch 15.09.: Wortschatz bekommt eine EIGENE Wahl (Anbieter +
 // Modell), damit die Erzeugung nicht still die Dialog-Einstellung
 // ('situations') mitbenutzt.

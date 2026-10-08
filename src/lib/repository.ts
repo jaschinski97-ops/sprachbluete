@@ -9,8 +9,6 @@
 import type { VocabEntry } from '@/data/vocab-types';
 import { activeVocabulary, activeVocabularyIds, mitIpaStrichen } from '@/data/active-vocabulary';
 
-import { BUILTIN_EXAM_MODULES } from '@/data/exam-modules';
-import { EXAM_LEVELS, ExamLevel, ExamModule, isValidExamModule } from './exam/types';
 import { bundledAssetUri, bundledDocuments, bundledEntry, isDeletedDraft, preferBundled } from './content/bundled';
 import { isRejectedImageAsset } from './images/reviewed-assets';
 import { isContentDeveloper } from './content/developer';
@@ -402,79 +400,6 @@ export async function clearAudioClips(
   await blobs.clear();
   await db.clear('audio');
   invalidateClipIndex();
-}
-
-/* ---------- Pruefungsmodule (Phase 7) ---------- */
-
-/**
- * Spielt die mitgelieferten Aufgaben ein.
- *
- * Wie beim Vokabel-Grundstock: idempotent und ueberschreibend, weil sie Teil
- * der App sind und nicht Nutzerdaten. Erzeugte Aufgaben (`source: 'generated'`)
- * werden dabei nicht angefasst.
- */
-export async function seedExamModules(
-  store?: DataStore,
-  modules: ExamModule[] = BUILTIN_EXAM_MODULES
-): Promise<number> {
-  const db = store ?? (await getStore());
-  await db.putMany(
-    'exam',
-    modules.map((module) => ({ id: module.id, value: module }))
-  );
-  return modules.length;
-}
-
-export async function loadExamModules(store?: DataStore): Promise<ExamModule[]> {
-  if (!__DEV__ || (!store && !isContentDeveloper())) return preferBundled('exam', BUILTIN_EXAM_MODULES);
-  const db = store ?? (await getStore());
-  const roh = await db.getAll<unknown>('exam');
-  let modules = roh.filter(isValidExamModule);
-  meldeAussortierte('Pruefungsaufgaben', roh.length, modules.length);
-
-  // Geprueft wird, ob die MITGELIEFERTEN Aufgaben da sind - nicht, ob die
-  // Sammlung leer ist. Der Unterschied ist keine Feinheit: wer auf einem
-  // frischen Geraet erst Aufgaben erzeugt und dann die Pruefung oeffnet,
-  // haette sonst nur die erzeugten und nie die mitgelieferten.
-  const vorhanden = new Set(modules.map((module) => module.id));
-  const fehlt = BUILTIN_EXAM_MODULES.some((module) => !vorhanden.has(module.id));
-  if (fehlt) {
-    await seedExamModules(db);
-    modules = (await db.getAll<unknown>('exam')).filter(isValidExamModule);
-  }
-
-  return preferBundled('exam', modules);
-}
-
-export async function countExamModules(store?: DataStore): Promise<number> {
-  return (await loadExamModules(store)).length;
-}
-
-export async function countGeneratedExamModules(store?: DataStore): Promise<number> {
-  return (await loadExamModules(store)).filter((module) => module.source === 'generated').length;
-}
-
-/** Aufgaben je Stufe — gesamt und davon erzeugt. */
-export type ExamLevelCounts = Record<ExamLevel, { total: number; generated: number }>;
-
-/**
- * Prüfungsaufgaben je Stufe.
- *
- * Erzeugt und mitgeliefert getrennt zu sehen ist hier der eigentliche Punkt:
- * die mitgelieferten Aufgaben sind Teil der App, nur die übrigen sind das
- * Ergebnis von Generierungsläufen — und nur die kosten beim Löschen etwas.
- */
-export async function countExamModulesByLevel(store?: DataStore): Promise<ExamLevelCounts> {
-  const zaehler = Object.fromEntries(
-    EXAM_LEVELS.map((level) => [level, { total: 0, generated: 0 }])
-  ) as ExamLevelCounts;
-  for (const module of await loadExamModules(store)) {
-    const stufe = zaehler[module.level];
-    if (!stufe) continue;
-    stufe.total += 1;
-    if (module.source === 'generated') stufe.generated += 1;
-  }
-  return zaehler;
 }
 
 /* ---------- Einstellungen / Lernprofil ---------- */

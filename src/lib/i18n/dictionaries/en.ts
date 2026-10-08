@@ -17,7 +17,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'tabs.overview': 'Overview',
   'tabs.learn': 'Learn',
   'tabs.conversation': 'Conversation',
-  'tabs.exam': 'Exam',
   'tabs.progress': 'Progress',
   'tabs.settings': 'Settings',
   'tabs.brand': 'Learning companion',
@@ -135,24 +134,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'topic.restaurant': 'Restaurant & food',
   'topic.travel': 'On the move',
 
-  'exam.subtitle': 'Preparation for the Goethe certificates',
-  'exam.subtitleModule': 'Module',
-  'exam.moduleLoadFailed': 'Module could not be loaded',
-  'exam.partsAsModules': 'Four modules that can be taken individually or in combination.',
-  'exam.partsTogether': 'Four exam parts that are taken together.',
-  'exam.recommendation':
-    'Recommended from age {{age}}; up to this level the Goethe-Institut expects {{units}} teaching units of 45 minutes each.',
-  'exam.approxPrefix': 'about ',
-  'exam.minutes': '{{minutes}} minutes',
-  'exam.formatGroup': ' · Group exam',
-  'exam.formatPair': ' · Pair exam',
-  'exam.retrievedPrefix': 'Official exam structure, retrieved on {{date}} — source: ',
-  'exam.retrievedSuffix': '',
-  'exam.loading': 'Loading tasks …',
-  'exam.filterAll': 'All',
-  'exam.noModules':
-    'No task available yet for {{level}}. More tasks arrive with app updates.',
-  'exam.moduleMinutes': 'about {{minutes}} min',
 
   'progress.subtitle': 'Learning history',
   'progress.subtitleLanguage': 'Learning history · {{language}}',
@@ -265,28 +246,8 @@ const en: Partial<Record<TranslationKey, string>> = {
   'drill.prompt.stressHear': 'Which syllable do you hear as stressed?',
   'drill.prompt.soundSpelling': 'Which word do you hear?',
 
-  /* ---------- Exam task (exam-runner) ---------- */
-  'exam.taskMultipleChoice': 'Multiple choice (A/B/C)',
-  'exam.taskTrueFalse': 'True or false',
-  'exam.taskMatching': 'Matching',
-  'exam.taskGapFill': 'Gap fill',
-  'exam.taskProduction': 'Free production',
-  'exam.backA11y': 'Back to the task overview',
-  'exam.back': 'Back to the overview',
-  'exam.score': '{{correct}} of {{total}} correct',
-  'exam.noPassMark':
-    'This is a practice task, not an exam — no pass mark is given here, deliberately, because it was not taken from the source.',
-  'exam.check': 'Evaluate',
-  'exam.checkDisabled': 'Please answer all tasks',
-  'exam.listen': 'Listen to the text',
-  'exam.audioNote':
-    'The text is read aloud. You can listen to it as often as you like; reading it is only possible after evaluating.',
-  'exam.productionNote':
-    'This task is not evaluated automatically — the app cannot reliably judge free texts and spoken answers. Write or speak first yourself, then compare with the model answer.',
-  'exam.modelAnswerTitle': 'Model answer',
-  'exam.listenModel': 'Listen to the model answer',
-  'exam.selfCheck': 'Self-check',
-  'exam.showModel': 'Show the model answer',
+  'answer.modelTitle': 'Model answer',
+  'answer.listenModel': 'Listen to the model answer',
 
   /* ---------- Free writing (writing-runner) ---------- */
   'writing.promptDe': 'What is this called in German? With the article, if there is one.',

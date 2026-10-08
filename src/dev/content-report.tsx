@@ -39,7 +39,6 @@ const PAGE_STEP = 50;
 const KIND_LABELS: Record<string, string> = {
   audio: 'Audio',
   situations: 'Situationen',
-  exam: 'Aufgaben',
   images: 'Bilder',
 };
 

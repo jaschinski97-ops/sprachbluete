@@ -67,10 +67,7 @@ export default function AppTabs() {
       />
       {/* Untergeordnete Bereiche: navigierbar, aber bewusst ohne eigenen Tab
           (href: null) — sie sind Ziel von Zeilen in anderen Reitern, keine
-          Hauptziele der App. Die Prüfung gehört zum Deutsch-Lernziel und wird
-          als eigener Punkt im Lern-Reiter erreicht; „Prüfung üben“ ist für
-          die anderen Ziele kein Angebot. */}
-      <Tabs.Screen name="exam" options={{ href: null }} />
+          Hauptziele der App. */}
       <Tabs.Screen name="settings/about" options={{ href: null }} />
       <Tabs.Screen name="settings/studio" options={{ href: null }} />
     </Tabs>

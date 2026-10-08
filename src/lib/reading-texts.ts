@@ -7,6 +7,7 @@ import { type UiLanguage } from './i18n';
 import { loadCardStatesForDirection } from './repository';
 import { type DataStore } from './storage';
 import { type VocabEntry } from '@/data/vocab-types';
+import { contextualWord, vocabularyForms } from './vocabulary-forms';
 
 /**
  * Längere Hör- und Lesetexte (Schritt 4, Lern-Reiter-Ausbau 13.09.).
@@ -32,7 +33,7 @@ import { type VocabEntry } from '@/data/vocab-types';
  */
 
 /** Freischalt-Schwellen: begonnene Karten je Level. */
-const SCHWELLE: Record<string, number> = { A1: 20, A2: 50 };
+const SCHWELLE: Record<string, number> = { A1: 20, A2: 50, B1: 100, B2: 150, C1: 200, C2: 250 };
 
 export type TextToken = {
   text: string;
@@ -90,14 +91,17 @@ export function tokenisiereFuerAntippen(
   const tokens: TextToken[] = [];
   const bedeutung = (e: VocabEntry) => bridgeText(e, bedeutungsSprache).text;
   if (latin) {
+    let before = '';
     for (const wort of text.split(/(\s+)/)) {
       if (/^\s+$/.test(wort) || wort.length === 0) {
         tokens.push({ text: wort });
+        before += wort;
         continue;
       }
       const bloß = wort.replace(/[\p{P}\p{S}]/gu, '').toLowerCase();
-      const entry = pool.find((e) => e.term.toLowerCase() === bloß);
+      const entry = contextualWord(bloß, before, pool);
       tokens.push(entry ? { text: wort, entry: { id: entry.id, term: entry.term, roman: entry.romanization, german: bedeutung(entry) } } : { text: wort });
+      before += wort;
     }
     return tokens;
   }
@@ -167,7 +171,7 @@ export function poolWoerterDerSzene(
         .replace(/[\p{P}\p{S}]/gu, ' ')
         .split(/\s+/)
     );
-    return pool.filter((e) => woerter.has(e.term.toLowerCase()));
+    return pool.filter((e) => vocabularyForms(e).some(form => woerter.has(form)));
   }
   const ids = new Set(
     situation.scriptTurns.flatMap((turn) =>

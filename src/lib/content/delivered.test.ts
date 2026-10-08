@@ -5,6 +5,8 @@ import type { ContentCatalog } from './types';
 import { loadAudioClips, loadVocabImageUri, loadVocabImages } from '../repository';
 import { playPronunciation, setPronunciationBackend } from '../audio';
 import { installClipLookup, invalidateClipIndex } from '../clips/lookup';
+import { bundledAssetUri } from './bundled';
+import { isRejectedImageAsset } from '../images/reviewed-assets';
 
 // Unlike the isolated storage unit tests, exercise the real checked-in catalog
 // and its static asset map. Exact exported media bytes are checked separately.
@@ -33,13 +35,16 @@ test('every shipped media entry resolves in production with no network, draft st
     expect(await loadVocabImages()).toEqual(images.map(entry => entry.document));
     for (const entry of [...audio, ...images]) {
       expect(['passed', 'unchecked']).toContain(entry.check?.status);
-      expect(entry.check?.label).toBe(entry.check?.status === 'unchecked' ? 'ungeprüft' : 'automatisch geprüft');
+      expect(entry.check?.status === 'unchecked' ? ['ungeprüft'] : ['automatisch geprüft', 'Motiv redaktionell geprüft']).toContain(entry.check?.label);
       expect(CONTENT_ASSETS[entry.asset!]).toBeDefined();
       if (entry.kind === 'audio') {
         const clip = entry.document as { text: string; language: 'th' | 'de' | 'en' | 'es' };
         expect(await playPronunciation({ ...clip, purpose: 'vocabulary' })).toBe('asset');
       } else {
-        expect(await loadVocabImageUri(entry.id)).toBe('file:///embedded/media');
+        // Rejected motives remain recoverable in Studio, but never appear in
+        // learner cards. Their underlying embedded files must still resolve.
+        expect(await bundledAssetUri('images', entry.id)).toBe('file:///embedded/media');
+        expect(await loadVocabImageUri(entry.id)).toBe(isRejectedImageAsset(entry.asset) ? null : 'file:///embedded/media');
       }
       expect(Asset.fromModule).toHaveBeenLastCalledWith(CONTENT_ASSETS[entry.asset!]);
     }

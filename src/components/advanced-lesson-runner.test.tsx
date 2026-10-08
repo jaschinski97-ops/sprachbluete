@@ -5,10 +5,21 @@ import { ThemedButton } from './themed-button';
 import { ADVANCED_LESSONS } from '@/data/advanced-lessons';
 import { translate } from '@/lib/i18n';
 import { recordDrill } from '@/lib/review-log';
+import { isLanguageAvailable } from '@/lib/audio';
 
 jest.mock('@/lib/repository', () => ({ readMeta: async (_key: string, fallback: unknown) => fallback, writeMeta: jest.fn(async () => {}) }));
 jest.mock('@/lib/review-log', () => ({ recordDrill: jest.fn(async () => {}) }));
-jest.mock('@/lib/audio', () => ({ hasPronunciationClip: async () => false, isLanguageAvailable: async () => true, stopPronunciation: async () => {}, playPronunciationWithStatus: async () => ({ kind: 'tts' }) }));
+jest.mock('@/lib/audio', () => ({ hasPronunciationClip: async () => false, isLanguageAvailable: jest.fn(async () => true), stopPronunciation: async () => {}, playPronunciationWithStatus: async () => ({ kind: 'tts' }) }));
+
+it('provides reading without dead listening buttons when neither clips nor a system voice are available', async () => {
+  jest.mocked(isLanguageAvailable).mockResolvedValueOnce(false);
+  let renderer!: ReactTestRenderer;
+  await act(async () => { renderer = create(<AdvancedLessonRunner direction="de_to_en" onExit={() => {}} />); });
+  expect(renderer.root.findAllByType(ThemedButton).some(node => node.props.label === translate('en', 'advanced.listen', { index: 1, total: 3 }))).toBe(false);
+  expect(JSON.stringify(renderer.toJSON())).toContain(ADVANCED_LESSONS.en.paragraphs[0]);
+  expect(JSON.stringify(renderer.toJSON())).toContain(translate('en', 'advanced.unavailable'));
+  await act(async () => renderer.unmount());
+});
 
 it('records each comprehension answer once, without scoring free writing or completion', async () => {
   let renderer!: ReactTestRenderer;

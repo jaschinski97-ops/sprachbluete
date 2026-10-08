@@ -3,6 +3,21 @@ import { VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 import type { ConversationSituation } from './conversation/types';
 import { chaptersForDirection, finishChapter, finishedChapterIds } from './learning-path';
 import { MemoryDataStore } from './storage';
+import type { VocabEntry } from '@/data/vocab-types';
+
+test('a late catalog noun in plural is retained before the 20-word limit even after many function words', () => {
+  const words: VocabEntry[] = Array.from({ length: 21 }, (_, index) => ({
+    id: `f${index}`, term: `f${index}`, language: 'en', romanization: `f${index}`, german: `Funktion ${index}`,
+    partOfSpeech: 'particle', register: 'neutral', isConcrete: false, sourceVerified: false, syllables: [], generatedAt: 1,
+  }));
+  const apple: VocabEntry = { ...words[0], id: 'apple', term: 'apple', german: 'Apfel', partOfSpeech: 'noun', isConcrete: true, generatedAt: 2 };
+  words.push(apple);
+  const market = { ...scene('market', 'market', 'A1'), direction: 'de_to_en' as const,
+    scriptTurns: [{ speaker: 'learner' as const, thai: `${words.slice(0, 21).map(word => word.term).join(' ')} apples`, roman: '', german: '' }] };
+  const chapter = chaptersForDirection('de_to_en', [market], words)[0];
+  expect(chapter.vocabulary).toHaveLength(20);
+  expect(chapter.vocabulary[0]).toEqual(apple);
+});
 
 function scene(id: string, topic: ConversationSituation['topic'], level: ConversationSituation['level']): ConversationSituation {
   return {

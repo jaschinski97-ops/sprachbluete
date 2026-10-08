@@ -40,7 +40,11 @@ export function chaptersForDirection(
     const sceneWords = poolWoerterDerSzene(situation, candidates, target !== 'th');
     // Thai has no spaces between words. Prefer complete longer matches, so
     // incidental one-character substrings do not push scene words out.
-    if (target === 'th') sceneWords.sort((a, b) => b.term.length - a.term.length);
+    sceneWords.sort((a, b) =>
+      Number(b.isConcrete) - Number(a.isConcrete) ||
+      Number(b.partOfSpeech === 'noun') - Number(a.partOfSpeech === 'noun') ||
+      (target === 'th' ? b.term.length - a.term.length : 0)
+    );
     const vocabulary: VocabEntry[] = [];
     for (const word of sceneWords) {
       if (vocabulary.length >= CHAPTER_WORDS) break;

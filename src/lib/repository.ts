@@ -11,7 +11,8 @@ import { activeVocabulary, activeVocabularyIds, mitIpaStrichen } from '@/data/ac
 
 import { BUILTIN_EXAM_MODULES } from '@/data/exam-modules';
 import { EXAM_LEVELS, ExamLevel, ExamModule, isValidExamModule } from './exam/types';
-import { bundledAssetUri, bundledDocuments, isDeletedDraft, preferBundled } from './content/bundled';
+import { bundledAssetUri, bundledDocuments, bundledEntry, isDeletedDraft, preferBundled } from './content/bundled';
+import { isRejectedImageAsset } from './images/reviewed-assets';
 import { isContentDeveloper } from './content/developer';
 
 import { ConversationSituation, isValidSituation } from './conversation/types';
@@ -316,13 +317,15 @@ export async function loadVocabImageUri(
 ): Promise<string | null> {
   if (language) {
     const gepackt = await packImageUri(language, vocabId).catch(() => null);
-    if (gepackt) return gepackt;
+    if (gepackt && !isRejectedImageAsset(gepackt)) return gepackt;
   }
+  if (isRejectedImageAsset(bundledEntry('images', vocabId)?.asset)) return null;
   const shipped = await bundledAssetUri('images', vocabId);
   if (shipped) return shipped;
   if (!__DEV__ || (!store && !isContentDeveloper())) return null;
   const doc = await loadVocabImage(vocabId, store);
   if (!doc) return null;
+  if (isRejectedImageAsset(doc.blobKey)) return null;
   const blobs = blobStore ?? (await getImageBlobStore());
   return blobs.uri(doc.blobKey);
 }

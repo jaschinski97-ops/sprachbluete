@@ -42,14 +42,19 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
   const [completed, setCompleted] = useState(false);
   const [showModel, setShowModel] = useState(false);
   const [audioUnavailable, setAudioUnavailable] = useState(true);
+  const [hasClip, setHasClip] = useState(false);
   const [playing, setPlaying] = useState(false);
   const answerInFlight = useRef(false);
   const [recordingAnswer, setRecordingAnswer] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    void hasPronunciationClip({ text: lesson.paragraphs[listenIndex], language: lesson.language, purpose: 'sentence' })
-      .then(available => { if (!cancelled) setAudioUnavailable(!available); });
+    void Promise.all([
+      hasPronunciationClip({ text: lesson.paragraphs[listenIndex], language: lesson.language, purpose: 'sentence' }),
+      isLanguageAvailable(lesson.language),
+    ]).then(([clip, voice]) => {
+      if (!cancelled) { setHasClip(clip); setAudioUnavailable(!clip && voice === false); }
+    }).catch(() => { if (!cancelled) setAudioUnavailable(true); });
     return () => { cancelled = true; };
   }, [lesson.language, lesson.paragraphs, listenIndex]);
 
@@ -115,22 +120,25 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     <ThemedText type="small" themeColor="textSecondary">{t('advanced.intro')}</ThemedText>
 
     {phase === 'listen' ? <ThemedView type="backgroundElement" style={styles.card}>
-      <ThemedText type="smallBold">{t('advanced.listen', { index: listenIndex + 1, total: lesson.paragraphs.length })}</ThemedText>
+      <ThemedText type="smallBold">{audioUnavailable ? `${t('advanced.read')} · ${listenIndex + 1}/${lesson.paragraphs.length}` : t('advanced.listen', { index: listenIndex + 1, total: lesson.paragraphs.length })}</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">{t('advanced.audioNote')}</ThemedText>
-      <ThemedButton
+      {!audioUnavailable ? <ThemedButton
         label={t('advanced.listen', { index: listenIndex + 1, total: lesson.paragraphs.length })}
         disabled={playing}
         variant="primary"
         onPress={() => play(lesson.paragraphs[listenIndex])}
-      />
-      {audioUnavailable ? <>
-        <ThemedText type="small" themeColor="textSecondary">{t('advanced.read')} · {t('advanced.audioNote')}</ThemedText>
+      /> : <ThemedText type="small" themeColor="textSecondary">{t('advanced.unavailable')}</ThemedText>}
+      {!hasClip || audioUnavailable ? <>
         <ThemedText type="default">{lesson.paragraphs[listenIndex]}</ThemedText>
         {lesson.roman ? <RomanLine text={lesson.roman.paragraphs[listenIndex]} /> : null}
       </> : null}
       <ThemedButton label={t('common.next')} onPress={() => {
         void stopPronunciation();
-        if (listenIndex + 1 < lesson.paragraphs.length) setListenIndex((value) => value + 1);
+        if (listenIndex + 1 < lesson.paragraphs.length) {
+          setHasClip(false);
+          setAudioUnavailable(true);
+          setListenIndex((value) => value + 1);
+        }
         else setPhase('questions');
       }} />
     </ThemedView> : null}
@@ -168,7 +176,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
       {lesson.paragraphs.map((paragraph, index) => <View key={index} style={styles.paragraph}>
         <ThemedText type="default">{paragraph}</ThemedText>
         {lesson.roman ? <RomanLine text={lesson.roman.paragraphs[index]} /> : null}
-        <ThemedButton label={t('advanced.listen', { index: index + 1, total: lesson.paragraphs.length })} onPress={() => play(paragraph)} />
+        {!audioUnavailable ? <ThemedButton disabled={playing} label={t('advanced.listen', { index: index + 1, total: lesson.paragraphs.length })} onPress={() => play(paragraph)} /> : null}
       </View>)}
       {audioUnavailable ? <ThemedText type="small" themeColor="textSecondary">{t('advanced.unavailable')}</ThemedText> : null}
       <ThemedButton label={t('common.next')} variant="primary" onPress={() => { void stopPronunciation(); setPhase('produce'); }} />

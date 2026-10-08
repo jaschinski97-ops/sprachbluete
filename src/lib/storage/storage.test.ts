@@ -31,8 +31,36 @@ jest.mock('./backend', () => ({
  */
 const BACKENDS: { name: string; create: () => DataStore }[] = [
   { name: 'MemoryDataStore', create: () => new MemoryDataStore() },
-  { name: 'AsyncStorageDataStore (web)', create: () => createWebStore() },
+  { name: 'WebDataStore (Node persistence)', create: () => createWebStore() },
 ];
+
+it('rolls back a failed browser write and remains usable for retry, including multi-collection commits', async () => {
+  const disk = new Map<string, string>();
+  let fail = false;
+  const set = jest.fn(async (entries: [string, string][]) => {
+    if (fail) throw new Error('transaction aborted');
+    for (const [key, raw] of entries) disk.set(key, raw);
+  });
+  const persistence = { init: async () => {}, get: async (key: string) => disk.get(key) ?? null, set };
+  const store = createWebStore(persistence);
+  await store.init();
+  await store.put('cards', 'one', { reps: 1 });
+  fail = true;
+  await expect(store.put('cards', 'one', { reps: 2 })).rejects.toThrow('transaction aborted');
+  expect(await store.get('cards', 'one')).toEqual({ reps: 1 });
+  await expect((store as TransactionalDataStore).withTransactionAsync(async () => {
+    await store.put('cards', 'one', { reps: 3 });
+    await store.put('meta', 'done', true);
+  })).rejects.toThrow('transaction aborted');
+  expect(set.mock.calls.at(-1)?.[0]).toHaveLength(2);
+  expect(await store.get('cards', 'one')).toEqual({ reps: 1 });
+  expect(await store.get('meta', 'done')).toBeNull();
+  fail = false;
+  await store.put('cards', 'one', { reps: 4 });
+  const restarted = createWebStore(persistence);
+  await restarted.init();
+  expect(await restarted.get('cards', 'one')).toEqual({ reps: 4 });
+});
 
 describe.each(BACKENDS)('DataStore-Vertrag: $name', ({ create }) => {
   let store: DataStore;
@@ -292,3 +320,29 @@ describe('Backend-Ausfall zur Laufzeit', () => {
   });
 });
 
+
+describe('Web-Dokumentspeicher: IndexedDB nicht verfügbar', () => {
+  beforeEach(async () => {
+    await AsyncStorage.clear();
+  });
+
+  it('arbeitet auf localStorage weiter, wenn IndexedDB sich nicht öffnen lässt', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createDocumentPersistence } = require('./document-persistence.web') as typeof import('./document-persistence.web');
+    const blockiert = {
+      open: () => {
+        const request = {} as IDBOpenDBRequest;
+        setTimeout(() => (request.onerror as ((event: Event) => void) | null)?.(new Event('error')), 0);
+        return request;
+      },
+    } as unknown as IDBFactory;
+    await AsyncStorage.setItem('thai-lernbegleiter:cards', JSON.stringify({ alt: { reps: 2 } }));
+
+    const store = createWebStore(createDocumentPersistence(blockiert));
+    await store.init();
+
+    expect(await store.get('cards', 'alt')).toEqual({ reps: 2 });
+    await store.put('cards', 'neu', { reps: 1 });
+    expect(JSON.parse((await AsyncStorage.getItem('thai-lernbegleiter:cards'))!)).toHaveProperty('neu');
+  });
+});

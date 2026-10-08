@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createDocumentPersistence, type DocumentPersistence } from './document-persistence.web';
 
 import { CollectionName, DataStore } from './types';
 
 /**
- * Web-Backend: eine Sammlung = ein JSON-Blob in AsyncStorage
- * (im Browser also ein localStorage-Eintrag).
+ * Web-Backend: eine Sammlung = ein JSON-Blob in IndexedDB.
+ * Bestehende localStorage-Daten werden beim Start mit Sicherung übernommen.
  *
  * Grund für den eigenen Web-Pfad statt `expo-sqlite`: dessen Web-Pfad legt
  * SharedArrayBuffer an und synchronisiert über Atomics, was
@@ -14,8 +14,8 @@ import { CollectionName, DataStore } from './types';
  *
  * Die Sammlung wird beim ersten Zugriff in eine Map geladen und danach im
  * Speicher gehalten; Schreibvorgänge aktualisieren Map und Blob gemeinsam.
- * Das ist für die erwarteten Datenmengen (einige tausend Vokabeln und Karten)
- * unkritisch und hält Lesezugriffe schnell.
+ * IndexedDB vermeidet die gemeinsame kleine localStorage-Quote für
+ * Lernfortschritt und frühere Studio-Metadaten.
  */
 
 const KEY_PREFIX = 'thai-lernbegleiter:';
@@ -35,7 +35,8 @@ function copy<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-class AsyncStorageDataStore implements DataStore {
+class WebDataStore implements DataStore {
+  constructor(private readonly persistence: DocumentPersistence = createDocumentPersistence()) {}
   private cache = new Map<CollectionName, Map<string, unknown>>();
 
   /**
@@ -61,7 +62,7 @@ class AsyncStorageDataStore implements DataStore {
   private txDirty = new Set<CollectionName>();
 
   async init(): Promise<void> {
-    // Sammlungen werden verzögert geladen, sobald sie gebraucht werden.
+    await this.persistence.init();
   }
 
   /**
@@ -69,22 +70,20 @@ class AsyncStorageDataStore implements DataStore {
    * ATOMAR brauchen (siehe `transact` in `./index`): Schreibvorgänge aus dem
    * Inneren landen erst im Cache und werden gemeinsam geflusht; wirft die
    * Arbeit, wird der Cache auf den Zustand davor zurückgerollt und nichts
-   * gelangt in den AsyncStorage.
-   *
-   * EHRLICHE GRENZE: Ein Absturz NACH dem ersten Flush einer Transaktion
-   * kann bereits Geflushtes nicht zurückholen — AsyncStorage kennt keine
-   * Mehrschlüssel-Atomicität. Das Fenster ist aber von „jeder Schreibvorgang
-   * flusht sofort" auf „ein Flush je Sammlung am Ende" geschrumpft.
+   * gelangt in die Persistenz. Im Browser schreibt eine IndexedDB-Transaktion
+   * alle geänderten Sammlungen atomar; erst oncomplete bestätigt den Erfolg.
    */
   async withTransactionAsync<T>(work: () => Promise<T>): Promise<T> {
     return this.enqueue(async () => {
       this.txDepth += 1;
       try {
         const result = await work();
+        const entries: [string, string][] = [];
         for (const collection of this.txDirty) {
           const bucket = this.cache.get(collection);
-          if (bucket) await this.flushNow(collection, bucket);
+          if (bucket) entries.push([storageKey(collection), JSON.stringify(Object.fromEntries(bucket))]);
         }
+        if (entries.length) await this.persistence.set(entries);
         return result;
       } catch (error) {
         for (const [collection, snapshot] of this.txSnapshots) {
@@ -120,8 +119,8 @@ class AsyncStorageDataStore implements DataStore {
     if (cached) return cached;
 
     let parsed: Record<string, unknown> = {};
+    const raw = await this.persistence.get(storageKey(collection));
     try {
-      const raw = await AsyncStorage.getItem(storageKey(collection));
       if (raw) parsed = JSON.parse(raw) as Record<string, unknown>;
     } catch {
       // Beschädigter oder nicht lesbarer Blob: lieber leer starten als die App
@@ -136,10 +135,7 @@ class AsyncStorageDataStore implements DataStore {
   }
 
   private async flushNow(collection: CollectionName, bucket: Map<string, unknown>): Promise<void> {
-    await AsyncStorage.setItem(
-      storageKey(collection),
-      JSON.stringify(Object.fromEntries(bucket))
-    );
+    await this.persistence.set([[storageKey(collection), JSON.stringify(Object.fromEntries(bucket))]]);
   }
 
   /** Merkt sich für die rollback-fähige Transaktion, welche Sammlung sich ändert. */
@@ -159,10 +155,14 @@ class AsyncStorageDataStore implements DataStore {
     await this.run(async () => {
       const bucket = await this.loadNow(collection);
       this.noteMutation(collection);
+      const snapshot = new Map(bucket);
       change(bucket);
       // Außerhalb einer Transaktion wird sofort geflusht — innerhalb sammelt
       // die Transaktion die Sammlungen ein und flusht sie gemeinsam.
-      if (this.txDepth === 0) await this.flushNow(collection, bucket);
+      if (this.txDepth === 0) {
+        try { await this.flushNow(collection, bucket); }
+        catch (error) { this.cache.set(collection, snapshot); throw error; }
+      }
     });
   }
 
@@ -211,8 +211,8 @@ class AsyncStorageDataStore implements DataStore {
   }
 }
 
-export function createDataStore(): DataStore {
-  return new AsyncStorageDataStore();
+export function createDataStore(persistence?: DocumentPersistence): DataStore {
+  return new WebDataStore(persistence);
 }
 
-export const BACKEND_NAME = 'async-storage';
+export const BACKEND_NAME = 'indexeddb';

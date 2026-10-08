@@ -312,7 +312,7 @@ const de = {
   'drill.noVocab': 'Keine passenden Vokabeln',
   'drill.toneEmpty':
     'Für dieses Hörquiz liegen noch keine geprüften Aussprache-Aufnahmen vor. Ungeprüfte Clips und Computerstimmen werden bewusst nicht benutzt — lieber übst du mit einer der anderen Übungen.',
-  'drill.noneFor': 'Für „{{drill}}" gibt es im aktuellen Bestand gerade keine geeigneten Einträge.',
+  'drill.noneFor': 'Für „{{drill}}“ gibt es im aktuellen Bestand gerade keine geeigneten Einträge.',
   'drill.roundDone': 'Runde beendet',
   'drill.roundScore': '{{correct}} von {{total}} richtig.',
   'drill.newRound': 'Neue Runde',
@@ -382,7 +382,7 @@ const de = {
   'writing.taskOf': 'Aufgabe {{index}} von {{total}}',
 
   /* ---------- Bewertungshinweis (writing-runner, dictation-runner) ---------- */
-  'rating.ratedAs': 'Bewertet als „{{rating}}". {{explanation}}',
+  'rating.ratedAs': 'Bewertet als „{{rating}}“. {{explanation}}',
 
   /* ---------- Sprechübung (speaking-runner) ---------- */
   'speaking.noticeClip': 'KI-Clip abgespielt — nur Hörbeispiel, nie Bewertungsmaßstab.',

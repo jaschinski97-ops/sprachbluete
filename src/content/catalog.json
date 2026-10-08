@@ -750402,7 +750402,7 @@
             "targetText": "กิโลละห้าสิบบาทค่ะ หวานมากนะคะ",
             "thai": "กิโลละห้าสิบบาทค่ะ หวานมากนะคะ",
             "roman": "gì-loo-lá hâa-sìp bàat khâ, wǎan mâak ná khá.",
-            "german": "Fünfzig Baht pro Kilo. Sie sind sehr süß!"
+            "german": "Fünfzig Baht pro Kilo. Die sind sehr süß!"
           },
           {
             "speaker": "learner",
@@ -750452,7 +750452,7 @@
             "turns": [
               "Guten Tag! Was möchten Sie gerne haben?",
               "Guten Tag! Wie viel kostet ein Kilo Mangos?",
-              "Fünfzig Baht pro Kilo. Sie sind sehr süß!",
+              "Fünfzig Baht pro Kilo. Die sind sehr süß!",
               "Ich nehme zwei Kilo. Gibt es einen Rabatt?",
               "Zwei Kilo für neunzig Baht dann.",
               "Hier sind einhundert Baht.",
@@ -750498,11 +750498,11 @@
             "turns": [
               "¡Hola! ¿Qué le gustaría llevar?",
               "¡Hola! ¿Cuánto cuesta un kilo de mangos?",
-              "Cincuenta baths por kilo. ¡Están muy dulces!",
+              "Cincuenta bahts por kilo. ¡Están muy dulces!",
               "Me llevo dos kilos. ¿Me hace un descuento?",
-              "Dos kilos por noventa baths entonces.",
-              "Aquí tiene cien baths.",
-              "Aquí tiene diez baths de cambio. ¡Muchas gracias!"
+              "Dos kilos por noventa bahts entonces.",
+              "Aquí tiene cien bahts.",
+              "Aquí tiene diez bahts de cambio. ¡Muchas gracias!"
             ],
             "corrections": [
               {
@@ -750908,7 +750908,7 @@
           }
         }
       },
-      "digest": "f79b196c5ad0898c459b9fa80f3977efdd38e82810c1ec1f0cb2ae744898a324",
+      "digest": "4a018158f04ab5e46b61df18d39df203757d66ddcc7b4e05c82f89af180a6ee4",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",

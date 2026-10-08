@@ -128,6 +128,9 @@ export function LanguagePicker({
               }
               aria-checked={active}
               style={({ pressed }) => [styles.lead, pressed && styles.pressed]}>
+              {/* Zwei Zeilen statt einer: Auf 375 px lief „20 fällig“ sonst
+                  unter den „Lernen“-Knopf (Testlauf 08.10.2026). */}
+              <View style={styles.leadLine}>
               <ThemedText type="default" style={[styles.name, styles.shrink]}>
                 {name}
               </ThemedText>
@@ -158,8 +161,10 @@ export function LanguagePicker({
                   ))}
                 </View>
               ) : null}
+              </View>
 
-              <ThemedText type="small" themeColor="textSecondary" style={styles.meta}>
+              <View style={styles.leadLine}>
+              <ThemedText type="small" themeColor="textSecondary">
                 {t('home.vocabCount', { count: wortschatz })}
               </ThemedText>
 
@@ -171,6 +176,7 @@ export function LanguagePicker({
                   </ThemedText>
                 </ThemedView>
               ) : null}
+              </View>
             </Pressable>
 
             {/* Direkter Einstieg (Nutzerwunsch 13.09.): wählt dieses Ziel und
@@ -208,11 +214,17 @@ const styles = StyleSheet.create({
   /** Die Auswahl-Fläche: füllt die Zeile links vom „Lernen"-Knopf. */
   lead: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
+    minWidth: 0,
+    justifyContent: 'center',
+    gap: Spacing.one,
     minHeight: 44,
     paddingVertical: Spacing.two,
+  },
+  leadLine: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   /** Direkter Einstieg in die Sitzung — gleiche Zielhöhe wie die Zeile. */
   startPill: {
@@ -237,9 +249,6 @@ const styles = StyleSheet.create({
     width: 9,
     height: 9,
     borderRadius: 4.5,
-  },
-  meta: {
-    marginLeft: 'auto',
   },
   badge: {
     borderRadius: 999,

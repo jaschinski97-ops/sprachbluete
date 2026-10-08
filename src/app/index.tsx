@@ -55,7 +55,12 @@ export default function DashboardScreen() {
   const requestedDirection = wahlRichtung ?? profile?.review?.direction ?? null;
   const selectedDirection = requestedDirection
     ? directionForBridge(uiLanguage, requestedDirection)
-    : (ziele.find(ziel => ziel.language === language) ?? ziele[0]).direction;
+    // Ohne gemerkte Wahl nie die eigene Oberflächensprache vorwählen: Die
+    // Profil-Sprache ist anfangs 'th', und eine Thai-Oberfläche begann sonst
+    // mit „Thai lernen“ (Testlauf 08.10.2026).
+    : (ziele.find(ziel => ziel.language === language && ziel.language !== uiLanguage)
+      ?? ziele.find(ziel => ziel.language !== uiLanguage)
+      ?? ziele[0]).direction;
 
   // Die Beschreibung unter dem Picker hängt am GEWÄHLTEN Ziel: Beim Deutsch-
   // Ziel war sonst der Thai-Tontext zu lesen (gleiche Paarsprache, anderes

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ConversationSituation } from '@/lib/conversation/types';
 import { situationTranslation, spokenText } from '@/lib/conversation/types';
-import type { PairDirection } from '@/lib/languages/types';
+import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import { useLocale } from '@/lib/i18n';
 import { RoleplayRunner } from './roleplay-runner';
 import { ThemedButton } from './themed-button';
@@ -26,6 +26,8 @@ export function ChapterGrammarRunner({ situation, direction, onExit }: {
     <ThemedText type="small">{t('learning.example')}</ThemedText>
     {situation.scriptTurns.slice(0, 2).map((turn, index) => <ThemedView key={index}>
       <ThemedText>{spokenText(situation, turn)}</ThemedText>
+      {/* Thai-Zieltexte immer mit Umschrift, wie überall (Testlauf 08.10.2026). */}
+      {targetLanguageOf(direction) === 'th' && turn.roman ? <ThemedText type="small" themeColor="textSecondary">{turn.roman}</ThemedText> : null}
       <ThemedText type="small">{translation.turns[index]}</ThemedText>
     </ThemedView>)}
     <ThemedButton label={t('common.next')} onPress={() => setPractising(true)} />

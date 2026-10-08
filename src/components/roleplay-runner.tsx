@@ -313,6 +313,8 @@ function SzeneZeile({
               <View style={styles.actions}>
                 <ThemedButton
                   label={t('dictation.check')}
+                  // Leer ergab „Andere Formulierung“ — irreführend (Testlauf 08.10.2026).
+                  disabled={!eingabe.trim()}
                   onPress={() => setErgebnis(compareDialogue(eingabe, zeile.thai, sprache))}
                 />
                 {hatErkennung ? (

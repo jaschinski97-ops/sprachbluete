@@ -243,7 +243,7 @@ const vi = {
   "drill.assembling": "Đang chuẩn bị bài tập …",
   "drill.noVocab": "Không có từ vựng phù hợp",
   "drill.toneEmpty": "Chưa có bản ghi phát âm đã được kiểm tra cho bài nghe này. Các clip chưa được kiểm tra và giọng nói máy tính sẽ không được sử dụng — bạn nên luyện tập với một trong những bài tập khác.",
-  "drill.noneFor": "Hiện tại không có mục nào phù hợp cho „{{drill}}\" trong kho từ.",
+  "drill.noneFor": "Hiện tại không có mục nào phù hợp cho „{{drill}}“ trong kho từ.",
   "drill.roundDone": "Vòng đã kết thúc",
   "drill.roundScore": "{{correct}} trên {{total}} đúng.",
   "drill.newRound": "Vòng mới",

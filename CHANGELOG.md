@@ -1,5 +1,10 @@
 # Changelog
 
+## 08.10.2026
+
+- Komplett-Durchlauf als Deutscher (Thai), Thailänder (Deutsch) und Spanier (Deutsch, Thai) mit frischen Testdaten: Lernpfad mit allen 7 Lektionsschritten, Heutige Runde, alle Übungsformen, Goethe, Gespräch, Fortschritt, Datensicherung. Behoben: Sprachzeilen der Übersicht überlappten auf 375 px („20 fällig“ unter „Lernen“); eine neue Thai-Oberfläche wählte Thai als Lernziel vor (jetzt die erste Fremdsprache); Grammatik-Beispiele ohne Thai-Umschrift; Prüfen ohne Eingabe in Rollenspiel („Andere Formulierung“) und „Sag es“ (keine Reaktion) jetzt gesperrt; „Gut"-Anführungszeichen in 8 Wörterbüchern; Übersetzungen „Die sind sehr süß!“ und „bahts“; Vertiefungs-Umschrift (rian statt riian, dtɔɔn, sà-nə̌ə). Web-Speicher fällt auf localStorage zurück, wenn IndexedDB nicht öffnet.
+- Offen aus dem Durchlauf: Mikrofon/Aufnahme nur am Gerät prüfbar; Goethe-Hörtexte laufen über die Systemstimme; Goethe-Formular ist Ankreuzen statt Schreiben; Stammformen mit sein/haben (ist gestanden) gelten als falsch; Thai-Wortgrenzen in Lesetexten teils grob; „Ton herleiten“ zeigt die Tonzeichen bewusst schon in der Frage.
+
 ## 04.10.2026
 
 - Inhalte korrigiert: Thai-Umschrift vereinheitlicht (Paiboon-Stil der Dialoge). 524 Vokabeln, 990 Beispielsätze und Dialogzeilen bereinigt: fehlende Behauchung (kǎo→khǎo, tîi→thîi), k/t/p für g/dt/bp, ae/ue/oe/aw-Schreibungen, falsche Tonzeichen und 23 falsch hinterlegte Töne (z. B. ต้อนรับ dtɔ̂ɔn, แตะ dtɛ̀, เผื่อ phʉ̀a, นี้ níi), Fremdzeichen (griech. ε, æ, Breve). Längen vereinheitlicht (ได้ dâai, น้ำ nám, เช้า cháo). Abgleich gegen die Thai-Schrift mit tltk, Tonfälle von Hand entschieden. Handdaten (Partikel-, Zählwort-, Vertiefungstexte) ebenso; Kommentar zu ค่ะ/คะ-Tönen korrigiert. Deutsche Pluralangaben einheitlich „die …“ bzw. „—“.

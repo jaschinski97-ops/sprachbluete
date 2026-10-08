@@ -255,7 +255,8 @@ export function ProductionRunner({
               style={[styles.input, { color: colors.text, borderColor: colors.borderSubtle }]}
             />
             <View style={styles.actions}>
-              <ThemedButton label={t('dictation.check')} onPress={() => pruefen(eingabe)} />
+              {/* Leer prüfen tat nichts — der Knopf ist erst mit Eingabe aktiv (Testlauf 08.10.2026). */}
+              <ThemedButton label={t('dictation.check')} disabled={!eingabe.trim()} onPress={() => pruefen(eingabe)} />
               {naht.verfuegbar ? (
                 <ThemedButton
                   label={hoert ? t('production.listening') : t('production.speakA11y')}

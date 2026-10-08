@@ -691,15 +691,8 @@ function DirectionPicker({
                 <ThemedText type="default" style={styles.goalName}>
                   {name}
                 </ThemedText>
-                {/* Brücken-Lernziel: die Quellsprache nennen — „Thai (von
-                    Deutsch)“ unterscheidet sich als Ziel nur durch ihre
-                    Herkunft. Sonst gilt wie bisher: Bei Deutsch fallen Name
-                    und Endonym zusammen. */}
-                {ziel.vonSprache ? (
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {t('goal.fromSource', { language: languageName(ziel.vonSprache) })}
-                  </ThemedText>
-                ) : endonym !== name ? (
+                {/* Bei Deutsch fallen Name und Endonym zusammen. */}
+                {endonym !== name ? (
                   <ThemedText type="small" themeColor="textSecondary">
                     {endonym}
                   </ThemedText>

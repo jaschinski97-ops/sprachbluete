@@ -34,8 +34,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'home.vocabCount': 'คำศัพท์ {{count}} คำ',
 
   'picker.chooseA11y': 'เลือกภาษา',
-  // เป้าหมายการเรียนภาษาสะพาน: ส่วน „จาก X“ — เรียนภาษาสะพานจากภาษาอื่น (goals.ts, vonSprache)
-  'goal.fromSource': 'จาก{{language}}',
   // เป้าหมายภาษาเยอรมัน: ทำไมคลังคำจึงต่างจาก th/en/es
   'goal.deutschDescription': 'เป้าหมายคือภาษาเยอรมัน — ฝึกไวยากรณ์เยอรมัน (คำนำหน้านาม รูปกริยา) ไปด้วย',
 

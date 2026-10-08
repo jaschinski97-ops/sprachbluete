@@ -25,7 +25,6 @@ const ta = {
   "home.sectionLanguages": "மொழிகள்",
   "home.vocabCount": "{{count}} வார்த்தைகள்",
   "picker.chooseA11y": "மொழியை தேர்ந்தெடுக்கவும்",
-  "goal.fromSource": "{{language}} இல் இருந்து",
   "goal.deutschDescription": "ஜெர்மன் கற்கை இலக்கு — ஜெர்மன் இலக்கணம் (ஆர்டிக்கல்கள், அடிப்படைக் கட்டமைப்புகள்) பயிற்சியுடன் கற்றுக்கொள்ளப்படுகிறது.",
   "dashboard.cta": "{{direction}} பயிற்சி செய்",
   "legend.toneTitle": "சொல் நிறங்கள்",

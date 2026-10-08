@@ -3,7 +3,8 @@
 ## 08.10.2026
 
 - Komplett-Durchlauf als Deutscher (Thai), Thailänder (Deutsch) und Spanier (Deutsch, Thai) mit frischen Testdaten: Lernpfad mit allen 7 Lektionsschritten, Heutige Runde, alle Übungsformen, Goethe, Gespräch, Fortschritt, Datensicherung. Behoben: Sprachzeilen der Übersicht überlappten auf 375 px („20 fällig“ unter „Lernen“); eine neue Thai-Oberfläche wählte Thai als Lernziel vor (jetzt die erste Fremdsprache); Grammatik-Beispiele ohne Thai-Umschrift; Prüfen ohne Eingabe in Rollenspiel („Andere Formulierung“) und „Sag es“ (keine Reaktion) jetzt gesperrt; „Gut"-Anführungszeichen in 8 Wörterbüchern; Übersetzungen „Die sind sehr süß!“ und „bahts“; Vertiefungs-Umschrift (rian statt riian, dtɔɔn, sà-nə̌ə). Web-Speicher fällt auf localStorage zurück, wenn IndexedDB nicht öffnet.
-- Offen aus dem Durchlauf: Mikrofon/Aufnahme nur am Gerät prüfbar; Goethe-Hörtexte laufen über die Systemstimme; Goethe-Formular ist Ankreuzen statt Schreiben; Stammformen mit sein/haben (ist gestanden) gelten als falsch; Thai-Wortgrenzen in Lesetexten teils grob; „Ton herleiten“ zeigt die Tonzeichen bewusst schon in der Frage.
+- Offen aus dem Durchlauf: Mikrofon/Aufnahme nur am Gerät prüfbar; Goethe-Hörtexte laufen über die Systemstimme; Goethe-Formular ist Ankreuzen statt Schreiben; Stammformen mit sein/haben (ist gestanden) gelten als falsch; Thai-Wortgrenzen in Lesetexten teils grob.
+- „Ton herleiten“ zeigt in der Frage nur noch die Thai-Schrift; die Umschrift mit Tonzeichen verriet die Lösung und steht jetzt in der Auflösung. Thai-Oberfläche ohne Ziel „Thai (von Deutsch)“, auch im Gesprächs-Reiter: Die Bedeutung war dort identisch mit dem Thai-Text. Die App-Sprache ist damit überall kein Lernziel; ein gemerktes de_to_th fällt auf das erste Ziel zurück, Karten bleiben gespeichert. Baustein `goal.fromSource` aus allen 20 Wörterbüchern entfernt.
 
 ## 04.10.2026
 

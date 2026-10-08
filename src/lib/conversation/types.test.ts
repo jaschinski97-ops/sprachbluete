@@ -11,8 +11,8 @@ describe('SITUATION_SPRACHEN — die Sprachliste des Gesprächs-Reiters', () => 
   it('zeigt dieselben Sprachen wie die Lernziele der Oberfläche', () => {
     // Deutsch nie auf deutscher Oberfläche (Nutzerentscheidung 19.09.).
     expect(situationSprachenFuerBruecke('de').map(e => e.sprache)).toEqual(['th', 'en', 'es']);
-    // Thai-Oberfläche: alle vier — Thai bleibt über „Thai (von Deutsch)“.
-    expect(situationSprachenFuerBruecke('th')).toEqual(SITUATION_SPRACHEN);
+    // Thai-Oberfläche: Thai ausgeblendet wie Deutsch auf deutscher (08.10.2026).
+    expect(situationSprachenFuerBruecke('th').map(e => e.sprache)).toEqual(['de', 'en', 'es']);
     // Englische Oberfläche: Englisch lernt man dort nicht.
     expect(situationSprachenFuerBruecke('en').map(e => e.sprache)).toEqual(['de', 'th', 'es']);
     expect(situationSprachenFuerBruecke('ar')).toEqual(SITUATION_SPRACHEN);

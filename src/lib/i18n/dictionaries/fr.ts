@@ -25,7 +25,6 @@ const fr = {
   "home.sectionLanguages": "Langues",
   "home.vocabCount": "{{count}} mots",
   "picker.chooseA11y": "Choisir une langue",
-  "goal.fromSource": "de {{language}}",
   "goal.deutschDescription": "Allemand comme objectif d'apprentissage — la grammaire allemande (articles, formes de base) est pratiquée.",
   "dashboard.cta": "Pratiquer {{direction}}",
   "legend.toneTitle": "Teintes",

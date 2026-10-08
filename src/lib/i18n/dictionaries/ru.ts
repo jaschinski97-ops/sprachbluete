@@ -25,7 +25,6 @@ const ru = {
   "home.sectionLanguages": "Языки",
   "home.vocabCount": "{{count}} слов",
   "picker.chooseA11y": "Выбрать язык",
-  "goal.fromSource": "из {{language}}",
   "goal.deutschDescription": "Немецкий как цель обучения — немецкая грамматика (артикли, основы) будет отрабатываться.",
   "dashboard.cta": "Практиковать {{direction}}",
   "legend.toneTitle": "Тональности",

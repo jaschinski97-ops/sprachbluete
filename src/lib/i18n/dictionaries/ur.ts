@@ -25,7 +25,6 @@ const ur = {
   "home.sectionLanguages": "زبانیں",
   "home.vocabCount": "{{count}} الفاظ",
   "picker.chooseA11y": "زبان منتخب کریں",
-  "goal.fromSource": "{{language}} سے",
   "goal.deutschDescription": "جرمن بطور سیکھنے کا مقصد — جرمن گرامر (مضمون، بنیادی شکلیں) کی مشق کی جائے گی.",
   "dashboard.cta": "{{direction}} کی مشق کریں",
   "legend.toneTitle": "سر کی رنگتیں",

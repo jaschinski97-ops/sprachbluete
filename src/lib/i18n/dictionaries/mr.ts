@@ -25,7 +25,6 @@ const mr = {
   "home.sectionLanguages": "भाषा",
   "home.vocabCount": "{{count}} शब्द",
   "picker.chooseA11y": "भाषा निवडा",
-  "goal.fromSource": "{{language}} पासून",
   "goal.deutschDescription": "जर्मन शिकण्याचे लक्ष्य — जर्मन व्याकरण (लेख, मूळ रूपे) याचा अभ्यास केला जातो.",
   "dashboard.cta": "{{direction}} सराव करा",
   "legend.toneTitle": "स्वर रंग",

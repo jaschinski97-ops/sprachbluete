@@ -40,9 +40,6 @@ const de = {
 
   /* ---------- Sprachauswahl (language-picker) ---------- */
   'picker.chooseA11y': 'Sprache wählen',
-  // Brücken-Lernziel: der „(von X)“-Anteil — die Brücke selbst von einer
-  // anderen Sprache gelernt (goals.ts, vonSprache).
-  'goal.fromSource': 'von {{language}}',
   // Deutsch-Ziel: warum der Bestand ein anderer ist als bei th/en/es.
   'goal.deutschDescription': 'Deutsch als Lernziel — die deutsche Grammatik (Artikel, Stammformen) wird mitgeübt.',
 

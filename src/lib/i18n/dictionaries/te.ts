@@ -25,7 +25,6 @@ const te = {
   "home.sectionLanguages": "భాషలు",
   "home.vocabCount": "{{count}} పదాలు",
   "picker.chooseA11y": "భాషను ఎంచుకోండి",
-  "goal.fromSource": "{{language}} నుండి",
   "goal.deutschDescription": "జర్మన్ నేర్చుకోవడం — జర్మన్ వ్యాకరణం (ఆర్టికల్, మూల రూపాలు) అభ్యాసం చేయబడుతుంది.",
   "dashboard.cta": "{{direction}} అభ్యాసం చేయండి",
   "legend.toneTitle": "స్వరాలు",

@@ -25,7 +25,6 @@ const vi = {
   "home.sectionLanguages": "Ngôn ngữ",
   "home.vocabCount": "{{count}} từ",
   "picker.chooseA11y": "Chọn ngôn ngữ",
-  "goal.fromSource": "từ {{language}}",
   "goal.deutschDescription": "Tiếng Đức là mục tiêu học — ngữ pháp tiếng Đức (mạo từ, dạng gốc) sẽ được luyện tập.",
   "dashboard.cta": "Luyện tập {{direction}}",
   "legend.toneTitle": "Âm sắc",

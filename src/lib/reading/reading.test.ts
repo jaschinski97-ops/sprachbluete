@@ -339,6 +339,8 @@ describe('Die Uebung „Ton herleiten"', () => {
     // Die Umschrift traegt die Tonzeichen (à, á, â, ǎ) und waere die Antwort.
     const question = buildToneRuleQuestion(VOCABULARY.find((e) => e.term === 'หมา')!);
     expect(question.visible).toBe('หมา');
+    expect(question.visibleRoman).toBeUndefined();
+    expect(question.solution).toContain('mǎa');
     expect(question.visibleHint).toBeNull();
     expect(question.speak).toBeNull();
   });

@@ -31,9 +31,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'home.vocabCount': '{{count}} vocablos',
 
   'picker.chooseA11y': 'Elegir idioma',
-  // Objetivo del puente: la parte „desde X“ — aprender el propio puente
-  // desde otro idioma (goals.ts, vonSprache).
-  'goal.fromSource': 'desde {{language}}',
   // Meta alemán: por qué su stock difiere del de th/en/es.
   'goal.deutschDescription': 'El alemán como meta — también se practica la gramática alemana (artículos, formas verbales).',
 

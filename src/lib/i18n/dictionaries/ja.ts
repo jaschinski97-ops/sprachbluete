@@ -25,7 +25,6 @@ const ja = {
   "home.sectionLanguages": "言語",
   "home.vocabCount": "{{count}} 語",
   "picker.chooseA11y": "言語を選択",
-  "goal.fromSource": "{{language}}から",
   "goal.deutschDescription": "ドイツ語を学ぶ — ドイツ語の文法（冠詞、基本形）を練習します。",
   "dashboard.cta": "{{direction}}を練習する",
   "legend.toneTitle": "音調",

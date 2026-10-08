@@ -32,12 +32,11 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
     expect(LERNZIELE.map(goalLanguage)).toEqual(['th', 'en', 'es']);
   });
 
-  it('Thai-Oberfläche: Englisch, Spanisch, Deutsch — plus „Thai (von Deutsch)“', () => {
+  it('Thai-Oberfläche: Englisch, Spanisch, Deutsch — Thai ausgeblendet (Testlauf 08.10.)', () => {
     expect(zieleFuerBruecke('th')).toEqual([
       { direction: 'th_to_en', language: 'en' },
       { direction: 'th_to_es', language: 'es' },
       { direction: 'th_to_de', language: 'de' },
-      { direction: 'de_to_th', language: 'th', vonSprache: 'de' },
     ]);
   });
 
@@ -75,7 +74,7 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
 describe('Gemerkte Ziele beim Wechsel der App-Sprache', () => {
   it('behält ein Ziel, das es auf der Oberfläche gibt', () => {
     expect(directionForBridge('de', 'de_to_es')).toBe('de_to_es');
-    expect(directionForBridge('th', 'de_to_th')).toBe('de_to_th');
+    expect(directionForBridge('th', 'th_to_es')).toBe('th_to_es');
   });
 
   it('hält die Zielsprache fest: de_to_es wird auf englischer Oberfläche zu en_to_es', () => {

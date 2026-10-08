@@ -25,7 +25,6 @@ const ar = {
   "home.sectionLanguages": "اللغات",
   "home.vocabCount": "{{count}} كلمة",
   "picker.chooseA11y": "اختر اللغة",
-  "goal.fromSource": "من {{language}}",
   "goal.deutschDescription": "الألمانية هدف تعلّم — وتُتدرَّب أيضًا على القواعد الألمانية (أدوات التعريف، أشكال الفعل).",
   "dashboard.cta": "{{direction}} تمرين",
   "legend.toneTitle": "ألوان النغمة",

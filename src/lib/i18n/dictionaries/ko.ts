@@ -25,7 +25,6 @@ const ko = {
   "home.sectionLanguages": "언어",
   "home.vocabCount": "{{count}} 단어",
   "picker.chooseA11y": "언어 선택",
-  "goal.fromSource": "{{language}}에서",
   "goal.deutschDescription": "독일어 학습 목표 — 독일어 문법(관사, 어근 형태)을 연습합니다.",
   "dashboard.cta": "{{direction}} 연습하기",
   "legend.toneTitle": "음색",

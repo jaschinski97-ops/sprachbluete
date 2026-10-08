@@ -25,7 +25,6 @@ const pt = {
   "home.sectionLanguages": "Idiomas",
   "home.vocabCount": "{{count}} palavras",
   "picker.chooseA11y": "Escolher idioma",
-  "goal.fromSource": "de {{language}}",
   "goal.deutschDescription": "Alemão como objetivo de aprendizado — a gramática alemã (artigos, formas de raiz) será praticada.",
   "dashboard.cta": "Praticar {{direction}}",
   "legend.toneTitle": "Tons",

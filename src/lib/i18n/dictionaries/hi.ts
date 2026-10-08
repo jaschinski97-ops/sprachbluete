@@ -25,7 +25,6 @@ const hi = {
   "home.sectionLanguages": "भाषाएँ",
   "home.vocabCount": "{{count}} शब्द",
   "picker.chooseA11y": "भाषा चुनें",
-  "goal.fromSource": "{{language}} से",
   "goal.deutschDescription": "जर्मन एक अध्ययन लक्ष्य के रूप में - जर्मन व्याकरण (आर्टिकल, मूल रूप) का अभ्यास किया जाएगा।",
   "dashboard.cta": "{{direction}} का अभ्यास करें",
   "legend.toneTitle": "स्वर रंग",

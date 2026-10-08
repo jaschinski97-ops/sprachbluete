@@ -25,7 +25,6 @@ const zh = {
   "home.sectionLanguages": "语言",
   "home.vocabCount": "{{count}} 个单词",
   "picker.chooseA11y": "选择语言",
-  "goal.fromSource": "来自 {{language}}",
   "goal.deutschDescription": "德语作为学习目标 — 德语语法（冠词、词根形式）进行练习。",
   "dashboard.cta": "练习{{direction}}",
   "legend.toneTitle": "音调",

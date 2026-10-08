@@ -25,7 +25,6 @@ const tr = {
   "home.sectionLanguages": "Diller",
   "home.vocabCount": "{{count}} kelime",
   "picker.chooseA11y": "Dil seç",
-  "goal.fromSource": "{{language}}'den",
   "goal.deutschDescription": "Almanca öğrenme hedefi — Almanca dilbilgisi (artikeller, kök formlar) pratik yapılacaktır.",
   "dashboard.cta": "{{direction}} çalış",
   "legend.toneTitle": "Tonlar",

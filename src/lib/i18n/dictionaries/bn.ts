@@ -25,7 +25,6 @@ const bn = {
   "home.sectionLanguages": "ভাষাসমূহ",
   "home.vocabCount": "{{count}} শব্দ",
   "picker.chooseA11y": "ভাষা নির্বাচন করুন",
-  "goal.fromSource": "{{language}} থেকে",
   "goal.deutschDescription": "জার্মান ভাষা শেখার লক্ষ্য — জার্মান ব্যাকরণ (নির্ধারক, মূল রূপ) অনুশীলন করা হবে।",
   "dashboard.cta": "{{direction}} অনুশীলন করুন",
   "legend.toneTitle": "সুরের রঙ",

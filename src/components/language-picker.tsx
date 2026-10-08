@@ -32,8 +32,7 @@ import { DirectionSummary } from '@/lib/review-session';
  * SEIT STUFE 1 JE BRÜCKE: Die Zeilen kommen aus `zieleFuerBruecke` — die
  * App-/Oberflächensprache bestimmt die Liste. Brücke Deutsch sieht die vier
  * Bestandsziele wie vorher; Brücken th/en/es sehen ihre Paare, Kreuzziele
- * inklusive. Brücken-Lernziele („Thai (von Deutsch)“) tragen den
- * `goal.fromSource`-Baustein statt des Endonyms als zweite Zeile.
+ * inklusive.
  *
  * EHRLICH BEI DEN ZAHLEN: Die Fällig-Badges kommen aus den geladenen
  * Summaries (Übersicht lädt ALLE Paarsprachen der Brücke) und erscheinen nur,
@@ -117,9 +116,6 @@ export function LanguagePicker({
                   t('dashboard.cta', { direction: name }),
                   fällig !== undefined ? t('home.dueBadge', { count: fällig }) : null,
                   t('home.vocabCount', { count: wortschatz }),
-                  ziel.vonSprache !== undefined
-                    ? t('goal.fromSource', { language: languageName(ziel.vonSprache) })
-                    : null,
                   t(languageOf(gelehrteSprache).challenge),
                   t(languageOf(gelehrteSprache).feature.label),
                 ]
@@ -134,13 +130,8 @@ export function LanguagePicker({
               <ThemedText type="default" style={[styles.name, styles.shrink]}>
                 {name}
               </ThemedText>
-              {/* Brücken-Lernziel: die Quellsprache nennen. Sonst wie bisher —
-                  bei Deutsch fallen Name und Endonym in eines zusammen. */}
-              {ziel.vonSprache !== undefined ? (
-                <ThemedText type="small" themeColor="textSecondary" style={styles.shrink}>
-                  {t('goal.fromSource', { language: languageName(ziel.vonSprache) })}
-                </ThemedText>
-              ) : endonym !== name ? (
+              {/* Bei Deutsch fallen Name und Endonym in eines zusammen. */}
+              {endonym !== name ? (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.shrink}>
                   {endonym}
                 </ThemedText>

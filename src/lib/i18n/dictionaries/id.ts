@@ -25,7 +25,6 @@ const id = {
   "home.sectionLanguages": "Bahasa",
   "home.vocabCount": "{{count}} kata",
   "picker.chooseA11y": "Pilih bahasa",
-  "goal.fromSource": "dari {{language}}",
   "goal.deutschDescription": "Bahasa Jerman sebagai tujuan belajar — tata bahasa Jerman (artikel, bentuk dasar) akan dipraktikkan.",
   "dashboard.cta": "Latihan {{direction}}",
   "legend.toneTitle": "Nada",

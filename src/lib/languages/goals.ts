@@ -1,5 +1,4 @@
 import { activeVocabularyFor } from '@/data/active-vocabulary';
-import type { UiLanguage } from '@/lib/i18n/types';
 import { UI_LANGUAGES } from '@/lib/i18n/types';
 
 import { LEARNING_LANGUAGES } from './definitions';
@@ -33,22 +32,6 @@ export type Lernziel = {
   direction: PairDirection;
   /** Die gelernte Sprache — die rechte Seite der Richtung. */
   language: LanguageCode;
-  /**
-   * Nur beim Brücken-Lernziel gesetzt: die Sprache, AUS DER die Brücke selbst
-   * gelernt wird. `de_to_th` ist auf der Thai-Oberfläche „Thai (von
-   * Deutsch)“. Die UI setzt daraus den i18n-Baustein `goal.fromSource`
-   * zusammen; dieses Modul bleibt übersetzungsfrei.
-   */
-  vonSprache?: Lang;
-};
-
-/**
- * Zusätzliche Ziele einer Oberfläche: die App-Sprache selbst, gelernt von
- * einer anderen Sprache aus. Bisher nur Thai-Oberfläche → Thai von Deutsch
- * (Nutzerentscheidung 10.09., dort gibt es vollständigen th↔de-Bestand).
- */
-const BRUECKEN_LERNZIELE: Partial<Record<UiLanguage, { direction: PairDirection; vonSprache: Lang }[]>> = {
-  th: [{ direction: 'de_to_th', vonSprache: 'de' }],
 };
 
 /**
@@ -63,13 +46,12 @@ export function zieleFuerBruecke(bridge: Lang | ForeignBridge): Lernziel[] {
   const reihenfolge: readonly LanguageCode[] = isForeignBridge(bridge)
     ? ['de', ...LANGUAGE_CODES.filter((code) => code !== 'de')]
     : LANGUAGE_CODES;
-  const ziele: Lernziel[] = reihenfolge
+  // Die App-Sprache selbst ist nie Ziel — auch nicht „Thai (von Deutsch)“
+  // auf Thai-Oberfläche: Dort war die Bedeutung identisch mit dem Thai-Text
+  // (Testlauf 08.10.2026, Nutzerentscheidung).
+  return reihenfolge
     .filter((code) => code !== bridge)
     .map((code) => ({ direction: `${bridge}_to_${code}` as PairDirection, language: code }));
-  for (const extra of BRUECKEN_LERNZIELE[bridge] ?? []) {
-    ziele.push({ direction: extra.direction, language: targetLanguageOf(extra.direction), vonSprache: extra.vonSprache });
-  }
-  return ziele;
 }
 
 /** Die Ziele der deutschen Oberfläche — historischer Standard. */
@@ -89,7 +71,7 @@ export function directionForBridge(bridge: Lang | ForeignBridge, direction: Pair
   if (direkt) return direkt.direction;
   const ziel = targetLanguageOf(direction);
   if (ziel !== bridge) {
-    const passend = goals.find(goal => goal.language === ziel && !goal.vonSprache);
+    const passend = goals.find(goal => goal.language === ziel);
     if (passend) return passend.direction;
   }
   return goals[0].direction;

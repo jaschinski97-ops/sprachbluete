@@ -209,10 +209,10 @@ export function buildToneRuleQuestion(
     drill: 'toneRule',
     direction: toTarget(entry),
     vocabId: entry.id,
-    // Die Tonzeichen der Umschrift sind auf ausdrücklichen Nutzerwunsch
-    // auch während der Aufgabe sichtbar.
+    // Nur die Thai-Schrift: Die Tonzeichen der Umschrift verrieten die
+    // Lösung. Umschrift und Ton stehen in der Auflösung (Nutzerentscheidung
+    // 08.10.2026, hebt den früheren Wunsch auf).
     visible: entry.term,
-    visibleRoman: entry.romanization,
     visibleHint: null,
     speak: null,
     options,

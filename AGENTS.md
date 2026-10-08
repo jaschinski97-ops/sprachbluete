@@ -16,6 +16,7 @@ Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nu
 - Thai-Zieltexte und Antworten in Übungen zeigen Thai-Schrift plus Umschrift; verdeckte Hör-/Schreibantworten erst nach der Auswertung. Die App-Sprachwahl zeigt Eigennamen plus englische Namen, ohne die Aufgabenübersetzungen zu ändern.
 - Erste B1-Vertiefung mit je einer Einheit in allen 4 Lernsprachen: Texte/Fragen in `src/data/advanced-lessons.ts`, Ablauf in `src/components/advanced-lesson-runner.tsx`. Texte noch ohne unabhängige Sprachprüfung. Freie Antworten werden lokal gespeichert und nur selbst geprüft; System-TTS ersetzt keine geprüften Hörclips und die Übung bescheinigt keine GER-Stufe.
 - Nutzervision: Lernsprache in der Übersicht wählen; neue Lernsprache = Vorlage kopieren + KI-Erzeugung im Studio.
+- Sprachpakete (Nutzerentscheidung 08.10.2026, bleibt): Admin erzeugt zu Hause, `npm run pack:build`/`pack:publish` lädt Zip + Manifest als GitHub-Release `pack-<lang>-v<N>`; Nutzer laden je Lernsprache per Knopf (Übersicht, Einstellungen → Sprachpakete). Store-Build (`eas.json` production, `rc-ios-packs`) setzt `THAISPEAKER_MEDIA=packs`: Medien nicht eingebettet (`assets.packs.ts`). Paket-Repo `app.json` extra.pack.repo muss öffentlich sein. Ablauf `docs/PIPELINE.md` §5.
 
 ## Inhaltsbestand (Katalog `src/content/catalog.json`)
 

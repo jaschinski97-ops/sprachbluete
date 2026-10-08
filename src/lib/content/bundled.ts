@@ -26,6 +26,15 @@ export function bundledDocuments<K extends ContentKind>(kind: K): ContentDocumen
   return currentEntries().filter((entry) => entry.kind === kind).map((entry) => entry.document as ContentDocuments[K]);
 }
 
+/**
+ * Sprachpaket-Build (`THAISPEAKER_MEDIA=packs`, metro.config.js): Nativ ist
+ * dann kein Medium eingebettet, Hörclips und Bilder kommen nur aus den
+ * heruntergeladenen Paketen. Web liest weiter den `public/content`-Spiegel.
+ */
+export function mediaFromPacks(): boolean {
+  return Platform.OS !== 'web' && Object.keys(CONTENT_ASSETS).length === 0;
+}
+
 export async function bundledAssetUri(kind: 'audio' | 'images', id: string): Promise<string | null> {
   const entry = currentEntries().find((item) => item.kind === kind && item.id === id);
   if (!entry?.asset) return null;

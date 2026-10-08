@@ -3,7 +3,7 @@
  * Byte-Check vor dem Entpacken, Aktivierung und Aufraeumen — Netz, Entpacker
  * und Dateisystem sind dabei vollstaendig ersetzt.
  */
-import { choosePackVersion, installLanguagePack, PackInstallError, type PackDownloadProgress } from './downloader';
+import { choosePackVersion, installLanguagePack, latestPackRelease, PackInstallError, type PackDownloadProgress } from './downloader';
 import type { PackExtractor } from './extractor';
 import type { PackConfig } from './config';
 import { packZipUrl } from './config';
@@ -191,5 +191,28 @@ describe('installLanguagePack via GitHub Releases', () => {
     expect(result.version).toBe(3);
     expect(calls.map((call) => call.url)).toEqual([api, manifestUrl]);
     expect((await activePack('th'))?.version).toBe(3);
+  });
+});
+
+describe('latestPackRelease (Größe für den Laden-Knopf)', () => {
+  test('liefert neueste Version und Zip-Größe aus den GitHub-Releases', async () => {
+    const config: PackConfig = { repo: 'nutzer/packs', baseUrlOverride: null };
+    const fetchImpl = fakeFetch(new Map([
+      ['https://api.github.com/repos/nutzer/packs/releases?per_page=100', JSON.stringify([
+        { tag_name: 'pack-th-v1' }, { tag_name: 'pack-th-v3' }, { tag_name: 'pack-es-v9' }, { tag_name: 'v1.0.0' },
+      ])],
+      ['https://github.com/nutzer/packs/releases/download/pack-th-v3/thai-pack-th-v3.manifest.json', JSON.stringify(releaseFixture(3, 98_000_000))],
+    ]));
+    await expect(latestPackRelease('th', { fetch: fetchImpl, config })).resolves.toEqual({ version: 3, zipBytes: 98_000_000 });
+  });
+
+  test('ohne Release für die Sprache: null', async () => {
+    const config: PackConfig = { repo: 'nutzer/packs', baseUrlOverride: null };
+    const fetchImpl = fakeFetch(new Map([['https://api.github.com/repos/nutzer/packs/releases?per_page=100', '[]']]));
+    await expect(latestPackRelease('th', { fetch: fetchImpl, config })).resolves.toBeNull();
+  });
+
+  test('Netzfehler wirft (die Oberfläche bleibt dann still)', async () => {
+    await expect(latestPackRelease('th', { fetch: fakeFetch(new Map()), config: OVERRIDE_CONFIG })).rejects.toThrow();
   });
 });

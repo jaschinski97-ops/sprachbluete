@@ -633,6 +633,22 @@ const hi = {
   "flashcard.ambiguous": "कई शब्द सही बैठते हैं – खोजा गया शब्द: {{start}}",
   "path.stageEmpty": "“{{stage}}” के लिए अभी कोई अध्याय नहीं है।",
   "conversation.stageEmpty": "इस भाषा में “{{stage}}” के लिए अभी कोई बातचीत नहीं है।",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "भाषा पैक",
+  "pack.intro": "हर भाषा की ऑडियो क्लिप और चित्र इंटरनेट से एक पैक के रूप में आते हैं। एक बार डाउनलोड करें, फिर सब कुछ ऑफ़लाइन चलता है। पैक हटाने पर भी आपकी प्रगति सुरक्षित रहती है।",
+  "pack.download": "डाउनलोड करें",
+  "pack.downloadSize": "डाउनलोड करें · {{size}}",
+  "pack.downloadA11y": "{{language}} भाषा पैक डाउनलोड करें",
+  "pack.downloading": "डाउनलोड हो रहा है … {{percent}} %",
+  "pack.installing": "इंस्टॉल हो रहा है …",
+  "pack.installed": "डाउनलोड हो गया · संस्करण {{version}}",
+  "pack.notInstalled": "डाउनलोड नहीं हुआ",
+  "pack.unavailable": "अभी प्रकाशित नहीं",
+  "pack.failed": "डाउनलोड विफल रहा। इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "pack.updateSize": "अपडेट करें · {{size}}",
+  "pack.updateA11y": "{{language}} भाषा पैक अपडेट करें",
+  "pack.remove": "हटाएँ",
+  "pack.removeA11y": "{{language}} भाषा पैक हटाएँ",
 } as const;
 
 export default hi;

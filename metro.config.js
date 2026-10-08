@@ -38,4 +38,22 @@ config.cacheStores = [];
 // sichtbar, statt still auf einen Stub aufzuloesen.)
 config.resolver.unstable_conditionNames = ['require', 'import', 'default', 'browser'];
 
+// SPRACHPAKET-BUILD (08.10.2026): Mit THAISPEAKER_MEDIA=packs bleiben die
+// ~19.000 Hörclips und Bilder (≈ 390 MB) aus dem nativen Build draußen.
+// `src/content/assets.ts` wird dann durch die leere Liste in
+// `assets.packs.ts` ersetzt; die App erkennt das (`mediaFromPacks`) und
+// bietet je Lernsprache den Download von GitHub Releases an. Ohne die
+// Variable bleibt alles eingebettet (Entwicklung, Vorschau-Builds).
+if (process.env.THAISPEAKER_MEDIA === 'packs') {
+  const packsStub = require('node:path').join(__dirname, 'src/content/assets.packs.ts');
+  const upstream = config.resolver.resolveRequest;
+  config.resolver.resolveRequest = (context, moduleName, platform) => {
+    const resolved = (upstream ?? context.resolveRequest)(context, moduleName, platform);
+    if (resolved.type === 'sourceFile' && /[\\/]src[\\/]content[\\/]assets\.ts$/.test(resolved.filePath)) {
+      return { type: 'sourceFile', filePath: packsStub };
+    }
+    return resolved;
+  };
+}
+
 module.exports = config;

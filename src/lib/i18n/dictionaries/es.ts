@@ -729,6 +729,22 @@ const es: Partial<Record<TranslationKey, string>> = {
   "flashcard.ambiguous": "Varias palabras encajan – buscamos: {{start}}",
   "path.stageEmpty": "Todavía no hay capítulos para «{{stage}}».",
   "conversation.stageEmpty": "Todavía no hay conversaciones de «{{stage}}» en este idioma.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Paquetes de idioma",
+  "pack.intro": "Los audios y las imágenes de cada idioma se descargan como paquete desde internet. Se descargan una vez y luego todo funciona sin conexión. Tu progreso se conserva al eliminar un paquete.",
+  "pack.download": "Descargar",
+  "pack.downloadSize": "Descargar · {{size}}",
+  "pack.downloadA11y": "Descargar el paquete de {{language}}",
+  "pack.downloading": "Descargando … {{percent}} %",
+  "pack.installing": "Instalando …",
+  "pack.installed": "Descargado · versión {{version}}",
+  "pack.notInstalled": "No descargado",
+  "pack.unavailable": "Aún no publicado",
+  "pack.failed": "La descarga ha fallado. Comprueba la conexión a internet e inténtalo de nuevo.",
+  "pack.updateSize": "Actualizar · {{size}}",
+  "pack.updateA11y": "Actualizar el paquete de {{language}}",
+  "pack.remove": "Eliminar",
+  "pack.removeA11y": "Eliminar el paquete de {{language}}",
 };
 
 export default es;

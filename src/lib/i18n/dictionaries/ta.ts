@@ -633,6 +633,22 @@ const ta = {
   "flashcard.ambiguous": "பல சொற்கள் பொருந்தும் – தேடப்படும் சொல்: {{start}}",
   "path.stageEmpty": "“{{stage}}” நிலைக்கு இன்னும் அத்தியாயங்கள் இல்லை.",
   "conversation.stageEmpty": "இந்த மொழியில் “{{stage}}” நிலைக்கு இன்னும் உரையாடல்கள் இல்லை.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "மொழித் தொகுப்புகள்",
+  "pack.intro": "ஒவ்வொரு மொழியின் ஒலிக் கோப்புகளும் படங்களும் இணையத்திலிருந்து ஒரு தொகுப்பாக வரும். ஒருமுறை பதிவிறக்கினால் பிறகு எல்லாம் இணையமின்றி இயங்கும். தொகுப்பை நீக்கினாலும் உங்கள் முன்னேற்றம் அப்படியே இருக்கும்.",
+  "pack.download": "பதிவிறக்கு",
+  "pack.downloadSize": "பதிவிறக்கு · {{size}}",
+  "pack.downloadA11y": "{{language}} மொழித் தொகுப்பைப் பதிவிறக்கு",
+  "pack.downloading": "பதிவிறக்குகிறது … {{percent}} %",
+  "pack.installing": "நிறுவுகிறது …",
+  "pack.installed": "பதிவிறக்கப்பட்டது · பதிப்பு {{version}}",
+  "pack.notInstalled": "பதிவிறக்கப்படவில்லை",
+  "pack.unavailable": "இன்னும் வெளியிடப்படவில்லை",
+  "pack.failed": "பதிவிறக்கம் தோல்வியடைந்தது. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.",
+  "pack.updateSize": "புதுப்பி · {{size}}",
+  "pack.updateA11y": "{{language}} மொழித் தொகுப்பைப் புதுப்பி",
+  "pack.remove": "நீக்கு",
+  "pack.removeA11y": "{{language}} மொழித் தொகுப்பை நீக்கு",
 } as const;
 
 export default ta;

@@ -61,15 +61,47 @@ Ergebnisse landen in `pipeline/reports/` (lokal).
 
 ## 4. Ausliefern
 
-Der Katalog ist immer im App-Build. Die Medien (Hörclips, Bilder) kommen je
-Lernsprache als Sprachpaket von GitHub Releases; der Ablauf steht in
-Abschnitt 5. Native Builds: `eas build --profile rc-ios` (Checkliste
-`docs/release-candidate-2026-09-30.md`) bzw. `--profile production`.
+Der Katalog (Texte, Übungen) ist immer im App-Build. Die Medien (Hörclips,
+Bilder, zusammen rund 390 MB) kommen im Store-Build je Lernsprache als
+Sprachpaket von GitHub Releases (Abschnitt 5).
+
+| EAS-Profil | Medien | Zweck |
+|---|---|---|
+| `development`, `preview`, `rc-ios` | eingebettet | Entwicklung, Gerätetest ohne Paketserver |
+| `rc-ios-packs` | aus Paketen | Gerätetest des Download-Wegs |
+| `production` | aus Paketen | Store |
+
+Gesteuert wird das über `THAISPEAKER_MEDIA=packs` (`metro.config.js` ersetzt
+dann `src/content/assets.ts` durch die leere `assets.packs.ts`). Checkliste
+für das iPhone: `docs/release-candidate-2026-09-30.md`.
 
 ## 5. Sprachpakete
 
-Wird im nächsten Schritt fertig verdrahtet; der Abschnitt folgt mit den
-endgültigen Befehlen.
+Ablauf: Inhalte zu Hause erzeugen → Paket bauen → als GitHub-Release
+hochladen → Nutzer tippen in der Übersicht auf **Laden · 98 MB** (oder unter
+Einstellungen → Sprachpakete). Danach ist die Sprache offline vollständig.
+
+```bash
+npm run pack:build -- --lang th        # oder --lang all; Version = letzte + 1
+npm run pack:publish -- --lang th      # lädt Zip + Manifest als Release pack-th-v<N> hoch
+```
+
+- Ausgabe: `dist/packs/<lang>/thai-pack-<lang>-v<N>.zip` plus
+  `….manifest.json` (Dateiliste mit sha256, Größen, `zipBytes`). Beide
+  Dateien müssen am Release hängen; die App liest zuerst das Manifest.
+- Ziel-Repo: `app.json` → `expo.extra.pack.repo` („owner/name“). Das Repo muss
+  **öffentlich** sein, sonst bekommen Nutzer HTTP 404. Der Code darf in einem
+  privaten Repo bleiben, wenn die Pakete in einem eigenen öffentlichen Repo
+  liegen.
+- Upload braucht die GitHub CLI (`gh auth login`); ohne `gh` druckt
+  `pack:publish` die Schritte für den Browser.
+- Auf dem Gerät: Größenprüfung vor dem Entpacken, danach Dateianzahl und
+  Gesamtgröße gegen das Manifest; erst dann wird die neue Version aktiv und
+  die alte entfernt. Neue Inhalte = neues Paket mit höherer Version; die App
+  bietet dann „Aktualisieren“ an.
+- Lokaler Test ohne GitHub: `python -m http.server 8090 --directory dist/packs`
+  starten und `expo.extra.pack.baseUrlOverride` auf `http://<PC-IP>:8090`
+  setzen (Handy im selben WLAN). Die App liest dann `<lang>/index.json`.
 
 ## Grenzen
 

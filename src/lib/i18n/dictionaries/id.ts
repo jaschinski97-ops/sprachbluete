@@ -633,6 +633,22 @@ const id = {
   "flashcard.ambiguous": "Beberapa kata cocok – yang dicari: {{start}}",
   "path.stageEmpty": "Belum ada bab untuk “{{stage}}”.",
   "conversation.stageEmpty": "Belum ada percakapan “{{stage}}” dalam bahasa ini.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Paket bahasa",
+  "pack.intro": "Klip audio dan gambar setiap bahasa diunduh sebagai paket dari internet. Unduh sekali, lalu semuanya berfungsi offline. Kemajuan belajarmu tetap tersimpan saat paket dihapus.",
+  "pack.download": "Unduh",
+  "pack.downloadSize": "Unduh · {{size}}",
+  "pack.downloadA11y": "Unduh paket bahasa {{language}}",
+  "pack.downloading": "Mengunduh … {{percent}} %",
+  "pack.installing": "Menyiapkan …",
+  "pack.installed": "Terunduh · versi {{version}}",
+  "pack.notInstalled": "Belum diunduh",
+  "pack.unavailable": "Belum diterbitkan",
+  "pack.failed": "Unduhan gagal. Periksa koneksi internet lalu coba lagi.",
+  "pack.updateSize": "Perbarui · {{size}}",
+  "pack.updateA11y": "Perbarui paket bahasa {{language}}",
+  "pack.remove": "Hapus",
+  "pack.removeA11y": "Hapus paket bahasa {{language}}",
 } as const;
 
 export default id;

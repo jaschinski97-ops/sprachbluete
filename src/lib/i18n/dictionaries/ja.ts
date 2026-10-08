@@ -633,6 +633,22 @@ const ja = {
   "flashcard.ambiguous": "複数の語が当てはまります – 探している語：{{start}}",
   "path.stageEmpty": "「{{stage}}」の章はまだありません。",
   "conversation.stageEmpty": "この言語には「{{stage}}」の会話がまだありません。",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "言語パック",
+  "pack.intro": "各言語の音声と画像は、インターネットからパックとして入手します。一度ダウンロードすれば、その後はすべてオフラインで使えます。パックを削除しても学習の進み具合は残ります。",
+  "pack.download": "ダウンロード",
+  "pack.downloadSize": "ダウンロード · {{size}}",
+  "pack.downloadA11y": "{{language}}の言語パックをダウンロード",
+  "pack.downloading": "ダウンロード中 … {{percent}} %",
+  "pack.installing": "セットアップ中 …",
+  "pack.installed": "ダウンロード済み · バージョン {{version}}",
+  "pack.notInstalled": "未ダウンロード",
+  "pack.unavailable": "まだ公開されていません",
+  "pack.failed": "ダウンロードに失敗しました。インターネット接続を確認して、もう一度お試しください。",
+  "pack.updateSize": "更新 · {{size}}",
+  "pack.updateA11y": "{{language}}の言語パックを更新",
+  "pack.remove": "削除",
+  "pack.removeA11y": "{{language}}の言語パックを削除",
 } as const;
 
 export default ja;

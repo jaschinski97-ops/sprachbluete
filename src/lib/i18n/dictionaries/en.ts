@@ -723,6 +723,22 @@ const en: Partial<Record<TranslationKey, string>> = {
   "flashcard.ambiguous": "Several words fit – looking for: {{start}}",
   "path.stageEmpty": "There are no chapters for “{{stage}}” yet.",
   "conversation.stageEmpty": "There are no conversations for “{{stage}}” in this language yet.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Language packs",
+  "pack.intro": "Audio clips and pictures for each learning language come as a pack from the internet. Download once, then everything works offline. Your progress stays when you remove a pack.",
+  "pack.download": "Download",
+  "pack.downloadSize": "Download · {{size}}",
+  "pack.downloadA11y": "Download the {{language}} language pack",
+  "pack.downloading": "Downloading … {{percent}} %",
+  "pack.installing": "Setting up …",
+  "pack.installed": "Downloaded · version {{version}}",
+  "pack.notInstalled": "Not downloaded",
+  "pack.unavailable": "Not published yet",
+  "pack.failed": "Download failed. Check your internet connection and try again.",
+  "pack.updateSize": "Update · {{size}}",
+  "pack.updateA11y": "Update the {{language}} language pack",
+  "pack.remove": "Remove",
+  "pack.removeA11y": "Remove the {{language}} language pack",
 };
 
 export default en;

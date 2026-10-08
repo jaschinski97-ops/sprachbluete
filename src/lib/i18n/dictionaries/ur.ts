@@ -633,6 +633,22 @@ const ur = {
   "flashcard.ambiguous": "کئی الفاظ موزوں ہیں – مطلوبہ لفظ: {{start}}",
   "path.stageEmpty": "“{{stage}}” کے لیے ابھی کوئی باب نہیں ہے۔",
   "conversation.stageEmpty": "اس زبان میں “{{stage}}” کے لیے ابھی کوئی گفتگو نہیں ہے۔",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "زبان کے پیک",
+  "pack.intro": "ہر زبان کی آڈیو کلپس اور تصاویر انٹرنیٹ سے ایک پیک کی صورت میں آتی ہیں۔ ایک بار ڈاؤن لوڈ کریں، پھر سب کچھ آف لائن چلتا ہے۔ پیک ہٹانے پر بھی آپ کی پیش رفت محفوظ رہتی ہے۔",
+  "pack.download": "ڈاؤن لوڈ",
+  "pack.downloadSize": "ڈاؤن لوڈ · {{size}}",
+  "pack.downloadA11y": "{{language}} زبان کا پیک ڈاؤن لوڈ کریں",
+  "pack.downloading": "ڈاؤن لوڈ ہو رہا ہے … {{percent}} %",
+  "pack.installing": "انسٹال ہو رہا ہے …",
+  "pack.installed": "ڈاؤن لوڈ شدہ · ورژن {{version}}",
+  "pack.notInstalled": "ڈاؤن لوڈ نہیں ہوا",
+  "pack.unavailable": "ابھی شائع نہیں ہوا",
+  "pack.failed": "ڈاؤن لوڈ ناکام رہا۔ انٹرنیٹ کنکشن چیک کر کے دوبارہ کوشش کریں۔",
+  "pack.updateSize": "اپ ڈیٹ · {{size}}",
+  "pack.updateA11y": "{{language}} زبان کا پیک اپ ڈیٹ کریں",
+  "pack.remove": "ہٹائیں",
+  "pack.removeA11y": "{{language}} زبان کا پیک ہٹائیں",
 } as const;
 
 export default ur;

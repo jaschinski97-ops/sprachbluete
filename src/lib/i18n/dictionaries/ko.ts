@@ -633,6 +633,22 @@ const ko = {
   "flashcard.ambiguous": "여러 단어가 맞습니다 – 찾는 단어: {{start}}",
   "path.stageEmpty": "‘{{stage}}’ 단계의 장이 아직 없습니다.",
   "conversation.stageEmpty": "이 언어에는 아직 ‘{{stage}}’ 대화가 없습니다.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "언어 팩",
+  "pack.intro": "각 언어의 음성 클립과 그림은 인터넷에서 팩으로 받습니다. 한 번만 내려받으면 그다음부터는 모두 오프라인으로 작동합니다. 팩을 삭제해도 학습 진도는 그대로 남습니다.",
+  "pack.download": "다운로드",
+  "pack.downloadSize": "다운로드 · {{size}}",
+  "pack.downloadA11y": "{{language}} 언어 팩 다운로드",
+  "pack.downloading": "다운로드 중 … {{percent}} %",
+  "pack.installing": "설치 중 …",
+  "pack.installed": "다운로드됨 · 버전 {{version}}",
+  "pack.notInstalled": "다운로드 안 됨",
+  "pack.unavailable": "아직 게시되지 않음",
+  "pack.failed": "다운로드에 실패했습니다. 인터넷 연결을 확인하고 다시 시도하세요.",
+  "pack.updateSize": "업데이트 · {{size}}",
+  "pack.updateA11y": "{{language}} 언어 팩 업데이트",
+  "pack.remove": "삭제",
+  "pack.removeA11y": "{{language}} 언어 팩 삭제",
 } as const;
 
 export default ko;

@@ -633,6 +633,22 @@ const te = {
   "flashcard.ambiguous": "అనేక పదాలు సరిపోతాయి – కావలసిన పదం: {{start}}",
   "path.stageEmpty": "“{{stage}}” కోసం ఇంకా అధ్యాయాలు లేవు.",
   "conversation.stageEmpty": "ఈ భాషలో “{{stage}}” కోసం ఇంకా సంభాషణలు లేవు.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "భాషా ప్యాక్‌లు",
+  "pack.intro": "ప్రతి భాష యొక్క ఆడియో క్లిప్‌లు, చిత్రాలు ఇంటర్నెట్ నుండి ఒక ప్యాక్‌గా వస్తాయి. ఒకసారి డౌన్‌లోడ్ చేస్తే తర్వాత అన్నీ ఆఫ్‌లైన్‌లో పనిచేస్తాయి. ప్యాక్ తొలగించినా మీ పురోగతి అలాగే ఉంటుంది.",
+  "pack.download": "డౌన్‌లోడ్",
+  "pack.downloadSize": "డౌన్‌లోడ్ · {{size}}",
+  "pack.downloadA11y": "{{language}} భాషా ప్యాక్ డౌన్‌లోడ్ చేయండి",
+  "pack.downloading": "డౌన్‌లోడ్ అవుతోంది … {{percent}} %",
+  "pack.installing": "ఇన్‌స్టాల్ అవుతోంది …",
+  "pack.installed": "డౌన్‌లోడ్ అయింది · వెర్షన్ {{version}}",
+  "pack.notInstalled": "డౌన్‌లోడ్ కాలేదు",
+  "pack.unavailable": "ఇంకా ప్రచురించలేదు",
+  "pack.failed": "డౌన్‌లోడ్ విఫలమైంది. ఇంటర్నెట్ కనెక్షన్ తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+  "pack.updateSize": "అప్‌డేట్ · {{size}}",
+  "pack.updateA11y": "{{language}} భాషా ప్యాక్ అప్‌డేట్ చేయండి",
+  "pack.remove": "తొలగించు",
+  "pack.removeA11y": "{{language}} భాషా ప్యాక్ తొలగించు",
 } as const;
 
 export default te;

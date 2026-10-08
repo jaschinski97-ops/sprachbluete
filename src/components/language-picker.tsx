@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from './themed-text';
@@ -20,6 +21,7 @@ import {
   LanguageCode,
   PairDirection,
 } from '@/lib/languages/types';
+import { downloadPack, megabytes, packsNeeded, refreshPack, usePackStatus } from '@/lib/packs/state';
 import { DirectionSummary } from '@/lib/review-session';
 
 
@@ -171,25 +173,70 @@ export function LanguagePicker({
             </Pressable>
 
             {/* Direkter Einstieg (Nutzerwunsch 13.09.): wählt dieses Ziel und
-                öffnet den Lern-Reiter — die Übersicht muss der CTA oben nicht
-                mehr zwischengeschaltet sein. */}
-            <Pressable
-              onPress={() => onStart(ziel.direction)}
-              accessibilityRole="button"
-              accessibilityLabel={`${t('tabs.learn')}: ${name}`}
-              style={({ pressed }) => [
-                styles.startPill,
-                { borderColor: theme.decorGrey },
-                pressed && styles.pressed,
-              ]}>
-              <ThemedText type="smallBold" themeColor="text">
-                {t('tabs.learn')}
-              </ThemedText>
-            </Pressable>
+                öffnet den Lern-Reiter. Im Sprachpaket-Build steht hier zuerst
+                „Laden“, solange Hörclips und Bilder der Sprache fehlen. */}
+            {packsNeeded() ? (
+              <StartOrDownload language={gelehrteSprache} name={name} onStart={() => onStart(ziel.direction)} />
+            ) : (
+              <StartPill name={name} onStart={() => onStart(ziel.direction)} />
+            )}
           </View>
         );
       })}
     </View>
+  );
+}
+
+function StartPill({ name, onStart }: { name: string; onStart: () => void }) {
+  const theme = useTheme();
+  const { t } = useLocale();
+  return (
+    <Pressable
+      onPress={onStart}
+      accessibilityRole="button"
+      accessibilityLabel={`${t('tabs.learn')}: ${name}`}
+      style={({ pressed }) => [styles.startPill, { borderColor: theme.decorGrey }, pressed && styles.pressed]}>
+      <ThemedText type="smallBold" themeColor="text">
+        {t('tabs.learn')}
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+/**
+ * Sprachpaket fehlt: „Laden · 98 MB“, während des Downloads die Prozentzahl.
+ * Ist das Paket da, wieder der normale Einstieg.
+ */
+function StartOrDownload({ language, name, onStart }: { language: LanguageCode; name: string; onStart: () => void }) {
+  const theme = useTheme();
+  const { t } = useLocale();
+  const status = usePackStatus(language);
+  useEffect(() => {
+    void refreshPack(language);
+  }, [language]);
+  if (status.installed !== null && status.phase !== 'error') return <StartPill name={name} onStart={onStart} />;
+
+  const laeuft = status.phase === 'downloading' || status.phase === 'installing';
+  const label =
+    status.phase === 'downloading'
+      ? t('pack.downloading', { percent: Math.round(status.progress * 100) })
+      : status.phase === 'installing'
+        ? t('pack.installing')
+        : status.latest
+          ? t('pack.downloadSize', { size: megabytes(status.latest.zipBytes) })
+          : t('pack.download');
+  return (
+    <Pressable
+      onPress={() => void downloadPack(language)}
+      disabled={laeuft}
+      accessibilityRole="button"
+      accessibilityLabel={t('pack.downloadA11y', { language: name })}
+      accessibilityState={{ busy: laeuft, disabled: laeuft }}
+      style={({ pressed }) => [styles.startPill, { borderColor: theme.decorGrey }, pressed && styles.pressed]}>
+      <ThemedText type="smallBold" themeColor="text">
+        {label}
+      </ThemedText>
+    </Pressable>
   );
 }
 

@@ -633,6 +633,22 @@ const vi = {
   "flashcard.ambiguous": "Có nhiều từ phù hợp – từ cần tìm: {{start}}",
   "path.stageEmpty": "Chưa có chương nào cho “{{stage}}”.",
   "conversation.stageEmpty": "Chưa có hội thoại “{{stage}}” cho ngôn ngữ này.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Gói ngôn ngữ",
+  "pack.intro": "Âm thanh và hình ảnh của từng ngôn ngữ được tải về dưới dạng gói từ internet. Tải một lần, sau đó mọi thứ hoạt động ngoại tuyến. Tiến độ học vẫn được giữ khi xóa gói.",
+  "pack.download": "Tải về",
+  "pack.downloadSize": "Tải về · {{size}}",
+  "pack.downloadA11y": "Tải gói ngôn ngữ {{language}}",
+  "pack.downloading": "Đang tải … {{percent}} %",
+  "pack.installing": "Đang cài đặt …",
+  "pack.installed": "Đã tải · phiên bản {{version}}",
+  "pack.notInstalled": "Chưa tải",
+  "pack.unavailable": "Chưa phát hành",
+  "pack.failed": "Tải về thất bại. Hãy kiểm tra kết nối internet và thử lại.",
+  "pack.updateSize": "Cập nhật · {{size}}",
+  "pack.updateA11y": "Cập nhật gói ngôn ngữ {{language}}",
+  "pack.remove": "Xóa",
+  "pack.removeA11y": "Xóa gói ngôn ngữ {{language}}",
 } as const;
 
 export default vi;

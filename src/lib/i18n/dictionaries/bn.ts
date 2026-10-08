@@ -633,6 +633,22 @@ const bn = {
   "flashcard.ambiguous": "একাধিক শব্দ মেলে – খোঁজা শব্দটি: {{start}}",
   "path.stageEmpty": "“{{stage}}”-এর জন্য এখনও কোনো অধ্যায় নেই।",
   "conversation.stageEmpty": "এই ভাষায় “{{stage}}”-এর জন্য এখনও কোনো কথোপকথন নেই।",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "ভাষা প্যাক",
+  "pack.intro": "প্রতিটি ভাষার অডিও ক্লিপ ও ছবি ইন্টারনেট থেকে একটি প্যাক হিসেবে আসে। একবার ডাউনলোড করুন, তারপর সবকিছু অফলাইনে চলে। প্যাক মুছে ফেললেও আপনার অগ্রগতি থেকে যায়।",
+  "pack.download": "ডাউনলোড",
+  "pack.downloadSize": "ডাউনলোড · {{size}}",
+  "pack.downloadA11y": "{{language}} ভাষা প্যাক ডাউনলোড করুন",
+  "pack.downloading": "ডাউনলোড হচ্ছে … {{percent}} %",
+  "pack.installing": "ইনস্টল হচ্ছে …",
+  "pack.installed": "ডাউনলোড হয়েছে · সংস্করণ {{version}}",
+  "pack.notInstalled": "ডাউনলোড হয়নি",
+  "pack.unavailable": "এখনও প্রকাশিত হয়নি",
+  "pack.failed": "ডাউনলোড ব্যর্থ হয়েছে। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।",
+  "pack.updateSize": "আপডেট · {{size}}",
+  "pack.updateA11y": "{{language}} ভাষা প্যাক আপডেট করুন",
+  "pack.remove": "মুছুন",
+  "pack.removeA11y": "{{language}} ভাষা প্যাক মুছুন",
 } as const;
 
 export default bn;

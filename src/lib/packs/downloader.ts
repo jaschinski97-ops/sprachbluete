@@ -139,6 +139,27 @@ async function fetchReleaseInfo(
   return manifest;
 }
 
+/** Neueste veröffentlichte Version samt Zip-Größe — für „Laden · 98 MB“. */
+export type LatestPackRelease = { version: number; zipBytes: number };
+
+/**
+ * Fragt die neueste veröffentlichte Paketversion ab (Releases-Liste plus
+ * Manifest, beides klein). `null`, wenn es für die Sprache noch kein Release
+ * gibt; Netzfehler werfen.
+ */
+export async function latestPackRelease(
+  language: PackLanguage,
+  deps: { fetch?: FetchLike; config?: PackConfig; signal?: AbortSignal } = {}
+): Promise<LatestPackRelease | null> {
+  const fetchImpl = deps.fetch ?? fetch;
+  const config = deps.config ?? loadPackConfig();
+  const available = await fetchAvailableVersions(config, language, fetchImpl, deps.signal);
+  const version = choosePackVersion([], available);
+  if (version === null) return null;
+  const release = await fetchReleaseInfo(config, language, version, fetchImpl, deps.signal);
+  return { version, zipBytes: release.zipBytes };
+}
+
 function isFileAvailable(): boolean {
   return packsRootUri() !== null;
 }

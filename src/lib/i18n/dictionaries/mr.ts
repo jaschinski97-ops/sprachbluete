@@ -633,6 +633,22 @@ const mr = {
   "flashcard.ambiguous": "अनेक शब्द जुळतात – हवा असलेला शब्द: {{start}}",
   "path.stageEmpty": "“{{stage}}” साठी अजून कोणतेही प्रकरण नाही.",
   "conversation.stageEmpty": "या भाषेत “{{stage}}” साठी अजून संवाद नाहीत.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "भाषा पॅक",
+  "pack.intro": "प्रत्येक भाषेच्या ऑडिओ क्लिप आणि चित्रे इंटरनेटवरून एका पॅकच्या रूपात येतात. एकदा डाउनलोड करा, मग सर्व काही ऑफलाइन चालते. पॅक काढला तरी तुमची प्रगती जतन राहते.",
+  "pack.download": "डाउनलोड करा",
+  "pack.downloadSize": "डाउनलोड करा · {{size}}",
+  "pack.downloadA11y": "{{language}} भाषा पॅक डाउनलोड करा",
+  "pack.downloading": "डाउनलोड होत आहे … {{percent}} %",
+  "pack.installing": "इंस्टॉल होत आहे …",
+  "pack.installed": "डाउनलोड झाले · आवृत्ती {{version}}",
+  "pack.notInstalled": "डाउनलोड केलेले नाही",
+  "pack.unavailable": "अजून प्रकाशित नाही",
+  "pack.failed": "डाउनलोड अयशस्वी. इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
+  "pack.updateSize": "अपडेट करा · {{size}}",
+  "pack.updateA11y": "{{language}} भाषा पॅक अपडेट करा",
+  "pack.remove": "काढा",
+  "pack.removeA11y": "{{language}} भाषा पॅक काढा",
 } as const;
 
 export default mr;

@@ -711,6 +711,22 @@ const th: Partial<Record<TranslationKey, string>> = {
   "flashcard.ambiguous": "มีหลายคำที่ตรงความหมาย – คำที่ต้องการขึ้นต้นด้วย {{start}}",
   "path.stageEmpty": "ยังไม่มีบทเรียนสำหรับระดับ „{{stage}}“",
   "conversation.stageEmpty": "ยังไม่มีบทสนทนาระดับ „{{stage}}“ ในภาษานี้",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "แพ็กภาษา",
+  "pack.intro": "คลิปเสียงและรูปภาพของแต่ละภาษามาเป็นแพ็กจากอินเทอร์เน็ต ดาวน์โหลดครั้งเดียว จากนั้นใช้งานออฟไลน์ได้ทั้งหมด ความก้าวหน้าการเรียนยังอยู่แม้ลบแพ็กออก",
+  "pack.download": "ดาวน์โหลด",
+  "pack.downloadSize": "ดาวน์โหลด · {{size}}",
+  "pack.downloadA11y": "ดาวน์โหลดแพ็กภาษา{{language}}",
+  "pack.downloading": "กำลังดาวน์โหลด … {{percent}} %",
+  "pack.installing": "กำลังติดตั้ง …",
+  "pack.installed": "ดาวน์โหลดแล้ว · เวอร์ชัน {{version}}",
+  "pack.notInstalled": "ยังไม่ได้ดาวน์โหลด",
+  "pack.unavailable": "ยังไม่เผยแพร่",
+  "pack.failed": "ดาวน์โหลดไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+  "pack.updateSize": "อัปเดต · {{size}}",
+  "pack.updateA11y": "อัปเดตแพ็กภาษา{{language}}",
+  "pack.remove": "ลบ",
+  "pack.removeA11y": "ลบแพ็กภาษา{{language}}",
 };
 
 export default th;

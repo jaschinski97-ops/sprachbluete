@@ -748,6 +748,22 @@ const de = {
   "flashcard.ambiguous": "Mehrere Wörter passen – gesucht: {{start}}",
   "path.stageEmpty": "Für „{{stage}}“ gibt es noch keine Kapitel.",
   "conversation.stageEmpty": "Für „{{stage}}“ gibt es in dieser Sprache noch keine Gespräche.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Sprachpakete",
+  "pack.intro": "Hörclips und Bilder jeder Lernsprache kommen als Paket aus dem Internet. Einmal laden, danach funktioniert alles offline. Dein Lernstand bleibt beim Entfernen erhalten.",
+  "pack.download": "Laden",
+  "pack.downloadSize": "Laden · {{size}}",
+  "pack.downloadA11y": "Sprachpaket {{language}} laden",
+  "pack.downloading": "Lädt … {{percent}} %",
+  "pack.installing": "Wird eingerichtet …",
+  "pack.installed": "Geladen · Version {{version}}",
+  "pack.notInstalled": "Nicht geladen",
+  "pack.unavailable": "Noch nicht veröffentlicht",
+  "pack.failed": "Laden fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",
+  "pack.updateSize": "Aktualisieren · {{size}}",
+  "pack.updateA11y": "Sprachpaket {{language}} aktualisieren",
+  "pack.remove": "Entfernen",
+  "pack.removeA11y": "Sprachpaket {{language}} entfernen",
 } as const;
 
 export default de;

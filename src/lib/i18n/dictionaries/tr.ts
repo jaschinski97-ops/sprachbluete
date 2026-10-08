@@ -633,6 +633,22 @@ const tr = {
   "flashcard.ambiguous": "Birden fazla kelime uyuyor – aranan: {{start}}",
   "path.stageEmpty": "“{{stage}}” için henüz bölüm yok.",
   "conversation.stageEmpty": "Bu dilde “{{stage}}” için henüz konuşma yok.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Dil paketleri",
+  "pack.intro": "Her dilin ses kayıtları ve resimleri internetten paket olarak gelir. Bir kez indir, sonra her şey çevrimdışı çalışır. Paketi kaldırsan da öğrenme ilerlemen korunur.",
+  "pack.download": "İndir",
+  "pack.downloadSize": "İndir · {{size}}",
+  "pack.downloadA11y": "{{language}} dil paketini indir",
+  "pack.downloading": "İndiriliyor … %{{percent}}",
+  "pack.installing": "Kuruluyor …",
+  "pack.installed": "İndirildi · sürüm {{version}}",
+  "pack.notInstalled": "İndirilmedi",
+  "pack.unavailable": "Henüz yayımlanmadı",
+  "pack.failed": "İndirme başarısız. İnternet bağlantını kontrol edip tekrar dene.",
+  "pack.updateSize": "Güncelle · {{size}}",
+  "pack.updateA11y": "{{language}} dil paketini güncelle",
+  "pack.remove": "Kaldır",
+  "pack.removeA11y": "{{language}} dil paketini kaldır",
 } as const;
 
 export default tr;

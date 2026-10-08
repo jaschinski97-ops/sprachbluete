@@ -1,6 +1,6 @@
 // Baut ein Sprachpaket ("Content Pack") fuer eine Zielsprache.
 //
-//   node scripts/content/build-pack.cjs --lang th [--out dist/packs] [--version N]
+//   node scripts/content/build-pack.cjs --lang th|all [--out dist/packs] [--version N]
 //
 // Erzeugt unter <out>/<lang>/:
 //   thai-pack-<lang>-v<N>.zip             das Paket (manifest.json + audio/*.mp3 + images/*.webp)
@@ -376,21 +376,25 @@ if (require.main === module) {
     return i >= 0 ? args[i + 1] : undefined;
   };
   const root = path.resolve(__dirname, '../..');
-  buildPack(root, {
-    lang: option('--lang'),
-    out: option('--out'),
-    version: option('--version') ? Number(option('--version')) : undefined,
-  })
-    .then((result) => {
+  const requested = option('--lang');
+  // `--lang all`: alle Lernsprachen nacheinander (dieselbe Liste wie die App).
+  const langs = requested === 'all' ? domain.load('src/lib/languages/types').LANGUAGE_CODES : [requested];
+  (async () => {
+    for (const lang of langs) {
+      const result = await buildPack(root, {
+        lang,
+        out: option('--out'),
+        version: option('--version') ? Number(option('--version')) : undefined,
+      });
       const { manifest } = result;
       console.log(`Paket gebaut: ${result.zipPath}`);
       console.log(`  Sprache ${manifest.language}, Version ${manifest.version}`);
       console.log(`  Audio: ${manifest.totals.audio}, Bilder: ${manifest.totals.images}`);
       console.log(`  Inhalt: ${(manifest.totals.bytes / 1024 / 1024).toFixed(1)} MB, Zip: ${(result.zipBytes / 1024 / 1024).toFixed(1)} MB`);
       console.log(`  Zip-Sha256: ${result.zipSha256}`);
-    })
-    .catch((error) => {
-      console.error(error);
-      process.exitCode = 1;
-    });
+    }
+  })().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
 }

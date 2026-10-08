@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import Constants from 'expo-constants';
 
+import { LanguagePacksSection } from '@/components/language-packs-section';
 import { SettingsRow } from '@/components/settings-row';
 import {
   AppLanguageSection,
@@ -14,8 +15,9 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { SYSTEM_LANGUAGE_SETTING, useLocale } from '@/lib/i18n';
 import { settingsLanguageName } from '@/lib/i18n/settings-language-names';
+import { packsNeeded } from '@/lib/packs/state';
 
-type Offen = null | 'sprache' | 'sicherung';
+type Offen = null | 'sprache' | 'pakete' | 'sicherung';
 
 /**
  * Einstellungen als kompakte Zeilen (UI-Review 10.09.): Bezeichnung links,
@@ -58,6 +60,15 @@ export default function SettingsScreen() {
           expanded={offen === 'sprache'}
           onPress={() => umschalten('sprache')}
         />
+        {/* Nur im Sprachpaket-Build: Hörclips und Bilder je Lernsprache laden. */}
+        {packsNeeded() ? (
+          <SettingsRow
+            title={t('pack.title')}
+            icon="cloud-download-outline"
+            expanded={offen === 'pakete'}
+            onPress={() => umschalten('pakete')}
+          />
+        ) : null}
         <SettingsRow
           title={t('settings.backupTitle')}
           detail={t('settings.backupSummary')}
@@ -73,6 +84,7 @@ export default function SettingsScreen() {
         />
       </View>
       {offen === 'sprache' ? <AppLanguageSection /> : null}
+      {offen === 'pakete' ? <LanguagePacksSection /> : null}
       {offen === 'sicherung' ? <BackupSection /> : null}
 
       {__DEV__ ? (

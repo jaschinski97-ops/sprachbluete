@@ -633,6 +633,22 @@ const ru = {
   "flashcard.ambiguous": "Подходят несколько слов – искомое: {{start}}",
   "path.stageEmpty": "Для уровня «{{stage}}» пока нет глав.",
   "conversation.stageEmpty": "На этом языке пока нет диалогов уровня «{{stage}}».",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Языковые пакеты",
+  "pack.intro": "Аудио и картинки для каждого языка загружаются из интернета одним пакетом. Скачайте один раз — дальше всё работает офлайн. Прогресс обучения сохраняется при удалении пакета.",
+  "pack.download": "Скачать",
+  "pack.downloadSize": "Скачать · {{size}}",
+  "pack.downloadA11y": "Скачать языковой пакет: {{language}}",
+  "pack.downloading": "Загрузка … {{percent}} %",
+  "pack.installing": "Установка …",
+  "pack.installed": "Загружен · версия {{version}}",
+  "pack.notInstalled": "Не загружен",
+  "pack.unavailable": "Ещё не опубликован",
+  "pack.failed": "Не удалось скачать. Проверьте подключение к интернету и попробуйте снова.",
+  "pack.updateSize": "Обновить · {{size}}",
+  "pack.updateA11y": "Обновить языковой пакет: {{language}}",
+  "pack.remove": "Удалить",
+  "pack.removeA11y": "Удалить языковой пакет: {{language}}",
 } as const;
 
 export default ru;

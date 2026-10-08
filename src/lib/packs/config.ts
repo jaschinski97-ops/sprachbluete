@@ -7,8 +7,8 @@
  *      Sprache+Version, Tag `pack-<lang>-v<N>`, Asset `thai-pack-<lang>-v<N>.zip`
  *      plus Sidecar `thai-pack-<lang>-v<N>.manifest.json` (gleiche Datei wie im
  *      Zip, plus zipBytes/zipSha256 fuer den Byte-Check vor dem Entpacken).
- *   2. Entwicklung: `extra.pack.baseUrlOverride` in app.json. Der lokale
- *      Helper (Debug-Studio, Port 8082) stellt `packs/<lang>/...` statisch —
+ *   2. Entwicklung: `extra.pack.baseUrlOverride` in app.json, z. B. ein
+ *      statischer Server auf `dist/packs` (docs/PIPELINE.md, Abschnitt 5) —
  *      dort entscheidet `<base>/<lang>/index.json` ueber die neueste Version.
  *
  * Die Konfiguration kommt aus `app.json` unter `expo.extra.pack` (expo-constants).

@@ -30,8 +30,17 @@
         "simulator": false
       }
     },
+    "rc-ios-packs": {
+      "extends": "rc-ios",
+      "env": {
+        "THAISPEAKER_MEDIA": "packs"
+      }
+    },
     "production": {
       "autoIncrement": true,
+      "env": {
+        "THAISPEAKER_MEDIA": "packs"
+      },
       "android": {
         "buildType": "app-bundle"
       }

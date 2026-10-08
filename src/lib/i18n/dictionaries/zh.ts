@@ -633,6 +633,22 @@ const zh = {
   "flashcard.ambiguous": "有多个词符合 – 要找的词以 {{start}} 开头",
   "path.stageEmpty": "「{{stage}}」暂时还没有章节。",
   "conversation.stageEmpty": "此语言暂时还没有「{{stage}}」对话。",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "语言包",
+  "pack.intro": "每种语言的音频和图片以语言包的形式从网上下载。只需下载一次，之后一切都可离线使用。删除语言包后，你的学习进度仍会保留。",
+  "pack.download": "下载",
+  "pack.downloadSize": "下载 · {{size}}",
+  "pack.downloadA11y": "下载{{language}}语言包",
+  "pack.downloading": "正在下载 … {{percent}}%",
+  "pack.installing": "正在安装 …",
+  "pack.installed": "已下载 · 版本 {{version}}",
+  "pack.notInstalled": "未下载",
+  "pack.unavailable": "尚未发布",
+  "pack.failed": "下载失败。请检查网络连接后重试。",
+  "pack.updateSize": "更新 · {{size}}",
+  "pack.updateA11y": "更新{{language}}语言包",
+  "pack.remove": "删除",
+  "pack.removeA11y": "删除{{language}}语言包",
 } as const;
 
 export default zh;

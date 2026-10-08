@@ -633,6 +633,22 @@ const pt = {
   "flashcard.ambiguous": "Várias palavras servem – procuramos: {{start}}",
   "path.stageEmpty": "Ainda não há capítulos para “{{stage}}”.",
   "conversation.stageEmpty": "Ainda não há conversas de “{{stage}}” neste idioma.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "Pacotes de idioma",
+  "pack.intro": "Os áudios e as imagens de cada idioma chegam como pacote pela internet. Baixe uma vez e depois tudo funciona offline. Seu progresso continua salvo ao remover um pacote.",
+  "pack.download": "Baixar",
+  "pack.downloadSize": "Baixar · {{size}}",
+  "pack.downloadA11y": "Baixar o pacote de {{language}}",
+  "pack.downloading": "Baixando … {{percent}} %",
+  "pack.installing": "Instalando …",
+  "pack.installed": "Baixado · versão {{version}}",
+  "pack.notInstalled": "Não baixado",
+  "pack.unavailable": "Ainda não publicado",
+  "pack.failed": "Falha no download. Verifique a conexão com a internet e tente novamente.",
+  "pack.updateSize": "Atualizar · {{size}}",
+  "pack.updateA11y": "Atualizar o pacote de {{language}}",
+  "pack.remove": "Remover",
+  "pack.removeA11y": "Remover o pacote de {{language}}",
 } as const;
 
 export default pt;

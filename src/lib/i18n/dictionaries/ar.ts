@@ -633,6 +633,22 @@ const ar = {
   "flashcard.ambiguous": "تناسب عدة كلمات – المطلوبة تبدأ بـ: {{start}}",
   "path.stageEmpty": "لا توجد فصول لمستوى «{{stage}}» بعد.",
   "conversation.stageEmpty": "لا توجد محادثات لمستوى «{{stage}}» بهذه اللغة بعد.",
+  /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
+  "pack.title": "حزم اللغات",
+  "pack.intro": "المقاطع الصوتية والصور لكل لغة تأتي كحزمة من الإنترنت. نزّلها مرة واحدة، ثم يعمل كل شيء دون اتصال. يبقى تقدّمك في التعلّم محفوظًا عند حذف الحزمة.",
+  "pack.download": "تنزيل",
+  "pack.downloadSize": "تنزيل · {{size}}",
+  "pack.downloadA11y": "تنزيل حزمة لغة {{language}}",
+  "pack.downloading": "جارٍ التنزيل … {{percent}} %",
+  "pack.installing": "جارٍ التثبيت …",
+  "pack.installed": "تم التنزيل · الإصدار {{version}}",
+  "pack.notInstalled": "لم يتم التنزيل",
+  "pack.unavailable": "لم تُنشر بعد",
+  "pack.failed": "فشل التنزيل. تحقّق من اتصال الإنترنت وحاول مرة أخرى.",
+  "pack.updateSize": "تحديث · {{size}}",
+  "pack.updateA11y": "تحديث حزمة لغة {{language}}",
+  "pack.remove": "حذف",
+  "pack.removeA11y": "حذف حزمة لغة {{language}}",
 } as const;
 
 export default ar;

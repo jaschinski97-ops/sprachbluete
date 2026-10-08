@@ -4,8 +4,9 @@ import { BatchTask } from '../generation/types';
 import { DataStore, getStore } from '../storage';
 
 import { getImageBlobStore } from './blob-store';
-import { ImageGenerationClient } from './generator';
+import { buildImagePrompt, ImageGenerationClient } from './generator';
 import { assertConcreteSpec } from './plan';
+import { isRejectedImageAsset } from './reviewed-assets';
 import {
   base64ByteLength,
   blobKeyFor,
@@ -43,12 +44,25 @@ export type ImageRunOptions = {
 function imageExists(db: DataStore, blobs: ImageBlobStore) {
   return {
     async exists(spec: ImageSpec) {
-      if (bundledEntry('images', spec.id)?.asset) return true;
+      const bundled = bundledEntry('images', spec.id);
+      // Redaktionell geprüfte Motive bleiben, auch mit altem Prompt.
+      if (bundled?.asset && bundled.check?.scope === 'schema-integrity-decode-motif-review') return true;
+      if (bundled?.asset) return isCurrentImage(spec, bundled.document as VocabImage, bundled.asset);
       const doc = await db.get<VocabImage>('images', spec.id);
       if (!doc || isDeletedDraft('images', doc)) return false;
-      return blobs.has(doc.blobKey);
+      return isCurrentImage(spec, doc, doc.blobKey) && blobs.has(doc.blobKey);
     },
   };
+}
+
+/**
+ * Bildprüfung 04.10.2026: Ein Bild aus einem älteren Prompt oder mit
+ * gesperrtem Motiv gilt als fehlend, damit der nächste Lauf es ersetzt. Ohne
+ * gespeicherten Prompt (alte Handbilder) bleibt es stehen.
+ */
+function isCurrentImage(spec: ImageSpec, doc: VocabImage, asset: string): boolean {
+  if (isRejectedImageAsset(asset)) return false;
+  return !doc.prompt || doc.prompt === buildImagePrompt(spec);
 }
 
 function imageTask(

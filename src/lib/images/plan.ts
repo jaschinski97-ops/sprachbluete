@@ -55,9 +55,40 @@ export function imageSpecFor(entry: VocabEntry): ImageSpec {
     partOfSpeech: entry.partOfSpeech,
     // Wirft, wenn kein Motiv hinterlegt ist - lieber ein sichtbarer Fehler
     // beim Planen als ein geratenes Bild.
-    motif: hasMotif(motifKey(entry)) ? motifFor(motifKey(entry)) : `One clear everyday depiction of ${entry.german} (${entry.term}), without written labels or text.`,
+    motif: hasMotif(motifKey(entry)) ? motifFor(motifKey(entry)) : generatedMotif(entry),
     isConcrete: true,
   };
+}
+
+/**
+ * Motiv für KI-Vokabeln ohne handgeschriebenes Motiv — auf Englisch.
+ *
+ * Bildprüfung 04.10.2026: Der frühere Ersatz „depiction of <deutsche
+ * Bedeutung> (<Zielwort>)" lieferte bei FLUX klein Fruchtgesichter, Porträts
+ * und Kugeln („Bett (เตียง)" → Gesicht). Deshalb die englische Übersetzung
+ * und eine Szene je Wortart: Handlungen brauchen jemanden, der sie ausführt,
+ * Eigenschaften ein Ding, an dem man sie sieht.
+ */
+export function generatedMotif(entry: VocabEntry): string {
+  // Ohne Anführungszeichen: Ein zitiertes Wort malt FLUX als Schriftzug ins
+  // Bild ("Bill", "Exit"). Die Übersetzung steht deshalb nur im Satz.
+  const english = (entry.translations?.en ?? (entry.language === 'en' ? entry.term : entry.german)).trim();
+  const noFiller = 'No face, mascot or cartoon character unless the subject is a person or an animal.';
+  const noWriting = 'Show it purely as a picture; never write the word, a sign or a label.';
+  switch (entry.partOfSpeech) {
+    case 'verb': {
+      const action = english.replace(/^to\s+/i, '').replace(/,\s*to\s+/gi, ', ');
+      return `A scene where one or two people are clearly in the middle of the action to ${action}, ` +
+        `together with every object the action needs, so the action is obvious at a glance. ${noWriting}`;
+    }
+    case 'adjective':
+    case 'adverb':
+      return `A typical everyday object whose most obvious feature is that it is ${english}, ` +
+        `exaggerated so it cannot be mistaken. ${noFiller} ${noWriting}`;
+    default:
+      return `A typical ${english} as it looks in everyday life, whole and instantly recognizable; ` +
+        `for a place or a group, the typical scene. ${noFiller} ${noWriting}`;
+  }
 }
 
 /**

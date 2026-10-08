@@ -97,7 +97,9 @@ export type ImageGenerationClient = {
 export function buildImagePrompt(spec: ImageSpec): string {
   return (
     `${spec.motif}. ` +
-    'Simple flashcard illustration, one single subject, centered, ' +
+    // Kein "one single subject" mehr: Handlungen, Orte und Gruppen (umarmen,
+    // Stau, Geschwister) wurden damit zu einer einzelnen Figur ohne Sinn.
+    'Simple flashcard illustration, one clear focus, centered, ' +
     'plain uncluttered background, clear outlines, friendly flat style, ' +
     'no text and no letters anywhere in the image.'
   );

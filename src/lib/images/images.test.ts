@@ -11,7 +11,7 @@ import {
 } from '../repository';
 import { DataStore, MemoryDataStore } from '../storage';
 
-import { runImageBatch } from './batch';
+import { missingImageSpecs, runImageBatch } from './batch';
 import { MemoryImageBlobStore } from './blob-memory';
 import {
   buildImagePrompt,
@@ -27,6 +27,7 @@ import {
   assertConcreteSpec,
   canHaveImage,
   countImageCandidates,
+  generatedMotif,
   IMAGE_TEST_RUN,
   imageSpecFor,
   planImages,
@@ -473,6 +474,42 @@ describe('buildImagePrompt und die Motivliste', () => {
 
   it('meldet ein fehlendes Motiv, statt eines zu erfinden', () => {
     expect(() => motifFor('gibtsnicht')).toThrow(/kein Bildmotiv/);
+  });
+});
+
+describe('generatedMotif - Bildpruefung 04.10.2026', () => {
+  const base = { ...concreteEntry(), id: 'ki-th-test', german: 'Bett', term: 'เตียง', translations: { en: 'bed' } } as VocabEntry;
+
+  it('beschreibt KI-Vokabeln auf Englisch statt mit deutscher Bedeutung und Zielwort', () => {
+    const motif = generatedMotif({ ...base, partOfSpeech: 'noun' });
+    expect(motif).toContain('A typical bed ');
+    expect(motif).not.toContain('"');
+    expect(motif).not.toMatch(/Bett|เตียง/);
+    expect(motif).toMatch(/^[ -~]+$/);
+    expect(imageSpecFor({ ...base, partOfSpeech: 'noun' }).motif).toBe(motif);
+  });
+
+  it('zeigt Handlungen als Szene mit handelnden Personen', () => {
+    expect(generatedMotif({ ...base, partOfSpeech: 'verb', translations: { en: 'to throw, to launch' } }))
+      .toContain('the action to throw, launch,');
+  });
+
+  it('zeigt Eigenschaften an einem Ding, nicht als Figur', () => {
+    expect(generatedMotif({ ...base, partOfSpeech: 'adjective', translations: { en: 'rough' } }))
+      .toMatch(/it is rough,.*No face/);
+  });
+});
+
+describe('missingImageSpecs - veraltete Bilder', () => {
+  it('erzeugt ein Bild neu, dessen Prompt nicht mehr dem aktuellen entspricht', async () => {
+    const store = await freshStore();
+    const blobs = freshBlobs();
+    const specs = planImages({ limit: 2 });
+    await runImageBatch({ specs, client: clientThatFailsOn(), store, blobStore: blobs, now: () => T0 });
+    const old = await loadVocabImage(specs[0].vocabId, store);
+    await store.put('images', specs[0].id, { ...old!, prompt: 'One clear everyday depiction of Bett (เตียง).' });
+
+    expect((await missingImageSpecs(specs, store, blobs)).map((spec) => spec.id)).toEqual([specs[0].id]);
   });
 });
 

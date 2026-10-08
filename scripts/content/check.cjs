@@ -35,8 +35,11 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
         if (vocabSeen.has(schluessel)) throw Error('Doppelter Wortschatz-Begriff (normalisiert): ' + schluessel);
         vocabSeen.add(schluessel);
       }
-      if (entry.review || !isDeliverableEntry(entry) || !entry.check.checkedAt || !['schema-integrity-decode', 'schema-language'].includes(entry.check.scope) ||
-          entry.check.label !== (entry.check.status === 'unchecked' ? 'ungeprüft' : 'automatisch geprüft')) throw Error('Automatische Prüfung fehlt.');
+      // Redaktionell geprüfte Bildmotive (repair-audit-2026-10-04.cjs) tragen einen eigenen Vermerk.
+      const motivGeprueft = entry.kind === 'images' && entry.check.scope === 'schema-integrity-decode-motif-review'
+        && entry.check.status === 'passed' && entry.check.label === 'Motiv redaktionell geprüft';
+      if (entry.review || !isDeliverableEntry(entry) || !entry.check.checkedAt || (!motivGeprueft && (!['schema-integrity-decode', 'schema-language'].includes(entry.check.scope) ||
+          entry.check.label !== (entry.check.status === 'unchecked' ? 'ungeprüft' : 'automatisch geprüft')))) throw Error('Automatische Prüfung fehlt.');
       const media = entry.kind === 'audio' || entry.kind === 'images';
       if (media && !entry.asset) throw Error('Mediendatei fehlt.');
       if (entry.asset && !/^[a-f0-9]{64}\.(mp3|png|jpeg|webp)$/.test(entry.asset)) throw Error('Unsicherer Assetpfad.');

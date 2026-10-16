@@ -107,8 +107,14 @@ test('schlauer Export: unveränderte Stage-Zwillinge werden übersprungen, Neue 
   const gesendet: { kind: string; document: { id: string }; base64?: string }[] = [];
   // Der Stage-Zwilling ist inhaltsgleich, aber absichtlich in VERDREHTER
   // Feldreihenfolge gespeichert — der Vergleich darf daran nicht scheitern.
-  const bekannterClip = { id: 'en-bekannt', text: 'hello', byteSize: 123, blobKey: 'en-bekannt.mp3' };
-  const stageZwilling = { blobKey: 'en-bekannt.mp3', byteSize: 123, text: 'hello', id: 'en-bekannt' };
+  // 16.10.2026: Wie im echten Helper ist der Zwilling komprimiert — neue
+  // Größe, neuer Hash-Schlüssel, Originalgröße als `sourceBytes`.
+  const bekannterClip = { id: 'en-bekannt', text: 'hello', byteSize: 123, blobKey: 'en-bekannt.mp3', format: 'mp3' };
+  const stageZwilling = { blobKey: '9f86d08.mp3', byteSize: 45, format: 'mp3', text: 'hello', id: 'en-bekannt' };
+  // Schon veröffentlicht (Stage nach dem Publish leer): ebenfalls nicht senden.
+  const katalogClip = { id: 'en-katalog', text: 'bye', byteSize: 77, blobKey: 'en-katalog.mp3', format: 'mp3' };
+  const katalogEintrag = { kind: 'audio', id: 'en-katalog', sourceBytes: 77,
+    document: { ...katalogClip, byteSize: 30, blobKey: 'b2c3.mp3' } };
   global.fetch = jest.fn(async (_url, options) => {
     if (options?.method === 'POST' && String(_url).endsWith('/stage')) {
       gesendet.push(JSON.parse(options.body as string));
@@ -116,13 +122,13 @@ test('schlauer Export: unveränderte Stage-Zwillinge werden übersprungen, Neue 
     }
     if (options?.method === 'POST') return { ok: true, json: async () => ({}) } as Response;
     return { ok: true, json: async () => ({
-      shipped: { version: 2, entries: [] },
-      stage: { version: 2, entries: [{ kind: 'audio', id: 'en-bekannt', document: stageZwilling }] },
+      shipped: { version: 2, entries: [katalogEintrag] },
+      stage: { version: 2, entries: [{ kind: 'audio', id: 'en-bekannt', sourceBytes: 123, document: stageZwilling }] },
     }) } as Response;
   });
   mockGetAll.mockImplementation(async (kind: string) => ({
     situations: [], images: [],
-    audio: [bekannterClip, { id: 'en-neu', text: 'world', blobKey: 'en-neu.mp3' }],
+    audio: [bekannterClip, katalogClip, { id: 'en-neu', text: 'world', blobKey: 'en-neu.mp3' }],
   })[kind]);
   // Nur für den NEUEN Clip liegt eine Mediendatei bereit — der bekannte darf
   // gar nicht erst danach gefragt werden (das war der Zeitfresser: das Base64-

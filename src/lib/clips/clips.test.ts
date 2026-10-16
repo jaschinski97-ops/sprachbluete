@@ -397,6 +397,22 @@ describe('Der Clip-Lauf — vierter Nutzer des Batch-Läufers', () => {
     expect(second.calls).toEqual([specs[1].id, specs[3].id]);
   });
 
+  it('erzeugt mit overwrite auch vorhandene Clips neu („Neu erzeugen“ im Prüfbericht)', async () => {
+    const store = await freshStore();
+    const blobs = freshBlobs();
+    const specs = planClipTestRun().slice(0, 1);
+    await runClipBatch({ specs, client: clientThatFailsOn(), store, blobStore: blobs, now: () => T0 });
+
+    const ohne = clientThatFailsOn();
+    expect((await runClipBatch({ specs, client: ohne, store, blobStore: blobs, now: () => T0 })).skipped).toBe(1);
+    expect(ohne.calls).toEqual([]);
+
+    const neu = clientThatFailsOn();
+    const result = await runClipBatch({ specs, client: neu, store, blobStore: blobs, now: () => T0, overwrite: true });
+    expect(neu.calls).toEqual([specs[0].id]);
+    expect(result.skipped).toBe(0);
+  });
+
   it('gilt als fehlend, wenn nur das Dokument, nicht die Datei da ist', async () => {
     const store = await freshStore();
     const blobs = freshBlobs();

@@ -128,6 +128,20 @@ export async function studioRequest<T>(path: string, data?: unknown): Promise<T>
  * ergeben denselben String, egal in welcher Reihenfolge die Felder entstanden
  * sind. Grundlage des Export-Vergleichs unten.
  */
+const MEDIENFELDER = new Set(['format', 'byteSize', 'blobKey']);
+
+/**
+ * Was beim Export „unverändert“ heißt: bei Medien der Inhalt ohne die Felder,
+ * die der Helper beim Staging neu schreibt, plus die Größe der Originaldatei
+ * (`sourceBytes` am Katalog-/Stage-Eintrag, lokal `byteSize`).
+ */
+export function vergleichsform(kind: string, document: object, sourceBytes?: number): string {
+  if (kind !== 'audio' && kind !== 'images') return stableStringify(document);
+  const ohneMedien = Object.fromEntries(Object.entries(document).filter(([name]) => !MEDIENFELDER.has(name)));
+  const groesse = sourceBytes ?? (document as { byteSize?: number }).byteSize;
+  return `${stableStringify(ohneMedien)}#${groesse ?? ''}`;
+}
+
 export function stableStringify(value: unknown): string {
   if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null';
   if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
@@ -151,15 +165,23 @@ export async function exportDrafts(onProgress: (message: string) => void, option
   // Audio hochgeladen). Deshalb: den Stage-Stand je kind:id merken und nur das
   // Neue oder Geänderte wirklich senden. Der Publish läuft wie bisher immer —
   // er sichert auch Stage-Reste ab, die von einem abgebrochenen Lauf blieben.
-  const stageStand = new Map<string, string>();
-  for (const eintrag of state.stage.entries ?? []) {
-    if (eintrag && typeof eintrag === 'object' && 'id' in eintrag) {
-      stageStand.set(`${eintrag.kind}:${eintrag.id}`, stableStringify(eintrag.document));
+  //
+  // 16.10.2026: Beim Staging komprimiert der Helper Audio und schreibt
+  // `format`, `byteSize` und `blobKey` neu; die Größe der gelieferten Datei
+  // steht als `sourceBytes` am Eintrag. Der Vergleich mit dem lokalen
+  // Original schlug deshalb bei JEDEM Clip fehl, und nach dem Publish (Stage
+  // leer) kannte er den Katalog gar nicht. Jetzt: ohne diese drei Felder,
+  // dafür mit Originalgröße — gegen Katalog und Stage.
+  const stand = new Map<string, string>();
+  for (const eintrag of [...(state.shipped.entries ?? []), ...(state.stage.entries ?? [])]) {
+    if (eintrag && typeof eintrag === 'object' && 'id' in eintrag && eintrag.document) {
+      const quelle = (eintrag as { sourceBytes?: number }).sourceBytes;
+      stand.set(`${eintrag.kind}:${eintrag.id}`, vergleichsform(eintrag.kind, eintrag.document, quelle));
     }
   }
   const unveraendertInStage = (kind: string, document: { id: string }) => {
-    const dort = stageStand.get(`${kind}:${document.id}`);
-    return dort !== undefined && dort === stableStringify(document);
+    const dort = stand.get(`${kind}:${document.id}`);
+    return dort !== undefined && dort === vergleichsform(kind, document);
   };
 
   const failures: string[] = [];

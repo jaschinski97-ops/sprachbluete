@@ -339,8 +339,9 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
         specs: [spec],
         client: createClipGenerationClient(provider, apiKey, model, voice ?? defaultVoiceFor(provider)),
         onProgress: () => {},
-        // Der Eintrag existiert bereits — missingClipSpecs würde ihn
-        // ausfiltern. Neu erzeugen heißt: bewusst überschreiben.
+        // Der Eintrag existiert bereits — der Lauf würde ihn als vorhanden
+        // überspringen. Neu erzeugen heißt: bewusst überschreiben.
+        overwrite: true,
         delayMs: provider === 'chatgpt-helper' ? 2200 : 600,
       });
       await exportDrafts((m) => setMessage(m));

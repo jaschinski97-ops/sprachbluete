@@ -43,6 +43,11 @@ export type ClipRunOptions = {
   delayMs?: number;
   now?: () => number;
   onProduced?: (document: AudioClip, base64: string) => Promise<void>;
+  /**
+   * Vorhandene Clips trotzdem neu erzeugen („Neu erzeugen“ im Prüfbericht).
+   * Ohne das übersprang der Lauf genau den Clip, um den es ging (Testrunde 26.09.).
+   */
+  overwrite?: boolean;
 };
 
 /** Vorhanden heißt: Dokument **und** Datei — sonst Karteileiche (AE-14). */
@@ -202,9 +207,11 @@ export async function runClipBatch(options: ClipRunOptions): Promise<BatchProgre
     ? (progress: BatchProgress) => options.onProgress?.({ ...progress, tone: { ...tone, register: registerStand() } })
     : undefined;
   const basisCancel = options.shouldCancel;
+  const task = clipTask(options.client, db, blobs, tone, options.now ?? Date.now, options.toneWortschatz, frueh, register, options.onProduced);
+  if (options.overwrite) task.exists = async () => false;
   const result = await runBatch({
     specs: options.specs,
-    task: clipTask(options.client, db, blobs, tone, options.now ?? Date.now, options.toneWortschatz, frueh, register, options.onProduced),
+    task,
     onProgress,
     shouldCancel: () => basisCancel?.() || frueh.notstopp || register.gestoppt,
     delayMs: options.delayMs,

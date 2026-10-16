@@ -27,8 +27,8 @@ Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest                         # Typen + Tests (~1238 Tests)
-npm run test:scripts                                 # alle Skript-Tests (node --test, 74)
+npx tsc --noEmit && npx jest                         # Typen + Tests (~1255 Tests)
+npm run test:scripts                                 # alle Skript-Tests (node --test, 76; ein Rauchtest wird übersprungen, wenn gh installiert ist)
 npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)
 ```
@@ -45,6 +45,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 - Nach Änderungen an `scripts/content/pipeline.cjs`, `studio.cjs` oder den vom Helper geladenen TS-Modulen (tone-gate usw.) **den Helper neu starten**. Er lädt den Code nur beim Start.
 - Neue UI-Texte in **allen 20 Wörterbüchern** eintragen (Paritätstest). Beim Einfügen in `en.ts` als Anker `};\n\nexport default en;` nehmen, nicht `};`.
 - Nach einer Session-Grenze sterben die Server oft: Ports 8081/8082 prüfen.
+- Linux Mint (seit 16.10.): Node 24 über nvm, JDK 17 unter `~/.local/jdks/temurin-17`, Android SDK `~/Android/Sdk` (AVD `ThaiSpeaker_API36`), Pfade in `~/.bashrc`. Kein sudo für Claude. Textdateien sind LF (`.gitattributes`).
 - Verifikation gehört zum Auftrag: tsc, jest, bei UI-Änderungen der Browser.
 
 ## Inhalts-Pipeline (Studio)
@@ -79,6 +80,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 - iOS am Gerät prüfen: Shadowing stellt die Audiokategorie während laufender Aufnahme um (`src/lib/audio-mode.ts`).
 - Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
 - Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
-- Testrunde 26.09.: Behobenes steht in `CHANGELOG.md`. Noch OFFEN: Stammformen mit beiden Hilfsverben (ist/hat geritten) gelten als falsch; ar „مقال“ für Artikel + Untertitel umgangssprachlich; Backup-Fehler fest deutsch; keine Pluralregeln; Studio-Export vergleicht Clips nie gleich (blobKey/byteSize), „Neu erzeugen“ überspringt vorhandene Clips. Änderungen immer auch in `CHANGELOG.md` eintragen.
+- Änderungen immer auch in `CHANGELOG.md` eintragen. Die offenen Punkte der Testrunde 26.09. sind seit 16.10. erledigt.
+- Testrunde 16.10. (Linux): offen sind fehlende Thai-Grundwörter (ชื่อ, ประเทศ, ไหน, จาก; braucht Studio-Lauf), schwere Sätze in „Satz verstehen“ auf Anfängerstufe, Pluralformen für ar/ur u. a. (Syntax `{{count, plural, one {…} other {…}}}`). ไหม-Umschrift gemischt mǎi/mái: Umschrift von Sätzen mit Clip ändern kippt den Ton-Gate-Status (`content:integrity` prüft das), vorher Tonprüfung neu rechnen.
 - Testrunde 29.09.: Lesequiz-Auswahl, Thai-Wortgrenzen, Rollenspiel-Zähltext und Anfänger-Stoffauswahl korrigiert (siehe `CHANGELOG.md`). B1-Hörtexte bleiben ohne gebündelte Clips; eine physische Mikrofonprüfung steht weiter aus.
 - Kapitelgrammatik nutzt Szenenregeln und Dialogbeispiele; vollständige gelieferte Satzübersetzungen sind Pflicht für fremdsprachige Satzbedeutungen. Musterhilfe beim Schreiben zählt nie als FSRS-Wiederholung.

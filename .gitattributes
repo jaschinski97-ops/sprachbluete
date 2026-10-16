@@ -1,0 +1,4 @@
+# Zeilenenden: Textdateien immer LF, auch bei Checkouts unter Windows.
+# (Eine Windows-Kopie hatte 190 Dateien mit CRLF, siehe CHANGELOG 16.10.2026.)
+* text=auto eol=lf
+*.ps1 text eol=lf

@@ -331,13 +331,13 @@ export type VowelPattern = {
  */
 export const VOWEL_PATTERNS: VowelPattern[] = [
   { display: 'เ◌ียว', prefix: 'เ', infix: 'ียว', suffix: '', final: 'none', length: 'long', endsInSonorant: true, ipa: '/iaw/', rtgs: 'iao' },
-  { display: 'เ◌ือย', prefix: 'เ', infix: 'ือย', suffix: '', final: 'none', length: 'long', endsInSonorant: true, ipa: '/ɪaj/', rtgs: 'ueai' },
+  { display: 'เ◌ือย', prefix: 'เ', infix: 'ือย', suffix: '', final: 'none', length: 'long', endsInSonorant: true, ipa: '/ɯaj/', rtgs: 'ueai' },
   { display: 'เ◌ียะ', prefix: 'เ', infix: 'ียะ', suffix: '', final: 'none', length: 'short', ipa: '/iaʔ/', rtgs: 'ia' },
-  { display: 'เ◌ือะ', prefix: 'เ', infix: 'ือะ', suffix: '', final: 'none', length: 'short', ipa: '/ɪaʔ/', rtgs: 'uea' },
+  { display: 'เ◌ือะ', prefix: 'เ', infix: 'ือะ', suffix: '', final: 'none', length: 'short', ipa: '/ɯaʔ/', rtgs: 'uea' },
   { display: 'เ◌ีย◌', prefix: 'เ', infix: 'ีย', suffix: '', final: 'required', length: 'long', ipa: '/ia/', rtgs: 'ia' },
   { display: 'เ◌ีย', prefix: 'เ', infix: 'ีย', suffix: '', final: 'none', length: 'long', endsInSonorant: true, ipa: '/ia/', rtgs: 'ia' },
-  { display: 'เ◌ือ◌', prefix: 'เ', infix: 'ือ', suffix: '', final: 'required', length: 'long', ipa: '/ɪa/', rtgs: 'uea' },
-  { display: 'เ◌ือ', prefix: 'เ', infix: 'ือ', suffix: '', final: 'none', length: 'long', ipa: '/ɪa/', rtgs: 'uea' },
+  { display: 'เ◌ือ◌', prefix: 'เ', infix: 'ือ', suffix: '', final: 'required', length: 'long', ipa: '/ɯa/', rtgs: 'uea' },
+  { display: 'เ◌ือ', prefix: 'เ', infix: 'ือ', suffix: '', final: 'none', length: 'long', ipa: '/ɯa/', rtgs: 'uea' },
   { display: '◌ัวะ', prefix: '', infix: 'ัวะ', suffix: '', final: 'none', length: 'short', ipa: '/uaʔ/', rtgs: 'ua' },
   { display: '◌ัว', prefix: '', infix: 'ัว', suffix: '', final: 'none', length: 'long', ipa: '/ua/', rtgs: 'ua' },
   { display: '◌วย', prefix: '', infix: 'วย', suffix: '', final: 'none', length: 'long', endsInSonorant: true, ipa: '/uaj/', rtgs: 'uai' },

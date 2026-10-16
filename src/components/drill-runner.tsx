@@ -99,12 +99,16 @@ export function DrillRunner({
   const [voiceMissing, setVoiceMissing] = useState(false);
   const [heardId, setHeardId] = useState<string | null>(null);
   const [introduced, setIntroduced] = useState(false);
+  // Das gelöste Beispiel verbraucht die erste Frage einer Runde; Zähler und
+  // Gesamtzahl rechnen es heraus, damit „Aufgabe 1“ die erste eigene ist.
+  const [exampleOffset, setExampleOffset] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     setSession(null);
     setBuildFailed(null);
     setIndex(0);
+    setExampleOffset(0);
     setChosen(null);
     setAnswers([]);
     setHeardId(null);
@@ -244,7 +248,7 @@ export function DrillRunner({
     {question.visibleHint ? <ThemedText type="small">{question.visibleHint}</ThemedText> : null}
     <ThemedText type="subtitle">{question.solution}</ThemedText>
     {question.solutionRoman ? <ThemedText type="small">{question.solutionRoman}</ThemedText> : null}
-    <ThemedButton label={t('common.next')} onPress={() => { setIntroduced(true); next(); }} />
+    <ThemedButton label={t('common.next')} onPress={() => { setIntroduced(true); setExampleOffset(1); next(); }} />
     <ThemedButton label={t('common.back')} onPress={onExit} />
   </ThemedView>;
 
@@ -252,7 +256,7 @@ export function DrillRunner({
     <>
       <View style={styles.headerRow}>
         <ThemedText type="small" themeColor="textSecondary">
-          {t('drill.questionProgress', { index: index + 1, total: session.questions.length })}
+          {t('drill.questionProgress', { index: index + 1 - exampleOffset, total: session.questions.length - exampleOffset })}
         </ThemedText>
         <Pressable
           onPress={onExit}

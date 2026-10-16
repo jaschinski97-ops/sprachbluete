@@ -2,6 +2,7 @@ import { levelLabelKey } from '@/lib/learning-stages';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
+import { ENTER_PRUEFT } from './sentence-input';
 import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
@@ -306,6 +307,8 @@ function SzeneZeile({
               <TextInput
                 value={eingabe}
                 onChangeText={setEingabe}
+                onSubmitEditing={() => { if (eingabe.trim()) setErgebnis(compareDialogue(eingabe, zeile.thai, sprache)); }}
+                {...ENTER_PRUEFT}
                 multiline
                 accessibilityLabel={t('production.inputA11y')}
                 style={[styles.input, { color: colors.text, borderColor: colors.borderSubtle }]}

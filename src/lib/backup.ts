@@ -47,6 +47,8 @@ import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
 
+import { translate, type TranslationKey } from './i18n';
+import type { TParams } from './i18n/types';
 import { HUB_LANGUAGE, isLanguageCode, isPairDirection } from './languages/types';
 import { LearnerProfile, loadProfile, setConversationDirection, setLanguage, setReviewSpot } from './profile';
 import { loadAllCardStates } from './repository';
@@ -263,9 +265,26 @@ function isValidProfile(value: unknown): value is LearnerProfile {
   return true;
 }
 
+/**
+ * Ein Fehler beim Einlesen einer Sicherung — mit Wörterbuchschlüssel, damit
+ * die Oberfläche ihn in der App-Sprache zeigt. Bis zum 16.10.2026 stand hier
+ * nur deutscher Text, auch auf jeder anderen Oberfläche. `message` bleibt
+ * deutsch (Protokolle, Tests).
+ */
+export class BackupError extends Error {
+  constructor(readonly key: TranslationKey, readonly params?: TParams) {
+    super(translate('de', key, params));
+    this.name = 'BackupError';
+  }
+}
+
 export type ValidationResult =
   | { ok: true; data: BackupData; exportedAt: string }
-  | { ok: false; reason: string };
+  | { ok: false; reason: string; key: TranslationKey; params?: TParams };
+
+function abgelehnt(key: TranslationKey, params?: TParams): ValidationResult {
+  return { ok: false, reason: translate('de', key, params), key, ...(params ? { params } : {}) };
+}
 
 /**
  * Grobe Strukturprüfung eines eingelesenen Dokuments — rein, ohne Store.
@@ -277,59 +296,44 @@ export type ValidationResult =
  */
 export function validateBackupDocument(raw: unknown): ValidationResult {
   if (!isPlainObject(raw)) {
-    return { ok: false, reason: 'Die Datei enthält keine lesbaren Daten.' };
+    return abgelehnt('backup.errNoData');
   }
   if (raw.format !== BACKUP_FORMAT) {
-    return {
-      ok: false,
-      reason: 'Das ist keine Sicherung des Thai-Lernbegleiters (unbekanntes Format).',
-    };
+    return abgelehnt('backup.errFormat');
   }
   if (
     typeof raw.version !== 'number' ||
     !Number.isInteger(raw.version) ||
     raw.version < 1
   ) {
-    return { ok: false, reason: 'Die Angabe zur Format-Version der Datei ist unbrauchbar.' };
+    return abgelehnt('backup.errVersion');
   }
   if (raw.version > BACKUP_VERSION) {
-    return {
-      ok: false,
-      reason:
-        `Die Sicherung stammt von einer neueren App-Version ` +
-        `(Format ${raw.version}, unterstützt wird ${BACKUP_VERSION}) ` +
-        'und kann von dieser Version nicht eingelesen werden.',
-    };
+    return abgelehnt('backup.errNewer', { found: raw.version, supported: BACKUP_VERSION });
   }
   if (typeof raw.exportedAt !== 'string') {
-    return { ok: false, reason: 'Die Datei nennt keinen Erstellungszeitpunkt.' };
+    return abgelehnt('backup.errNoDate');
   }
   const data = raw.data;
   if (!isPlainObject(data)) {
-    return { ok: false, reason: 'Die Sicherung enthält keinen Datenbereich.' };
+    return abgelehnt('backup.errNoSection');
   }
 
   if (!Array.isArray(data.cards)) {
-    return { ok: false, reason: 'Die Kartenzustände fehlen in der Sicherung.' };
+    return abgelehnt('backup.errNoCards');
   }
   for (let i = 0; i < data.cards.length; i++) {
     if (!isValidCard(data.cards[i])) {
-      return {
-        ok: false,
-        reason: `Die Kartenzustände in der Sicherung sind beschädigt (Eintrag ${i + 1}).`,
-      };
+      return abgelehnt('backup.errBadCard', { index: i + 1 });
     }
   }
 
   if (!Array.isArray(data.reviewLog)) {
-    return { ok: false, reason: 'Das Lernprotokoll fehlt in der Sicherung.' };
+    return abgelehnt('backup.errNoLog');
   }
   for (let i = 0; i < data.reviewLog.length; i++) {
     if (!isValidDayLog(data.reviewLog[i])) {
-      return {
-        ok: false,
-        reason: `Das Lernprotokoll in der Sicherung ist beschädigt (Eintrag ${i + 1}).`,
-      };
+      return abgelehnt('backup.errBadLog', { index: i + 1 });
     }
   }
 
@@ -337,7 +341,7 @@ export function validateBackupDocument(raw: unknown): ValidationResult {
   // muss es aber sauber sein: halb geparste Werte würden von den Settern
   // still verworfen, und der Nutzer wüßte nicht, was passiert ist.
   if (data.profile !== undefined && data.profile !== null && !isValidProfile(data.profile)) {
-    return { ok: false, reason: 'Das Lernprofil in der Sicherung ist beschädigt.' };
+    return abgelehnt('backup.errBadProfile');
   }
 
   return {
@@ -352,7 +356,7 @@ export function validateBackupDocument(raw: unknown): ValidationResult {
 }
 
 /**
- * Text in Backup-Daten überführen — wirft mit deutschsprachiger Meldung.
+ * Text in Backup-Daten überführen — wirft `BackupError` (übersetzbar).
  * `maxBytes` begrenzt die Textlänge als zweite Decke hinter `asset.size`.
  */
 export function parseBackupText(
@@ -360,16 +364,16 @@ export function parseBackupText(
   maxBytes: number = MAX_BACKUP_BYTES
 ): { data: BackupData; exportedAt: string } {
   if (text.length > maxBytes) {
-    throw new Error('Die Sicherungsdatei ist größer als 20 MB und wird nicht eingelesen.');
+    throw new BackupError('backup.errTooLarge');
   }
   let raw: unknown;
   try {
     raw = JSON.parse(text);
   } catch {
-    throw new Error('Die Datei ist keine gültige JSON-Datei.');
+    throw new BackupError('backup.errNotJson');
   }
   const result = validateBackupDocument(raw);
-  if (!result.ok) throw new Error(result.reason);
+  if (!result.ok) throw new BackupError(result.key, result.params);
   return { data: result.data, exportedAt: result.exportedAt };
 }
 
@@ -450,14 +454,14 @@ async function readBackupText(asset: DocumentPickerAsset): Promise<string> {
   // neue File-Klasse liest asynchron Text.
   const file = new File(asset.uri);
   if (!file.exists) {
-    throw new Error('Die gewählte Datei ist nicht mehr lesbar. Bitte erneut wählen.');
+    throw new BackupError('backup.errUnreadable');
   }
   return file.text();
 }
 
 /**
  * Liest die gewählte Datei, prüft sie und ersetzt die Lernhistorie.
- * Wirft bei unbrauchbarer Datei mit deutschsprachiger Meldung; die
+ * Wirft bei unbrauchbarer Datei einen `BackupError`; die
  * Bestätigung VOR dem Ersetzen holt die Oberfläche.
  */
 export async function restoreBackup(
@@ -465,7 +469,7 @@ export async function restoreBackup(
   store?: DataStore
 ): Promise<BackupImportSummary> {
   if (typeof asset.size === 'number' && asset.size > MAX_BACKUP_BYTES) {
-    throw new Error('Die Sicherungsdatei ist größer als 20 MB und wird nicht eingelesen.');
+    throw new BackupError('backup.errTooLarge');
   }
   const text = await readBackupText(asset);
   const { data, exportedAt } = parseBackupText(text);

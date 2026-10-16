@@ -6,6 +6,7 @@ import { File, Paths } from 'expo-file-system';
 
 import {
   applyBackupToStore,
+  BackupError,
   backupFileName,
   buildBackupDocument,
   BACKUP_FORMAT,
@@ -16,6 +17,7 @@ import {
   restoreBackup,
   validateBackupDocument,
 } from './backup';
+import { translate } from './i18n';
 import { loadProfile } from './profile';
 import { loadAllCardStates } from './repository';
 import { loadReviewLog, ReviewDayLog } from './review-log';
@@ -296,6 +298,22 @@ describe('parseBackupText', () => {
 
   it('wirft bei Überschreitung der Größenbegrenzung', () => {
     expect(() => parseBackupText('x'.repeat(11), 10)).toThrow(/20 MB/);
+  });
+
+  it('liefert übersetzbare Fehler statt nur deutschen Text (Testlauf 16.10.2026)', () => {
+    const fehler = (() => {
+      try {
+        parseBackupText(JSON.stringify({ ...validDocument(), version: 99 }));
+      } catch (error) {
+        return error;
+      }
+      return null;
+    })();
+    expect(fehler).toBeInstanceOf(BackupError);
+    const { key, params } = fehler as BackupError;
+    expect(key).toBe('backup.errNewer');
+    expect(translate('en', key, params)).toMatch(/newer app version \(format 99/);
+    expect(translate('th', key, params)).toContain('99');
   });
 });
 

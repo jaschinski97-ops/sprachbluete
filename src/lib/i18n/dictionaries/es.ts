@@ -27,7 +27,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'home.dueBadge': '{{count}} pendientes',
   'home.nothingDue': 'Nada pendiente hoy',
   'home.sectionLanguages': 'Idiomas',
-  'home.vocabCount': '{{count}} vocablos',
+  'home.vocabCount': "{{count, plural, one {# vocablo} other {# vocablos}}}",
 
   'picker.chooseA11y': 'Elegir idioma',
   // Meta alemán: por qué su stock difiere del de th/en/es.
@@ -113,7 +113,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'conversation.subtitle': 'Situaciones lingüísticas preproducidas',
   'conversation.loading': 'Cargando situaciones …',
   'conversation.subtitleLanguage': 'Situaciones lingüísticas preproducidas · {{language}}',
-  'conversation.subtitleCount': '{{count}} situaciones — sin conexión',
+  'conversation.subtitleCount': "{{count, plural, one {# situación} other {# situaciones}}} — sin conexión",
   'conversation.noneFor': 'Aún no hay situaciones para {{language}}',
   'conversation.noneForBody':
     'Esta versión de la app aún no contiene diálogos para {{language}}. Tarjetas y ejercicios están en «Aprender». Más contenido llega con las actualizaciones.',
@@ -181,7 +181,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'settings.development': 'Desarrollo',
   'settings.studioDevOnly': 'El estudio de desarrollador pertenece solo a la compilación de desarrollo; no forma parte de la app instalada.',
   'settings.studioOrigin': 'Esta ventana está fuera del puerto del estudio. Abre la compilación de desarrollo en localhost:8081 para generar contenido.',
-  'settings.materialCount': '{{count}} palabras · {{languages}}',
+  'settings.materialCount': "{{count, plural, one {# palabra} other {# palabras}}} · {{languages}}",
   'settings.materialBody':
     'El material de aprendizaje forma parte de la app. Palabras, diálogos y ejercicios nuevos llegan con las actualizaciones. Tu progreso se queda en este dispositivo.',
   'settings.warningTitle': 'El progreso solo se guarda hasta cerrar la app',
@@ -202,14 +202,28 @@ const es: Partial<Record<TranslationKey, string>> = {
   'backup.failed': 'Esto es lo que falló: {{message}}',
   'backup.applied': 'Importado: {{parts}}.',
   'backup.fromDate': ' (copia del {{date}}.)',
-  'backup.partsCards': '{{cards}} tarjetas',
-  'backup.partsLog': '{{days}} días de registro',
+  'backup.partsCards': "{{cards, plural, one {# tarjeta} other {# tarjetas}}}",
+  'backup.partsLog': "{{days, plural, one {# día} other {# días}}} de registro",
   'backup.partsProfile': 'Perfil de aprendizaje',
   'backup.confirmTitle': '¿Reemplazar el historial?',
   'backup.confirmQuestion':
     'La copia reemplazará todo tu historial de aprendizaje en este dispositivo. ¿Hacer este paso?',
   'backup.confirmCancel': 'Cancelar',
   'backup.confirmReplace': 'Reemplazar',
+  "backup.errTooLarge": "El archivo de copia de seguridad supera los 20 MB y no se leerá.",
+  "backup.errNotJson": "El archivo no es un archivo JSON válido.",
+  "backup.errUnreadable": "El archivo elegido ya no se puede leer. Vuelve a elegirlo.",
+  "backup.errNoData": "El archivo no contiene datos legibles.",
+  "backup.errFormat": "Esto no es una copia de seguridad de esta app (formato desconocido).",
+  "backup.errVersion": "La versión de formato del archivo no es válida.",
+  "backup.errNewer": "La copia procede de una versión más reciente de la app (formato {{found}}, compatible: {{supported}}) y esta versión no puede leerla.",
+  "backup.errNoDate": "El archivo no indica cuándo se creó.",
+  "backup.errNoSection": "La copia de seguridad no contiene ninguna sección de datos.",
+  "backup.errNoCards": "Faltan los estados de las tarjetas en la copia de seguridad.",
+  "backup.errBadCard": "Los estados de las tarjetas de la copia están dañados (entrada {{index}}).",
+  "backup.errNoLog": "Falta el registro de aprendizaje en la copia de seguridad.",
+  "backup.errBadLog": "El registro de aprendizaje de la copia está dañado (entrada {{index}}).",
+  "backup.errBadProfile": "El perfil de aprendizaje de la copia está dañado.",
 
   /* ---------- Piezas comunes de los runners de ejercicios ---------- */
   'common.back': 'Volver',
@@ -258,6 +272,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'writing.countsAsReview':
     'Esta ronda cuenta como repetición: a diferencia de los ejercicios de elección, la escritura libre actualiza el estado de la tarjeta (AE-40).',
   'writing.inputA11y': 'Introducir la respuesta',
+  "writing.paletteToggle": "Insertar caracteres",
   'writing.checkA11y': 'Comprobar la respuesta',
   'writing.check': 'Comprobar',
   'writing.taskOf': 'Tarea {{index}} de {{total}}',
@@ -423,7 +438,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'wordSpeaking.noneFor': 'Sin material de palabras para {{language}}',
   'wordSpeaking.prompt': 'Escucha y repite — {{language}}:',
   'wordSpeaking.note': 'Escucha el modelo y repítelo en voz alta. Este ejercicio no mide ni evalúa nada — tampoco cambia tu plan de repaso.',
-  'wordSpeaking.summary': '{{count}} palabras repetidas.',
+  'wordSpeaking.summary': "{{count, plural, one {# palabra repetida} other {# palabras repetidas}}}.",
   'wordSpeaking.noScore': 'Sin puntos ni cambios en el plan de repaso.',
   'wordSpeaking.progress': 'Palabra {{index}} de {{total}}',
 
@@ -473,7 +488,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   /* ---------- Lese-/Hörtexte (13.09.2026, Schritt 4) ---------- */
   'mode.lesestoffe': 'Textos de lectura',
   'texts.pick': 'Elige un texto',
-  'texts.knownOf': '{{total}} palabras de tu stock, {{known}} iniciadas',
+  'texts.knownOf': "{{total, plural, one {# palabra} other {# palabras}}} de tu stock, {{known, plural, one {# iniciada} other {# iniciadas}}}",
   'texts.lockedBody': 'Bloqueado — se abre cuando hayas empezado {{needed}} tarjetas en este idioma (ahora {{known}}).',
   'texts.showTranslation': 'Mostrar traducción',
   'texts.questionsTitle': 'Preguntas de comprensión',
@@ -518,6 +533,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "drill.toneIs": "Tono: {{tone}}",
   "drill.syllableOrdinal": "Sílaba {{index}}",
   "drill.irregular": "irregular",
+  "drill.alsoPossible": "también correcto: {{form}}",
   "drill.spellingOther": "El mismo «{{grapheme}}», pronunciado de otra forma: {{list}}.",
   "drill.spellingSame": "Suena igual en: {{list}}.",
   "drill.spellingHere": "«{{grapheme}}» suena aquí como {{sound}}.",
@@ -532,7 +548,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "stress.stepWordEnd": "Final de palabra",
   "stress.stepBasicRule": "Regla básica",
   "stress.detailOneNucleus": "Un núcleo vocálico, por lo tanto una sílaba.",
-  "stress.detailNuclei": "{{count}} núcleos vocálicos. Los diptongos cuentan como uno; una tilde en «i» o «u» los separa de nuevo.",
+  "stress.detailNuclei": "{{count, plural, one {# núcleo vocálico} other {# núcleos vocálicos}}}. Los diptongos cuentan como uno; una tilde en «i» o «u» los separa de nuevo.",
   "stress.detailAcuteDifferential": "Aquí la tilde distingue dos palabras que se escriben igual — el acento caería en esta sílaba también sin ella.",
   "stress.detailAcute": "Una tilde escrita siempre está sobre la sílaba tónica. Eso anula la regla básica.",
   "stress.detailOnlySyllable": "Solo hay una sílaba — ella lleva el acento.",
@@ -569,6 +585,8 @@ const es: Partial<Record<TranslationKey, string>> = {
   // 21.09.2026: Writing-Feedback-Schlüssel (Handübersetzung —
   // diese Datei ist bewusst außerhalb des Generators, weil sie geprüft ist).
   "writing.mistakeCase": "Mayúsculas: en alemán los sustantivos se escriben con mayúscula inicial.",
+  "writing.mistakeCaseUpper": "Mayúsculas: esta palabra se escribe con mayúscula.",
+  "writing.mistakeCaseLower": "Mayúsculas: esta palabra se escribe con minúscula.",
   "writing.mistakeUmlaut": "Umlaut: ä, ö y ü cambian el significado — «schon» no es «schön».",
   "writing.mistakeEszett": "ß frente a ss: no es una errata, sino una grafía propia.",
   "writing.mistakeArticleMissing": "Falta el artículo. Pertenece a la palabra.",
@@ -686,7 +704,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   /* Kapitelplan */
   "chapter.position": "Capítulo {{index}} de {{total}} · {{level}}",
   "chapter.completed": "Completado",
-  "chapter.words": "{{count}} palabras para este capítulo",
+  "chapter.words": "{{count, plural, one {# palabra} other {# palabras}}} para este capítulo",
   "chapter.finish": "Marcar capítulo como completado",
   "chapter.all": "Todos los capítulos",
   "chapter.doneCount": "{{done}} de {{total}} completados",

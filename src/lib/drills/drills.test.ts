@@ -23,6 +23,7 @@ import {
   canBuildToneQuestion,
   canBuildVerbFormQuestion,
   swapAuxiliary,
+  alternativePerfekt,
 } from './questions';
 import { seededRandom, shuffled } from './random';
 import { buildDrillSession, DRILL_SESSION_SIZE, scoreAnswers } from './session';
@@ -167,11 +168,28 @@ describe('Stammform-Uebung', () => {
     // "haben" gegen "sein" ist die eigentliche Fehlerquelle. Wer nur zwischen
     // fremden Partizipien waehlen muesste, koennte die Aufgabe loesen, ohne je
     // ueber das Hilfsverb nachzudenken.
-    for (const entry of verbs()) {
+    for (const entry of verbs().filter((verb) => !alternativePerfekt(verb))) {
       const question = buildVerbFormQuestion(entry, VOCABULARY, random());
       const swapped = swapAuxiliary(entry.germanVerb!.perfekt);
       expect(question.options.map((option) => option.label)).toContain(swapped);
     }
+  });
+
+  it('bietet bei Verben mit beiden Hilfsverben die andere Form nicht als falsch an', () => {
+    // „ist geritten“ und „hat geritten“ sind beide richtig (Testrunde 26.09.).
+    const reiten = {
+      ...verbs()[0],
+      id: 'test-reiten',
+      term: 'reiten',
+      germanVerb: { thirdPerson: 'reitet', praeteritum: 'ritt', perfekt: 'ist geritten', irregular: true },
+    } as VocabEntry;
+    expect(alternativePerfekt(reiten)).toBe('hat geritten');
+    for (let seed = 1; seed <= 20; seed++) {
+      const question = buildVerbFormQuestion(reiten, VOCABULARY, seededRandom(seed));
+      expect(question.options.map((option) => option.label)).not.toContain('hat geritten');
+      expect(question.explanation).toContain('hat geritten');
+    }
+    expect(alternativePerfekt(verbs().find((verb) => verb.germanVerb!.perfekt === 'hat gegessen')!)).toBeNull();
   });
 
   it('markiert die richtige Form und wiederholt keine Antwort', () => {

@@ -160,6 +160,43 @@ function articleOf(text: string): string | null {
   return (GERMAN_ARTICLES as readonly string[]).includes(first ?? '') ? first! : null;
 }
 
+/**
+ * Weicht die Eingabe NUR in der Groß-/Kleinschreibung des ersten Buchstabens
+ * ab, und ist das am Satzanfang unbedenklich? (Testlauf 16.10.2026)
+ *
+ * - Großschreiben geht immer: „Oder“, „Das Haus“ sind Satzanfänge.
+ * - Kleinschreiben geht im Deutschen, wenn die Zielform keinen Artikel trägt:
+ *   Dann ist sie kein Substantiv, sondern eine als Satz notierte Formel
+ *   („Hallo“, „Tschüss“, „Gleichfalls“). Substantive stehen in der
+ *   Schreibübung immer mit Artikel, ihr Großbuchstabe liegt also nie vorn.
+ * - Englisch „i“ für „I“ bleibt ein Fehler — dort ist der Großbuchstabe Teil
+ *   des Wortes.
+ */
+function onlySentenceStartCase(given: string, target: string, language: WritingLanguage): boolean {
+  if (given.length !== target.length || given.slice(1) !== target.slice(1)) return false;
+  const [g, z] = [given[0], target[0]];
+  if (g === z || g.toLowerCase() !== z.toLowerCase()) return false;
+  if (z === z.toLowerCase()) return true;
+  return language === 'de' && !articleOf(target);
+}
+
+/**
+ * Welche Erklärung passt zu einem Fehler in der Groß-/Kleinschreibung? Vorher
+ * hieß es überall „im Deutschen werden Substantive großgeschrieben“ — auch
+ * bei „Oder“ und beim Englischlernen.
+ */
+function caseMessage(given: string, target: string, language: WritingLanguage): TranslationKey {
+  // Die erste Abweichung hinter dem Satzanfang zählt; nur wenn es sonst
+  // keine gibt, der erste Buchstabe selbst.
+  const differs = (i: number) => given[i] !== target[i];
+  let index = -1;
+  for (let i = 1; i < target.length; i++) if (differs(i)) { index = i; break; }
+  if (index < 0) index = 0;
+  const letter = target[index] ?? '';
+  if (letter === letter.toLowerCase()) return 'writing.mistakeCaseLower';
+  return language === 'de' && articleOf(target) ? 'writing.mistakeCase' : 'writing.mistakeCaseUpper';
+}
+
 const MISTAKE_MESSAGE: Record<MistakeKind, TranslationKey> = {
   case: 'writing.mistakeCase',
   umlaut: 'writing.mistakeUmlaut',
@@ -234,8 +271,9 @@ export function compareWriting(given: string, options: CompareOptions): WritingV
     };
   }
 
-  // 1. Exakt — der einzige Fall ohne jede Abweichung.
-  const exact = candidates.find((candidate) => candidate === input);
+  // 1. Exakt — ohne Abweichung oder nur mit dem Großbuchstaben eines Satzanfangs.
+  const exact = candidates.find((candidate) => candidate === input)
+    ?? candidates.find((candidate) => onlySentenceStartCase(input, candidate, language));
   if (exact) {
     return { correct: true, exact: true, typo: false, mistake: null, message: null, matched: exact, distance: 0 };
   }
@@ -252,7 +290,7 @@ export function compareWriting(given: string, options: CompareOptions): WritingV
       exact: false,
       typo: false,
       mistake,
-      message: { key: MISTAKE_MESSAGE[mistake] },
+      message: { key: mistake === 'case' ? caseMessage(input, protectedMatch, language) : MISTAKE_MESSAGE[mistake] },
       matched: protectedMatch,
       distance: editDistance(input, protectedMatch),
     };

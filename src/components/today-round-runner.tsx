@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { Flashcard } from './flashcard';
+import { ENTER_PRUEFT } from './sentence-input';
 import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
@@ -640,6 +641,32 @@ function DiktatSegment({
     setErgebnis(null);
   }, [position]);
 
+  // Leer prüfen wertete als „nicht bestanden“ — wie im Rollenspiel gesperrt.
+  const pruefen = () => {
+    if (busy || ergebnis !== null || !task || !draft.trim()) return;
+    setBusy(true);
+    void (async () => {
+      try {
+        const config = dictationConfigFor(task.language);
+        const score = scoreDictation(draft, task.text, config);
+        setErgebnis(score.passed ? 'passed' : 'failed');
+        await recordDrill(score.passed, Date.now(), undefined, 'dictation', direction).catch(() => {});
+        if (score.passed) {
+          try {
+            const card = await loadOrCreateCardState(task.vocabId, task.direction);
+            // ratingForScore liefert bei `passed` immer 2 oder 3 — nie null.
+            await rateCard(card, ratingForScore(score)!);
+          } catch {
+            // Kartenschreiben darf die Runde nicht stoppen.
+          }
+        }
+      } finally {
+        setBusy(false);
+      }
+      setTimeout(onAnswered, 1600);
+    })();
+  };
+
   if (!task) {
     return (
       <ThemedText type="small" themeColor="textSecondary">
@@ -671,39 +698,15 @@ function DiktatSegment({
       <TextInput
         value={draft}
         onChangeText={setDraft}
+        onSubmitEditing={pruefen}
+        {...ENTER_PRUEFT}
         editable={ergebnis === null && !busy}
         multiline
         accessibilityLabel={t('dictation.inputA11y')}
         style={[styles.input, { color: colors.text, borderColor: colors.borderSubtle }]}
       />
       {ergebnis === null ? (
-        <ThemedButton
-          label={t('dictation.check')}
-          onPress={() => {
-            if (busy) return;
-            setBusy(true);
-            void (async () => {
-              try {
-                const config = dictationConfigFor(task.language);
-                const score = scoreDictation(draft, task.text, config);
-                setErgebnis(score.passed ? 'passed' : 'failed');
-                await recordDrill(score.passed, Date.now(), undefined, 'dictation', direction).catch(() => {});
-                if (score.passed) {
-                  try {
-                    const card = await loadOrCreateCardState(task.vocabId, task.direction);
-                    // ratingForScore liefert bei `passed` immer 2 oder 3 — nie null.
-                    await rateCard(card, ratingForScore(score)!);
-                  } catch {
-                    // Kartenschreiben darf die Runde nicht stoppen.
-                  }
-                }
-              } finally {
-                setBusy(false);
-              }
-              setTimeout(onAnswered, 1600);
-            })();
-          }}
-        />
+        <ThemedButton label={t('dictation.check')} disabled={!draft.trim()} onPress={pruefen} />
       ) : (
         <View>
           <ThemedText type="small" themeColor="textSecondary">

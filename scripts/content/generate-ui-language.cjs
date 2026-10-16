@@ -170,9 +170,13 @@ const CHUNK_GROESSE = 30;
 // 2 Retries = bis zu 3 Versuche je Chunk, bevor die Rest-Keys auf Deutsch fallen.
 const RETRIES = 2;
 
-/** Die {{namen}} eines Texts — für die Erhaltensprüfung nach der Übersetzung. */
+/**
+ * Die {{namen}} eines Texts — für die Erhaltensprüfung nach der Übersetzung.
+ * Pluralblöcke `{{count, plural, one {…} other {…}}}` zählen als `count`, damit
+ * eine Zielsprache ohne Pluralformen auch einfach `{{count}}` schreiben darf.
+ */
 function platzhalter(text) {
-  return (String(text).match(/\{\{(\w+)\}\}/g) || []).sort().join('|');
+  return [...String(text).matchAll(/\{\{(\w+)(?:\}\}|, plural,)/g)].map((m) => m[1]).sort().join('|');
 }
 
 /**
@@ -200,6 +204,7 @@ async function rufeOpenAI(apiKey, ziel, chunk) {
             `Stil: ${ziel.stil}. Regeln:\n` +
             '1. Übersetze natürlich und knapp — es sind Knopf-, Titel- und Hinweistexte.\n' +
             '2. Platzhalter wie {{count}} oder {{message}} bleiben EXAKT stehen (gleiches Wort in den doppelten geschweiften Klammern).\n' +
+            '   Pluralblöcke {{count, plural, one {# Wort} other {# Wörter}}} bekommen die CLDR-Kategorien der Zielsprache (z. B. one/few/many/other); ohne Pluralformen genügt {{count}}.\n' +
             '3. Kein Schlüssel darf in der Antwort fehlen.\n' +
             '4. Antworte NUR mit einem JSON-Objekt: { "<schlüssel>": "<übersetzung>", ... } — dieselben Schlüssel wie die Eingabe.',
         },

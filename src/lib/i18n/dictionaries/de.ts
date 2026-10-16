@@ -35,7 +35,7 @@ const de = {
   'home.dueBadge': '{{count}} fällig',
   'home.nothingDue': 'Heute nichts fällig',
   'home.sectionLanguages': 'Sprachen',
-  'home.vocabCount': '{{count}} Wörter',
+  'home.vocabCount': "{{count, plural, one {# Wort} other {# Wörter}}}",
 
   /* ---------- Sprachauswahl (language-picker) ---------- */
   'picker.chooseA11y': 'Sprache wählen',
@@ -178,7 +178,7 @@ const de = {
   'conversation.subtitle': 'Vorproduzierte Sprachsituationen',
   'conversation.loading': 'Lade Situationen …',
   'conversation.subtitleLanguage': 'Vorproduzierte Sprachsituationen · {{language}}',
-  'conversation.subtitleCount': '{{count}} Situationen — offline nutzbar',
+  'conversation.subtitleCount': "{{count, plural, one {# Situation} other {# Situationen}}} — offline nutzbar",
   'conversation.noneFor': 'Noch keine Situationen für {{language}}',
   'conversation.noneForBody':
     'Diese App-Version enthält noch keine Dialoge für {{language}}. Karteikarten und Übungen findest du unter „Lernen“. Weitere Inhalte kommen mit App-Updates.',
@@ -247,7 +247,7 @@ const de = {
   'settings.development': 'Entwicklung',
   'settings.studioDevOnly': 'Das Entwicklerstudio gehört nur zum Entwicklungsbau und ist nicht Teil der installierten App.',
   'settings.studioOrigin': 'Dieses Fenster läuft außerhalb des Studio-Ports. Öffne den Entwicklungsbau auf localhost:8081, um Inhalte zu erzeugen.',
-  'settings.materialCount': '{{count}} Wörter · {{languages}}',
+  'settings.materialCount': "{{count, plural, one {# Wort} other {# Wörter}}} · {{languages}}",
   'settings.materialBody':
     'Lernmaterial gehört zur App. Neue Wörter, Dialoge und Übungen kommen mit App-Updates. Dein Lernfortschritt bleibt auf diesem Gerät.',
   'settings.warningTitle': 'Lernfortschritt wird nur bis zum Schließen der App gespeichert',
@@ -269,14 +269,28 @@ const de = {
   'backup.failed': 'Das ist schiefgegangen: {{message}}',
   'backup.applied': 'Übernommen: {{parts}}.',
   'backup.fromDate': ' (Sicherung vom {{date}}.)',
-  'backup.partsCards': '{{cards}} Karten',
-  'backup.partsLog': '{{days}} Tage Lernprotokoll',
+  'backup.partsCards': "{{cards, plural, one {# Karte} other {# Karten}}}",
+  'backup.partsLog': "{{days, plural, one {# Tag} other {# Tage}}} Lernprotokoll",
   'backup.partsProfile': 'Lernprofil',
   'backup.confirmTitle': 'Lernhistorie ersetzen?',
   'backup.confirmQuestion':
     'Die Sicherung ersetzt deine komplette Lernhistorie auf diesem Gerät. Diesen Schritt gehen?',
   'backup.confirmCancel': 'Abbrechen',
   'backup.confirmReplace': 'Ersetzen',
+  "backup.errTooLarge": "Die Sicherungsdatei ist größer als 20 MB und wird nicht eingelesen.",
+  "backup.errNotJson": "Die Datei ist keine gültige JSON-Datei.",
+  "backup.errUnreadable": "Die gewählte Datei ist nicht mehr lesbar. Bitte erneut wählen.",
+  "backup.errNoData": "Die Datei enthält keine lesbaren Daten.",
+  "backup.errFormat": "Das ist keine Sicherung dieser App (unbekanntes Format).",
+  "backup.errVersion": "Die Angabe zur Format-Version der Datei ist unbrauchbar.",
+  "backup.errNewer": "Die Sicherung stammt von einer neueren App-Version (Format {{found}}, unterstützt wird {{supported}}) und kann von dieser Version nicht eingelesen werden.",
+  "backup.errNoDate": "Die Datei nennt keinen Erstellungszeitpunkt.",
+  "backup.errNoSection": "Die Sicherung enthält keinen Datenbereich.",
+  "backup.errNoCards": "Die Kartenzustände fehlen in der Sicherung.",
+  "backup.errBadCard": "Die Kartenzustände in der Sicherung sind beschädigt (Eintrag {{index}}).",
+  "backup.errNoLog": "Das Lernprotokoll fehlt in der Sicherung.",
+  "backup.errBadLog": "Das Lernprotokoll in der Sicherung ist beschädigt (Eintrag {{index}}).",
+  "backup.errBadProfile": "Das Lernprofil in der Sicherung ist beschädigt.",
 
   /* ---------- Gemeinsame Bausteine der Übungs-Runner ---------- */
   'common.back': 'Zurück',
@@ -333,6 +347,7 @@ const de = {
   'writing.countsAsReview':
     'Diese Runde zählt als Wiederholung: Anders als die Auswahlübungen schreibt das freie Schreiben den Kartenzustand fort (AE-40).',
   'writing.inputA11y': 'Antwort eingeben',
+  "writing.paletteToggle": "Zeichen einfügen",
   'writing.checkA11y': 'Antwort prüfen',
   'writing.check': 'Prüfen',
   'writing.taskOf': 'Aufgabe {{index}} von {{total}}',
@@ -395,7 +410,7 @@ const de = {
   'wordSpeaking.prompt': 'Hör zu und sprich nach — {{language}}:',
   'wordSpeaking.note':
     'Hör die Musterlösung und sprich laut nach. Diese Übung misst nichts und bewertet nichts — sie verändert auch den Wiederholungsplan nicht.',
-  'wordSpeaking.summary': '{{count}} Wörter nachgesprochen.',
+  'wordSpeaking.summary': "{{count, plural, one {# Wort} other {# Wörter}}} nachgesprochen.",
   'wordSpeaking.noScore': 'Keine Punktzahl, keine Änderung am Wiederholungsplan.',
   'wordSpeaking.progress': 'Wort {{index}} von {{total}}',
 
@@ -486,7 +501,7 @@ const de = {
 
   /* ---------- Lese-/Hörtexte (reading-texts-runner, Schritt 4) ---------- */
   'texts.pick': 'Wähle einen Text',
-  'texts.knownOf': '{{total}} Wörter aus deinem Bestand, {{known}} begonnen',
+  'texts.knownOf': "{{total, plural, one {# Wort} other {# Wörter}}} aus deinem Bestand, {{known}} begonnen",
   'texts.lockedBody': 'Gesperrt — frei ab {{needed}} begonnenen Karten in dieser Sprache (aktuell {{known}}).',
   'texts.showTranslation': 'Übersetzung zeigen',
   'texts.questionsTitle': 'Verständnisfragen',
@@ -542,6 +557,7 @@ const de = {
   "drill.toneIs": "Ton: {{tone}}",
   "drill.syllableOrdinal": "{{index}}. Silbe",
   "drill.irregular": "unregelmäßig",
+  "drill.alsoPossible": "auch richtig: {{form}}",
   "drill.spellingOther": "Dasselbe „{{grapheme}}“, anders gesprochen: {{list}}.",
   "drill.spellingSame": "Gleich klingt es in: {{list}}.",
   "drill.spellingHere": "„{{grapheme}}“ klingt hier {{sound}}.",
@@ -556,7 +572,7 @@ const de = {
   "stress.stepWordEnd": "Wortende",
   "stress.stepBasicRule": "Grundregel",
   "stress.detailOneNucleus": "Ein Silbenkern, also eine Silbe.",
-  "stress.detailNuclei": "{{count}} Silbenkerne. Diphthonge zählen als einer, ein Akut auf „i“ oder „u“ trennt sie wieder.",
+  "stress.detailNuclei": "{{count, plural, one {# Silbenkern} other {# Silbenkerne}}}. Diphthonge zählen als einer, ein Akut auf „i“ oder „u“ trennt sie wieder.",
   "stress.detailAcuteDifferential": "Hier unterscheidet der Akut zwei gleich geschriebene Wörter — die Betonung läge auch ohne ihn auf dieser Silbe.",
   "stress.detailAcute": "Ein geschriebener Akut steht immer auf der betonten Silbe. Damit ist die Grundregel außer Kraft.",
   "stress.detailOnlySyllable": "Es gibt nur eine Silbe — sie trägt die Betonung.",
@@ -591,6 +607,8 @@ const de = {
   "dictation.msgBaseOff": "Die Basisschrift weicht noch zu stark ab.",
 
   "writing.mistakeCase": "Groß- und Kleinschreibung: im Deutschen werden Substantive großgeschrieben.",
+  "writing.mistakeCaseUpper": "Groß- und Kleinschreibung: Dieses Wort schreibt man groß.",
+  "writing.mistakeCaseLower": "Groß- und Kleinschreibung: Dieses Wort schreibt man klein.",
   "writing.mistakeUmlaut": "Umlaut: ä, ö und ü unterscheiden Bedeutungen — schon ist nicht schön.",
   "writing.mistakeEszett": "ß gegen ss: das ist kein Tippfehler, sondern eine eigene Schreibung.",
   "writing.mistakeArticleMissing": "Der Artikel fehlt. Er gehört zum Wort dazu.",
@@ -705,7 +723,7 @@ const de = {
   /* Kapitelplan */
   "chapter.position": "Kapitel {{index}} von {{total}} · {{level}}",
   "chapter.completed": "Abgeschlossen",
-  "chapter.words": "{{count}} Wörter für dieses Kapitel",
+  "chapter.words": "{{count, plural, one {# Wort} other {# Wörter}}} für dieses Kapitel",
   "chapter.finish": "Kapitel als abgeschlossen markieren",
   "chapter.all": "Alle Kapitel",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",

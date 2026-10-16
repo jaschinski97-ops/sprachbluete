@@ -209,6 +209,20 @@ const th: Partial<Record<TranslationKey, string>> = {
   'backup.confirmQuestion': 'ไฟล์สำรองจะแทนที่ประวัติการเรียนทั้งหมดบนเครื่องนี้ ทำต่อไหม?',
   'backup.confirmCancel': 'ยกเลิก',
   'backup.confirmReplace': 'แทนที่',
+  "backup.errTooLarge": "ไฟล์สำรองใหญ่กว่า 20 MB จึงไม่ถูกอ่าน",
+  "backup.errNotJson": "ไฟล์นี้ไม่ใช่ไฟล์ JSON ที่ถูกต้อง",
+  "backup.errUnreadable": "อ่านไฟล์ที่เลือกไม่ได้แล้ว โปรดเลือกใหม่อีกครั้ง",
+  "backup.errNoData": "ไฟล์ไม่มีข้อมูลที่อ่านได้",
+  "backup.errFormat": "นี่ไม่ใช่ไฟล์สำรองของแอปนี้ (รูปแบบที่ไม่รู้จัก)",
+  "backup.errVersion": "เวอร์ชันรูปแบบของไฟล์ใช้ไม่ได้",
+  "backup.errNewer": "ไฟล์สำรองนี้มาจากแอปเวอร์ชันที่ใหม่กว่า (รูปแบบ {{found}} รองรับ {{supported}}) เวอร์ชันนี้จึงอ่านไม่ได้",
+  "backup.errNoDate": "ไฟล์ไม่ได้ระบุเวลาที่สร้าง",
+  "backup.errNoSection": "ไฟล์สำรองไม่มีส่วนข้อมูล",
+  "backup.errNoCards": "ไฟล์สำรองไม่มีสถานะบัตรคำ",
+  "backup.errBadCard": "สถานะบัตรคำในไฟล์สำรองเสียหาย (รายการที่ {{index}})",
+  "backup.errNoLog": "ไฟล์สำรองไม่มีบันทึกการเรียน",
+  "backup.errBadLog": "บันทึกการเรียนในไฟล์สำรองเสียหาย (รายการที่ {{index}})",
+  "backup.errBadProfile": "โปรไฟล์การเรียนในไฟล์สำรองเสียหาย",
 
   /* ---------- ส่วนร่วมของรันเนอร์แบบฝึก ---------- */
   'common.back': 'ย้อนกลับ',
@@ -257,6 +271,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   'writing.countsAsReview':
     'รอบนี้นับเป็นการทบทวน: ต่างจากแบบฝึกเลือกตอบ การเขียนอิสระจะบันทึกสถานะการ์ดต่อไป (AE-40)',
   'writing.inputA11y': 'พิมพ์คำตอบ',
+  "writing.paletteToggle": "แทรกตัวอักษร",
   'writing.checkA11y': 'ตรวจคำตอบ',
   'writing.check': 'ตรวจ',
   'writing.taskOf': 'แบบฝึกที่ {{index}} จาก {{total}}',
@@ -500,6 +515,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "drill.toneIs": "วรรณยุกต์: {{tone}}",
   "drill.syllableOrdinal": "พยางค์ที่ {{index}}",
   "drill.irregular": "ผิดกฎ",
+  "drill.alsoPossible": "แบบนี้ก็ถูก: {{form}}",
   "drill.spellingOther": "“{{grapheme}}” ตัวเดียวกัน แต่ออกเสียงต่างกัน: {{list}}",
   "drill.spellingSame": "ออกเสียงเหมือนกันใน: {{list}}",
   "drill.spellingHere": "“{{grapheme}}” ในคำนี้ออกเสียง {{sound}}",
@@ -551,6 +567,8 @@ const th: Partial<Record<TranslationKey, string>> = {
   // 21.09.2026: Writing-Feedback-Schlüssel (Handübersetzung —
   // diese Datei ist bewusst außerhalb des Generators, weil sie geprüft ist).
   "writing.mistakeCase": "ตัวพิมพ์ใหญ่-เล็ก: ภาษาเยอรมัน คำนามขึ้นต้นด้วยตัวพิมพ์ใหญ่",
+  "writing.mistakeCaseUpper": "ตัวพิมพ์ใหญ่-เล็ก: คำนี้ขึ้นต้นด้วยตัวพิมพ์ใหญ่",
+  "writing.mistakeCaseLower": "ตัวพิมพ์ใหญ่-เล็ก: คำนี้เขียนด้วยตัวพิมพ์เล็ก",
   "writing.mistakeUmlaut": "สระเปลี่ยนเสียง: ä, ö และ ü เปลี่ยนความหมาย — «schon» ไม่ใช่ «schön»",
   "writing.mistakeEszett": "ß กับ ss: ไม่ใช่การพิมพ์ผิด แต่เป็นการสะกดคนละแบบ",
   "writing.mistakeArticleMissing": "ยังไม่มีคำนำหน้า คำนำหน้าเป็นส่วนหนึ่งของคำ",

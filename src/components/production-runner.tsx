@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
+import { ENTER_PRUEFT } from './sentence-input';
 import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
@@ -250,6 +251,8 @@ export function ProductionRunner({
             <TextInput
               value={eingabe}
               onChangeText={setEingabe}
+              onSubmitEditing={() => { if (eingabe.trim()) pruefen(eingabe); }}
+              {...ENTER_PRUEFT}
               multiline
               accessibilityLabel={t('production.inputA11y')}
               style={[styles.input, { color: colors.text, borderColor: colors.borderSubtle }]}

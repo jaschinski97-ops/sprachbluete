@@ -154,6 +154,33 @@ describe('Pflicht 3 — was Lernziel ist, gilt nie als Tippfehler', () => {
     expect(verdict.message?.key?.startsWith('writing.mistakeArticle')).toBe(true);
   });
 
+  it('verlangt beim Nomen den Artikel auch in der Zielform (Testlauf 16.10.2026)', () => {
+    // Bis zum 16.10. stand „Haus“ als eigene Zielform drin und galt als
+    // „genau richtig“ — entgegen dem Auftrag „mit Artikel“.
+    const prompt = buildWritingPrompt(deutsch('บ้าน'), 'th_to_de');
+    expect(prompt.targets).toContain('das Haus');
+    expect(prompt.targets).not.toContain('Haus');
+    expect(compareWriting('Haus', { language: 'de', targets: prompt.targets }).mistake).toBe('article-missing');
+  });
+
+  it('nimmt den Großbuchstaben eines Satzanfangs nicht als Fehler', () => {
+    // „Oder“ und „Das Haus“ sind Satzanfänge, „hallo“ steht klein mitten im Satz.
+    expect(verdictFor('Oder', ['oder'])).toMatchObject({ correct: true, exact: true });
+    expect(verdictFor('Das Haus', ['das Haus'])).toMatchObject({ correct: true, exact: true });
+    expect(verdictFor('hallo', ['Hallo'])).toMatchObject({ correct: true, exact: true });
+    expect(compareWriting('Hello', { language: 'en', targets: ['hello'] }).exact).toBe(true);
+  });
+
+  it('erklärt Groß-/Kleinschreibung passend zum Wort', () => {
+    expect(verdictFor('das haus', ['das Haus']).message?.key).toBe('writing.mistakeCase');
+    expect(verdictFor('guten morgen', ['Guten Morgen']).message?.key).toBe('writing.mistakeCaseUpper');
+    expect(verdictFor('gUt', ['gut']).message?.key).toBe('writing.mistakeCaseLower');
+    // Englisch: „I“ ist immer groß — kein Satzanfang-Bonus, keine Nomen-Erklärung.
+    const ich = compareWriting('i', { language: 'en', targets: ['I'] });
+    expect(ich.mistake).toBe('case');
+    expect(ich.message?.key).toBe('writing.mistakeCaseUpper');
+  });
+
   it('lässt einen falschen Artikel nicht durchgehen', () => {
     const verdict = verdictFor('der Haus', ['das Haus']);
     expect(verdict.correct).toBe(false);

@@ -14,6 +14,7 @@ import {
 import { settingsLanguageName } from '@/lib/i18n/settings-language-names';
 import { Spacing } from '@/constants/theme';
 import {
+  BackupError,
   BackupImportSummary,
   chooseBackupFile,
   exportBackup,
@@ -28,8 +29,10 @@ type StatusMessage = { kind: 'success' | 'error'; text: string };
 
 type Translate = (key: TranslationKey, params?: Record<string, string | number>) => string;
 
-function messageOf(error: unknown, unknownLabel: string): string {
-  return error instanceof Error ? error.message : unknownLabel;
+function messageOf(error: unknown, t: Translate): string {
+  // Sicherungsfehler tragen einen Schlüssel; ihr `message` ist nur deutsch.
+  if (error instanceof BackupError) return t(error.key, error.params);
+  return error instanceof Error ? error.message : t('common.unknownError');
 }
 
 function formatSummary(summary: BackupImportSummary, t: Translate, localeTag: string): string {
@@ -41,9 +44,12 @@ function formatSummary(summary: BackupImportSummary, t: Translate, localeTag: st
   const when = summary.exportedAt
     ? new Date(summary.exportedAt).toLocaleDateString(localeTag)
     : null;
-  return `${t('backup.applied', { parts: parts.join(', ') })}${
-    when ? t('backup.fromDate', { date: when }) : ''
-  }`;
+  // Mit Leerzeichen verbunden: 16 Sprachen führen „fromDate“ ohne
+  // führendes Leerzeichen, dann klebte „… .(Sicherung vom …)“ zusammen.
+  return [t('backup.applied', { parts: parts.join(', ') }), when ? t('backup.fromDate', { date: when }) : '']
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(' ');
 }
 
 /**
@@ -174,7 +180,7 @@ export function BackupSection() {
       const fileName = await exportBackup();
       setStatus({ kind: 'success', text: t('backup.created', { fileName }) });
     } catch (error) {
-      setStatus({ kind: 'error', text: messageOf(error, t('common.unknownError')) });
+      setStatus({ kind: 'error', text: messageOf(error, t) });
     } finally {
       setBusy(null);
     }
@@ -195,7 +201,7 @@ export function BackupSection() {
         text: formatSummary(summary, t, localeTagFor(uiLanguage)),
       });
     } catch (error) {
-      setStatus({ kind: 'error', text: messageOf(error, t('common.unknownError')) });
+      setStatus({ kind: 'error', text: messageOf(error, t) });
     } finally {
       setBusy(null);
     }

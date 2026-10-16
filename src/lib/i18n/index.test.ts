@@ -152,6 +152,40 @@ describe('Interpolation', () => {
     expect(interpolate('Hallo {{name}}', {})).toBe('Hallo {{name}}');
     expect(interpolate('Hallo {{name}}')).toBe('Hallo {{name}}');
   });
+
+  it('wählt Pluralformen nach den Regeln der Sprache (vorher „1 Wörter“)', () => {
+    const wort = '{{count, plural, one {# Wort} other {# Wörter}}} für {{was}}';
+    expect(interpolate(wort, { count: 1, was: 'heute' }, 'de')).toBe('1 Wort für heute');
+    expect(interpolate(wort, { count: 2000, was: 'heute' }, 'de')).toBe('2000 Wörter für heute');
+    expect(interpolate('{{n, plural, =0 {nichts} other {# Stück}}}', { n: 0 }, 'de')).toBe('nichts');
+    // Russisch: drei Formen für ganze Zahlen.
+    expect(translate('ru', 'chapter.words', { count: 1 })).toBe('1 слово для этой главы');
+    expect(translate('ru', 'chapter.words', { count: 3 })).toBe('3 слова для этой главы');
+    expect(translate('ru', 'chapter.words', { count: 5 })).toBe('5 слов для этой главы');
+    expect(translate('ru', 'chapter.words', { count: 21 })).toBe('21 слово для этой главы');
+    expect(translate('de', 'backup.partsLog', { days: 1 })).toBe('1 Tag Lernprotokoll');
+    expect(translate('en', 'stress.detailNuclei', { count: 1 })).toMatch(/^1 vowel nucleus\./);
+  });
+
+  it('lässt einen Pluralblock ohne Wert sichtbar stehen', () => {
+    expect(interpolate('{{count, plural, one {# Wort} other {# Wörter}}}', {}, 'de')).toBe(
+      '{{count, plural, one {# Wort} other {# Wörter}}}'
+    );
+  });
+});
+
+describe('Pluralblöcke in allen Wörterbüchern', () => {
+  it('sind wohlgeformt und haben immer eine other-Form', () => {
+    for (const language of UI_LANGUAGES) {
+      for (const [key, template] of Object.entries(dictionaries[language])) {
+        if (!template?.includes(', plural,')) continue;
+        for (const count of [0, 1, 2, 5, 21]) {
+          const text = interpolate(template, { count, cards: count, days: count, total: count, known: count, languages: 'x' }, language);
+          expect({ language, key, text }).toEqual({ language, key, text: expect.not.stringMatching(/plural,|[{}]/) });
+        }
+      }
+    }
+  });
 });
 
 describe('translate — Nachschlagen und Fallback', () => {

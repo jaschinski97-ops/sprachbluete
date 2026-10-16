@@ -306,6 +306,28 @@ export function swapAuxiliary(perfekt: string): string | null {
   return null;
 }
 
+/**
+ * Verben, deren Perfekt standardsprachlich mit BEIDEN Hilfsverben steht
+ * (Duden): je nach Bedeutung („ist geritten“ / „hat das Pferd geritten“,
+ * „ist gebrochen“ / „hat gebrochen“) oder regional („hat/ist gestanden“ im
+ * Süden, in Österreich und der Schweiz). Für sie ist die Form mit dem anderen
+ * Hilfsverb kein Ablenker — bis zum 16.10.2026 galt sie als falsch.
+ */
+const BEIDE_HILFSVERBEN = new Set([
+  'reiten', 'fahren', 'fliegen', 'schwimmen', 'segeln', 'rudern', 'tanzen',
+  'sitzen', 'stehen', 'liegen', 'hängen',
+  'frieren', 'schmelzen', 'brechen', 'abbrechen', 'zerbrechen', 'reißen', 'zerreißen',
+  'ziehen', 'treten', 'stoßen', 'anstoßen', 'abheben', 'verderben', 'trocknen',
+]);
+
+/** Die Form mit dem anderen Hilfsverb, wenn sie ebenfalls richtig ist. */
+export function alternativePerfekt(entry: VocabEntry): string | null {
+  const perfekt = entry.germanVerb?.perfekt;
+  if (!perfekt) return null;
+  const infinitiv = entry.term.replace(/^sich /, '');
+  return BEIDE_HILFSVERBEN.has(infinitiv) ? swapAuxiliary(perfekt) : null;
+}
+
 export function canBuildVerbFormQuestion(entry: VocabEntry): boolean {
   return Boolean(entry.germanVerb?.perfekt);
 }
@@ -334,9 +356,10 @@ export function buildVerbFormQuestion(
 
   const correct = verb.perfekt;
   const distractors: string[] = [];
+  const auchRichtig = alternativePerfekt(entry);
 
   const swapped = swapAuxiliary(correct);
-  if (swapped) distractors.push(swapped);
+  if (swapped && !auchRichtig) distractors.push(swapped);
 
   const foreign = shuffled(
     pool
@@ -344,7 +367,7 @@ export function buildVerbFormQuestion(
       .map((other) => other.germanVerb!.perfekt)
       // Zwei Verben koennten dieselbe Form tragen - dann waere der "falsche"
       // Ablenker in Wahrheit richtig.
-      .filter((form) => form !== correct && !distractors.includes(form)),
+      .filter((form) => form !== correct && form !== auchRichtig && !distractors.includes(form)),
     random
   );
 
@@ -359,6 +382,7 @@ export function buildVerbFormQuestion(
   // „unregelmäßig/regelmäßig" ist Übersichts-Chrome, nicht Stoff — localized
   // über die Wörterbücher (21.09.2026, en-UI).
   const parts = [stems, verb.irregular ? translate(ui, 'drill.irregular') : translate(ui, 'drill.regular')];
+  if (auchRichtig) parts.push(translate(ui, 'drill.alsoPossible', { form: auchRichtig }));
   if (entry.note) parts.push(entry.note);
 
   return {

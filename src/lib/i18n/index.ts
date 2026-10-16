@@ -104,15 +104,77 @@ export const dictionaries: Record<UiLanguage, Partial<Record<TranslationKey, str
 export const FALLBACK_ALLOWED_KEYS: readonly TranslationKey[] = [];
 
 const PLACEHOLDER_PATTERN = /\{\{(\w+)\}\}/g;
+const PLURAL_START = /\{\{(\w+), plural,/g;
+
+const pluralRules = new Map<string, Intl.PluralRules | null>();
+
+/** CLDR-Kategorie (one, few, many …) — ohne `Intl.PluralRules` nur one/other. */
+function pluralCategory(language: string, value: number): string {
+  if (!pluralRules.has(language)) {
+    try {
+      pluralRules.set(language, new Intl.PluralRules(language));
+    } catch {
+      pluralRules.set(language, null);
+    }
+  }
+  return pluralRules.get(language)?.select(value) ?? (value === 1 ? 'one' : 'other');
+}
+
+/**
+ * Pluralformen als ICU-Teilmenge: `{{count, plural, one {# Wort} other {# Wörter}}}`.
+ * Vorher stand überall eine feste Form („1 Wörter“, russisch „5 слоговых
+ * ядра“). Die Kategorie wählt `Intl.PluralRules` der Oberflächensprache,
+ * `=0`/`=1` … treffen genau, `#` ist die Zahl, ohne passende Kategorie gilt
+ * `other`. Ein Block ohne Wert bleibt wie `{{name}}` sichtbar stehen.
+ */
+function resolvePlurals(template: string, params: TParams, language: string): string {
+  let out = '';
+  let pos = 0;
+  for (const match of template.matchAll(PLURAL_START)) {
+    const start = match.index;
+    if (start < pos) continue;
+    const branches = new Map<string, string>();
+    let i = start + match[0].length;
+    for (;;) {
+      while (template[i] === ' ') i++;
+      if (template.startsWith('}}', i)) {
+        i += 2;
+        break;
+      }
+      const open = template.indexOf('{', i);
+      if (open < 0) return template;
+      let depth = 1;
+      let j = open + 1;
+      for (; j < template.length && depth > 0; j++) {
+        if (template[j] === '{') depth++;
+        else if (template[j] === '}') depth--;
+      }
+      if (depth !== 0) return template;
+      branches.set(template.slice(i, open).trim(), template.slice(open + 1, j - 1));
+      i = j;
+    }
+    const name = match[1];
+    if (!Object.prototype.hasOwnProperty.call(params, name)) continue;
+    const value = Number(params[name]);
+    const chosen =
+      (Number.isFinite(value)
+        ? branches.get(`=${value}`) ?? branches.get(pluralCategory(language, value))
+        : undefined) ?? branches.get('other') ?? '';
+    out += template.slice(pos, start) + chosen.replace(/#/g, String(params[name]));
+    pos = i;
+  }
+  return out + template.slice(pos);
+}
 
 /**
  * Ersetzt `{{name}}` durch die übergebenen Werte. Ein Platzhalter ohne Wert
  * bleibt stehen — eine fehlende Variable soll sichtbar sein, nicht still
- * leeren, was der Nutzer lesen soll.
+ * leeren, was der Nutzer lesen soll. Pluralblöcke siehe `resolvePlurals`.
  */
-export function interpolate(template: string, params?: TParams): string {
+export function interpolate(template: string, params?: TParams, language: string = 'en'): string {
   if (!params) return template;
-  return template.replace(PLACEHOLDER_PATTERN, (match, name: string) =>
+  const resolved = template.includes(', plural,') ? resolvePlurals(template, params, language) : template;
+  return resolved.replace(PLACEHOLDER_PATTERN, (match, name: string) =>
     Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match
   );
 }
@@ -120,7 +182,7 @@ export function interpolate(template: string, params?: TParams): string {
 /** Ein Schlüssel in einer Sprache — bei Fehlbestand auf Deutsch zurückfallend. */
 export function translate(language: UiLanguage, key: TranslationKey, params?: TParams): string {
   const template = dictionaries[language][key] ?? en[key] ?? de[key];
-  return interpolate(template, params);
+  return interpolate(template, params, language);
 }
 
 /* ---------- Anzeigename einer Lernsprache ---------- */

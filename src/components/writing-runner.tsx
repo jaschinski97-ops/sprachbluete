@@ -233,7 +233,8 @@ export function WritingRunner({
             </View> : null}
           </> : null}
           <Pressable accessibilityRole="button" accessibilityState={{ expanded: paletteOpen }} onPress={() => setPaletteOpen(value => !value)} style={styles.wide}>
-            <ThemedText type="small">{t('writing.inputA11y')} · {paletteOpen ? '−' : '+'}</ThemedText>
+            {/* Vorher stand hier „Antwort eingeben · +“ — klang wie das Feld, öffnet aber die Zeichentafel. */}
+            <ThemedText type="small">{t('writing.paletteToggle')} · {paletteOpen ? '−' : '+'}</ThemedText>
           </Pressable>
         </> : null}
         {!answered && paletteOpen ? <LanguagePalette

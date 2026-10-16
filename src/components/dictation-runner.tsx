@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { AudioPlayer } from 'expo-audio';
 
 import { LanguagePalette } from './character-palette';
+import { ENTER_PRUEFT } from './sentence-input';
 import { ThemedText, displayLineHeight } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -183,7 +184,8 @@ export function DictationRunner({
   }, [task, language, play, releaseSlowPlayer, t]);
 
   const submit = useCallback(async () => {
-    if (!task || !config || busy || answered) return;
+    // Leer prüfen wertete als „nicht bestanden“ — wie im Rollenspiel gesperrt.
+    if (!task || !config || busy || answered || !draft.trim()) return;
     setBusy(true);
     setNotice('');
     try {
@@ -322,6 +324,7 @@ export function DictationRunner({
           value={draft}
           onChangeText={setDraft}
           onSubmitEditing={() => void submit()}
+          {...ENTER_PRUEFT}
           editable={!answered}
           multiline
           placeholder={learningLanguage(task.language).placeholders.sentence}
@@ -346,11 +349,11 @@ export function DictationRunner({
           <View style={styles.row}>
             <Pressable
               onPress={() => void submit()}
-              disabled={busy}
+              disabled={busy || !draft.trim()}
               accessibilityRole="button"
               accessibilityLabel={t('dictation.checkA11y')}
-              accessibilityState={{ disabled: busy }}
-              style={({ pressed }) => [pressed && styles.pressed, busy && styles.disabled]}>
+              accessibilityState={{ disabled: busy || !draft.trim() }}
+              style={({ pressed }) => [pressed && styles.pressed, (busy || !draft.trim()) && styles.disabled]}>
               <ThemedView type="backgroundSelected" style={styles.wide}>
                 <ThemedText type="smallBold">{t('dictation.check')}</ThemedText>
               </ThemedView>

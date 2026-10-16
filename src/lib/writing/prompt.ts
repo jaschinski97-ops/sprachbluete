@@ -104,14 +104,16 @@ function ankerwortFuer(entry: VocabEntry, direction: PairDirection): string {
 
 /**
  * Der generierte de-Pool trägt den Artikel NICHT im `term`, der Auftrag
- * verlangt ihn aber (sichtbar in der Lösung) — deshalb zählt die Form mit
- * UND ohne Artikel.
+ * verlangt ihn aber („mit Artikel“). Zielform ist deshalb nur die Form MIT
+ * Artikel; „Haus“ allein meldet `compareWriting` als fehlenden Artikel.
+ * Bis zum 16.10.2026 zählte auch die Form ohne Artikel als „genau richtig“ —
+ * entgegen dem Auftrag und Abnahmekriterium 14 in docs/PROGRESS.md.
  */
 function mitArtikel(formen: string[], entry: VocabEntry): string[] {
   const noun = entry.germanNoun;
   if (!noun) return formen;
-  const erweitert = formen.flatMap((form) =>
-    form.toLowerCase().startsWith(`${noun.article} `) ? [form] : [form, `${noun.article} ${form}`]
+  const erweitert = formen.map((form) =>
+    form.toLowerCase().startsWith(`${noun.article} `) ? form : `${noun.article} ${form}`
   );
   return [...new Set(erweitert)];
 }

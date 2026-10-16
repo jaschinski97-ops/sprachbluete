@@ -80,8 +80,9 @@ describe('ReadingTextsRunner — der ganze Weg', () => {
     const renderer = await rendere(<ReadingTextsRunner direction="de_to_th" onExit={() => {}} />);
     const text = textVon(renderer);
     expect(text).toContain('Leseszene');
-    // Interpoliert: der Template-Vorsilbe vor {{total}} muss im Text stehen.
-    expect(text).toContain(d('texts.knownOf').split('{{total}}')[0]);
+    // Interpoliert, samt Pluralform: kein Platzhalter darf übrig bleiben.
+    expect(text).toMatch(/\d+ Wörter? aus deinem Bestand, \d+ begonnen/);
+    expect(text).not.toContain('{{');
   });
 
   it('zeigt den Text mit Antipp-Wörtern und Verständnisfragen', async () => {

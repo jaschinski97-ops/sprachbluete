@@ -272,6 +272,7 @@ function ReviewBody({
 }) {
   const { t, languageName, uiLanguage } = useLocale();
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [openArea, setOpenArea] = useState<TranslationKey | null>(null);
   const [writingPack, setWritingPack] = useState<VocabEntry[] | null>(null);
   const [chapters, setChapters] = useState<LearningChapter[] | null>(null);
   const [finished, setFinished] = useState<string[]>([]);
@@ -339,6 +340,8 @@ function ReviewBody({
       ) : mode === 'path' ? (
         <>
           <LearnPath
+            openArea={openArea}
+            setOpenArea={setOpenArea}
             direction={direction}
             chapters={chapters}
             finished={finished}
@@ -483,6 +486,8 @@ function LearnPath({
   onSelect,
   onFinish,
   onOpen,
+  openArea,
+  setOpenArea,
 }: {
   direction: PairDirection;
   chapters: LearningChapter[] | null;
@@ -495,6 +500,8 @@ function LearnPath({
   onSelect: (chapterId: string) => void;
   onFinish: (chapter: LearningChapter) => void;
   onOpen: (mode: Mode, chapter?: LearningChapter) => void;
+  openArea: TranslationKey | null;
+  setOpenArea: (label: TranslationKey | null) => void;
 }) {
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
@@ -606,7 +613,7 @@ function LearnPath({
 
       <HeutigeRundeKnopf onPress={() => onOpen('heute')} />
       <ThemedText type="smallBold" themeColor="textSecondary">{t('path.areas')}</ThemedText>
-      <ModeBar direction={direction} onPick={onOpen} />
+      <ModeBar direction={direction} onPick={onOpen} expanded={openArea} setExpanded={setOpenArea} />
       {stageChapters.length > 0 ? <>
         <ThemedText type="smallBold" themeColor="textSecondary">
           {t(STAGE_KEYS[stage])} · {t('chapter.doneCount', {
@@ -707,11 +714,20 @@ function DirectionPicker({
   );
 }
 
-/** Fünf eigenständige Lernbereiche mit Übungen hinter einer kurzen Beschreibung. */
-function ModeBar({ direction, onPick }: { direction: PairDirection; onPick: (mode: Mode) => void }) {
+/**
+ * Fünf eigenständige Lernbereiche mit Übungen hinter einer kurzen Beschreibung.
+ * Der aufgeklappte Bereich liegt im Lern-Bildschirm: Diese Leiste wird beim
+ * Öffnen einer Übung abgebaut und war danach jedes Mal wieder zugeklappt
+ * (Testlauf 16.10.2026).
+ */
+function ModeBar({ direction, onPick, expanded, setExpanded }: {
+  direction: PairDirection;
+  onPick: (mode: Mode) => void;
+  expanded: TranslationKey | null;
+  setExpanded: (label: TranslationKey | null) => void;
+}) {
   const { t } = useLocale();
   const colors = useTheme();
-  const [expanded, setExpanded] = useState<TranslationKey | null>(null);
   const descriptions = [
     'path.vocabulary',
     'path.listening',

@@ -751669,7 +751669,7 @@
               },
               {
                 "issue": "การสั่งซื้อโดยใช้ 'I'll take...'",
-                "explanation": "เวลาสั่งสินค้าให้ใช้สำนวน 'I'll take...' (ฉันขอรับ...) ซึ่งเป็นธรรมชาติในการซื้อของ"
+                "explanation": "เวลาสั่งสินค้าให้ใช้สำนวน 'I'll take...' (ขอเอา...) ซึ่งเป็นธรรมชาติในการซื้อของ"
               }
             ]
           },
@@ -752107,7 +752107,7 @@
           }
         }
       },
-      "digest": "64df2a0fdd70f3b1f2341683a03932766c114a8a495b1368b22a915e71e38ace",
+      "digest": "d032c7128773bd6e87d398c6bc441ec251a5e5bfcbb92f2dbf2ec605a6abf4cc",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -752185,7 +752185,7 @@
           {
             "speaker": "partner",
             "targetText": "Son cuatro euros con cincuenta céntimos.",
-            "thai": "ทั้งหมดสี่แผงห้าสิบเซนต์ครับ/ค่ะ (สี่ยูโรห้าสิบเซนต์)",
+            "thai": "ทั้งหมดสี่ยูโรห้าสิบเซนต์ครับ/ค่ะ",
             "roman": "Son kwat-ro ew-ros kon thin-kwen-ta then-tee-mos.",
             "german": "Das macht vier Euro und fünfzig Cent."
           }
@@ -752306,7 +752306,7 @@
               "ขอแอปเปิลครึ่งกิโลกรัมด้วยครับ/ค่ะ",
               "นี่ครับ/ค่ะ ต้องการอะไรเพิ่มอีกไหมครับ/ค่ะ?",
               "แค่นี้ครับ/ค่ะ ขอบคุณครับ/ค่ะ ทั้งหมดเท่าไรครับ/ค่ะ?",
-              "ทั้งหมดสี่แผงห้าสิบเซนต์ครับ/ค่ะ (สี่ยูโรห้าสิบเซนต์)"
+              "ทั้งหมดสี่ยูโรห้าสิบเซนต์ครับ/ค่ะ"
             ],
             "corrections": [
               {
@@ -752789,7 +752789,7 @@
           }
         }
       },
-      "digest": "0a095f953f77d52eeee056f1918908d1f5298da3415f40704cb9b7146f310498",
+      "digest": "dd5535343d08848576d9c7c86b8f02370a7d7c02f9b1ebe07b992fc6074dc04b",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -753433,7 +753433,7 @@
           {
             "speaker": "learner",
             "targetText": "Ich nehme lieber die süßen roten Äpfel. Haben Sie auch frische Tomaten?",
-            "thai": "ขอรับเป็นแอปเปิลแดงหวานดีกว่าค่ะ มีมะเขือเทศสดด้วยไหมคะ?",
+            "thai": "ขอเอาแอปเปิลแดงหวานดีกว่าค่ะ มีมะเขือเทศสดด้วยไหมคะ?",
             "roman": "Ich nehme lieber die süßen roten Äpfel. Haben Sie auch frische Tomaten?",
             "german": "Ich nehme lieber die süßen roten Äpfel. Haben Sie auch frische Tomaten?"
           },
@@ -753574,7 +753574,7 @@
               "สวัสดีตอนเช้าครับ รับอะไรดีครับ?",
               "สวัสดีตอนเช้าค่ะ ขอแอปเปิลสองกิโลกรัมค่ะ",
               "ยินดีครับ อยากได้สีแดงหวานหรือสีเขียวอมเปรี้ยวดีครับ?",
-              "ขอรับเป็นแอปเปิลแดงหวานดีกว่าค่ะ มีมะเขือเทศสดด้วยไหมคะ?",
+              "ขอเอาแอปเปิลแดงหวานดีกว่าค่ะ มีมะเขือเทศสดด้วยไหมคะ?",
               "มีแน่นอนครับ มะเขือเทศพวงตรงนี้สดมาก รับเท่าไหร่ดีครับ?",
               "ครึ่งกิโลกรัมก็พอค่ะ ทั้งหมดนี้ราคาเท่าไหร่คะ?",
               "ทั้งหมดรวมเป็นหกยูโรห้าสิบเซนต์ครับ",
@@ -754045,7 +754045,7 @@
           }
         }
       },
-      "digest": "3a865d28206d9cd9c3baca4fd13544522aa561b1ddb7e113f2c1431892aa31e6",
+      "digest": "bb864cfd320ad2b6630cf01a43be04a8e4d2f703155b9b5894c4a922f7fe7252",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -757016,7 +757016,7 @@
           {
             "speaker": "learner",
             "targetText": "Guten Abend. Ich möchte bitte ein Mineralwasser.",
-            "thai": "สวัสดีตอนเย็นค่ะ ขอรับน้ำแร่หนึ่งที่ค่ะ",
+            "thai": "สวัสดีตอนเย็นค่ะ ขอน้ำแร่หนึ่งขวดค่ะ",
             "roman": "Goo-ten Ah-bent. Ikh merkh-te bit-teh ayn Mee-neh-rahl-vas-ser.",
             "german": "Guten Abend. Ich möchte bitte ein Mineralwasser."
           },
@@ -757030,7 +757030,7 @@
           {
             "speaker": "learner",
             "targetText": "Ja, ich nehme das Hähnchen mit Reis und Gemüse.",
-            "thai": "ค่ะ ฉันขอรับไก่กับข้าวและผักค่ะ",
+            "thai": "ค่ะ ฉันขอไก่กับข้าวและผักค่ะ",
             "roman": "Yah, ikh nay-meh dahs Hehn-khen mit Rayss oont Geh-mew-zeh.",
             "german": "Ja, ich nehme das Hähnchen mit Reis und Gemüse."
           },
@@ -757133,9 +757133,9 @@
             "setting": "ลูกค้าสั่งอาหารและเครื่องดื่มกับพนักงานเสิร์ฟในร้านอาหาร",
             "turns": [
               "สวัสดีตอนเย็นครับ รับเครื่องดื่มอะไรดีครับ",
-              "สวัสดีตอนเย็นค่ะ ขอรับน้ำแร่หนึ่งที่ค่ะ",
+              "สวัสดีตอนเย็นค่ะ ขอน้ำแร่หนึ่งขวดค่ะ",
               "ยินดีครับ แล้วเลือกอาหารจานหลักได้หรือยังครับ",
-              "ค่ะ ฉันขอรับไก่กับข้าวและผักค่ะ",
+              "ค่ะ ฉันขอไก่กับข้าวและผักค่ะ",
               "คุณต้องการสลัดจานเล็กเพิ่มด้วยไหมครับ",
               "ไม่ค่ะขอบคุณ เท่านี้ก่อนค่ะ"
             ],
@@ -757508,7 +757508,7 @@
           }
         }
       },
-      "digest": "a7597bfbe20168a8526777f7e496e7c768cb2c01c451450b3e4d594c02f37ef8",
+      "digest": "29fa3c46455036edf015e60bc1bc237dfadf26c1eb08a32cab64fbb7edcb73fb",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -769218,7 +769218,7 @@
         "german": "farblose, geruchlose Flüssigkeit zum Trinken",
         "germanNoun": {
           "article": "das",
-          "plural": "die Wässer"
+          "plural": "—"
         },
         "translations": {
           "de": "Wasser",
@@ -769259,7 +769259,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "ee35eaa5c05e0caf95c79d08561808adae8e56a7e496a68447f0cae5a5c8b68f",
+      "digest": "9138c7a1b17bdad335c8eccc428a6fab441cf13c2ba129495193669e5b15cf5f",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -783045,7 +783045,7 @@
         ],
         "germanNoun": {
           "article": "der",
-          "plural": "die Zimt"
+          "plural": "—"
         },
         "id": "ki-de-3258d33c",
         "generatedAt": 1789640212780,
@@ -783054,7 +783054,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "25d5bbd373f673848c8f20f88a81b1f56150b0d81461b1b6120497c9b97d2b73",
+      "digest": "031d73d0ce2dbb7aaa4fe2824c0e63abe9fcdb408a96496c9e8c3026ef800ef5",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -783965,7 +783965,7 @@
         "isConcrete": true,
         "germanNoun": {
           "article": "der",
-          "plural": "die Restmüll"
+          "plural": "—"
         },
         "exampleTerm": "Alte Zahnbürsten gehören in den Restmüll.",
         "exampleRoman": "ˈʔaltə ˈt͡saːnˌbʏʁstn̩ ɡəˈhøːʁən ɪn deːn ˈʁɛstˌmʏl.",
@@ -783981,7 +783981,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "4b994d37dedcc86ef3fe077ff7e53d34ac366dcea542485e994b063905bd3ecb",
+      "digest": "54d32f505410bde323b8c37acb8f7a4a81526c74bc9580ff4a6fee1b6f5a8731",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -808957,7 +808957,7 @@
         "isConcrete": true,
         "germanNoun": {
           "article": "das",
-          "plural": "die Leergut"
+          "plural": "—"
         },
         "exampleTerm": "Wir geben das Leergut im Supermarkt ab.",
         "exampleRoman": "viːɐ̯ ˈɡeːbn̩ das ˈleːɐ̯ˌɡuːt ɪm ˈzuːpɐˌmaʁkt ʔap.",
@@ -808973,7 +808973,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "1085aca9186f75a15fa590a2255fe6e95c09e63ba6e76eced09025aa8749289d",
+      "digest": "94523727e8fce4e44d5649963fab03959c39d52b42d1fd406ac10ab8ded3e9e0",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -811232,7 +811232,7 @@
         "isConcrete": true,
         "germanNoun": {
           "article": "der",
-          "plural": "die Biomüll"
+          "plural": "—"
         },
         "exampleTerm": "Obstschalen wirft man in den Biomüll.",
         "exampleRoman": "ˈʔoːpstˌʃaːlən vɪʁft man ɪn deːn ˈbiːoˌmʏl.",
@@ -811249,7 +811249,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "7b479be4f2533e8e1d26189f1b83afc9490c1da904a9b21d8cb73ccaa583d7bc",
+      "digest": "c458a625a4fcc624df70d6891cd6a1ba62c339627eb6b0a735d811388ea784af",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -811678,7 +811678,7 @@
         "german": "Abfall, Unrat",
         "germanNoun": {
           "article": "der",
-          "plural": "die Müll"
+          "plural": "—"
         },
         "translations": {
           "de": "Müll",
@@ -811718,7 +811718,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b526ca788a80dacb508a6c7890248ae6d592edfb790d9f8acd2cc3959acfe4ba",
+      "digest": "a7fed4fb0152f6263a8848c4fb8007c49aa87d532570951f6ee303af2b97f41e",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -814759,7 +814759,7 @@
         "german": "Licht der Sonne",
         "germanNoun": {
           "article": "der",
-          "plural": "die Sonnenschein"
+          "plural": "—"
         },
         "translations": {
           "de": "Sonnenschein",
@@ -814801,7 +814801,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "58528ecb6b2357bc181739839c89a828152c5edb364a7ba7227d39ec75a121de",
+      "digest": "e60fa34158da523e165e93878e85d791e06ec879a35d126491fa60b90407ff3d",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -823843,7 +823843,7 @@
         "german": "gelbes Getreide mit Kolben",
         "germanNoun": {
           "article": "der",
-          "plural": "die Mais"
+          "plural": "—"
         },
         "translations": {
           "de": "Mais",
@@ -823883,7 +823883,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "85139ba62a5452ffd0ee0592b4a97893adb18a5db9b302890b33690af54a1ebd",
+      "digest": "feef9035889130b3bc75583ace0c9fc17240e2f7236b966641d382cee715960d",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -852440,7 +852440,7 @@
         ],
         "germanNoun": {
           "article": "das",
-          "plural": "die Obst"
+          "plural": "—"
         },
         "id": "ki-de-c9138482",
         "generatedAt": 1789655012598,
@@ -852449,7 +852449,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "e39d6b453b1dbf4684ff1483b8c428d8c0430ba8ad4334e1cac5e7edac6e4ca9",
+      "digest": "0ace21b643b336b55dc66d4f1e94266b94747f35ac6d7da0b357a8528bd8b2a2",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -862547,7 +862547,7 @@
         "isConcrete": true,
         "germanNoun": {
           "article": "das",
-          "plural": "die Hackfleisch"
+          "plural": "—"
         },
         "exampleTerm": "Für die Soße brauche ich frisches Hackfleisch.",
         "exampleRoman": "feur dee ZOH-seh BROW-kheh FRISH-es HAHK-flysh.",
@@ -862563,7 +862563,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b2641bb695fc75f9840a95538c8c0c3364cf0a378fb0af08e5793a5c3f21aa39",
+      "digest": "eea83a065f400fb42bd42a9a51bf363c3d937618a5c154c873345e4b24db2220",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -867377,7 +867377,7 @@
         "isConcrete": true,
         "germanNoun": {
           "article": "die",
-          "plural": "die Unterwäsche"
+          "plural": "—"
         },
         "exampleTerm": "Ich packe saubere Unterwäsche in die Reisetasche.",
         "exampleRoman": "Ich PACK-e ZOW-be-re UN-ter-wä-she in dee RY-ze-ta-she.",
@@ -867395,7 +867395,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "0c06c1294f6587f8b5e4861281ec2581707caa0de76e73aa3661ff388fdcae45",
+      "digest": "2c46c589f8dc9edb5425eb3da86d677aed8858783ed99ad402542d126dce946e",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1103293,7 +1103293,7 @@
       "id": "ki-th-1322c8d4",
       "document": {
         "term": "ห้องน้ำ",
-        "romanization": "hɔ̂ɔng-nám",
+        "romanization": "hɔ̂ng-nám",
         "german": "Toilette / Badezimmer",
         "translations": {
           "de": "Toilette / Badezimmer",
@@ -1103321,11 +1103321,11 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ห้องน้ำอยู่ไหน",
-        "exampleRoman": "hɔ̂ɔng-nám yùu nǎi",
+        "exampleRoman": "hɔ̂ng-nám yùu nǎi",
         "exampleGerman": "Wo ist die Toilette?",
         "syllables": [
           {
-            "roman": "hɔ̂ɔng",
+            "roman": "hɔ̂ng",
             "tone": "falling"
           },
           {
@@ -1103340,7 +1103340,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, zweiter Anbieter geprüft)."
       },
-      "digest": "f632aa6d34c603149b56a18ee3a6cfe5931420153faeccb0bcc1471729438160",
+      "digest": "60c248b354eb7cfa0fff0108eceb9f3bead2cade72b9486cc0d3702f3b227544",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1107510,7 +1107510,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ขอถามหน่อยครับ ห้องน้ำไปทางไหน",
-        "exampleRoman": "khɔ̌ɔ-thǎam-nɔ̀i khráp, hɔ̂ɔng-nám bpai thaang nǎi",
+        "exampleRoman": "khɔ̌ɔ-thǎam-nɔ̀i khráp, hɔ̂ng-nám bpai thaang nǎi",
         "exampleGerman": "Darf ich kurz fragen: In welche Richtung geht es zur Toilette?",
         "syllables": [
           {
@@ -1107533,7 +1107533,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "26a7fbb1e6e78ce0769379d5339c3b4280389d1a1bc93866de5a0076fa79bd24",
+      "digest": "51c5fc5ede20dfecf77e96d217fbfe06212c84a3521e2ac0a1eae08c7d3c3ff0",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1110451,7 +1110451,7 @@
       "id": "ki-th-21dcdc65",
       "document": {
         "term": "ห้องรับแขก",
-        "romanization": "hɔ̂ɔng-ráp-khɛ̀ɛk",
+        "romanization": "hɔ̂ng-ráp-khɛ̀ɛk",
         "german": "Wohnzimmer",
         "translations": {
           "de": "Wohnzimmer",
@@ -1110479,11 +1110479,11 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "เรานั่งคุยกันในห้องรับแขก",
-        "exampleRoman": "rao nâng khui gan nai hɔ̂ɔng-ráp-khɛ̀ɛk",
+        "exampleRoman": "rao nâng khui gan nai hɔ̂ng-ráp-khɛ̀ɛk",
         "exampleGerman": "Wir sitzen im Wohnzimmer und unterhalten uns.",
         "syllables": [
           {
-            "roman": "hɔ̂ɔng",
+            "roman": "hɔ̂ng",
             "tone": "falling"
           },
           {
@@ -1110502,7 +1110502,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "16efbb76ceecc9b4f9aa46ae5ec5219df185eef7f8995f25b8125df93ff5c504",
+      "digest": "525f6a6ffd0a0412395e2d21e4b6ea912b07433098e4be378743b4e966384ade",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1115514,7 +1115514,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ปลั๊กไฟอยู่ตรงมุมห้อง",
-        "exampleRoman": "bplák-fai yùu dtrong mum hɔ̂ɔng",
+        "exampleRoman": "bplák-fai yùu dtrong mum hɔ̂ng",
         "exampleGerman": "Die Steckdose befindet sich in der Zimmerecke.",
         "syllables": [
           {
@@ -1115533,7 +1115533,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "1ed93da9b06d40e9c513d0b0ba41ee63a8463a9a5647c871c4bdc3c5a6a33779",
+      "digest": "ff10c1894620f0c715739ed68c9408f98ace873dffafc37228821ae706debbe8",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1116108,7 +1116108,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ห้องนี้กว้างขวางดี",
-        "exampleRoman": "hɔ̂ɔng níi gwâang-khwǎang dii",
+        "exampleRoman": "hɔ̂ng níi gwâang-khwǎang dii",
         "exampleGerman": "Dieses Zimmer ist schön geräumig.",
         "syllables": [
           {
@@ -1116123,7 +1116123,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "653c594f230f3df1ae825794cf2fd44a2e1fc8052509850877e224cd8d7c6cc8",
+      "digest": "cbad8fbc38dc0411e150261ce9497dab20a55434e960feb626bc36a3388ad0e5",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1119370,7 +1119370,7 @@
       "id": "ki-th-33908831",
       "document": {
         "term": "ห้องแต่งตัว",
-        "romanization": "hɔ̂ɔng-dtɛ̀ng-dtua",
+        "romanization": "hɔ̂ng-dtɛ̀ng-dtua",
         "german": "Ankleidezimmer",
         "translations": {
           "de": "Ankleidezimmer",
@@ -1119398,11 +1119398,11 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "เธอกำลังเลือกชุดอยู่ในห้องแต่งตัว",
-        "exampleRoman": "thəə gam-lang lʉ̂ak chút yùu nai hɔ̂ɔng-dtɛ̀ng-dtua",
+        "exampleRoman": "thəə gam-lang lʉ̂ak chút yùu nai hɔ̂ng-dtɛ̀ng-dtua",
         "exampleGerman": "Sie wählt gerade im Ankleidezimmer ein Outfit aus.",
         "syllables": [
           {
-            "roman": "hɔ̂ɔng",
+            "roman": "hɔ̂ng",
             "tone": "falling"
           },
           {
@@ -1119421,7 +1119421,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "df79f9077780eb7d4d161a0397e6379b142ede4c253a400faa194ec91a3cf2ad",
+      "digest": "040554c667280692dd1ed98ab24170ef4cc7130c7ac5442b2b16b7ed8919aa74",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1139127,7 +1139127,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ห้องน้ำอยู่ทางขวามือ",
-        "exampleRoman": "hɔ̂ɔng-nám yùu thaang khwǎa-mʉʉ",
+        "exampleRoman": "hɔ̂ng-nám yùu thaang khwǎa-mʉʉ",
         "exampleGerman": "Die Toilette ist auf der rechten Seite.",
         "syllables": [
           {
@@ -1139142,7 +1139142,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "54e9641f0b62d5af1697d6f0d11a591eed44af56dad96c8e980a61303325554b",
+      "digest": "805db7519504c7d76fc2d6e06a7545df9a029db010bf857307d6d4a4d29c1ec8",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1150865,7 +1150865,7 @@
       "id": "ki-th-7939d37b",
       "document": {
         "term": "ห้องเก็บของ",
-        "romanization": "hɔ̂ɔng-gèp-khɔ̌ɔng",
+        "romanization": "hɔ̂ng-gèp-khɔ̌ɔng",
         "german": "Abstellraum",
         "translations": {
           "de": "Abstellraum",
@@ -1150893,11 +1150893,11 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "วางกล่องไว้ในห้องเก็บของ",
-        "exampleRoman": "waang glɔ̀ɔng wái nai hɔ̂ɔng-gèp-khɔ̌ɔng",
+        "exampleRoman": "waang glɔ̀ɔng wái nai hɔ̂ng-gèp-khɔ̌ɔng",
         "exampleGerman": "Stell den Karton in den Abstellraum.",
         "syllables": [
           {
-            "roman": "hɔ̂ɔng",
+            "roman": "hɔ̂ng",
             "tone": "falling"
           },
           {
@@ -1150916,7 +1150916,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "5b291b327790aeada99e218e91a38bb36ae9ba25f2284799bd325a0ee5b5ca77",
+      "digest": "5fd2b57f1a100891e37491ca7a21f7b1d7678d8304e83138dfab49c8fcfa91e3",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1152438,7 +1152438,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ในห้องมีฝุ่นเยอะ",
-        "exampleRoman": "nai hɔ̂ɔng mii fùn yə́",
+        "exampleRoman": "nai hɔ̂ng mii fùn yə́",
         "exampleGerman": "Im Zimmer ist viel Staub.",
         "syllables": [
           {
@@ -1152453,7 +1152453,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "061ff31ce459ae4dcc8e28207a73d19b3cad75ba8597ff17721674aedabdceed",
+      "digest": "4d45becc52a0467bdb9d1a6813b668c1036a68119369662fe04c1ae04a3225ff",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1165757,7 +1165757,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "หยิบเสื้อคลุมมาใส่เพราะในห้องแอร์เย็น",
-        "exampleRoman": "yìp sʉ̂a-khlum maa sài phrɔ́ nai hɔ̂ɔng ɛɛ yen",
+        "exampleRoman": "yìp sʉ̂a-khlum maa sài phrɔ́ nai hɔ̂ng ɛɛ yen",
         "exampleGerman": "Nimm eine Strickjacke, weil es im klimatisierten Raum kalt ist.",
         "syllables": [
           {
@@ -1165776,7 +1165776,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "d0037d589f86d7b6df2551eb68827abd09032e909ca98434c4ca5d21f8694213",
+      "digest": "e71a28053ab211ad1d2e1f8656074d32c7b6600d9cd80099d4a817731d4ba248",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1180675,7 +1180675,7 @@
       "id": "ki-th-b2896586",
       "document": {
         "term": "ห้องประชุม",
-        "romanization": "hɔ̂ɔng-bprà-chum",
+        "romanization": "hɔ̂ng-bprà-chum",
         "german": "Besprechungsraum",
         "translations": {
           "de": "Besprechungsraum",
@@ -1180703,11 +1180703,11 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ทุกคนพร้อมกันในห้องประชุมแล้ว",
-        "exampleRoman": "thúk-khon phrɔ́ɔm gan nai hɔ̂ɔng-bprà-chum lɛ́ɛo",
+        "exampleRoman": "thúk-khon phrɔ́ɔm gan nai hɔ̂ng-bprà-chum lɛ́ɛo",
         "exampleGerman": "Alle sind bereits im Besprechungsraum versammelt.",
         "syllables": [
           {
-            "roman": "hɔ̂ɔng",
+            "roman": "hɔ̂ng",
             "tone": "falling"
           },
           {
@@ -1180726,7 +1180726,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "1a79d264aa1d8f26b465dda3c276e40eb0acef4cb5ffafb36248eaec21cd83db",
+      "digest": "c9fcdfc8354c7e9f2fb41c717df1c6c179ef7dc4586606779f2870f84d33a1e7",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1201706,7 +1201706,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "อย่าตะโกนในห้องสมุด",
-        "exampleRoman": "yàa dtà-goon nai hɔ̂ɔng-sà-mùt",
+        "exampleRoman": "yàa dtà-goon nai hɔ̂ng-sà-mùt",
         "exampleGerman": "Schreie nicht in der Bibliothek.",
         "syllables": [
           {
@@ -1201725,7 +1201725,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b2d456fd1a0824462b800cb8d3ceab08801b0c1f0ba4e12c050c2283c3e634c7",
+      "digest": "bba33dcf688cfa434b178b9625c7cabe0c55aba63f14fc2e25d2041f911ba8bf",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",

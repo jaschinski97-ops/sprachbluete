@@ -141,6 +141,31 @@ export function satzaufgabenFuer(language: SatzSprache, anchor: UiLanguage = 'de
   );
 }
 
+/**
+ * Wie viele Wörter der Grundwortschatz für Satzübungen ohne Kapitel umfasst.
+ *
+ * WARUM (Testlauf 16.10.2026): „Satz verstehen“ und das Diktat zogen aus allen
+ * 2.000 Beispielsätzen einer Sprache. Fast der ganze Wortschatz trägt keine
+ * `learningStage` und gilt damit als Anfängerstoff — so kamen auf der
+ * Anfängerstufe Sätze wie „Besucher müssen am Wachhäuschen ihren Ausweis
+ * hinterlegen“. Die ersten Wörter in Erzeugungsreihenfolge sind die häufigen
+ * (dieselbe Ordnung wie neue Karteikarten in `review-session.ts`).
+ */
+export const GRUNDWORTSCHATZ_GROESSE = 400;
+
+/** Die häufigsten Wörter einer Lernsprache, in Erzeugungsreihenfolge. */
+export function grundwortschatz(language: SatzSprache): VocabEntry[] {
+  return activeVocabulary()
+    .filter((word) => String(word.language) === language)
+    .sort((a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id))
+    .slice(0, GRUNDWORTSCHATZ_GROESSE);
+}
+
+/** Satzaufgaben aus dem Grundwortschatz — für Übungen, die ohne Kapitel starten. */
+export function grundsaetzeFuer(language: SatzSprache, anchor: UiLanguage = 'de'): SentenceTask[] {
+  return buildSentenceTasks(grundwortschatz(language), anchor);
+}
+
 /** Die Satzaufgaben je Lernsprache (lazy — der Katalog kann sich zur Laufzeit ändern). */
 export const SENTENCE_TASKS_BY_LANGUAGE: Record<SatzSprache, SentenceTask[]> = Object.defineProperties(
   {} as Record<SatzSprache, SentenceTask[]>,

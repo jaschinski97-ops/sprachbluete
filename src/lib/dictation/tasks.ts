@@ -1,6 +1,6 @@
 import { dictationConfigFor } from '@/data/dictation-config';
 
-import { satzaufgabenFuer, sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
+import { grundsaetzeFuer, satzaufgabenFuer, sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
 
 import { seededRandom, shuffled } from '@/lib/drills/random';
 
@@ -42,14 +42,23 @@ export type DictationTask = {
 };
 
 /** Sprachen ohne Satzstoff liefern ehrlich nichts — der Runner zeigt einen Hinweis. */
-export function dictationTasksFor(language: SatzSprache, direction: PairDirection): DictationTask[] {
+export function dictationTasksFor(
+  language: SatzSprache,
+  direction: PairDirection,
+  /**
+   * Nur Sätze des Grundwortschatzes — für die eigenständige Übung (16.10.2026).
+   * Die Heutige Runde filtert selbst auf ihre Karten und braucht alle Sätze.
+   */
+  options: { grundwortschatz?: boolean } = {}
+): DictationTask[] {
   // Der Konfigurationseintrag ist die Fachlichkeit-Prüfung: Eine Sprache
   // ohne Diktat-Regeln kann keine Diktate urteilen.
   dictationConfigFor(language);
   // Der Anker steuert dieRegistry (21.09.2026): Das Diktat tippt immer die
   // ZIELsprache — der Anker ändert hier nur, welche Aufgabenbasis der
   // Registry-Cache liefert (de-Brücke: Bedeutungsstoff, sonst derselbe).
-  return satzaufgabenFuer(language, anchorOf(direction))
+  const anchor = anchorOf(direction);
+  return (options.grundwortschatz ? grundsaetzeFuer(language, anchor) : satzaufgabenFuer(language, anchor))
     .filter((task) => task.text.trim().length > 0)
     .map((task) => ({
       id: `dictation-${task.vocabId}`,
@@ -76,7 +85,7 @@ export function buildDictationSession(
   seed: number = Date.now(),
   size: number = DICTATION_SESSION_SIZE
 ): DictationTask[] {
-  return shuffled(dictationTasksFor(language, direction), seededRandom(seed)).slice(0, size);
+  return shuffled(dictationTasksFor(language, direction, { grundwortschatz: true }), seededRandom(seed)).slice(0, size);
 }
 
 /** Der ehrliche Fußtext je Sprache — geerbt von den Satzübungen. */

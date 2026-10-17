@@ -4,6 +4,8 @@ import type { VocabEntry } from './vocab-types';
 
 import {
   buildSentenceTasks,
+  grundwortschatz,
+  GRUNDWORTSCHATZ_GROESSE,
   sentenceFootnote,
   SENTENCE_TASKS_BY_LANGUAGE,
 } from './sentence-tasks';
@@ -138,6 +140,28 @@ describe('SENTENCE_TASKS_BY_LANGUAGE im generierten Modus', () => {
     expect(sentenceFootnote('en')).not.toContain('keine Beispielsätze');
     // Sprache ohne Stoff im Katalog: fr existiert nicht als Vokabel-Sprache.
     expect(SENTENCE_TASKS_BY_LANGUAGE.en.length).toBeGreaterThan(0);
+  });
+});
+
+describe('Grundwortschatz für Satzübungen ohne Kapitel (Testlauf 16.10.2026)', () => {
+  afterEach(() => {
+    setCurrentCatalog(FIXTURE_CATALOG);
+  });
+
+  it('nimmt die häufigen Wörter zuerst und höchstens GRUNDWORTSCHATZ_GROESSE', () => {
+    const basis = generierterKatalog();
+    const vorlage = basis.entries[0];
+    const viele = Array.from({ length: GRUNDWORTSCHATZ_GROESSE + 50 }, (_, i) => ({
+      ...vorlage,
+      id: `vokabular:th:w${i}`,
+      // Umgekehrt gespeichert: Erzeugungsreihenfolge, nicht Speicherreihenfolge, zählt.
+      document: { ...vorlage.document, id: `w${i}`, term: `w${i}`, exampleTerm: `ประโยค ${i}`, generatedAt: 1000 + i },
+    })).reverse();
+    setCurrentCatalog({ ...basis, entries: viele } as never);
+    const woerter = grundwortschatz('th');
+    expect(woerter).toHaveLength(GRUNDWORTSCHATZ_GROESSE);
+    expect(woerter[0].id).toBe('w0');
+    expect(woerter.some((wort) => wort.id === `w${GRUNDWORTSCHATZ_GROESSE}`)).toBe(false);
   });
 });
 

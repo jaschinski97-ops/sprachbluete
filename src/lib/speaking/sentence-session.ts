@@ -1,6 +1,6 @@
 import type { CapturedPcm } from './microphone-capture';
 import { analyzeToneContour, type ToneContourMeasurement } from './analysis';
-import { buildSentenceTasks, dialogueSentenceTasks, satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
+import { buildSentenceTasks, dialogueSentenceTasks, grundsaetzeFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
 import { bundledDocuments } from '../content/bundled';
 import { targetLanguageOf } from '../languages/types';
 import type { VocabEntry } from '@/data/vocab-types';
@@ -35,7 +35,7 @@ export function sentenceSession(
   const tasks = anchor !== 'de' && !words
     ? bundledDocuments('situations').filter(scene => targetLanguageOf(scene.direction) === language)
       .flatMap(scene => dialogueSentenceTasks(scene, anchor))
-    : words ? buildSentenceTasks(words, anchor) : satzaufgabenFuer(language, anchor);
+    : words ? buildSentenceTasks(words, anchor) : grundsaetzeFuer(language, anchor);
   return shuffled(tasks, seededRandom(seed))
     .slice(0, SENTENCE_SESSION_SIZE);
 }

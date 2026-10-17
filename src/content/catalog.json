@@ -423092,9 +423092,9 @@
       "byteSize": 34605,
       "sourceBytes": 67968,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:51:41.086Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:04:56.712Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -423110,10 +423110,10 @@
             "high",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "9 Soll-Silben, aber nur 8 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (9 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -424511,9 +424511,9 @@
       "byteSize": 39021,
       "sourceBytes": 76800,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:51:42.239Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:04:57.290Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -424527,10 +424527,10 @@
             "mid",
             "high",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "7 Soll-Silben, aber nur 6 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (7 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -516906,9 +516906,9 @@
       "byteSize": 25965,
       "sourceBytes": 50688,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-03T22:18:50.034Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:04:58.654Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -516923,10 +516923,10 @@
             "low",
             "high",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "8 Soll-Silben, aber nur 5 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (8 Silben) besser als 98 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -517483,9 +517483,9 @@
       "byteSize": 46317,
       "sourceBytes": 91392,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:53:49.420Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:04:59.088Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -517502,10 +517502,10 @@
             "low",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "10 Soll-Silben, aber nur 8 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (10 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -531309,9 +531309,9 @@
       "byteSize": 16365,
       "sourceBytes": 31488,
       "check": {
-        "status": "passed",
-        "label": "automatisch geprüft",
-        "checkedAt": "2026-10-03T22:19:23.972Z",
+        "status": "unchecked",
+        "label": "ungeprüft",
+        "checkedAt": "2026-10-17T07:05:01.141Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -531320,7 +531320,7 @@
           "voicedMs": 740,
           "targetTones": [
             "rising",
-            "rising"
+            "high"
           ],
           "silben": [
             {
@@ -531328,8 +531328,8 @@
               "form": "knapp"
             },
             {
-              "tone": "rising",
-              "form": "geprueft"
+              "tone": "high",
+              "form": "register"
             }
           ],
           "ordnung": {
@@ -531341,12 +531341,12 @@
               "halbtoene": 2.6687090560373763
             },
             {
-              "tone": "rising",
+              "tone": "high",
               "halbtoene": 4.707809073345124
             }
           ],
-          "status": "passed",
-          "reason": "Silbenform 1 von 2 plus 0 Register-Ordnung(en) mit dem Soll vereinbar; absolute Registerlage bleibt ungeprüft."
+          "status": "unchecked",
+          "reason": "Registerlage mittel/tief/hoch ohne Sprecherreferenz nicht prüfbar (2 Silben)."
         }
       }
     },
@@ -532154,9 +532154,9 @@
       "byteSize": 32685,
       "sourceBytes": 64128,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-03T22:19:27.134Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:01.160Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -532167,10 +532167,10 @@
             "mid",
             "mid",
             "mid",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "4 Soll-Silben, aber nur 2 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (4 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -557244,9 +557244,9 @@
       "byteSize": 37485,
       "sourceBytes": 73728,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:54:42.805Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:01.844Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -557262,10 +557262,10 @@
             "mid",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "9 Soll-Silben, aber nur 7 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (9 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -559601,9 +559601,9 @@
       "byteSize": 10605,
       "sourceBytes": 19968,
       "check": {
-        "status": "passed",
-        "label": "automatisch geprüft",
-        "checkedAt": "2026-10-04T18:54:46.777Z",
+        "status": "unchecked",
+        "label": "ungeprüft",
+        "checkedAt": "2026-10-17T07:05:02.443Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -559612,7 +559612,7 @@
           "voicedMs": 700,
           "targetTones": [
             "high",
-            "rising"
+            "high"
           ],
           "silben": [
             {
@@ -559620,8 +559620,8 @@
               "form": "register"
             },
             {
-              "tone": "rising",
-              "form": "geprueft"
+              "tone": "high",
+              "form": "register"
             }
           ],
           "ordnung": {
@@ -559633,12 +559633,12 @@
               "halbtoene": 2.8920971940455398
             },
             {
-              "tone": "rising",
+              "tone": "high",
               "halbtoene": 3.4248266263469804
             }
           ],
-          "status": "passed",
-          "reason": "Silbenform 1 von 2 plus 0 Register-Ordnung(en) mit dem Soll vereinbar; absolute Registerlage bleibt ungeprüft."
+          "status": "unchecked",
+          "reason": "Registerlage mittel/tief/hoch ohne Sprecherreferenz nicht prüfbar (2 Silben)."
         }
       }
     },
@@ -571212,9 +571212,9 @@
       "byteSize": 17517,
       "sourceBytes": 33792,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-03T22:20:54.834Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:02.796Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -571223,10 +571223,10 @@
           "voicedMs": 660,
           "targetTones": [
             "mid",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "2 Soll-Silben, aber nur 1 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (2 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -601418,9 +601418,9 @@
       "byteSize": 25005,
       "sourceBytes": 48768,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-03T22:22:02.119Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:03.185Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -601434,10 +601434,10 @@
             "mid",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "7 Soll-Silben, aber nur 5 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (7 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -603199,9 +603199,9 @@
       "byteSize": 25581,
       "sourceBytes": 49920,
       "check": {
-        "status": "passed",
-        "label": "automatisch geprüft",
-        "checkedAt": "2026-10-04T18:55:43.540Z",
+        "status": "unchecked",
+        "label": "ungeprüft",
+        "checkedAt": "2026-10-17T07:05:03.514Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -603214,10 +603214,10 @@
             "mid",
             "mid",
             "high",
-            "rising"
+            "high"
           ],
-          "status": "passed",
-          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (6 Silben) besser als 98 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
+          "status": "unchecked",
+          "reason": "6 Soll-Silben, aber nur 4 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
         }
       }
     },
@@ -615740,9 +615740,9 @@
       "byteSize": 27117,
       "sourceBytes": 52992,
       "check": {
-        "status": "passed",
-        "label": "automatisch geprüft",
-        "checkedAt": "2026-10-04T18:55:56.494Z",
+        "status": "unchecked",
+        "label": "ungeprüft",
+        "checkedAt": "2026-10-17T07:05:04.391Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -615754,10 +615754,10 @@
             "high",
             "mid",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "passed",
-          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (5 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
+          "status": "unchecked",
+          "reason": "5 Soll-Silben, aber nur 4 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
         }
       }
     },
@@ -624542,9 +624542,9 @@
       "byteSize": 27117,
       "sourceBytes": 52992,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:56:09.618Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:05.090Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -624558,10 +624558,10 @@
             "high",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "7 Soll-Silben, aber nur 6 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (7 Silben) besser als 98 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -634845,9 +634845,9 @@
       "byteSize": 29421,
       "sourceBytes": 57600,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-04T18:56:25.147Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:06.594Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -634860,10 +634860,10 @@
             "mid",
             "falling",
             "mid",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "6 Soll-Silben, aber nur 5 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (6 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -642147,9 +642147,9 @@
       "byteSize": 31149,
       "sourceBytes": 61056,
       "check": {
-        "status": "unchecked",
-        "label": "ungeprüft",
-        "checkedAt": "2026-10-03T22:23:34.626Z",
+        "status": "passed",
+        "label": "automatisch geprüft",
+        "checkedAt": "2026-10-17T07:05:07.194Z",
         "scope": "schema-integrity-decode",
         "tone": {
           "version": "f0-syllables-4",
@@ -642164,10 +642164,10 @@
             "mid",
             "low",
             "falling",
-            "rising"
+            "high"
           ],
-          "status": "unchecked",
-          "reason": "8 Soll-Silben, aber nur 6 trennbare Silben — verbundene Silben ohne sichere Grenze nicht prüfbar; auch der Vorlagenabgleich ist nicht eindeutig."
+          "status": "passed",
+          "reason": "Vorlagenabgleich: Die Tonkurve passt zur Soll-Tonfolge (8 Silben) besser als 99 % zufälliger Tonfolgen (Schwelle p ≤ 0.02), jede fallende/steigende Silbe besser als jeder andere Ton. Filter gegen grobe Tonfehler, kein Nachweis jeder einzelnen Silbe."
         }
       }
     },
@@ -750408,7 +750408,7 @@
             "speaker": "learner",
             "targetText": "เอาสองกิโลครับ ลดได้ไหมครับ",
             "thai": "เอาสองกิโลครับ ลดได้ไหมครับ",
-            "roman": "ao sɔ̌ɔng gì-loo khráp, lót dâai mǎi khráp?",
+            "roman": "ao sɔ̌ɔng gì-loo khráp, lót dâai mái khráp?",
             "german": "Ich nehme zwei Kilo. Gibt es einen Rabatt?"
           },
           {
@@ -750908,7 +750908,7 @@
           }
         }
       },
-      "digest": "4a018158f04ab5e46b61df18d39df203757d66ddcc7b4e05c82f89af180a6ee4",
+      "digest": "c9acd243ff0aaf91009e0f1e492483553421437036534dd0b4c16167dcc03002",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -755143,7 +755143,7 @@
             "speaker": "partner",
             "targetText": "เอาเผ็ดไหมคะ",
             "thai": "เอาเผ็ดไหมคะ",
-            "roman": "ao phèt mǎi khá?",
+            "roman": "ao phèt mái khá?",
             "german": "Möchten Sie es scharf?"
           },
           {
@@ -755761,7 +755761,7 @@
           }
         }
       },
-      "digest": "e792d6aa38612db30f25dcdbd73777259c5b368158892a85134c07296a035c7a",
+      "digest": "b651e82cd234291eedde0494a7cb33e244997c76b1a1f57298ae50ffdd2eaa49",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -758717,7 +758717,7 @@
             "speaker": "learner",
             "targetText": "ไกลจากที่นี่ไหมครับ",
             "thai": "ไกลจากที่นี่ไหมครับ",
-            "roman": "glai jàak thîi-nîi mǎi khráp?",
+            "roman": "glai jàak thîi-nîi mái khráp?",
             "german": "Ist es weit von hier?"
           },
           {
@@ -759197,7 +759197,7 @@
           }
         }
       },
-      "digest": "073a9284c3954a4d0eee00d11778eef11b1aed9f2472fb5491a44fd763822dc8",
+      "digest": "966f0cec1904b98e90be010d67542ec3321e05211d16e49ac7d450a25a13f5dc",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -761145,7 +761145,7 @@
             "speaker": "learner",
             "targetText": "ไกลจากที่นี่ไหมครับ",
             "thai": "ไกลจากที่นี่ไหมครับ",
-            "roman": "glai jàak thîi-nîi mǎi khráp",
+            "roman": "glai jàak thîi-nîi mái khráp",
             "german": "Ist es weit von hier?"
           },
           {
@@ -761159,7 +761159,7 @@
             "speaker": "learner",
             "targetText": "ขอบคุณมากครับ แล้วมีมอเตอร์ไซค์รับจ้างแถวนี้ไหมครับ",
             "thai": "ขอบคุณมากครับ แล้วมีมอเตอร์ไซค์รับจ้างแถวนี้ไหมครับ",
-            "roman": "khɔ̀ɔp-khun mâak khráp, lɛ́ɛo mii mɔɔ-dtəə-sai ráp-jâang thɛ̌ɛo níi mǎi khráp",
+            "roman": "khɔ̀ɔp-khun mâak khráp, lɛ́ɛo mii mɔɔ-dtəə-sai ráp-jâang thɛ̌ɛo níi mái khráp",
             "german": "Vielen Dank! Und gibt es hier in der Nähe ein Motorradtaxi?"
           },
           {
@@ -761625,7 +761625,7 @@
           }
         }
       },
-      "digest": "30ad7139bd1ba047015fd460bd9e8ddc8f8fa6b7e3fed6c1d83090ef44c4d3ba",
+      "digest": "b47088b08c483b30767fcbacccbc3d2883fa5bdfbf9faed464507ae30db2faf9",
       "check": {
         "status": "passed",
         "label": "automatisch geprüft",
@@ -1094855,7 +1094855,7 @@
         "register": "informal",
         "isConcrete": false,
         "exampleTerm": "คุณชอบอาหารไทยใช่ไหม",
-        "exampleRoman": "khun chɔ̂ɔp aa-hǎan thai châi-mǎi",
+        "exampleRoman": "khun chɔ̂ɔp aa-hǎan thai châi-mái",
         "exampleGerman": "Du magst thailändisches Essen, nicht wahr?",
         "syllables": [
           {
@@ -1094874,7 +1094874,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b7deb446c35fc20671a0f94178bec4dd8f1d9c3b2593e080ae1c96335049672f",
+      "digest": "ff67449d3b47a41070097611cb047c5d92196bb9a87c548dbe2f1c56aa9274fa",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1099633,7 +1099633,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "หลังอาหารเราสั่งของหวานกันไหม",
-        "exampleRoman": "lǎng aa-hǎan rao sàng khɔ̌ɔng-wǎan gan mǎi",
+        "exampleRoman": "lǎng aa-hǎan rao sàng khɔ̌ɔng-wǎan gan mái",
         "exampleGerman": "Bestellen wir nach dem Essen einen Nachtisch?",
         "syllables": [
           {
@@ -1099652,7 +1099652,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "2a4e11eb83984517f5b228df7fa465634d7b3ee1d9313db3a0605731e5ae4778",
+      "digest": "af47220c62db227e164af2bd8131b6dcc6869347709168604ee0f5806751e67b",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1099694,7 +1099694,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ไปกินข้าวด้วยกันไหม",
-        "exampleRoman": "bpai gin khâao dûai-gan mǎi",
+        "exampleRoman": "bpai gin khâao dûai-gan mái",
         "exampleGerman": "Wollen wir zusammen essen gehen?",
         "syllables": [
           {
@@ -1099713,7 +1099713,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "6d8f626d4c0ccebc9530dbcd745094c5b5e2ffcb5ec4a5261b20e1b87fb9b570",
+      "digest": "3449093356772f366785611ba9e14a800f23dd51929e12bce58f35595aae9221",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1100365,7 +1100365,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "เย็นนี้ไปกินหมูกระทะกันไหม",
-        "exampleRoman": "yen níi bpai gin mǔu-grà-thá gan mǎi",
+        "exampleRoman": "yen níi bpai gin mǔu-grà-thá gan mái",
         "exampleGerman": "Gehen wir heute Abend zusammen Moo Kata essen?",
         "syllables": [
           {
@@ -1100388,7 +1100388,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "bec5a46302a3a8919f982c1e2d126a24f7f9442bbc9eabfef90e90f0b7192f74",
+      "digest": "d4a736ce5b3a6ba0f60dc23582c55aa362b65a8037b4d2e6c5b3e2afb2ce998a",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1103626,7 +1103626,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คุณแน่ใจไหมว่าถูกแล้ว",
-        "exampleRoman": "khun nɛ̂ɛ-jai mǎi wâa thùuk lɛ́ɛo",
+        "exampleRoman": "khun nɛ̂ɛ-jai mái wâa thùuk lɛ́ɛo",
         "exampleGerman": "Bist du sicher, dass das stimmt?",
         "syllables": [
           {
@@ -1103645,7 +1103645,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "6d714032a84bbecabdfa176f719832316781969b453386bc790bafdbaaa6c485",
+      "digest": "df76c6d7ed5b33c9639998f2d124050c9e12ac451d609423344b7676d7b6a06e",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1105029,7 +1105029,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "มีปลั๊กไฟตรงนี้ไหม",
-        "exampleRoman": "mii bplák-fai dtrong níi mǎi",
+        "exampleRoman": "mii bplák-fai dtrong níi mái",
         "exampleGerman": "Gibt es hier eine Steckdose?",
         "syllables": [
           {
@@ -1105044,7 +1105044,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "407d4281766a043a3510c063408e49873fa8607cd1db292856abac2b7a168a2e",
+      "digest": "20f048bc4169891a4a824b581b53c49a16b1131dad9b5392252d96521f3a427c",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1108055,7 +1108055,7 @@
         "register": "informal",
         "isConcrete": false,
         "exampleTerm": "ว่าไง จะไปด้วยกันไหม",
-        "exampleRoman": "wâa-ngai jà bpai dûai-gan mǎi",
+        "exampleRoman": "wâa-ngai jà bpai dûai-gan mái",
         "exampleGerman": "Was meinst du, kommst du mit?",
         "syllables": [
           {
@@ -1108074,7 +1108074,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "d5f3750068132cde92e381b940da0aac3acf5f5ed8de99881eaaf1f680832ccd",
+      "digest": "bd18aff9d51b16be9112ded23ddef95f8886dc5037a36b516bec59ed5aaa1373",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1111882,7 +1111882,7 @@
         "register": "formal",
         "isConcrete": true,
         "exampleTerm": "ห้องนี้มีเครื่องปรับอากาศไหม",
-        "exampleRoman": "hông níi mii khrʉ̂ang-bpràp-aa-gàat mǎi",
+        "exampleRoman": "hông níi mii khrʉ̂ang-bpràp-aa-gàat mái",
         "exampleGerman": "Hat dieses Zimmer eine Klimaanlage?",
         "syllables": [
           {
@@ -1111909,7 +1111909,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "66f1c0e136663b44c52d7b020e19d1d8ac8480c38bd6df57bff58deb91b3d11c",
+      "digest": "9bf1cc8a953bad6bcc011b600e13926fe810aa15f7243bc0edf00a222e6af75c",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1112008,7 +1112008,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอน้ำจิ้มเพิ่มได้ไหม",
-        "exampleRoman": "khɔ̌ɔ nám-jîm phə̂əm dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ nám-jîm phə̂əm dâai mái",
         "exampleGerman": "Kann ich bitte mehr Dipsauce haben?",
         "syllables": [
           {
@@ -1112027,7 +1112027,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "36055c9f113e952c8e8bec73e8d86e496cdd73a87bebbb9c5ec04454740f2db1",
+      "digest": "fc233bc8334171a23d4833092d06782bea12efd9ea21eaec8318da43ad2dd482",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1120114,7 +1120114,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "มีวิธีอื่นอีกไหม",
-        "exampleRoman": "mii wí-thii ʉ̀ʉn ìik mǎi",
+        "exampleRoman": "mii wí-thii ʉ̀ʉn ìik mái",
         "exampleGerman": "Gibt es noch einen anderen Weg?",
         "syllables": [
           {
@@ -1120129,7 +1120129,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "9f46eac44bf3b30ba1569edd6e390d513b9a76b53a1f20263441322636e55425",
+      "digest": "6a302a901aaf6fca558fb5c7a5d239fca089fe922d8fa6ad9bb872af1a574d95",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1120728,7 +1120728,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอยืมผ้าเช็ดปากหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ yʉʉm phâa-chét-bàak nɔ̀i dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ yʉʉm phâa-chét-bàak nɔ̀i dâai mái",
         "exampleGerman": "Kann ich bitte eine Serviette haben?",
         "syllables": [
           {
@@ -1120751,7 +1120751,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "0e859be7b46fede79e3bcae01168007a3173a0cddb2a1cb293caed1f94e8bc99",
+      "digest": "40c5830c18945f1ffeb28060316568b209ca246a7be3eed27e6141b181ed90d3",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1121525,7 +1121525,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คุณพูดไทยได้นิดหน่อยใช่ไหม",
-        "exampleRoman": "khun phûut-thai dâai nít-nɔ̀ɔi châi-mǎi",
+        "exampleRoman": "khun phûut-thai dâai nít-nɔ̀ɔi châi-mái",
         "exampleGerman": "Du kannst ein bisschen Thai sprechen, nicht wahr?",
         "syllables": [
           {
@@ -1121544,7 +1121544,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "f1c9db92ce70f2d321c4bb32f5a53d07d094277d48b01e9e6adb9aa3f5e8d434",
+      "digest": "097a2fdd9fd45c5115a4ed9c979e569bd1eee1a87808c0153038df87f37b4115",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1122078,7 +1122078,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "วันนี้คุณว่างไหม",
-        "exampleRoman": "wan-níi khun wâang mǎi",
+        "exampleRoman": "wan-níi khun wâang mái",
         "exampleGerman": "Bist du heute frei?",
         "syllables": [
           {
@@ -1122093,7 +1122093,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "c49752d1dfd7f7ac2bef0f1a9e5553b414c839c01ee73d7065d44091336b575f",
+      "digest": "efe93f281a0e35f4c8a401f1035cdd8793f092e1f57f28ec5573d1b0be94576b",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1122204,7 +1122204,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "มี ปากกา ไหม",
-        "exampleRoman": "mii bpàak-gaa mǎi",
+        "exampleRoman": "mii bpàak-gaa mái",
         "exampleGerman": "Hast du einen Stift?",
         "syllables": [
           {
@@ -1122223,7 +1122223,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "3cf56cce2271ea68d037cda0487b12f1542f3d5feffe2532f0c0efee85295921",
+      "digest": "80704a60c5fc3f7b8bcfd153955f447982671993c4716f37ee33d8cfafaf289d",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1126002,7 +1126002,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "จ่ายด้วยเงินสดได้ไหม",
-        "exampleRoman": "jàai dûai ngən-sòt dâai mǎi",
+        "exampleRoman": "jàai dûai ngən-sòt dâai mái",
         "exampleGerman": "Kann ich bar bezahlen?",
         "syllables": [
           {
@@ -1126021,7 +1126021,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "3d4fbe71adbbcaec2c558c9b89ef4d5aadcc9c30040df2cd813fb3b038ea1574",
+      "digest": "a6646bf80de8189fa9b696676ec13420e18987e4b7bdbe7a75b6011f19d7da65",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1132859,7 +1132859,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอถ่ายรูปตรงนี้ได้ไหม",
-        "exampleRoman": "khɔ̌ɔ thàai-rûup dtrong-níi dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ thàai-rûup dtrong-níi dâai mái",
         "exampleGerman": "Darf ich hier ein Foto machen?",
         "syllables": [
           {
@@ -1132878,7 +1132878,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "5614f41b4b92e80acb839da7f5f76c12c0aa1ab64565a705b8b29941ddb86e9c",
+      "digest": "ca44d59e1e12debfe0d4912d1ec5577a593fb54cd6458f36ca37f217f428f034",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1134136,7 +1134136,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "จำ ได้ ไหม",
-        "exampleRoman": "jam dâai mǎi",
+        "exampleRoman": "jam dâai mái",
         "exampleGerman": "Erinnerst du dich?",
         "syllables": [
           {
@@ -1134151,7 +1134151,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "fe654d0df46c6cbeae5f17f2221ee6954dad48a4b5413391c1ea6cd346f98cfe",
+      "digest": "612973b260871b4866675b35090dafa5e56141dc0e705e995b015fe83c1f18f8",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1135377,7 +1135377,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คืนนี้เราไปดูหนังกันไหม",
-        "exampleRoman": "khʉʉn-níi rao bpai duu-nǎng gan mǎi",
+        "exampleRoman": "khʉʉn-níi rao bpai duu-nǎng gan mái",
         "exampleGerman": "Gehen wir heute Abend zusammen einen Film schauen?",
         "syllables": [
           {
@@ -1135396,7 +1135396,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "c74b8ff56728b4315b76aa7f4a8b0f10bf5e705db95b581610f1844e258474aa",
+      "digest": "3a08c4e221f67b7eb2322a56d4bbd78a74ad28b9d5c41e55e3e3b6fe0dcc7f94",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1138102,7 +1138102,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คุณรอนานไหม",
-        "exampleRoman": "khun rɔɔ naan mǎi",
+        "exampleRoman": "khun rɔɔ naan mái",
         "exampleGerman": "Hast du lange gewartet?",
         "syllables": [
           {
@@ -1138117,7 +1138117,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "f785a7f31f32742b086d6ab402906b4deb282f5177c76a60a3d7e0a97c5dff89",
+      "digest": "3ea0bbdaf17db133996bcb64200a83d0d0f4ee1be1db973bed099a735626b999",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1143365,7 +1143365,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "จำเลขทะเบียนรถคันนั้นได้ไหม",
-        "exampleRoman": "jam lêek thá-bian-rót khan nán dâai mǎi",
+        "exampleRoman": "jam lêek thá-bian-rót khan nán dâai mái",
         "exampleGerman": "Kannst du dich an das Kennzeichen dieses Autos erinnern?",
         "syllables": [
           {
@@ -1143388,7 +1143388,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "abadc5d477c64be55e9e6ffed5de0d0a174dc2707d10c109688f020083d5f333",
+      "digest": "8fd0d1dfbdf0fa151760fd1043ea0d4fae347291f9a47d3cf5bb887166245db1",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1144390,7 +1144390,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอนามบัตรคุณหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ naam-bàt khun nɔ̀ɔi dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ naam-bàt khun nɔ̀ɔi dâai mái",
         "exampleGerman": "Darf ich Ihre Visitenkarte haben?",
         "syllables": [
           {
@@ -1144409,7 +1144409,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "e8308a7fc6a856e00b9a1130fb30b26c2d01ec3df08cf75fe3f4d82b0f3cbfd3",
+      "digest": "054128cb62908e9fce8390f57b167f340266e1ad93a9d6e0b8c36a62439698bb",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1149230,7 +1149230,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "พร้อมไหม",
-        "exampleRoman": "phrɔ́ɔm mǎi",
+        "exampleRoman": "phrɔ́ɔm mái",
         "exampleGerman": "Bist du bereit?",
         "syllables": [
           {
@@ -1149245,7 +1149245,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "9a708c87174c8d96253e35bd222473b2f510c029a039c7c04cd2280f02e6d5b2",
+      "digest": "fd121c1a503ef9961822b1fcaa99da39e7033b245ad62a876d3373f8b8cc612d",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1151259,7 +1151259,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "คุณมีที่เปิดไวน์ไหม",
-        "exampleRoman": "khun mii thîi-bpə̀ət-waai mǎi",
+        "exampleRoman": "khun mii thîi-bpə̀ət-waai mái",
         "exampleGerman": "Haben Sie einen Korkenzieher?",
         "syllables": [
           {
@@ -1151282,7 +1151282,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b9550596327056179f4f219beb419ac732277fd7713acc86bf4087f0eda1a9f3",
+      "digest": "071f5658f40a72423bcb4f9ebf0a376717bb42e8720a9d308932c7f7239a33c9",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1151324,7 +1151324,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอยืมกรรไกรตัดเล็บหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ yʉʉm gan-grai-dtàt-lép nɔ̀ɔi dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ yʉʉm gan-grai-dtàt-lép nɔ̀ɔi dâai mái",
         "exampleGerman": "Kann ich mir kurz deinen Nagelknipser leihen?",
         "syllables": [
           {
@@ -1151351,7 +1151351,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "6acbba043de694cb5fdacc12c10a89d96760b7f3d313ec58dd17cf5e7ceca36f",
+      "digest": "10a0071eaebfa1bdb1ed0502be4136a4206d8273832b9366f7e9c1b6c203d5a2",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1153605,7 +1153605,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "คุณมีไฟแช็กไหม",
-        "exampleRoman": "khun mii fai-chɛ́k mǎi",
+        "exampleRoman": "khun mii fai-chɛ́k mái",
         "exampleGerman": "Hast du ein Feuerzeug?",
         "syllables": [
           {
@@ -1153624,7 +1153624,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "51884c676383e36587b7ae4f58ad506dad8a991cd65f5970261fcc03ef0e9427",
+      "digest": "90df1d32a71e0f16b315c1cffa3da8abd2027d6bc5379b19eb34c4ad21db9271",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1157493,7 +1157493,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "มีเก้าอี้ว่างไหม",
-        "exampleRoman": "mii gâo-îi wâang mǎi",
+        "exampleRoman": "mii gâo-îi wâang mái",
         "exampleGerman": "Gibt es einen freien Stuhl?",
         "syllables": [
           {
@@ -1157512,7 +1157512,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "0a7a45add45a01d251e9ebfd40cff88f099df866ae48b95dad0f432519a83191",
+      "digest": "85110a5c0508f5d77b7331bab073efc5c57f9ba524787d95c23febc8cde6521b",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1167555,7 +1167555,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "เคยไปไหม",
-        "exampleRoman": "khəəi bpai mǎi",
+        "exampleRoman": "khəəi bpai mái",
         "exampleGerman": "Warst du schon einmal dort?",
         "syllables": [
           {
@@ -1167570,7 +1167570,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "c223b05abf166c1bc8b345497c014fb1f5e8d8e92f6b11393e540da89ee59e34",
+      "digest": "b41f5c1ae4c51b3c5f3f5f6a79abed4eddd1fcf4194768def5cc67a75100a6ac",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1171777,7 +1171777,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "กรุณาบอกอีกครั้งได้ไหม",
-        "exampleRoman": "gà-rú-naa bɔ̀ɔk ìik-khráng dâai-mǎi",
+        "exampleRoman": "gà-rú-naa bɔ̀ɔk ìik-khráng dâai-mái",
         "exampleGerman": "Könnten Sie es bitte noch einmal sagen?",
         "syllables": [
           {
@@ -1171796,7 +1171796,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "3fcbc61f58f1b8bc892c8b8bc0cdcfe0d46b577e51d577a0ffc694f4658862b9",
+      "digest": "5d579c247409f2cdc81b8c89d3619c7fd2d17c4c227bdc39d790f7aed62d2b9a",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1172021,7 +1172021,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอหลอดดูดน้ำเพิ่มอันหนึ่งได้ไหม",
-        "exampleRoman": "khɔ̌ɔ lɔ̀ɔt-dùut nám phə̂əm an nʉ̀ng dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ lɔ̀ɔt-dùut nám phə̂əm an nʉ̀ng dâai mái",
         "exampleGerman": "Kann ich bitte noch einen Strohhalm haben?",
         "syllables": [
           {
@@ -1172040,7 +1172040,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "270830dd9381b38364ef50f1cd6ad8b99347a9ddc28f6e06a9432a13a09b80a3",
+      "digest": "fe12be2ffec34a6f9138b046842d0eae9e1a0d26c60cd8243536be3dff8b2504",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1172265,7 +1172265,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ใส่ซอสมะเขือเทศเพิ่มไหม",
-        "exampleRoman": "sài sɔ́ɔt má-khʉ̌a-thêet phə̂əm mǎi",
+        "exampleRoman": "sài sɔ́ɔt má-khʉ̌a-thêet phə̂əm mái",
         "exampleGerman": "Möchtest du mehr Ketchup dazu?",
         "syllables": [
           {
@@ -1172280,7 +1172280,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b5b37ba580823014f75f7f914fb9473d1fb2b180ef6639e9f4ac2409928f0753",
+      "digest": "7f9e40fa9aaba6755cf8cba396f49b8c7080634f9b19d0447d0c8c54a570d302",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1174745,7 +1174745,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "สวัสดีครับ สบายดีไหม",
-        "exampleRoman": "sà-wàt-dii khráp, sà-baai-dii-mǎi",
+        "exampleRoman": "sà-wàt-dii khráp, sà-baai-dii-mái",
         "exampleGerman": "Hallo, wie geht es dir?",
         "syllables": [
           {
@@ -1174772,7 +1174772,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "2a39a6738ffdb7fead20cda57ecc3d09c472a2981def9969fe8084618e0dc60f",
+      "digest": "b87a5e144a524cf5cd53121a274b0ab434ca3ab5ed1674e4d58059705a976f75",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1177299,7 +1177299,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คุณช่วยแนะนำร้านอาหารได้ไหม",
-        "exampleRoman": "khun chûai nɛ́-nam ráan aa-hǎan dâai mǎi",
+        "exampleRoman": "khun chûai nɛ́-nam ráan aa-hǎan dâai mái",
         "exampleGerman": "Kannst du ein Restaurant empfehlen?",
         "syllables": [
           {
@@ -1177318,7 +1177318,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "17a955a4ea07d56c037c48f2f8ce0150c1539951c33cdadcbd3f365dbcd9f3ba",
+      "digest": "835ac4ba998f15a1e57e6c798f6db7945c9457dc78bb313d62a8cf90e1eab79a",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1177417,7 +1177417,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "มีรหัสไวไฟไหมครับ",
-        "exampleRoman": "mii rá-hàt wai-fai mǎi khráp",
+        "exampleRoman": "mii rá-hàt wai-fai mái khráp",
         "exampleGerman": "Haben Sie das WLAN-Passwort?",
         "syllables": [
           {
@@ -1177436,7 +1177436,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "23a4e4438d814fdd4e9b486a77534502e0c88ea1f257098527748c4a526f652f",
+      "digest": "94cc469615c16b7ac30604bb2571e52ba6cda632bd3a1168faa28d64ab183256",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1181309,7 +1181309,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "มีส่วนลดไหมครับ",
-        "exampleRoman": "mii sùan-lót mǎi khráp",
+        "exampleRoman": "mii sùan-lót mái khráp",
         "exampleGerman": "Gibt es einen Rabatt?",
         "syllables": [
           {
@@ -1181328,7 +1181328,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "193cdf085b9406a9af212f0f48060caf5f097e81f0e191d925fbe158aba73dc0",
+      "digest": "57326225ee17e01771c0f05b82bbf3fa12a090d9af27319e94d831c955e53c39",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1183753,7 +1183753,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "คุณสบายดีไหม",
-        "exampleRoman": "khun sà-baai-dii mǎi",
+        "exampleRoman": "khun sà-baai-dii mái",
         "exampleGerman": "Wie geht es Ihnen?",
         "syllables": [
           {
@@ -1183768,7 +1183768,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "b4bcd71b13881212a8a7725d89c3b3651704f93163aa72c7ebf384a6e9145979",
+      "digest": "a900f71537e954871c6f0d4cbe1146e5ac5a5fa6a66ec93cabe2b712adc9cdab",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1185599,7 +1185599,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "เอาไหม",
-        "exampleRoman": "ao mǎi",
+        "exampleRoman": "ao mái",
         "exampleGerman": "Möchtest du es?",
         "syllables": [
           {
@@ -1185614,7 +1185614,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "a7e5a43f22bbdf0d157ca71cce76ff63df253874b79e29c41c229c2c7206a1db",
+      "digest": "a8f24b748dc80834c3383644da75a6233e20dabf57f06dfe6e117a052d4c6549",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1185778,7 +1185778,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ช่วยเปิดฝาขวดให้หน่อยได้ไหม",
-        "exampleRoman": "chûai bpə̀ət fǎa-khùat hâi nɔ̀ɔi dâai mǎi",
+        "exampleRoman": "chûai bpə̀ət fǎa-khùat hâi nɔ̀ɔi dâai mái",
         "exampleGerman": "Kannst du mir bitte den Flaschendeckel öffnen?",
         "syllables": [
           {
@@ -1185797,7 +1185797,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "10a6c94b56428150dd50c95e20f05616c8cfcd004835f6db10fbefef8cc5d43d",
+      "digest": "488134410db3217e8f3955ce54a392af21d5ccdb6f37b1954c4f2b5b1da5e9ae",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1190476,7 +1190476,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "เราแวะซื้อกาแฟก่อนได้ไหม",
-        "exampleRoman": "rao wɛ́ sʉ́ʉ gaa-fɛɛ gɔ̀ɔn dâai mǎi",
+        "exampleRoman": "rao wɛ́ sʉ́ʉ gaa-fɛɛ gɔ̀ɔn dâai mái",
         "exampleGerman": "Können wir kurz anhalten und Kaffee kaufen?",
         "syllables": [
           {
@@ -1190491,7 +1190491,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "052c1daa94b9c9147099f7086c17335cfbcce74630dedc6ea88004f87a44a161",
+      "digest": "adaefec881bbedde5b16a43e911cf5c5e2b940ccba184105d9ff492ee57cbddd",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1193124,7 +1193124,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอยืมน้ำยาลบคำผิดหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ yʉʉm nám-yaa-lóp-kham-phìt nɔ̀i dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ yʉʉm nám-yaa-lóp-kham-phìt nɔ̀i dâai mái",
         "exampleGerman": "Kann ich mir bitte die Korrekturflüssigkeit leihen?",
         "syllables": [
           {
@@ -1193155,7 +1193155,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "a950c2c689f5e28213849086aa5080ba13dc575231d16619453413efcf3d4e9f",
+      "digest": "ab3fa77475541391fb724b17fb5e1b4f6aaf14fbf28a456c2b3b374caaf1313f",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1200567,7 +1200567,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ขอดูตัวอย่างหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ duu dtua-yàang nɔ̀ɔi dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ duu dtua-yàang nɔ̀ɔi dâai mái",
         "exampleGerman": "Darf ich ein Beispiel sehen?",
         "syllables": [
           {
@@ -1200586,7 +1200586,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "8bfc0d041e816259110d21466be135a841fc2cfe9d5f059802810705f456f010",
+      "digest": "ab751794c060443426249aadc2b78ebb38140062bbca8dc3cbb4f93718c90f9b",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1201828,7 +1201828,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอยืมยางลบหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ yʉʉm yaang-lóp nɔ̀i dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ yʉʉm yaang-lóp nɔ̀i dâai mái",
         "exampleGerman": "Kann ich mir kurz einen Radiergummi leihen?",
         "syllables": [
           {
@@ -1201847,7 +1201847,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "d1ae127625dcd3978b856093570c6a90c84cb308b1845d593d59703934d8aabd",
+      "digest": "5db21d42da0785c78b030c914ce1dc2c1b83c43c993093d626538d1b60c83509",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1204471,7 +1204471,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "ที่นี่สแกนจ่ายได้ไหมครับ",
-        "exampleRoman": "thîi-nîi sà-gɛɛn-jàai dâai mǎi khráp",
+        "exampleRoman": "thîi-nîi sà-gɛɛn-jàai dâai mái khráp",
         "exampleGerman": "Kann man hier per QR-Code zahlen?",
         "syllables": [
           {
@@ -1204494,7 +1204494,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "c7b978e3849bb717b76e7784c4ae37c1297955f6694f071f840d8894c4a79303",
+      "digest": "fda123b730673b913e460fa798318429e2d565f7fd63fe6771ed69be739624ee",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1204601,7 +1204601,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ที่นี่รับบัตรเครดิตไหม",
-        "exampleRoman": "thîi-nîi ráp bàt-khree-dìt mǎi",
+        "exampleRoman": "thîi-nîi ráp bàt-khree-dìt mái",
         "exampleGerman": "Wird hier Kreditkarte akzeptiert?",
         "syllables": [
           {
@@ -1204624,7 +1204624,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "7310a8c402469d1ee6143ac26cafc88d2740273f022bb4699c5e8ad6dbb601a8",
+      "digest": "a76e732c2f3695b18381a339436c16abafdcdc46126dae0aae48bcb6acf0eef4",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1204845,7 +1204845,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "เหลือไหม",
-        "exampleRoman": "lʉ̌a mǎi",
+        "exampleRoman": "lʉ̌a mái",
         "exampleGerman": "Ist noch etwas übrig?",
         "syllables": [
           {
@@ -1204860,7 +1204860,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "50fd7c203995ad474969d84dbbf3550ba9d48074671756203fbd3b726f05d33a",
+      "digest": "5463cdee9597f9b2021bae4da9b9f12202ba050dc503453eb72bf0031ce423f0",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1205451,7 +1205451,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "คุณชอบกินต้มยำไหม",
-        "exampleRoman": "khun chɔ̂ɔp gin dtôm-yam mǎi",
+        "exampleRoman": "khun chɔ̂ɔp gin dtôm-yam mái",
         "exampleGerman": "Isst du gerne Tom-Yam-Suppe?",
         "syllables": [
           {
@@ -1205470,7 +1205470,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "6a6fee9bd2bc14e5c6c6f658c624503ccadc626743351b2e6d89e4c49b97bcf2",
+      "digest": "923aa0db234dffa7c9cdca1c5074d298637ab373f07b7176d8e86117085934f0",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1206732,7 +1206732,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ช่วยเปิดไฟหน่อยได้ไหม",
-        "exampleRoman": "chûai bpə̀ət-fai nɔ̀i dâai mǎi",
+        "exampleRoman": "chûai bpə̀ət-fai nɔ̀i dâai mái",
         "exampleGerman": "Kannst du bitte das Licht anmachen?",
         "syllables": [
           {
@@ -1206751,7 +1206751,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "580ce726728d77eb80028996cfcae7767660c8273cc0dc01a0128f1b7defaa93",
+      "digest": "d7e8e4efcbe0864c03e4cf49f9b084a17e5998a61ccd9f279718c487086aa460",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1207484,7 +1207484,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "บนโต๊ะมีไม้จิ้มฟันไหม",
-        "exampleRoman": "bon dtó mii máai-jîm-fan mǎi",
+        "exampleRoman": "bon dtó mii máai-jîm-fan mái",
         "exampleGerman": "Gibt es auf dem Tisch Zahnstocher?",
         "syllables": [
           {
@@ -1207507,7 +1207507,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "233e5e1da16bf8afccca0acbd3045b419c54e1db3a846da3d5e81d037fa37b31",
+      "digest": "4953a4e533e7ed6eb72da612184a7d9ef333d21288c41fffbd4f0092d04f9ca2",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1213641,7 +1213641,7 @@
         "register": "neutral",
         "isConcrete": false,
         "exampleTerm": "พรุ่งนี้คุณมีเวลาไหม",
-        "exampleRoman": "phrûng-níi khun mii-wee-laa mǎi",
+        "exampleRoman": "phrûng-níi khun mii-wee-laa mái",
         "exampleGerman": "Hast du morgen Zeit?",
         "syllables": [
           {
@@ -1213664,7 +1213664,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "843bb0edf7dbc33a1926b43c589c8d29093c31901b86478de6a42ff699aad9de",
+      "digest": "fc2608017880a71bf4ab126e4fc7fe3dd5875287562ff5ec8e3a34dc21cc9578",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
@@ -1213763,7 +1213763,7 @@
         "register": "neutral",
         "isConcrete": true,
         "exampleTerm": "ขอยืมเครื่องเย็บกระดาษหน่อยได้ไหม",
-        "exampleRoman": "khɔ̌ɔ yʉʉm khrʉ̂ang-yép-grà-dàat nɔ̀ɔi dâai mǎi",
+        "exampleRoman": "khɔ̌ɔ yʉʉm khrʉ̂ang-yép-grà-dàat nɔ̀ɔi dâai mái",
         "exampleGerman": "Kann ich mir kurz den Tacker leihen?",
         "syllables": [
           {
@@ -1213790,7 +1213790,7 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (gemini erzeugt, chatgpt mit gpt-4o-mini geprüft)."
       },
-      "digest": "e5e9e15059274919a253c3ca01259724be8c86e2b2acd6d399e46f2a588599a3",
+      "digest": "a26637c3c90dfbcb5f053183028b341874d332da06694b0cadda4c91f62f2313",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",

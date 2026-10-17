@@ -222,3 +222,27 @@ describe('qualitative Formzuordnung aus scripts/tone-contour.html', () => {
     expect(matchesToneShape('rising', compatible.falling)).toBe(false);
   });
 });
+
+describe('Tonhöhenpfad und Oktavkorrektur (17.10.2026)', () => {
+  const frame = (f0: number, index: number) => ({ t: index / 100, start: index * 80, rms: 1, f0 });
+
+  it('lässt einen echten großen Fall stehen (กลั้น: 242 → 121 Hz)', () => {
+    const fall = [242, 242, 242, 242, 242, 235, 222, 211, 200, 190, 174, 160, 148, 136, 131, 125, 121];
+    expect(octaveCorrect(fall.map(frame)).map((candidate) => candidate.f0)).toEqual(fall);
+  });
+
+  it('korrigiert weiter einen Wert, der gegen seinen Nachbarn um eine Oktave springt', () => {
+    const run = [200, 200, 200, 100, 200, 200, 200].map(frame);
+    expect(octaveCorrect(run).map((candidate) => candidate.f0)).toEqual([200, 200, 200, 200, 200, 200, 200]);
+  });
+
+  it('folgt mit dem Kandidatenpfad der Periode statt ihrem Vielfachen', () => {
+    // 200 Hz mit kräftiger zweiter Harmonischer: die doppelte Periode korreliert fast gleich gut.
+    const rate = 8000;
+    const samples = Float32Array.from({ length: rate / 2 }, (_, i) =>
+      Math.sin((2 * Math.PI * 200 * i) / rate) + 0.6 * Math.sin((2 * Math.PI * 400 * i) / rate));
+    const voiced = autocorrF0(samples, rate).filter((candidate) => candidate.f0 > 0);
+    expect(voiced.length).toBeGreaterThan(20);
+    for (const candidate of voiced) expect(Math.abs(candidate.f0 - 200)).toBeLessThan(10);
+  });
+});

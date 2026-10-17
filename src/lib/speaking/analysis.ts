@@ -5,7 +5,8 @@
  * `scripts/tone-contour.html` verwendet jetzt diesen gemeinsamen Kern.
  * 40-ms-Fenster, 10-ms-Schritt,
  * normierte Autokorrelation von 70 bis 400 Hz, Energie- und
- * Korrelationsschwelle, Medianfilter (3), laengste stimmhafte Strecke,
+ * Korrelationsschwelle, stetiger Kandidatenpfad (Viterbi), Medianfilter (3),
+ * laengste stimmhafte Strecke,
  * einmalige grobe Oktavkorrektur und 8 % Beschnitt an beiden Raendern.
  * Ohne sichere Vier-Fenster-Strecke erlaubt AE-58 eine eng begrenzte
  * Fortsetzung schwacher Periodizitaet; vorhandene sichere Strecken bleiben.
@@ -26,6 +27,27 @@ export const F0_CONTINUATION_CORRELATION = 0.18;
 export const F0_MAX_STEP_SEMITONES = 2;
 export const F0_MIN_RELATIVE_RMS = 0.08;
 export const OCTAVE_RATIO = 1.8;
+/**
+ * Stetiger Tonhöhenpfad (17.10.2026): Je stimmhaftem Fenster zählen alle
+ * lokalen Korrelationsmaxima ab dieser Stärke als Kandidat, ein Viterbi-Pfad
+ * wählt die Folge mit hoher Korrelation UND kleinen Sprüngen (Verfahren wie
+ * Praats „To Pitch (ac)“: Oktavkosten und Oktavsprungkosten).
+ *
+ * WARUM: Bei einer periodischen Stimme korreliert auch die doppelte Periode
+ * fast perfekt. Das bisher genommene globale Maximum lag oft dort, und die
+ * Kurve sprang für einige Fenster auf die halbe Frequenz (มา: 211 → 107 →
+ * 216 Hz). An 400 Thai-Clips des Bestands: 262 Clips mit solchen Sprüngen,
+ * 1.172 insgesamt; mit dem Pfad 15 Clips, 16 Sprünge. Die Clip-Mediane
+ * blieben gleich (coral 186 Hz, onyx 89 Hz). Die bloße Wahl der kürzesten
+ * Periode (YIN-artig) wurde verworfen: Sie sprang am tiefen Ende fallender
+ * Töne nach OBEN und hätte 33 korrekt gesprochene Clips verworfen.
+ */
+export const F0_CANDIDATE_CORRELATION = 0.45;
+export const F0_MAX_CANDIDATES = 6;
+/** Kosten je Oktave Sprung zwischen zwei Fenstern (Praat-Vorgabe 0,35). */
+export const F0_OCTAVE_JUMP_COST = 0.35;
+/** Leichte Bevorzugung höherer Kandidaten je Oktave (Praat-Vorgabe 0,01). */
+export const F0_OCTAVE_COST = 0.01;
 export const CONTOUR_EDGE_TRIM = 0.08;
 /**
  * Obergrenze nur fuer die Vorverarbeitung der App-Aufnahmen.
@@ -173,6 +195,8 @@ export function autocorrF0(samples: ArrayLike<number>, sampleRate: number, recov
   }
 
   const candidates = new Map<F0Frame, number>();
+  const pitchCandidates = new Map<F0Frame, PitchCandidate[]>();
+  const correlations = new Float64Array(maxLag + 2);
   for (const frame of frames) {
     if (frame.rms < F0_MIN_RELATIVE_RMS * maxRms) continue;
 
@@ -190,6 +214,7 @@ export function autocorrF0(samples: ArrayLike<number>, sampleRate: number, recov
         d2 += b * b;
       }
       const correlation = numerator / (Math.sqrt(d1 * d2) || 1);
+      correlations[lag] = correlation;
       if (correlation > best) {
         best = correlation;
         bestLag = lag;
@@ -197,8 +222,21 @@ export function autocorrF0(samples: ArrayLike<number>, sampleRate: number, recov
     }
     frame.correlation = best;
     if (best >= F0_CONTINUATION_CORRELATION) candidates.set(frame, sampleRate / bestLag);
-    if (best >= F0_MIN_CORRELATION) frame.f0 = sampleRate / bestLag;
+    if (best >= F0_MIN_CORRELATION) {
+      frame.f0 = sampleRate / bestLag;
+      const own: PitchCandidate[] = [];
+      for (let lag = minLag + 1; lag < maxLag; lag++) {
+        const r = correlations[lag];
+        if (r >= F0_CANDIDATE_CORRELATION && r >= correlations[lag - 1] && r >= correlations[lag + 1]) {
+          own.push({ hz: sampleRate / lag, correlation: r });
+        }
+      }
+      if (!own.some((candidate) => candidate.hz === frame.f0)) own.push({ hz: frame.f0, correlation: best });
+      own.sort((a, b) => b.correlation - a.correlation);
+      pitchCandidates.set(frame, own.slice(0, F0_MAX_CANDIDATES));
+    }
   }
+  stetigerPfad(frames, pitchCandidates);
 
   // Short dead syllables can lose periodicity while their F0 falls smoothly.
   // Hysteresis preserves that continuation without accepting a whole low-r
@@ -230,6 +268,55 @@ export function autocorrF0(samples: ArrayLike<number>, sampleRate: number, recov
   }
 
   return frames;
+}
+
+type PitchCandidate = { hz: number; correlation: number };
+
+/**
+ * Viterbi je stimmhaftem Zug: maximiert die Summe aus Kandidatenstärke und
+ * zieht je Fensterschritt die Sprungkosten ab. Ein sanfter Fall (fallender
+ * Ton, 10 Halbtöne über 200 ms) kostet je Schritt fast nichts, ein
+ * Oktavsprung 0,35 — mehr, als ein Kandidat an Korrelation gewinnen kann.
+ */
+function stetigerPfad(frames: F0Frame[], pitchCandidates: ReadonlyMap<F0Frame, PitchCandidate[]>): void {
+  const staerke = (candidate: PitchCandidate) => candidate.correlation + F0_OCTAVE_COST * Math.log2(candidate.hz / F0_MIN_HZ);
+  let i = 0;
+  while (i < frames.length) {
+    if (!frames[i].f0) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j < frames.length && frames[j].f0) j++;
+    const zug = frames.slice(i, j).map((frame) => pitchCandidates.get(frame) ?? [{ hz: frame.f0, correlation: frame.correlation ?? 0 }]);
+    let score = zug[0].map(staerke);
+    const zurueck: number[][] = [];
+    for (let t = 1; t < zug.length; t++) {
+      const next: number[] = [];
+      const back: number[] = [];
+      for (const candidate of zug[t]) {
+        let bestScore = Number.NEGATIVE_INFINITY;
+        let bestIndex = 0;
+        zug[t - 1].forEach((previous, index) => {
+          const value = score[index] - F0_OCTAVE_JUMP_COST * Math.abs(Math.log2(candidate.hz / previous.hz));
+          if (value > bestScore) {
+            bestScore = value;
+            bestIndex = index;
+          }
+        });
+        next.push(bestScore + staerke(candidate));
+        back.push(bestIndex);
+      }
+      score = next;
+      zurueck.push(back);
+    }
+    let k = score.indexOf(Math.max(...score));
+    for (let t = zug.length - 1; t >= 0; t--) {
+      frames[i + t].f0 = zug[t][k].hz;
+      if (t > 0) k = zurueck[t - 1][k];
+    }
+    i = j;
+  }
 }
 
 /**
@@ -278,23 +365,32 @@ export function longestRun(frames: readonly F0Frame[]): F0Frame[] | null {
   return runs[0] && runs[0].length >= 4 ? runs[0] : null;
 }
 
+/** Ab diesem Abstand zum Nachbarfenster (10 ms) ist ein Wert ein Sprung, kein Tonverlauf. */
+export const OCTAVE_JUMP_SEMITONES = 5;
+
 /**
  * Grobe Oktavkorrektur aus AE-31, bewusst nur ein Durchgang.
  *
  * Werte ueber Median * 1,8 werden einmal halbiert, Werte unter Median / 1,8
- * einmal verdoppelt. Die Eingabe wird dabei nicht veraendert. Das faengt den
- * dokumentierten Oktavsprung ab, macht die Autokorrelation aber nicht
- * fehlerfrei.
+ * einmal verdoppelt — SEIT 17.10.2026 nur noch, wenn der Wert auch gegen
+ * sein Nachbarfenster SPRINGT. Ein echter fallender Ton faellt im Bestand
+ * um bis zu 12 Halbtoene (กลั้น 242 → 121 Hz); sein tiefes Ende lag unter
+ * Median / 1,8 und wurde hochgeklappt, der Fall verschwand. Die Eingabe
+ * wird nicht veraendert.
  */
 export function octaveCorrect(run: readonly F0Frame[]): F0Frame[] {
   if (run.length === 0) return [];
   const sorted = run.map((frame) => frame.f0).sort((a, b) => a - b);
   const median = sorted[Math.floor(sorted.length / 2)];
+  const springt = (i: number) => {
+    const nachbar = run[i - 1] ?? run[i + 1];
+    return !nachbar || Math.abs(semitones(run[i].f0, nachbar.f0)) > OCTAVE_JUMP_SEMITONES;
+  };
 
-  return run.map((frame) => {
+  return run.map((frame, i) => {
     let f0 = frame.f0;
-    if (f0 > median * OCTAVE_RATIO) f0 /= 2;
-    else if (f0 < median / OCTAVE_RATIO) f0 *= 2;
+    if (f0 > median * OCTAVE_RATIO && springt(i)) f0 /= 2;
+    else if (f0 < median / OCTAVE_RATIO && springt(i)) f0 *= 2;
     return { ...frame, f0 };
   });
 }

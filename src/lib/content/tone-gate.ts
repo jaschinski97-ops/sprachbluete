@@ -4,6 +4,7 @@ import { normalizeClipText } from '../clips/types';
 import {
   analyzeToneContour,
   konturBewegung,
+  longestRun,
   medianReferenceHz,
   octaveCorrect,
   semitones,
@@ -17,9 +18,9 @@ import { TONE_KEYS, type Tone } from '@/constants/tones';
 import { tonfolgeAusRoman } from './roman-tone';
 import { hoherTonSteigtAn, vorlagenUrteil, VORLAGE_P_MAX } from './tone-template';
 
-export const TONE_GATE_VERSION = 'f0-syllables-4';
+export const TONE_GATE_VERSION = 'f0-syllables-5';
 export const TONE_GATE_LIMITS =
-  'Filter gegen grobe Tonhöhenfehler je Silbe, kein Qualitätsnachweis. Konsonanten, Vokallänge und Aspiration werden nicht geprüft. Wörter werden silbenweise gegen syllables[].tone geprüft, Beispielsätze gegen die Tonfolge ihrer Roman-Umschrift; Dialogzüge bleiben ungeprüft. Silbengrenzen kommen aus den stimmhaften Zügen: zu viele werden verschmolzen, zu wenige an deutlichen Energietälern getrennt — bleibt die Zahl unklar, wird nicht geraten. Fallend und steigend werden an der Bewegung nach Gipfel bzw. Tal gemessen (nicht an Anfang-minus-Ende); ein Widerspruch ist nur die GEGENLÄUFIGE Bewegung. Die Registerlage von mittel, tief und hoch bleibt ohne Sprecherreferenz ungeprüft, innerhalb eines Clips wird nur die Ordnung der Silben zueinander geprüft (AE-7/AE-8); ein einzelner hoher Ton gilt nur bei deutlichem Anstieg zum Ende als geprüft. Lassen sich Silben nicht trennen, vergleicht ein Vorlagenabgleich die ganze Tonkurve mit gelernten Tonformen und mit zufälligen Tonfolgen — er stuft nur hoch (ungeprüft → bestanden), verwirft nie. System-TTS wird durch diesen Filter nicht geprüft.';
+  'Filter gegen grobe Tonhöhenfehler je Silbe, kein Qualitätsnachweis. Konsonanten, Vokallänge und Aspiration werden nicht geprüft. Wörter werden silbenweise gegen syllables[].tone geprüft, Beispielsätze gegen die Tonfolge ihrer Roman-Umschrift; Dialogzüge bleiben ungeprüft. Silbengrenzen kommen aus den stimmhaften Zügen: zu viele werden verschmolzen, zu wenige an deutlichen Energietälern getrennt — bleibt die Zahl unklar, wird nicht geraten. Fallend und steigend werden an der Bewegung nach Gipfel bzw. Tal gemessen (nicht an Anfang-minus-Ende); ein Widerspruch ist nur die GEGENLÄUFIGE Bewegung. Die Registerlage von mittel, tief und hoch bleibt ohne Sprecherreferenz ungeprüft, innerhalb eines Clips wird nur die Ordnung der Silben zueinander geprüft (AE-7/AE-8); ein einzelner hoher Ton gilt nur bei deutlichem Anstieg zum Ende als geprüft. Die Tonhöhe folgt einem stetigen Kandidatenpfad ohne Oktavsprünge; verschmolzene oder sehr kurze Züge gelten als geratene Grenze, und ein Fall, der als kurzer Rest hinter der Silbe abreißt, zählt mit. Lassen sich Silben nicht trennen, vergleicht ein Vorlagenabgleich die ganze Tonkurve mit gelernten Tonformen und mit zufälligen Tonfolgen — er stuft nur hoch (ungeprüft → bestanden), verwirft nie. System-TTS wird durch diesen Filter nicht geprüft.';
 
 export type ToneCheck = {
   status: 'passed' | 'failed' | 'unchecked' | 'not-applicable';
@@ -294,14 +295,20 @@ function formurteil(
   ton: Tone,
   summary: ToneContourSummary,
   einzeln: boolean,
-  amEnde = true
+  amEnde = true,
+  /** Wie tief es direkt NACH dem Zug noch hinuntergeht (Halbtöne, siehe `nachlaufTiefe`). */
+  nachlauf = 0
 ): 'geprueft' | 'widerspruch' | 'knapp' | 'register' {
   const bewegung = konturBewegung(summary);
   if (ton === 'falling') {
     if (bewegung.fall >= FORM_KLAR_HALBTOENE && bewegung.gipfelBei <= WENDEPUNKT_FRUEH) return 'geprueft';
     // Kein nennenswerter Abfall IRGENDWO in der Silbe: der fallende Ton ist
     // nicht gesprochen worden — egal ob die Silbe steigt oder eben bleibt.
-    if (bewegung.fall < FORM_SPUR_HALBTOENE) return 'widerspruch';
+    // AUSSER der Fall steht im Nachlauf: Seit dem stetigen Tonhöhenpfad
+    // (17.10.2026) reißt das steile Ende eines Falls ins Knarren oft als
+    // eigener, zu kurzer Zug ab (สุภาพ, อย่างมาก, ทอดไข่) — die Silbe selbst
+    // wirkt eben, gesprochen ist der Fall trotzdem. Dann kein Verwurf.
+    if (bewegung.fall < FORM_SPUR_HALBTOENE) return nachlauf >= FORM_KLAR_HALBTOENE ? 'knapp' : 'widerspruch';
     return 'knapp';
   }
   if (ton === 'rising') {
@@ -327,6 +334,31 @@ function formurteil(
     return einzeln ? 'widerspruch' : 'knapp';
   }
   return 'register';
+}
+
+/** Kürzer (in 10-ms-Fenstern) ist eine eigene Silbe kaum je stimmhaft. */
+const KURZER_ZUG_FENSTER = 8;
+
+/** Höchstens so weit hinter einem Zug zählt der Nachlauf (15 Fenster). */
+const NACHLAUF_FENSTER = 15;
+
+/**
+ * Wie tief die stimmhaften Fenster direkt NACH einem Zug unter dessen
+ * Gipfel liegen — auch Bruchstücke unter der Mindestlänge eines Zugs. Nur
+ * bis zum nächsten Zug und höchstens 150 ms; Werte unter der halben
+ * Gipfelfrequenz bleiben als mögliche Oktavfehler außen vor.
+ */
+function nachlaufTiefe(frames: readonly F0Frame[], zug: readonly F0Frame[], naechster?: readonly F0Frame[]): number {
+  const ende = frames.indexOf(zug[zug.length - 1]);
+  if (ende < 0) return 0;
+  const grenze = naechster ? frames.indexOf(naechster[0]) : frames.length;
+  const gipfel = Math.max(...zug.map((frame) => frame.f0));
+  let tiefste = 0;
+  for (let i = ende + 1; i < Math.min(grenze, ende + 1 + NACHLAUF_FENSTER); i++) {
+    const f0 = frames[i].f0;
+    if (f0 > 0 && f0 >= gipfel / 2) tiefste = Math.max(tiefste, semitones(gipfel, f0));
+  }
+  return tiefste;
 }
 
 function medianVonZahlen(werte: number[]): number {
@@ -473,7 +505,8 @@ export function checkThaiTone(
     // Dasselbe Formurteil wie im Mehrsilber, nur als ISOLIERTE Silbe
     // (`einzeln`): hier gibt es keine Nachbarsilbe, in die ein hoher Ton
     // hinunterziehen könnte, also verwirft der deutliche Fall weiterhin.
-    const urteil = formurteil(targetTone, measurement.summary, true);
+    const zug = longestRun(measurement.frames);
+    const urteil = formurteil(targetTone, measurement.summary, true, true, zug ? nachlaufTiefe(measurement.frames, zug) : 0);
     const silben = [{ tone: targetTone, form: urteil }];
     if (urteil === 'geprueft') {
       return { ...target, ...metrics, silben, status: 'passed',
@@ -522,7 +555,11 @@ export function checkThaiTone(
       reason: `${segmente.length} stimmhafte Züge für ${soll.toene.length} Soll-Silben — Zuordnung nicht eindeutig.` };
   }
   const spans = segmente.map((segment) => trimEdges(octaveCorrect(segment)));
-  const silben = spans.map((span, i) => ({ tone: soll.toene[i], form: formurteil(soll.toene[i], summarizeContour(span, medianReferenceHz(span)), false, i === spans.length - 1) }));
+  const silben = spans.map((span, i) => ({
+    tone: soll.toene[i],
+    form: formurteil(soll.toene[i], summarizeContour(span, medianReferenceHz(span)), false, i === spans.length - 1,
+      nachlaufTiefe(measurement.frames, segmente[i], segmente[i + 1])),
+  }));
   // Die Clip-Referenz aus den OKTAVKORRIGIERTEN Silben: ein einzelner
   // Oktavsprung der Autokorrelation verschöbe sonst den Median, an dem alle
   // Silbenlagen gemessen werden (die Silben selbst laufen längst korrigiert).
@@ -539,7 +576,17 @@ export function checkThaiTone(
   // nächsten Lauf erneut bezahlt wird. Bei geratener Grenze oder ab fünf
   // Silben (praktisch jeder Satz) zählt deshalb erst der ZWEITE Widerspruch;
   // eine Stimme, die die Töne wirklich nicht trifft, trifft mehrere.
-  const noetigeWidersprueche = geteilt > 0 || soll.toene.length >= 5 ? 2 : 1;
+  // Verschmolzene Züge sind genauso eine GERATENE Grenze wie geteilte
+  // (17.10.2026: อย่างมาก — ein abgerissener 4-Fenster-Rest wurde der
+  // falschen Silbe zugeschlagen und hätte den Clip verworfen).
+  // Ebenso ein Zug unter 80 ms, der als ganze Silbe zählen muss: Meist ist
+  // das der abgerissene Knarr-Rest eines Falls (ผ้าแห้งแล้ว, ชอบ ว่ายน้ำ),
+  // keine eigene Silbe.
+  const geraten = geteilt > 0 || verschmolzen.length !== zuege.length
+    || segmente.some((segment) => segment.length < KURZER_ZUG_FENSTER);
+  // Beides zusammen (langer Satz UND geratene Grenze) verschiebt leicht
+  // mehrere Zuordnungen auf einmal — dann erst ab drei Widersprüchen.
+  const noetigeWidersprueche = geraten && soll.toene.length >= 5 ? 3 : geraten || soll.toene.length >= 5 ? 2 : 1;
   const formWiderspruch = widersprueche.length >= noetigeWidersprueche ? widersprueche[0] - 1 : -1;
   // Dieselbe Vorsicht für die Lage: eine aus dem Lautstärkeverlauf GERATENE
   // Grenze verschiebt den Zuschnitt beider Nachbarsilben und damit direkt
@@ -547,7 +594,7 @@ export function checkThaiTone(
   // verworfen, nachdem die Trennung die dritte Silbe überhaupt erst sichtbar
   // gemacht hatte. Geratene Grenzen dürfen Abdeckung bringen, aber nie Geld
   // kosten — sie zählen dann nur noch positiv oder gar nicht.
-  const ordnungVerwirft = ordnung.widerspruch && geteilt === 0;
+  const ordnungVerwirft = ordnung.widerspruch && !geraten;
   if (formWiderspruch >= 0 || ordnungVerwirft) {
     let grund: string;
     if (formWiderspruch >= 0) {
@@ -569,7 +616,7 @@ export function checkThaiTone(
   }
   if (widersprueche.length > 0) {
     return { ...base, ...bezug, ...metrics, targetTones: soll.toene, silben, ...ordnungFeld, status: 'unchecked',
-      reason: `Silbe ${widersprueche[0]} von ${silben.length} (Sollton ${silben[widersprueche[0] - 1].tone}) passt nicht zur gemessenen Kontur — als einzelner Widerspruch${geteilt > 0 ? ' bei geratener Silbengrenze' : ''} nicht beweiskräftig, deshalb nicht verworfen.` };
+      reason: `Silbe ${widersprueche[0]} von ${silben.length} (Sollton ${silben[widersprueche[0] - 1].tone}) passt nicht zur gemessenen Kontur — als einzelner Widerspruch${geraten ? ' bei geratener Silbengrenze' : ''} nicht beweiskräftig, deshalb nicht verworfen.` };
   }
   const formGeprueft = silben.filter((silbe) => silbe.form === 'geprueft').length;
   if (formGeprueft + ordnung.erfuellt > 0) {

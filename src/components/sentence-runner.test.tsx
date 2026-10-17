@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
+import { AppState } from 'react-native';
 import { DrillRunner } from './drill-runner';
 import { SentenceAction, SentenceRunner } from './sentence-runner';
 import ReviewScreen from '@/app/review';
@@ -162,6 +163,28 @@ test('leaving during permission request cancels capture and prevents late model 
   await act(async () => tree.unmount());
   await act(async () => release(true));
   expect(mockPlay).not.toHaveBeenCalled(); expect(mockCancel).toHaveBeenCalled();
+});
+
+test('the microphone permission dialog is no interruption (emulator test 17.10.2026)', async () => {
+  // Android pausiert die App für den System-Dialog, iOS meldet „inactive“.
+  // AppState ist im RN-Jest-Preset bereits ein Mock: die Handler aus seinen Aufrufen lesen.
+  const addListener = AppState.addEventListener as unknown as jest.Mock;
+  expect(jest.isMockFunction(addListener)).toBe(true);
+  const vorher = addListener.mock.calls.length;
+  let release!: (value: boolean) => void;
+  await act(async () => { tree = create(<SentenceRunner language="th" mode="sentenceRepeat" onExit={() => {}} />); });
+  const handlers = addListener.mock.calls.slice(vorher).map((call) => call[1] as (state: string) => void);
+  expect(handlers.length).toBeGreaterThan(0);
+  await press(d('sentence.listen')); await act(async () => jest.advanceTimersByTime(15000));
+  mockStart.mockImplementationOnce(() => new Promise(resolve => { release = resolve; }));
+  await press(d('sentence.start'));
+  await act(async () => { handlers.forEach(handler => handler('background')); });
+  await act(async () => { handlers.forEach(handler => handler('active')); release(true); });
+  expect(JSON.stringify(tree.toJSON())).not.toContain(d('sentence.interrupted'));
+  expect(button(d('sentence.stop'))).toBeDefined();
+  // Während der laufenden Aufnahme bleibt der Hintergrund eine Unterbrechung.
+  await act(async () => { handlers.forEach(handler => handler('background')); });
+  expect(JSON.stringify(tree.toJSON())).toContain(d('sentence.interrupted'));
 });
 
 test('a language without audited sentences shows an honest notice and never touches the microphone (AE-66)', async () => {

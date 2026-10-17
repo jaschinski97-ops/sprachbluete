@@ -61,6 +61,13 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   const locked = useRef(false);
   const processed = useRef(new WeakSet<CapturedPcm>());
   const active = useRef(false);
+  /**
+   * Läuft gerade der Aufnahmestart samt Mikrofon-Abfrage? Der System-Dialog
+   * schickt die App kurz in den Hintergrund (Android) bzw. auf „inactive“
+   * (iOS). Das ist keine Unterbrechung — vorher verwarf genau das die erste
+   * Aufnahme jedes neuen Nutzers (Emulator-Test 17.10.2026).
+   */
+  const permissionPending = useRef(false);
   const stageRef = useRef(stage); stageRef.current = stage;
   const remaining = preparationRemaining(preparedAt, now);
 
@@ -75,7 +82,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   }, [countingDown]);
   useEffect(() => {
     const sub = AppState.addEventListener('change', state => {
-      if (state === 'active') return;
+      if (state === 'active' || permissionPending.current) return;
       generation.current++; active.current = false; locked.current = false;
       captureRef.current.cancel(); void stopPronunciation();
       setBusy(false); setStage('prepare'); setResult(null); setHeard(false);
@@ -143,7 +150,10 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
     locked.current = true; setBusy(true);
     const turn = generation.current;
     await stopPronunciation();
-    const started = await captureRef.current.start();
+    permissionPending.current = true;
+    let started: boolean;
+    try { started = await captureRef.current.start(); }
+    finally { permissionPending.current = false; }
     if (turn !== generation.current) { captureRef.current.cancel(); return; }
     if (!started) { locked.current = false; setBusy(false); return; }
     active.current = true; setResult(null); setStage('record');

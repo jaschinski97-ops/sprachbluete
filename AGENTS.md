@@ -27,7 +27,7 @@ Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest                         # Typen + Tests (~1255 Tests)
+npx tsc --noEmit && npx jest                         # Typen + Tests (~1259 Tests)
 npm run test:scripts                                 # alle Skript-Tests (node --test, 76; ein Rauchtest wird übersprungen, wenn gh installiert ist)
 npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)
@@ -81,6 +81,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 - Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
 - Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
 - Änderungen immer auch in `CHANGELOG.md` eintragen. Die offenen Punkte der Testrunde 26.09. sind seit 16.10. erledigt.
-- Testrunde 16.10. (Linux): offen sind fehlende Thai-Grundwörter (ชื่อ, ประเทศ, ไหน, จาก; braucht Studio-Lauf), schwere Sätze in „Satz verstehen“ auf Anfängerstufe, Pluralformen für ar/ur u. a. (Syntax `{{count, plural, one {…} other {…}}}`). ไหม-Umschrift gemischt mǎi/mái: Umschrift von Sätzen mit Clip ändern kippt den Ton-Gate-Status (`content:integrity` prüft das), vorher Tonprüfung neu rechnen.
+- Offen: 55 Thai-Dialogwörter ohne Wortschatzeintrag (Zahlen, บาท, คะ, ชื่อ, ประเทศ …). Studio → Wortschatz → „Dialogwörter ohne Eintrag übernehmen“, Liste prüfen, Lauf starten (Nutzer). Pluralblöcke: `{{count, plural, one {…} other {…}}}`.
+- Umschrift von Sätzen mit Clip ändern kippt den Ton-Gate-Status (`content:integrity` prüft das): vorher die Tonprüfung der Clips neu rechnen (`ContentPipeline.checkEntry`), kein Verwurf ohne Rückfrage. ไหม in Sätzen „mái“ (gesprochen), als Stichwort „mǎi“.
 - Testrunde 29.09.: Lesequiz-Auswahl, Thai-Wortgrenzen, Rollenspiel-Zähltext und Anfänger-Stoffauswahl korrigiert (siehe `CHANGELOG.md`). B1-Hörtexte bleiben ohne gebündelte Clips; eine physische Mikrofonprüfung steht weiter aus.
 - Kapitelgrammatik nutzt Szenenregeln und Dialogbeispiele; vollständige gelieferte Satzübersetzungen sind Pflicht für fremdsprachige Satzbedeutungen. Musterhilfe beim Schreiben zählt nie als FSRS-Wiederholung.

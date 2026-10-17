@@ -1,5 +1,13 @@
 # Changelog
 
+## 17.10.2026
+
+- Mikrofon (Emulator-Test Android 16): Der System-Dialog „Aufnahme erlauben?“ pausiert die App kurz (iOS: „inactive“). Der Satz-Runner wertete das als Unterbrechung und verwarf die erste Aufnahme jedes neuen Nutzers samt Vorbereitungszeit. Während der Mikrofon-Abfrage zählt ein AppState-Wechsel jetzt nicht mehr; Aufnahme, 12-Sekunden-Fenster und lokale Auswertung liefen im Emulator durch. Die App selbst lief dort erstmals vollständig (Debug-Build über Metro).
+- ไหม in Sätzen jetzt einheitlich „mái“ wie gesprochen (49 Beispielsätze, 5 Dialogzeilen, B1-Vertiefung); der Wörterbucheintrag ไหม und ใช่ไหม/สบายดีไหม bleiben schriftgemäß „mǎi“, Seide (ผ้าไหม, ไหมขัดฟัน, ไหมพรม) ohnehin. Ton-Gate der 70 ไหม-Clips neu gerechnet: 11 jetzt geprüft, 4 nicht mehr prüfbar, kein Verwurf; ungeprüfte Thai-Clips 2.001 → 1.994.
+- „Satz verstehen“, „Satz wiederholen“, Shadowing und das eigenständige Diktat ziehen ohne Kapitel aus dem Grundwortschatz (die 400 ersten Wörter in Erzeugungsreihenfolge) statt aus allen 2.000 Sätzen. Die Heutige Runde und Kapitel nutzen weiter ihre eigenen Wörter.
+- Pluralformen auch für ar (one/two/few/many), ur, hi, mr, te, ta; ta „Silbenkerne“ war „மந்திரக்கருகள்“, hi „स्वरक“.
+- Studio: Der Prüfbericht fragt vor „Neu erzeugen“ nicht mehr mit Kostenangabe nach (Regel „keine Kostendialoge“). Neuer Knopf „Dialogwörter ohne Eintrag übernehmen“ in der Wortschatz-Karte (Thai): schreibt die 55 Dialogwörter ohne Wortschatzeintrag (Zahlen, บาท, คะ, ชื่อ, ประเทศ, ไหน, จาก …) als Pflichtwörter ins Thema; der Lauf selbst startet wie immer von Hand.
+
 ## 16.10.2026
 
 - Linux-Mint-Einrichtung: Node 24 (nvm), JDK 17, Android SDK 36/NDK 27.1 und Emulator im Benutzerkonto; Debug-APK gebaut und im Emulator installiert. Die Windows-Kopie brachte 190 Dateien mit CRLF; zurück auf LF, neue `.gitattributes` erzwingt LF.
@@ -16,7 +24,7 @@
   - Lern-Reiter: Der zuletzt geöffnete Lernbereich bleibt nach einer Übung aufgeklappt.
   - Katalog: Plural „die Obst“, „die Müll“, „die Zimt“, „die Hackfleisch“ usw. (11 Nomen) → „—“, „das Wasser“ ohne „die Wässer“; ห้อง einheitlich hɔ̂ng (vorher 15× hɔ̂ɔng); B1-Vertiefung dâi → dâai, ไหม dort mǎi wie überwiegend im Katalog. Thai-Bedeutungen ohne ขอรับ in Frauensätzen; „สี่แผงห้าสิบเซนต์“ → „สี่ยูโรห้าสิบเซนต์“. Keine Audioänderung: Clips hängen am Thai-Text. ไหม bleibt im Katalog gemischt (67× mǎi, 9× mái): Das Ton-Gate liest den Sollton von Sätzen aus der Umschrift, die Clips sprechen mái, und mit mǎi kippten drei Clips in der Integritätsprüfung („geprüft“ → „nicht prüfbar“). Eine Vereinheitlichung braucht eine Entscheidung (mái wie gesprochen oder mǎi wie geschrieben) und eine neue Tonprüfung der betroffenen Clips.
   - Studio: Der „schlaue Export“ verglich lokale Clips mit der komprimierten Stage-Fassung und lud deshalb jeden Clip bei jedem Lauf neu hoch; jetzt ohne `format`/`byteSize`/`blobKey`, mit Originalgröße, auch gegen den Katalog. „Neu erzeugen“ im Prüfbericht übersprang den vorhandenen Clip; jetzt überschreibt der Lauf ihn.
-- Offen: Grundwörter wie ชื่อ, ประเทศ, ไหน, จาก fehlen im Thai-Wortschatz (deshalb in Lesetexten nicht antippbar; braucht einen Studio-Lauf). „Satz verstehen“ zeigt auf Anfängerstufe auch schwere Sätze („Besucher müssen am Wachhäuschen ihren Ausweis hinterlegen“); Ursache nicht untersucht. Pluralformen für ar, ur und weitere Sprachen mit Pluralbeugung stehen noch aus. Der Prüfbericht fragt vor „Neu erzeugen“ mit Kostenangabe nach (älter als die Regel „keine Kostendialoge“; nicht angefasst).
+- Offen: siehe 17.10.2026 (dort erledigt bis auf den Wortschatzlauf für die fehlenden Thai-Grundwörter).
 
 ## 08.10.2026
 

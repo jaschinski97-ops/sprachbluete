@@ -37,11 +37,6 @@ export function fileSystem(): FileSystemModule | null {
   return fileSystemModule;
 }
 
-/** Nur fuer Tests. */
-export function resetFileSystemCache(): void {
-  fileSystemModule = undefined;
-}
-
 export type InstalledPack = {
   language: PackLanguage;
   version: number;
@@ -69,10 +64,6 @@ export function versionFromDirName(name: string): number | null {
   if (!/^v(\d+)$/.test(name)) return null;
   const version = Number(name.slice(1));
   return version >= 1 ? version : null;
-}
-
-export function latestVersion(versions: number[]): number | null {
-  return versions.length ? Math.max(...versions) : null;
 }
 
 /** Document-Verzeichnis als URI, oder null ohne Dateisystem. */
@@ -257,19 +248,4 @@ export async function readInstalledManifest(
   } catch {
     return null;
   }
-}
-
-/**
- * Vollstaendige Installationsentscheidung fuer die Oberflaeche:
- * Welche Version ist installiert, welche ist aktiv, was waere zu tun?
- */
-export type PackInstallState = {
-  installed: number[];
-  active: InstalledPack | null;
-};
-
-export async function packInstallState(language: PackLanguage): Promise<PackInstallState> {
-  const installed = await installedVersions(language);
-  const active = await activePack(language);
-  return { installed, active };
 }

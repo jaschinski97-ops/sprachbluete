@@ -3,7 +3,7 @@ import { Tone } from '@/constants/tones';
 import { SpeechLanguage } from '../audio';
 import { Direction } from '../fsrs/types';
 import { drillsForDirectionViaFeature } from '../languages/feature';
-import { contentDirectionOf, PairDirection, TargetLanguage } from '../languages/types';
+import { contentDirectionOf, LanguageCode, PairDirection } from '../languages/types';
 import { DerivationStep } from '../reading/syllable';
 
 /**
@@ -89,7 +89,7 @@ export type DrillMeta = {
    * Der Wert ist der Sprach-Code des Merkmals (`feature: "th"` fuer die
    * Ton-UEbungen usw.).
    */
-  feature: TargetLanguage | null;
+  feature: LanguageCode | null;
   label: string;
   /** Ein Satz, der sagt, was geübt wird und warum. */
   description: string;
@@ -103,7 +103,7 @@ export type DrillMeta = {
  * Lern-Reiter reichen ihre echte Richtung (`anker_to_ziel`) immer mit; das
  * hier ist nur der Rückfall für Aufrufer ohne Richtung.
  */
-export function directionForDrill(_drill: DrillId, language: TargetLanguage): Direction {
+export function directionForDrill(_drill: DrillId, language: LanguageCode): Direction {
   return contentDirectionOf(language);
 }
 

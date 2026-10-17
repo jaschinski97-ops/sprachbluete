@@ -182,7 +182,7 @@ export function milestonesFor(entries: readonly VocabEntry[], cards: readonly FS
   const reihenfolge = [...entries].sort(
     (a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id)
   );
-  return MILESTONES.filter((size, index) => index === 0 || reihenfolge.length > MILESTONES[index - 1]).map((size) => {
+  return MILESTONES.filter((_, index) => index === 0 || reihenfolge.length > MILESTONES[index - 1]).map((size) => {
     const stufe = reihenfolge.slice(0, size);
     return { size, total: stufe.length, started: stufe.filter((entry) => begonnen.has(entry.id)).length };
   });

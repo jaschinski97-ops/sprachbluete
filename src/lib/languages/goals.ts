@@ -54,9 +54,6 @@ export function zieleFuerBruecke(bridge: Lang | ForeignBridge): Lernziel[] {
     .map((code) => ({ direction: `${bridge}_to_${code}` as PairDirection, language: code }));
 }
 
-/** Die Ziele der deutschen Oberfläche — historischer Standard. */
-export const LERNZIELE: readonly Lernziel[] = zieleFuerBruecke('de');
-
 /**
  * Die Richtung eines gemerkten Standes, passend zur AKTUELLEN App-Sprache.
  *

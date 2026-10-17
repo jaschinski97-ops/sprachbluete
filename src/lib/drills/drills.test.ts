@@ -27,7 +27,7 @@ import {
 } from './questions';
 import { seededRandom, shuffled } from './random';
 import { buildDrillSession, DRILL_SESSION_SIZE, scoreAnswers } from './session';
-import { directionForDrill, DRILL_META, DRILLS, drillsForDirection, DrillId } from './types';
+import { directionForDrill, DRILL_META, DRILLS, drillsForDirection } from './types';
 
 const T0 = Date.UTC(2026, 8, 1, 10);
 

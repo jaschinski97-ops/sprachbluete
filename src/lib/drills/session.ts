@@ -2,7 +2,7 @@ import { VocabEntry } from '@/data/vocab-types';
 
 import { retrievability } from '../fsrs/fsrs';
 import { FSRSCardState } from '../fsrs/types';
-import { anchorOf, PairDirection, TargetLanguage } from '../languages/types';
+import { anchorOf, LanguageCode, PairDirection } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
 import { ensureCardStates } from '../review-session';
 import { DataStore, getStore } from './../storage';
@@ -69,11 +69,11 @@ export type DrillSessionOptions = {
    * gemeint ist, kann diese Datei nicht wissen. Ein stiller Vorgabewert
    * 'th' wuerde spanische Sitzungen klammheimlich mit Thai-Karten fuellen.
    *
-   * SEIT DEM PAARMATRIX-START VOM TYP `TargetLanguage`: Jede Zielsprache
+   * SEIT DEM PAARMATRIX-START VOM TYP `LanguageCode`: Jede Zielsprache
    * ohne eigenen Bestand liefert schlicht `available: 0` — ehrlich leer
    * statt falsch gefuellt.
    */
-  language: TargetLanguage;
+  language: LanguageCode;
   direction?: PairDirection;
   /**
    * ANKER- UND UI-SPRACHE (21.09.2026): Der Anker entscheidet, in welcher

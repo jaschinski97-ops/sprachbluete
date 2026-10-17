@@ -10,7 +10,6 @@ import { DAY_MS, NEW_CARDS_PER_SESSION, retrievability } from './fsrs/fsrs';
 import { loadCardStatesForDirection, rateCard } from './repository';
 import {
   buildReviewQueue,
-  DIRECTIONS,
   ensureCardStates,
   summarizeAllDirections,
   summarizeDirection,
@@ -245,7 +244,7 @@ describe('summarizeDirection', () => {
     const store = await freshStore();
     const summaries = await summarizeAllDirections('th', store, T0);
 
-    expect(summaries.map((s) => s.direction)).toEqual([...DIRECTIONS]);
+    expect(summaries.map((s) => s.direction)).toEqual(['de_to_th']);
     expect(summaries[0].total).toBe(VOCABULARY.length);
     const deutsch = await summarizeAllDirections('de', store, T0);
     expect(deutsch.map((s) => s.direction)).toEqual(['th_to_de']);

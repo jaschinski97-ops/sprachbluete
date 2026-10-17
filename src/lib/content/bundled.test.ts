@@ -1,9 +1,8 @@
 import { Asset } from 'expo-asset';
 import { bundledAssetUri, bundledDocuments, preferBundled } from './bundled';
-import { resolveClipUri, invalidateClipIndex } from '../clips/lookup';
+import { installClipLookup, invalidateClipIndex, resolveClipUri } from '../clips/lookup';
 import { loadSituations, loadVocabImageUri } from '../repository';
 import { playPronunciation, setPronunciationBackend } from '../audio';
-import { installClipLookup } from '../clips/lookup';
 
 jest.mock('../../content/catalog.json', () => {
   const { clipIdFor } = require('../clips/types');

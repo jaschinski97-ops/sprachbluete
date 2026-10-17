@@ -13,11 +13,9 @@ import {
   deactivatePack,
   installedPackUri,
   installedVersions,
-  packInstallState,
   pruneOldVersions,
   readInstalledManifest,
   removePack,
-  latestVersion,
   versionFromDirName,
 } from './store';
 
@@ -51,11 +49,6 @@ describe('pure helpers', () => {
     expect(versionFromDirName('junk')).toBeNull();
     expect(versionFromDirName('')).toBeNull();
   });
-
-  test('latestVersion picks the maximum or null', () => {
-    expect(latestVersion([2, 7, 5])).toBe(7);
-    expect(latestVersion([])).toBeNull();
-  });
 });
 
 describe('installedVersions', () => {
@@ -76,10 +69,8 @@ describe('activate and read active pack', () => {
     expect(active).toMatchObject({ language: LANG, version: 1 });
     const manifest = await readInstalledManifest(LANG, 1);
     expect(manifest?.totals.bytes).toBe(4);
-    expect(await packInstallState(LANG)).toEqual({
-      installed: [1],
-      active: { language: LANG, version: 1, uri: installedPackUri(LANG, 1) },
-    });
+    expect(await installedVersions(LANG)).toEqual([1]);
+    expect(await activePack(LANG)).toEqual({ language: LANG, version: 1, uri: installedPackUri(LANG, 1) });
   });
 
   test('activating a missing version fails loudly', async () => {

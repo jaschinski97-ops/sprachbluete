@@ -6,7 +6,6 @@ import {
   directionForBridge,
   goalEndonym,
   goalLanguage,
-  LERNZIELE,
   wortschatzFuerZiel,
   zieleFuerBruecke,
   zielFuerDirection,
@@ -28,8 +27,9 @@ import {
  */
 describe('Lernziele — eine Regel für jede App-Sprache', () => {
   it('deutsche Oberfläche: Thai, Englisch, Spanisch — Deutsch ausgeblendet (Nutzerentscheidung 19.09.)', () => {
-    expect(LERNZIELE.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es']);
-    expect(LERNZIELE.map(goalLanguage)).toEqual(['th', 'en', 'es']);
+    const ziele = zieleFuerBruecke('de');
+    expect(ziele.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es']);
+    expect(ziele.map(goalLanguage)).toEqual(['th', 'en', 'es']);
   });
 
   it('Thai-Oberfläche: Englisch, Spanisch, Deutsch — Thai ausgeblendet (Testlauf 08.10.)', () => {
@@ -67,7 +67,7 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
   it('trägt das Endonym aus der Sprachdefinition — auch für Deutsch', () => {
     const deutsch = zieleFuerBruecke('th').find((ziel) => ziel.language === 'de')!;
     expect(goalEndonym(deutsch)).toBe('Deutsch');
-    expect(goalEndonym(LERNZIELE[0])).toBe('ภาษาไทย');
+    expect(goalEndonym(zieleFuerBruecke('de')[0])).toBe('ภาษาไทย');
   });
 });
 

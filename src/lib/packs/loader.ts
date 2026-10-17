@@ -22,7 +22,6 @@
  * liefert alles null, und die App verhaelt sich wie vor der Paket-Architektur.
  */
 
-import type { ContentKind } from '../content/types';
 import { bundledEntry } from '../content/bundled';
 import type { PackLanguage } from './manifest';
 import { File } from 'expo-file-system';
@@ -95,12 +94,6 @@ async function packFileUri(language: PackLanguage, relativePath: string | null):
   return uri;
 }
 
-/** `th-032745955ed8889a` -> `th`; fremde Formen -> null. */
-export function clipLanguageOf(clipId: string): PackLanguage | null {
-  const match = /^(th|en|es|de)-/.exec(clipId);
-  return match ? (match[1] as PackLanguage) : null;
-}
-
 /** URI eines Hörclips im aktiven Paket, sonst null. */
 export async function packAudioUri(language: PackLanguage, clipId: string): Promise<string | null> {
   const entry = bundledEntry('audio', clipId);
@@ -115,9 +108,4 @@ export async function packImageUri(language: PackLanguage, vocabId: string): Pro
   const prefix = `images/${vocabId}.`;
   const match = [...index.paths].find((path) => path.startsWith(prefix));
   return packFileUri(language, match ?? null);
-}
-
-/** Generisch fuer Anzeigen/Debug — Audio und Bilder. */
-export async function packAssetUri(kind: Extract<ContentKind, 'audio' | 'images'>, language: PackLanguage, id: string): Promise<string | null> {
-  return kind === 'audio' ? packAudioUri(language, id) : packImageUri(language, id);
 }

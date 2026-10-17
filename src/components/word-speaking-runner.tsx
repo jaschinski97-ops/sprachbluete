@@ -13,7 +13,7 @@ import { ThemedButton } from './themed-button';
 import { ThemedText, displayLineHeight } from './themed-text';
 import { ThemedView } from './themed-view';
 import { TranslationKey, useLocale } from '@/lib/i18n';
-import { pairLanguageOf, type PairDirection } from '@/lib/languages/types';
+import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import {
   buildWordSpeakingSession,
   type WordSpeakingTask,
@@ -40,7 +40,7 @@ export function WordSpeakingRunner({
 }) {
   const { t, languageName } = useLocale();
   const colors = useTheme();
-  const language = pairLanguageOf(direction);
+  const language = targetLanguageOf(direction);
 
   const [tasks, setTasks] = useState<WordSpeakingTask[] | null>(null);
   const [empty, setEmpty] = useState(false);

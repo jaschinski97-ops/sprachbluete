@@ -10,11 +10,11 @@
  * fremden Quelle darf beim Installieren hart scheitern, nicht halb laden.
  */
 
+import { LANGUAGE_CODES, type LanguageCode } from '../languages/types';
+
 export const PACK_SCHEMA_VERSION = 1 as const;
 
-/** Sprachen des Start-Kanons (Roadmap v2, "Kern 5"). */
-
-import { LANGUAGE_CODES, type LanguageCode } from '../languages/types';
+/** Je Lernsprache gibt es ein Paket. */
 export type PackLanguage = LanguageCode;
 
 export const PACK_LANGUAGES: readonly PackLanguage[] = LANGUAGE_CODES;
@@ -104,10 +104,6 @@ export function manifestProblem(value: unknown): string | null {
   }
   if (totals.bytes !== bytes) return `totals.bytes (${totals.bytes}) passt nicht zur Summe der Dateien (${bytes}).`;
   return null;
-}
-
-export function isPackManifest(value: unknown): value is PackManifest {
-  return manifestProblem(value) === null;
 }
 
 /**

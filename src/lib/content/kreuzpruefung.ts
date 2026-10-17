@@ -8,7 +8,6 @@ function pruefPunktDrei(language: string): string {
   return isLanguageCode(language) ? LEARNING_LANGUAGES[language].checkPoint3 : 'ist die Lautschrift plausibel?';
 }
 
-
 /** Der gewählte Anbieter prüft Übersetzung, Grammatik und Natürlichkeit.
  * Ein anderer Anbieter ergibt eine Kreuzprüfung; beim selben Anbieter
  * bestehen Einträge zwei getrennte Prüfrunden. Fehler werden verworfen.
@@ -28,37 +27,12 @@ export function gegenStueck(
   return { anbieter, selbstpruefung: familie(anbieter) === familie(erzeuger) };
 }
 
-const URTEILS_FORMAT = [
-  'Antworte NUR mit JSON:',
-  '{ "urteil": "bestehen" | "mangel", "gruende": ["…"] }',
-  '"bestehen" nur, wenn ALLE Punkte stimmen. Jeder Mangel bekommt einen kurzen Grund.',
-].join('\n');
-
 /**
  * Wie viele Einträge EIN Prüfaufruf auf einmal bekommt (15.09.: die
  * Einzelprüfung machte aus 200 Wörtern 200 nacheinander laufende Aufrufe
  * an ein Reasoning-Modell — das war der Zeitfresser des ersten Kettenlaufs).
  */
 export const PRUEF_BATCH_GROESSE = 10;
-
-/** Prüfprompt für EINEN Eintrag (Einzelfall/Tests — der Lauf nutzt den Batch). */
-export function baueVocabPruefPrompt(eintrag: VocabEntry, stufe?: string): string {
-  return [
-    'Prüfe diesen Lern-Vokabeleintrag kritisch in fünf Punkten:',
-    '1. Übersetzung: stimmen die deutsche Bedeutung und alle vorhandenen translations zum Begriff (und umgekehrt)? Es genügt EINE korrekte Hauptbedeutung — nicht alle Bedeutungsnuancen.',
-    '2. Grammatik/Rechtschreibung in der Zielsprache und im Deutschen.',
-    `3. Umschrift/Ton/Betonung: ${pruefPunktDrei(String(eintrag.language))}`,
-    '4. Natürlichkeit: klingt der Beispielsatz wie ein echter Satz der Zielsprache?',
-    stufe
-      ? `5. Stufe ${stufe}: ist das Wort für diese Stufe typisch und häufig genug?`
-      : '5. Passung: ist das Wort ein grundlegender, hochfrequenter Alltagsbegriff (ohne feste Niveaustufe)? Mehrdeutigkeit schließt hohe Frequenz nicht aus.',
-    '',
-    'Eintrag:',
-    JSON.stringify(eintrag, null, 2),
-    '',
-    URTEILS_FORMAT,
-  ].join('\n');
-}
 
 /** Prüfprompt für ein GANZES Paket — ein Aufruf, ein Urteil je Eintrag. */
 export function baueVocabBatchPruefPrompt(eintraege: VocabEntry[], stufe?: string): string {
@@ -253,24 +227,4 @@ export async function pruefeVocabKreuzBatch(
     }
   }
   return resultate;
-}
-
-/** Vokabel-Eintrag kreuzprüfen (Einzelfall — der Lauf nutzt die Batch-Funktion). */
-export async function pruefeVocabKreuz(
-  eintrag: VocabEntry,
-  stufe: string | undefined,
-  erzeuger: ProviderId,
-  hatSchluessel: (anbieter: ProviderId) => boolean,
-  clientFuer: (anbieter: ProviderId) => TextClient,
-  prueferWahl?: ProviderId
-): Promise<KreuzResultat> {
-  const [resultat] = await pruefeVocabKreuzBatch(
-    [eintrag],
-    stufe,
-    erzeuger,
-    hatSchluessel,
-    clientFuer,
-    prueferWahl
-  );
-  return resultat;
 }

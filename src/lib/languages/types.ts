@@ -1,31 +1,18 @@
 /**
- * Das Sprachmodell (Phase 15, seit dem v2-Plan: Paarmatrix).
+ * Das Sprachmodell.
  *
- * BIS HIERHER WAR ALLES AUF THAI↔DEUTSCH VERDRAHTET: `Direction` war der feste
- * Typ `de_to_th | th_to_de`, die Vokabel hatte ein Feld `thai`, und die
- * Tonfarben lagen als Konstante herum. Diese Datei zieht daraus ein Modell,
- * in dem Thai↔Deutsch das **erste** Sprachpaar ist und kein Sonderfall.
+ * ZWEI SCHICHTEN:
  *
- * DEUTSCH WAR DIE DREHSCHEIBE (AE-42) — und ist es im **Bestand** noch: Jede
- * ausgelieferte Richtung hat Deutsch auf einer Seite, und die deutsche Seite
- * jeder Vokabel (Genus, Stammformen, Steigerung) hängt an dieser Entscheidung.
- *
- * SEIT DEM PAARMATRIX-MODELL (Roadmap v2, 2026-09-08) GIBT ES HIER ZWEI
- * SCHICHTEN:
- *
- *   1. Die **Paarmatrix** (`SUPPORTED_TARGETS`, `Lang`, `Pair`, `pairsFor`):
- *      alle Kombinationen S→T mit S≠T über {de, en, es, fr, th} — 20 Paare.
- *      `BRIDGE_LOCALES` nennt dieselben fünf als Brückensprachen (= künftig
- *      die Systemsprache des Geräts).
- *   2. Der **Bestand** (`LANGUAGE_CODES`, `Direction`, `HUB_LANGUAGE`): die
- *      klassischen de↔th/en/es-Richtungen. `'de_to_th'` und `'th_to_de'`
- *      bleiben wörtlich gültige Werte — gespeicherte Kartenschlüssel
- *      (`vocabId:de_to_th`) sind davon unberührt — und `Direction` wurde nur
- *      um `de_to_fr`/`fr_to_de` erweitert, nie umgebaut.
- *
- * NEUER CODE liest Schicht 1; Schicht 2 trägt den Bestand. Französisch wurde
- * am 09.09.2026 komplett entfernt (Kern 4) — der frühere Grundstoff liegt
- * im Git-Verlauf und ist nicht mehr Teil des Typs.
+ *   1. Die **Paare** (`SUPPORTED_TARGETS`, `Lang`, `Pair`, `PairDirection`):
+ *      alle Kombinationen S→T mit S≠T über die vier Lernsprachen (12 Paare),
+ *      dazu die Richtungen der Fremd-Brücken (App-Sprachen ohne Lernstoff,
+ *      `ForeignPairDirection`). Die Lernsprache ist immer die rechte Seite
+ *      (`targetLanguageOf`), die Bedeutungsseite die linke (`anchorOf`).
+ *   2. Der **Bestand** (`Direction`, `HUB_LANGUAGE`): die de-geankerten
+ *      Richtungen. `'de_to_th'` und `'th_to_de'` bleiben wörtlich gültige
+ *      Werte — gespeicherte Kartenschlüssel (`vocabId:de_to_th`), Profile und
+ *      Backups tragen sie. Inhalte liegen je Lernsprache unter
+ *      `contentDirectionOf(code)`.
  */
 
 import { Tone } from '@/constants/tones';
@@ -35,13 +22,9 @@ import { UI_LANGUAGES, type UiLanguage } from '@/lib/i18n/types';
 /**
  * Die Drehscheibe. Steht auf einer Seite jedes Sprachpaars.
  *
- * @deprecated SEIT DEM PAARMATRIX-MODELL (Roadmap v2, Phase „Richtungslogik“)
- * ist Deutsch eine **Zielsprache unter fünf** und keine Drehcheibe mehr —
- * gültige Paare sind jetzt alle Kombinationen S→T mit S≠T, siehe
- * `SUPPORTED_TARGETS`, `Pair` und `pairsFor`. Der Export bleibt, bis alle
- * Aufrufer umgestellt sind (`profile.ts`, `backup.ts`, `questions.ts`
- * bauen damit weiterhin die klassischen de↔X-Richtungen). NEUER CODE liest
- * `HUB_LANGUAGE` nicht mehr; er nimmt `pairsFor` und `Pair`.
+ * Deutsch ist eine Lernsprache unter vieren; die Drehscheibe gilt nur noch
+ * für den Bestand (`Direction`, `contentDirectionOf`). Neuer Code arbeitet
+ * mit `PairDirection`, `targetLanguageOf` und `anchorOf`.
  */
 export const HUB_LANGUAGE = 'de' as const;
 export type HubLanguage = typeof HUB_LANGUAGE;
@@ -67,26 +50,12 @@ export function isLanguageCode(value: unknown): value is LanguageCode {
   return typeof value === 'string' && (LANGUAGE_CODES as readonly string[]).includes(value);
 }
 
-/** Alias aus der Paarmatrix-Zeit — dieselbe Liste. */
-export const TARGET_LANGUAGES = LANGUAGE_CODES;
-export type TargetLanguage = LanguageCode;
-
 /**
  * Der Sprachkanon: dieselbe Liste wie `LANGUAGE_CODES`. Jede Lernsprache ist
  * zugleich eine Sprache, in der erklärt werden kann (Brücke).
  */
 export const SUPPORTED_TARGETS = LANGUAGE_CODES;
 export type Lang = LanguageCode;
-
-/**
- * Die Brückensprachen — die Sprache, in der eine Vokabel **erklärt** wird.
- *
- * SPÄTER = SYSTEMSPRACHE: Der v2-Plan erkennt sie per `expo-localization`;
- * solange die i18n-Schicht nicht steht, bleibt Deutsch die Brücke. Der Kanon
- * ist absichtlich derselbe wie `SUPPORTED_TARGETS`: Jede Zielsprache ist auch
- * eine Sprache, in der erklärt werden kann.
- */
-export const BRIDGE_LOCALES = SUPPORTED_TARGETS;
 
 /**
  * Eine Richtung des Lernens: von `source` (Brückensprache) nach `target`
@@ -157,40 +126,16 @@ export const PAIRS: Pair[] = SUPPORTED_TARGETS.flatMap((source) =>
 );
 
 /**
- * Alle Paare einer Brückensprache — „Was kann jemand mit dieser
- * Systemsprache lernen?“ Deutsch als Brücke liefert die klassischen
- * Richtungen `de_to_*`; Englisch als Brücke zusätzlich `en_to_de`,
- * `en_to_es` und `en_to_th`.
- */
-export function pairsFor(bridge: Lang): Pair[] {
-  return PAIRS.filter((pair) => pair.source === bridge);
-}
-
-/**
  * Lernrichtung. `de_to_th` heißt weiterhin: Deutsch verstehen, Thai
  * hervorbringen (AE-11 gilt unverändert).
  *
  * BEWUSST UNVERÄNDERT AUF DEM BESTAND: `Direction` umfasst nur die
- * ausgelieferten Paare (de↔th/en/es). Für die deutsch-geankerten Richtungen
- * über allem Grundstoff gibt es `TargetDirection` — eine reine Erweiterung,
- * und jeder `Direction`-Wert ist zugleich ein gültiger `TargetDirection`. So
- * bleibt jede Profil- und Backup-Stelle (`profile.ts`, `backup.ts`) auf dem
- * alten Typ.
+ * de-geankerten Paare (de↔th/en/es). Profil, Backup und Kartenschlüssel
+ * tragen genau diese Werte.
  */
 export type Direction =
   | `${HubLanguage}_to_${Exclude<LanguageCode, HubLanguage>}`
   | `${Exclude<LanguageCode, HubLanguage>}_to_${HubLanguage}`;
-
-/**
- * Die deutsch-geankerten Richtungen über **allen** Ziel-Grundstücken — die
- * klassischen sechs.
- *
- * WARUM WEITERHIN DEUTSCH-GEANKERT: Die deutschen Grammatikübungen hängen
- * an der deutschen Seite eines Paars; für sie ist diese Union die
- * vollständige Menge. Das freie Kreuzprodukt S≠T
- * leistet separat `Pair`/`pairsFor` — ohne Erbanteil an der Bestandstypung.
- */
-export type TargetDirection = Direction;
 
 /**
  * Die Richtung, unter der die INHALTE einer Lernsprache gespeichert sind
@@ -209,32 +154,6 @@ export function contentDirectionOf(language: LanguageCode): Direction {
  */
 export function directionsFor(language: LanguageCode): Direction[] {
   return [contentDirectionOf(language)];
-}
-
-/**
- * Welche Zielsprache steckt in dieser Richtung? Deutsch ist ja immer dabei.
- *
- * NUR FÜR DEN BESTAND: Für Richtungen über allen Ziel-Grundstücken (inklusive
- * Französisch) gibt es `languageOfTargetDirection`.
- */
-export function languageOfDirection(direction: Direction): LanguageCode {
-  return targetLanguageOf(direction);
-}
-
-/** Dasselbe für die erweiterten Richtungen. */
-export function languageOfTargetDirection(direction: TargetDirection): TargetLanguage {
-  return targetLanguageOf(direction);
-}
-
-/**
- * Bringt die lernende Person in dieser Richtung die Zielsprache hervor?
- *
- * SEIT DEN KREUZRICHTUNGEN AUF `PairDirection`: Auch `en_to_es` produziert
- * seine Zielseite — die Frage ist paarsymmetrisch und braucht keinen
- * de-geankerten Vertrag mehr.
- */
-export function producesTargetLanguage(direction: PairDirection): boolean {
-  return direction.startsWith(`${HUB_LANGUAGE}_to_`);
 }
 
 /**
@@ -285,9 +204,6 @@ export function isPairDirection(value: unknown): value is PairDirection {
 export function targetLanguageOf(direction: PairDirection): LanguageCode {
   return direction.split('_to_')[1] as LanguageCode;
 }
-
-/** @deprecated Alter Name — identisch mit `targetLanguageOf`. */
-export const pairLanguageOf = targetLanguageOf;
 
 /**
  * Die ANKER-/Bedeutungsseite einer Richtung — die Sprache, die die lernende
@@ -343,11 +259,9 @@ export type SyllableAnnotation = {
  */
 export type LanguageMeta = {
   /**
-   * Der Bestands-Code aus `LANGUAGE_CODES`. SEIT DEM PAARMATRIX-MODELL VOM
-   * TYP `TargetLanguage`: auch Deutsch als Ziel trägt seinen Code hier,
-   * App-Bestand ist (`delivered: false`).
+   * Der Code aus `LANGUAGE_CODES` — Deutsch als Lernziel eingeschlossen.
    */
-  code: TargetLanguage;
+  code: LanguageCode;
   /** Name auf Deutsch, wie er in der Auswahl steht. */
   label: string;
   /** Eigenbezeichnung — hilft beim Wiedererkennen. */
@@ -410,8 +324,7 @@ export type LanguageDefinition = LanguageMeta & {
    * Ist der Grundstoff **im App-Bestand** (also in `VOCABULARY` und damit auf
    * jedem Gerät)? `false` heißt: geprüfte Einträge liegen im Repo, aber die
    * Auslieferung kommt noch — die Auswahl zeigt die Sprache ehrlich als „noch
-   * nicht lernbar“, der Sprachwechsel lässt sie weg. Französisch steht so da,
- * bis sein Paket ausgeliefert wird (Roadmap v2, Phase 3).
+   * nicht lernbar“, der Sprachwechsel lässt sie weg.
    */
   delivered: boolean;
   /**

@@ -11,7 +11,6 @@ import {
   canBuildSpeakingPrompt,
   feedbackForMeasurement,
   SPEAKING_LIMITATIONS,
-  SPEAKING_PRIVACY_NOTICE,
 } from './domain';
 
 function entry(id: string): VocabEntry {
@@ -196,7 +195,5 @@ describe('ehrliche qualitative Rueckmeldung', () => {
     expect(SPEAKING_LIMITATIONS.join(' ')).toMatch(/Oktavfehler/);
     expect(SPEAKING_LIMITATIONS.join(' ')).toMatch(/absolute Lage/);
     expect(SPEAKING_LIMITATIONS.join(' ')).toMatch(/nicht kalibriert/);
-    expect(SPEAKING_PRIVACY_NOTICE).toMatch(/bleibt auf diesem Gerät/);
-    expect(SPEAKING_PRIVACY_NOTICE).toMatch(/keine Audiodaten/);
   });
 });

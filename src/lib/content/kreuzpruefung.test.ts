@@ -1,6 +1,6 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
-import { baueVocabBatchPruefPrompt, baueVocabPruefPrompt, gegenStueck, parseUrteil, parseUrteile, pruefeVocabKreuz, pruefeVocabKreuzBatch } from './kreuzpruefung';
+import { baueVocabBatchPruefPrompt, gegenStueck, parseUrteil, parseUrteile, pruefeVocabKreuzBatch } from './kreuzpruefung';
 
 const vocab = {
   id: 'ki-th-abc12345',
@@ -59,16 +59,16 @@ describe('parseUrteil', ()=> {
   });
 });
 
-describe('baueVocabPruefPrompt — Stufe optional', () => {
+describe('baueVocabBatchPruefPrompt — Stufe optional', () => {
   it('nennt mit Stufe die übliche Stufen-Passung', () => {
-    const prompt = baueVocabPruefPrompt(vocab, 'A1');
+    const prompt = baueVocabBatchPruefPrompt([vocab], 'A1');
     expect(prompt).toContain('5. Stufe A1');
   });
 
   it('prüft ohne Stufe die Passung (Häufigkeit) statt einer Niveaustufe', () => {
     // Nutzerwunsch 15.09.: die Wortschatz-Ziele laufen ohne CEFR-Stufen —
     // der Prüfer darf dann keine Stufe behaupten, die es nicht gibt.
-    const prompt = baueVocabPruefPrompt(vocab, undefined);
+    const prompt = baueVocabBatchPruefPrompt([vocab], undefined);
     expect(prompt).toContain('hochfrequenter Alltagsbegriff');
     expect(prompt).not.toContain('Stufe undefined');
   });
@@ -94,14 +94,7 @@ describe('Prüfprompt — Spanisch-Betonung über das stressed-Feld (17.09.)', (
     exampleGerman: 'Ich komme morgen.',
   } as unknown as VocabEntry;
 
-  it('Single-Prompt prüft die stressed-Silbe und verlangt KEINE Umschrift-Markierung', () => {
-    const prompt = baueVocabPruefPrompt(esVocab);
-    expect(prompt).toContain('"stressed"');
-    expect(prompt).toContain('nicht erforderlich');
-    expect(prompt).not.toContain('Betonungssilbe');
-  });
-
-  it('Batch-Prompt genauso', () => {
+  it('prüft die stressed-Silbe und verlangt KEINE Umschrift-Markierung', () => {
     const prompt = baueVocabBatchPruefPrompt([esVocab]);
     expect(prompt).toContain('"stressed"');
     expect(prompt).toContain('nicht erforderlich');
@@ -110,7 +103,6 @@ describe('Prüfprompt — Spanisch-Betonung über das stressed-Feld (17.09.)', (
 
   it('Punkt 1 verlangt nur EINE korrekte Hauptbedeutung', () => {
     expect(baueVocabBatchPruefPrompt([esVocab])).toContain('EINE korrekte Hauptbedeutung');
-    expect(baueVocabPruefPrompt(esVocab)).toContain('EINE korrekte Hauptbedeutung');
   });
 });
 
@@ -213,30 +205,21 @@ describe('pruefeVocabKreuzBatch — Paketprüfung', () => {
     expect(aufrufe).toBe(2);
     expect(resultate[0].geprueft).toBe(true);
   });
-
-  it('die alte Einzelfunktion leitet weiter und bleibt kompatibel', async () => {
-    const resultat = await pruefeVocabKreuz(
-      vocab, undefined, 'gemini', keyImmer(),
-      () => batchClient([{ index: 0, urteil: 'mangel', gruende: ['Feld fehlt'] }])() as never
-    );
-    expect(resultat.geprueft).toBe(false);
-    expect(resultat.gruende).toContain('Feld fehlt');
-  });
 });
 
-describe('prüfeVocabKreuz — die Fallback-Regel', () => {
+describe('pruefeVocabKreuzBatch mit einem Eintrag — die Fallback-Regel', () => {
   it('echte Kreuzprüfung bestanden → geprüft', async () => {
-    const resultat = await pruefeVocabKreuz(
-      vocab, 'A1', 'gemini', keyImmer(),
-      (anbieter) => client('{"urteil":"bestehen","gruende":[]}') as never, 'chatgpt'
+    const [resultat] = await pruefeVocabKreuzBatch(
+      [vocab], 'A1', 'gemini', keyImmer(),
+      () => client('{"urteil":"bestehen","gruende":[]}') as never, 'chatgpt'
     );
     expect(resultat.geprueft).toBe(true);
     expect(resultat.kreuz).toBe(true);
   });
 
   it('Kreuzprüfung mangel → nicht geprüft mit Gründen', async () => {
-    const resultat = await pruefeVocabKreuz(
-      vocab, 'A1', 'gemini', keyImmer(),
+    const [resultat] = await pruefeVocabKreuzBatch(
+      [vocab], 'A1', 'gemini', keyImmer(),
       () => client('{"urteil":"mangel","gruende":["Übersetzung schief"]}') as never
     );
     expect(resultat.geprueft).toBe(false);
@@ -245,9 +228,9 @@ describe('prüfeVocabKreuz — die Fallback-Regel', () => {
 
   it('Selbstprüfung braucht zwei bestandene Durchläufe und bleibt „einfach geprüft"', async () => {
     let aufrufe = 0;
-    const resultat = await pruefeVocabKreuz(
-      vocab, 'A1', 'gemini', (p) => p !== 'chatgpt',
-      (anbieter) => {
+    const [resultat] = await pruefeVocabKreuzBatch(
+      [vocab], 'A1', 'gemini', (p) => p !== 'chatgpt',
+      () => {
         aufrufe += 1;
         return client('{"urteil":"bestehen","gruende":[]}') as never;
       }
@@ -259,8 +242,8 @@ describe('prüfeVocabKreuz — die Fallback-Regel', () => {
   });
 
   it('Selbstprüfung: erster Durchlauf mangel genügt zur Ablehnung', async () => {
-    const resultat = await pruefeVocabKreuz(
-      vocab, 'A1', 'gemini', (p) => p !== 'chatgpt',
+    const [resultat] = await pruefeVocabKreuzBatch(
+      [vocab], 'A1', 'gemini', (p) => p !== 'chatgpt',
       () => client('{"urteil":"mangel","gruende":["Feld fehlt"]}') as never
     );
     expect(resultat.geprueft).toBe(false);

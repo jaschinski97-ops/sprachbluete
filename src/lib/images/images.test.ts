@@ -15,7 +15,6 @@ import { missingImageSpecs, runImageBatch } from './batch';
 import { MemoryImageBlobStore } from './blob-memory';
 import {
   buildImagePrompt,
-  describeApiError,
   IMAGE_ASPECT_RATIO,
   IMAGE_FORMAT,
   IMAGE_MODEL,
@@ -425,12 +424,6 @@ describe('clearVocabImages', () => {
     expect(await countVocabImages(store)).toBe(0);
     expect(await blobs.has(`${specs[0].vocabId}.${IMAGE_FORMAT}`)).toBe(false);
     expect(await loadVocabImageUri(specs[0].vocabId, store, blobs)).toBeNull();
-  });
-});
-
-describe('describeApiError', () => {
-  it('kommt mit einer Antwort klar, die kein JSON ist', () => {
-    expect(describeApiError(502, 'Bad Gateway')).toContain('HTTP 502: Bad Gateway');
   });
 });
 

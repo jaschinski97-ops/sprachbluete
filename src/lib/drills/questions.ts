@@ -1,5 +1,5 @@
 import { TONE_KEYS, TONES } from '@/constants/tones';
-import { TargetVocabEntry, VocabEntry } from '@/data/vocab-types';
+import { VocabEntry } from '@/data/vocab-types';
 
 import { Direction } from '../fsrs/types';
 import { syllablesOf } from '@/data/vocab-helpers';
@@ -15,7 +15,7 @@ import { analyzeStress } from '../stress/syllables';
 import { type KeyedStep } from '../stress/syllables';
 
 import { Random, shuffled } from './random';
-import { DRILL_META, DrillOption, DrillQuestion } from './types';
+import { DrillOption, DrillQuestion } from './types';
 import { translate } from '../i18n';
 import { bridgeText } from '../languages/bridge';
 
@@ -72,16 +72,12 @@ const STRESS_REGEL_KEYS = {
  * Aufgabe `'th_to_de'` beziehungsweise `'de_to_th'`; damit haette eine
  * spanische Artikel-Aufgabe die falsche Richtung getragen und im
  * Tagesprotokoll unter Thai gezaehlt.
- *
- * SEIT DEM PAARMATRIX-START AUF `TargetVocabEntry` GERICHTET: Jeder
- * Ziel-Eintrag bildet hier dieselben Richtungen — sein Sprachcode liegt in
- * `TargetLanguage`.
  */
 function toHub(entry: VocabEntry): Direction {
   return `${entry.language}_to_${HUB_LANGUAGE}` as Direction;
 }
 
-function toTarget(entry: TargetVocabEntry): Direction {
+function toTarget(entry: VocabEntry): Direction {
   return `${HUB_LANGUAGE}_to_${entry.language}` as Direction;
 }
 
@@ -970,9 +966,3 @@ export function buildSoundSpellingQuestion(
 }
 
 /* ---------- gemeinsamer Zugang ---------- */
-
-export const DRILL_PROMPTS = {
-  tone: DRILL_META.tone.prompt,
-  article: DRILL_META.article.prompt,
-  verbForms: DRILL_META.verbForms.prompt,
-};

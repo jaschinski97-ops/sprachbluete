@@ -23,8 +23,7 @@ import {
   directionsFor,
   HUB_LANGUAGE,
   LANGUAGE_CODES,
-  languageOfDirection,
-  producesTargetLanguage,
+  targetLanguageOf,
 } from './types';
 
 /**
@@ -48,7 +47,7 @@ describe('Inhalts-Richtungen (seit dem Sprach-Umbau 23.09.2026)', () => {
       const [direction, ...rest] = directionsFor(language);
       expect(rest).toEqual([]);
       expect(direction).toBe(language === 'de' ? 'th_to_de' : `de_to_${language}`);
-      expect(languageOfDirection(direction)).toBe(language);
+      expect(targetLanguageOf(direction)).toBe(language);
     }
     expect(HUB_LANGUAGE).toBe('de');
   });
@@ -56,14 +55,8 @@ describe('Inhalts-Richtungen (seit dem Sprach-Umbau 23.09.2026)', () => {
   it('lässt die bisherigen Richtungswerte wörtlich gültig', () => {
     // Der Grund, warum kein einziger Kartenschluessel angefasst werden musste.
     const alt: Direction[] = ['de_to_th', 'th_to_de'];
-    expect(alt.map(languageOfDirection)).toEqual(['th', 'de']);
+    expect(alt.map(targetLanguageOf)).toEqual(['th', 'de']);
     expect(cardKey('sawatdii', 'de_to_th')).toBe('sawatdii:de_to_th');
-  });
-
-  it('sagt, welche Seite die lernende Person hervorbringt (AE-11)', () => {
-    expect(producesTargetLanguage('de_to_th')).toBe(true);
-    expect(producesTargetLanguage('th_to_de')).toBe(false);
-    expect(producesTargetLanguage('de_to_es')).toBe(true);
   });
 
   it('baut Beschriftungen aus dem Verzeichnis statt aus einer Tabelle', () => {

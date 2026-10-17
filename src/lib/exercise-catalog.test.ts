@@ -1,6 +1,5 @@
 import { zieleFuerBruecke } from '@/lib/languages/goals';
-import { PAIRS, SUPPORTED_TARGETS } from '@/lib/languages/types';
-import { FOREIGN_BRIDGES } from '@/lib/languages/types';
+import { FOREIGN_BRIDGES, PAIRS, SUPPORTED_TARGETS } from '@/lib/languages/types';
 
 import {
   groupsForDirection,

@@ -266,49 +266,6 @@ export function languageDisplayName(target: UiLanguage, ui: UiLanguage): string 
   return LANGUAGE_DISPLAY_NAMES[target]?.[ui] ?? LANGUAGE_ENDONYME[target];
 }
 
-/**
- * Monatsnamen für die Screenreader-Ansagen im Fortschritts-Chart — geprüfte
- * Tabellen, wo sie stehen (ar: ägyptische Namen, nicht die klassischen), und
- * für die übrigen App-Sprachen der CLDR-Weg über `Intl`. Liest bitte NUR über
- * `monthNamesFor`, nicht direkt aus der Tabelle.
- */
-export const MONTH_NAMES: Partial<Record<UiLanguage, readonly string[]>> = {
-  ar: [
-    // Ägyptische Monatsnamen: In Ägypten sind die syro-libanesischen Namen
-    // (yanaayir … disimbir) üblich, nicht die klassisch-arabischen Ordnungsnamen.
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
-  ],
-  de: [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
-  ],
-  en: [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ],
-  es: [
-    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
-  ],
-  th: [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม',
-  ],
-};
-
-/** Monatsnamen eines Jahres aus der Intl-Datenbank (CLDR) — der Fallback. */
-function intlMonate(locale: string): readonly string[] {
-  const format = new Intl.DateTimeFormat(locale, { month: 'long' });
-  // Der 15. liegt sicher inmitten des Monats — keine Zeitzonen-Verschobier.
-  return Array.from({ length: 12 }, (_, monat) => format.format(new Date(2024, monat, 15)));
-}
-
-/** Monatsnamen in der UI-Sprache — Tabelle zuerst, sonst Intl. */
-export function monthNamesFor(language: UiLanguage): readonly string[] {
-  return MONTH_NAMES[language] ?? intlMonate(localeTagFor(language));
-}
-
 /** Sprachtag für Datumsformatierung (etwa `toLocaleDateString`). */
 export function localeTagFor(language: UiLanguage): string {
   switch (language) {

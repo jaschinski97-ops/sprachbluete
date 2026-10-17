@@ -9,7 +9,7 @@ import {
   PairDirection,
   SyllableAnnotation,
   Lang,
-  TargetLanguage,
+  LanguageCode,
 } from './types';
 
 /**
@@ -90,7 +90,7 @@ const ANNOTATOREN: Partial<Record<Lang, Annotator>> = {
   de: (entry) => [{ roman: entry.romanization || entry.term }],
 };
 
-export function featureRuntime(language: TargetLanguage): LanguageFeatureRuntime {
+export function featureRuntime(language: LanguageCode): LanguageFeatureRuntime {
   return {
     annotate: ANNOTATOREN[language] ?? GENERISCH,
     drills: [...LEARNING_LANGUAGES[language].drills],
@@ -108,6 +108,6 @@ export function drillsForDirectionViaFeature(direction: PairDirection): DrillId[
   return featureRuntime(language).drills;
 }
 
-export function featureIsImplemented(language: TargetLanguage): boolean {
+export function featureIsImplemented(language: LanguageCode): boolean {
   return LANGUAGES[language].feature.implemented;
 }

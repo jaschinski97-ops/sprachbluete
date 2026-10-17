@@ -1,4 +1,3 @@
-import { describeHttpError } from '../providers/http';
 import { createImageProvider } from '../providers/image';
 import { ImageClient, PROVIDER_INFO, ProviderId } from '../providers/types';
 
@@ -104,15 +103,6 @@ export function buildImagePrompt(spec: ImageSpec): string {
     'no text and no letters anywhere in the image.'
   );
 }
-
-/**
- * Liest die Fehlerform von Stability (`{"errors":[…],"name":"…"}`) aus.
- *
- * Seit Phase 10 tut das der gemeinsame Fehlerleser aller Anbieter — was in der
- * Fehlerliste eines Laufs landet, soll bei allen vier gleich aussehen. Der
- * Name hier bleibt, weil er an mehreren Stellen geprüft wird.
- */
-export const describeApiError = describeHttpError;
 
 /**
  * Verbindet den Prompt dieser Datei mit einem beliebigen Bildanbieter.

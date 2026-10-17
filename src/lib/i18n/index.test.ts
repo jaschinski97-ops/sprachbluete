@@ -10,7 +10,6 @@ import {
   dictionaries,
   interpolate,
   languageDisplayName,
-  monthNamesFor,
   normalizeLanguageCode,
   normalizeLanguageSetting,
   translate,
@@ -269,12 +268,6 @@ describe('Sprachnamen und Monate', () => {
     // Chinesisch als Anzeige hat keine geprüfte Zeile — das Endonym muss kommen.
     expect(languageDisplayName('zh', 'de')).toBe('中文');
     expect(languageDisplayName('ko', 'zh')).toBe('한국어');
-  });
-
-  it('liefert zwölf Monatsnamen je Sprache (Tabelle oder Intl-Fallback)', () => {
-    for (const language of UI_LANGUAGES) {
-      expect(monthNamesFor(language)).toHaveLength(12);
-    }
   });
 });
 

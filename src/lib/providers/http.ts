@@ -190,8 +190,6 @@ export async function postJson(options: JsonPostOptions): Promise<unknown> {
 export async function postForBytes(
   options: JsonPostOptions
 ): Promise<{ bytes: ArrayBuffer; contentType: string }> {
-  const host = hostOf(options.url);
-
   const response = await postWithRetry(options);
 
   if (!response.ok) {

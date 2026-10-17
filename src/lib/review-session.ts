@@ -1,11 +1,10 @@
 import type { BridgeEntry, VocabEntry } from '@/data/vocab-types';
 
-import { createCardState, dueCards, retrievability } from './fsrs/fsrs';
-import { Direction, FSRSCardState } from './fsrs/types';
+import { createCardState, dueCards } from './fsrs/fsrs';
+import { FSRSCardState } from './fsrs/types';
 import { directionLabel } from './languages/registry';
 import {
   anchorOf,
-  contentDirectionOf,
   directionsFor,
   LanguageCode,
   PairDirection,
@@ -40,15 +39,6 @@ import { DataStore, getStore } from './storage';
  * (th/en/es_to_de) laufen unverändert über den Bestandsweg: deren Karten
  * fragen das `german`-Feld der Pool-Einträge ab.
  */
-
-/**
- * Die Richtungen der aktuell gewaehlten Sprache.
- *
- * Seit Phase 15 keine Konstante mehr: Welche zwei Richtungen es gibt, haengt
- * an der Sprache (AE-42). `DIRECTIONS` bleibt als Thai-Vorgabe erhalten, damit
- * bestehende Aufrufer unveraendert weiterlaufen.
- */
-export const DIRECTIONS: Direction[] = [contentDirectionOf('th')];
 
 export { directionLabel, directionsFor };
 
@@ -211,9 +201,4 @@ export async function summarizeAllDirections(
     summaries.push(await summarizeDirection(direction, store, now));
   }
   return summaries;
-}
-
-/** Nur für Anzeige: wie gut die Karte gerade sitzt, in Prozent. */
-export function retrievabilityPercent(card: FSRSCardState, now: number = Date.now()): number {
-  return Math.round(retrievability(card, now) * 100);
 }

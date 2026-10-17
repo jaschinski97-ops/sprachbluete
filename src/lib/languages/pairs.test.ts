@@ -5,7 +5,6 @@ import {
   isPairId,
   pairId,
   PairId,
-  pairsFor,
   parsePairId,
   PAIRS,
   SUPPORTED_TARGETS,
@@ -19,7 +18,7 @@ import {
  * 1. **Der Kanon ist vollständig, aber ohne Selbstpaare.** 4 × 3 = 12 Paare,
  *    jede Richtung genau einmal (Kern 4 seit 09.09.2026 — Französisch entfernt).
  * 2. **Die sechs klassischen Richtungen bleiben wörtlich gültig.** Sie sind
- *    Paar-IDs, `pairsFor('de')` liefert sie unverändert, und gespeicherte
+ *    Paar-IDs, und gespeicherte
  *    Kartenschlüssel im Format `vocabId:de_to_th` sind davon unberührt.
  * 3. **Brückentexte fallen ehrlich zurück.** `bridgeText` sagt über
  *    `usedFallback`, wenn die gewünschte Sprache fehlt.
@@ -55,23 +54,6 @@ describe('Die Paarmatrix', () => {
       expect(parsePairId(pairId(pair))).toEqual(pair);
       expect(isPairId(pairId(pair))).toBe(true);
     }
-  });
-
-  it('liefert pairsFor alle Paare einer Brückensprache und nur solche', () => {
-    for (const bridge of SUPPORTED_TARGETS) {
-      const pairs = pairsFor(bridge);
-      expect(pairs).toHaveLength(3);
-      for (const pair of pairs) {
-        expect(pair.source).toBe(bridge);
-        expect(pair.target).not.toBe(bridge);
-      }
-    }
-    // Deutsch als Brücke: die drei klassischen Richtungen.
-    expect(pairsFor('de').map(pairId)).toEqual([
-      'de_to_th',
-      'de_to_en',
-      'de_to_es',
-    ]);
   });
 });
 
@@ -139,6 +121,7 @@ describe('Der Brückentext fällt ehrlich zurück', () => {
 
   it('trägt die Kette weiter, wenn nicht einmal Deutsch da ist', () => {
     const ohneDeutsch = { german: '', term: 'la maison', translations: { en: 'house' } };
+    expect(bridgeText(ohneDeutsch, 'en')).toEqual({ text: 'house', usedFallback: false });
     const nackter = { german: '', term: 'maison' };
     expect(bridgeText(nackter, 'en')).toEqual({ text: 'maison', usedFallback: true });
     expect(bridgeText({ german: '' }, 'en')).toEqual({ text: '', usedFallback: true });

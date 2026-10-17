@@ -72,7 +72,7 @@ const REAL_PLATFORM_OS = Platform.OS;
 
 // @types/jest (29.5) deklariert jest.stubGlobal nicht — also werden die
 // Web-Globals für den Download-Test von Hand gesetzt und zurückgestellt.
-const savedGlobals: Array<{ name: string; value: unknown }> = [];
+const savedGlobals: { name: string; value: unknown }[] = [];
 
 function stubGlobalProperty(name: 'document' | 'URL', value: unknown): void {
   const holder = globalThis as Record<string, unknown>;

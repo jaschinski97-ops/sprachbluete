@@ -4,8 +4,6 @@ import { bewertungFuerErgebnis, vergleicheProduktion } from './compare';
 import { produktionsAufgaben } from './tasks';
 import { targetLanguageOf as zielSprache } from '../languages/types';
 
-const T0 = Date.UTC(2026, 8, 13, 10);
-
 describe('vergleicheProduktion — Toleranzen', () => {
   it('ignoriert Groß-/Kleinschreibung und Satzzeichen', () => {
     expect(vergleicheProduktion('ich mag katzen', 'Ich mag Katzen.', 'en').bewertung).toBe('exact');

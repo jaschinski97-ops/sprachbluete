@@ -4,7 +4,7 @@
  * resolveClipUri (TTS-Politik bleibt Sache von audio.ts und ist dort getestet).
  */
 import { clipIdFor } from '../clips/types';
-import { invalidatePackCache, packAudioUri, packImageUri, clipLanguageOf } from './loader';
+import { invalidatePackCache, packAudioUri, packImageUri } from './loader';
 import { activatePack, installedPackUri, type InstalledPack } from './store';
 import { resolveClipUri } from '../clips/lookup';
 
@@ -77,15 +77,6 @@ async function installThPack(): Promise<InstalledPack> {
 beforeEach(() => {
   mock.__reset();
   invalidatePackCache();
-});
-
-describe('clipLanguageOf', () => {
-  test('reads the language prefix of clip ids', () => {
-    expect(clipLanguageOf(TH_CLIP)).toBe('th');
-    expect(clipLanguageOf('en-1234')).toBe('en');
-    expect(clipLanguageOf('zh-1234')).toBeNull();
-    expect(clipLanguageOf('broken')).toBeNull();
-  });
 });
 
 describe('packAudioUri / packImageUri', () => {

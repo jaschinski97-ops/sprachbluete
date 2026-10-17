@@ -4,15 +4,12 @@ import { languageDisplayName, type UiLanguage } from '@/lib/i18n';
 import { LEARNING_LANGUAGES } from './definitions';
 
 import {
+  Direction,
   directionsFor,
   Lang,
   LANGUAGE_CODES,
   LanguageCode,
   LanguageDefinition,
-  languageOfDirection,
-  Pair,
-  TargetDirection,
-  TargetLanguage,
 } from './types';
 
 /**
@@ -47,7 +44,7 @@ export const LANGUAGE_ORDER: LanguageCode[] = [...LANGUAGE_CODES].sort((a, b) =>
   return byContent !== 0 ? byContent : LANGUAGES[a].label.localeCompare(LANGUAGES[b].label);
 });
 
-export function languageOf(code: TargetLanguage): LanguageDefinition {
+export function languageOf(code: LanguageCode): LanguageDefinition {
   return LANGUAGES[code];
 }
 
@@ -59,7 +56,7 @@ export function languageOf(code: TargetLanguage): LanguageDefinition {
  * Gerät“. Erst beides zusammen macht eine Sprache wählbar — ein Grundstoff
  * ohne Auslieferung wäre eine leere Versprechung.
  */
-export function hasContent(code: TargetLanguage): boolean {
+export function hasContent(code: LanguageCode): boolean {
   return LANGUAGES[code].entryCount > 0 && LANGUAGES[code].delivered;
 }
 
@@ -81,10 +78,6 @@ export function defaultLanguage(): LanguageCode {
  * gepflegt — sonst müsste jede neue Sprache an zwei Stellen nachgetragen
  * werden, und eine davon würde vergessen.
  *
- * SEIT DEM PAARMATRIX-START FÜR ALLE deutsch-geankerten Richtungen offen
- * (`TargetDirection`): Auch „Deutsch → Französisch” wird hier aus dem
- * Verzeichnis beschriftet, statt eine zweite Tabelle zu pflegen.
- *
  * SEIT DEM i18N-GERÜST MEHRSPRACHIG: Die Namen kommen aus
  * `LANGUAGE_DISPLAY_NAMES`, also in der Sprache der OBERFLÄCHE — ein
  * Thailänder sieht „ไทย → ภาษาเยอรมัน”. Ohne Angabe gilt Deutsch (die
@@ -92,7 +85,7 @@ export function defaultLanguage(): LanguageCode {
  * UI-Kontext — bleibt damit exakt so, wie er war. Wer die aktive
  * UI-Sprache kennt (`useLocale().uiLanguage`), reicht sie durch.
  */
-export function directionLabel(direction: TargetDirection, ui: UiLanguage = 'de'): string {
+export function directionLabel(direction: Direction, ui: UiLanguage = 'de'): string {
   const [quelle, ziel] = direction.split('_to_') as [LanguageCode, LanguageCode];
   return `${languageDisplayName(quelle, ui)} → ${languageDisplayName(ziel, ui)}`;
 }
@@ -103,7 +96,7 @@ export function directionLabel(direction: TargetDirection, ui: UiLanguage = 'de'
 // Lernen-Reiter die Liste der Fertigkeiten getreten - die Angabe, nach der man
 // wirklich auswaehlt.
 
-export { directionsFor, languageOfDirection };
+export { directionsFor };
 
 /**
  * Beschriftung aller fünf Kanon-Sprachen — Deutsch inklusive.
@@ -116,11 +109,6 @@ export { directionsFor, languageOfDirection };
 export const LANGUAGE_LABELS: Record<Lang, string> = Object.fromEntries(
   LANGUAGE_CODES.map((code) => [code, LEARNING_LANGUAGES[code].label])
 ) as Record<Lang, string>;
-
-/** Beschriftung eines Paars — „Englisch → Französisch“ statt `en_to_fr`. */
-export function pairLabel(pair: Pair): string {
-  return `${LANGUAGE_LABELS[pair.source]} → ${LANGUAGE_LABELS[pair.target]}`;
-}
 
 /** Alle 20 Paare des Kanons — aus `types.ts` hier nur weitergereicht. */
 export { PAIRS as ALL_PAIRS } from './types';

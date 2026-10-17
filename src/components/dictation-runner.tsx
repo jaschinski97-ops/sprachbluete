@@ -64,7 +64,7 @@ import { ratingExplanation } from '@/lib/writing';
  * Aufrufer: Das Deutsch-Diktat (th_to_de) schreibt dieselbe Karte fort wie
  * Karteikarte und freies Schreiben dieser Richtung (AE-16), und die Sprache
  * ist die PRODUZIERTE Seite des Paars (`de` im Deutsch-Ziel), nicht mehr die
- * über `pairLanguageOf` abgeleitete Ankerseite.
+ * über `targetLanguageOf` abgeleitete Ankerseite.
  */
 
 /** Verlangsamt, aber hörbar — innerhalb der expo-audio-Grenze (Android 0.1–2.0). */
@@ -232,7 +232,7 @@ export function DictationRunner({
   if (!task) {
     const correct = results.filter((entry) => entry.passed).length;
     const exact = results.filter((entry) => entry.exact).length;
-    const missed = session.filter((entry, position) => !results[position]?.passed);
+    const missed = session.filter((_, position) => !results[position]?.passed);
     return (
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{t('drill.roundDone')}</ThemedText>

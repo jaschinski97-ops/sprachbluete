@@ -187,13 +187,6 @@ export async function loadSituations(store?: DataStore): Promise<ConversationSit
   return preferBundled('situations', situations);
 }
 
-export async function loadSituation(
-  id: string,
-  store?: DataStore
-): Promise<ConversationSituation | null> {
-  return (await loadSituations(store)).find((situation) => situation.id === id) ?? null;
-}
-
 export async function countSituations(store?: DataStore): Promise<number> {
   return (await loadSituations(store)).length;
 }
@@ -224,11 +217,6 @@ export async function countSituationsByDirection(
     }
   }
   return zaehler;
-}
-
-export async function clearSituations(store?: DataStore): Promise<void> {
-  const db = store ?? (await getStore());
-  await db.clear('situations');
 }
 
 /* ---------- Vokabelbilder (Phase 5) ---------- */

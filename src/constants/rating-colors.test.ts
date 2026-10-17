@@ -15,7 +15,7 @@ import { kontrastVerhaeltnis } from './tones.test';
  * dreht, merkt hier sofort, wenn das Paar auseinanderfällt.
  */
 
-const PAARE: Array<[keyof typeof Colors.light, keyof typeof Colors.light]> = [
+const PAARE: [keyof typeof Colors.light, keyof typeof Colors.light][] = [
   ['rateAgainText', 'rateAgainBg'],
   ['rateHardText', 'rateHardBg'],
   ['rateGoodText', 'rateGoodBg'],

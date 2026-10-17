@@ -57,8 +57,3 @@ export function createPackExtractor(): PackExtractor | null {
   }
   return detection;
 }
-
-/** Nur fuer Tests. */
-export function resetPackExtractor(): void {
-  detection = undefined;
-}

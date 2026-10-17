@@ -1,6 +1,6 @@
 import { Tone } from '@/constants/tones';
 
-import { LanguageCode, SyllableAnnotation, TargetLanguage } from '@/lib/languages/types';
+import { LanguageCode, SyllableAnnotation } from '@/lib/languages/types';
 import type { UiLanguage } from '@/lib/i18n/types';
 
 /**
@@ -166,17 +166,6 @@ export type VocabEntry = {
   /** Lernhinweis zur Grammatik (Genus, Stammformen, Steigerung, Homonyme). */
   note?: string;
 };
-
-/**
- * Ein Eintrag eines **beliebigen** Ziel-Grundstuffs — die oberste Schranke
- * für Code, der Einträge mehrerer Grundstöcke liest.
- *
- * WARUM EIN EIGENER TYP: `VocabEntry.language` ist bewusst auf die
- * **ausgelieferten** Sprachen beschränkt (`LANGUAGE_CODES`) — dadurch bleibt
- * die Audio-Naht (`SpeechLanguage` in lib/audio) und die gesamte
- * Bestands-Oberfläche schmal und zwingt niemanden, heute schon Französisch zu
- */
-export type TargetVocabEntry = Omit<VocabEntry, 'language'> & { language: TargetLanguage };
 
 /**
  * Ein Eintrag eines **Brücken-Pools** — die Ankerwörter einer

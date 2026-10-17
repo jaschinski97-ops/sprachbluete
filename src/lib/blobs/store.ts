@@ -52,9 +52,3 @@ export function getBlobStore(config: BlobStoreConfig): Promise<BlobStore> {
 export function activeBlobBackend(name: string): string {
   return activeBackends.get(name) ?? 'noch nicht geladen';
 }
-
-/** Nur für Tests: erzwingt beim nächsten Aufruf eine neue Instanz. */
-export function resetBlobStoresForTests(): void {
-  stores.clear();
-  activeBackends.clear();
-}

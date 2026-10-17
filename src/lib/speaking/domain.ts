@@ -22,10 +22,6 @@ export const SPEAKING_LIMITATIONS = [
   'Ohne eine persönliche Referenz aus mehreren Aufnahmen wird nur die Konturform verglichen; die absolute Lage von mittel, tief und hoch ist dann nicht kalibriert.',
 ] as const;
 
-/** Textbaustein fuer die Begruendung unmittelbar vor der Mikrofonfreigabe. */
-export const SPEAKING_PRIVACY_NOTICE =
-  'Die Aufnahme bleibt auf diesem Gerät. Die Auswertung läuft lokal und sendet keine Audiodaten an einen Anbieter.';
-
 export type SpeakingPrompt = {
   id: string;
   vocabId: string;

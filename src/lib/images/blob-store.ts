@@ -1,4 +1,4 @@
-import { activeBlobBackend, getBlobStore, resetBlobStoresForTests } from '../blobs/store';
+import { activeBlobBackend, getBlobStore } from '../blobs/store';
 
 import { IMAGE_BLOB_CONFIG, ImageBlobStore } from './types';
 
@@ -14,9 +14,4 @@ export function getImageBlobStore(): Promise<ImageBlobStore> {
 
 export function getActiveBlobBackend(): string {
   return activeBlobBackend(IMAGE_BLOB_CONFIG.name);
-}
-
-/** Nur für Tests: erzwingt beim nächsten Aufruf eine neue Instanz. */
-export function resetImageBlobStoreForTests(): void {
-  resetBlobStoresForTests();
 }

@@ -12,7 +12,6 @@ import { Flashcard } from '@/components/flashcard';
 import { ScreenScaffold } from '@/components/screen-scaffold';
 import { SpeakingRunner } from '@/components/speaking-runner';
 import { SentenceRunner } from '@/components/sentence-runner';
-import type { SentenceMode } from '@/lib/speaking/sentence-session';
 import { ThemedButton } from '@/components/themed-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -38,7 +37,7 @@ import {
   type PairDirection,
 } from '@/lib/languages/types';
 import { LearnerProfile, loadProfile, setLanguage, setReviewSpot } from '@/lib/profile';
-import { rateCard } from '@/lib/repository';
+import { loadSituations, rateCard } from '@/lib/repository';
 import { buildReviewQueue, directionLabel, ReviewItem } from '@/lib/review-session';
 import {
   groupsForDirection,
@@ -57,7 +56,6 @@ import { ChapterGrammarRunner } from '@/components/chapter-grammar-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { finishChapter, finishedChapterIds, chaptersForDirection, type LearningChapter } from '@/lib/learning-path';
-import { loadSituations } from '@/lib/repository';
 import { situationTranslation, spokenText, type ConversationSituation } from '@/lib/conversation/types';
 
 const RATINGS: Rating[] = [1, 2, 3, 4];

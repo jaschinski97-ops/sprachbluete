@@ -164,6 +164,11 @@ describe('Interpolation', () => {
     expect(translate('ru', 'chapter.words', { count: 5 })).toBe('5 слов для этой главы');
     expect(translate('ru', 'chapter.words', { count: 21 })).toBe('21 слово для этой главы');
     expect(translate('de', 'backup.partsLog', { days: 1 })).toBe('1 Tag Lernprotokoll');
+    // Arabisch: Einzahl, Dual, 3–10, 11–99 (CLDR one/two/few/many).
+    expect(translate('ar', 'chapter.words', { count: 2 })).toBe('كلمتان لهذا الفصل');
+    expect(translate('ar', 'chapter.words', { count: 5 })).toBe('5 كلمات لهذا الفصل');
+    expect(translate('ar', 'chapter.words', { count: 20 })).toBe('20 كلمة لهذا الفصل');
+    expect(translate('te', 'home.vocabCount', { count: 1 })).toBe('1 పదం');
     expect(translate('en', 'stress.detailNuclei', { count: 1 })).toMatch(/^1 vowel nucleus\./);
   });
 

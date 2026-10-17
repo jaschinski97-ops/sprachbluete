@@ -30,6 +30,19 @@ describe('vergleicheProduktion — Toleranzen', () => {
     expect(vergleicheProduktion('ขอนำเปลาหนึงแกวครบ', 'ขอน้ำเปล่า หนึ่งแก้ว ครับ', 'th').bewertung).not.toBe('exact');
   });
 
+  it('zählt Thai-Höflichkeitspartikeln nicht (Nutzertest 17.10.2026)', () => {
+    expect(vergleicheProduktion('ผมมาจากเยอรมนีครับ', 'ผมมาจากเยอรมนี', 'th').bewertung).toBe('exact');
+    expect(vergleicheProduktion('ขอบคุณ', 'ขอบคุณค่ะ', 'th').bewertung).toBe('exact');
+    expect(vergleicheProduktion('สวัสดีครับ ยินดีที่ได้รู้จักครับ', 'สวัสดีค่ะ ยินดีที่ได้รู้จักค่ะ', 'th').bewertung).toBe('exact');
+    expect(vergleicheProduktion('คุณชื่ออะไรคะ', 'คุณชื่ออะไรครับ', 'th').bewertung).toBe('exact');
+    // คะ steckt auch in Wörtern (คะแนน) — dort bleibt es Inhalt.
+    expect(vergleicheProduktion('แนนดี', 'คะแนนดี', 'th').bewertung).toBe('wrong');
+    // Fehlende Wörter bleiben falsch, auch mit Partikel.
+    expect(vergleicheProduktion('ผมมาครับ', 'ผมมาจากเยอรมนี', 'th').bewertung).toBe('wrong');
+    // Tonzeichen bleiben ein Hinweis.
+    expect(vergleicheProduktion('ขาวครับ', 'ข้าว', 'th').bewertung).toBe('accent');
+  });
+
   it('bleibt hart bei falschen Wörtern und fehlenden Wörtern', () => {
     expect(vergleicheProduktion('Ich esse Fleisch', 'Ich mag Katzen', 'de').bewertung).toBe('wrong');
     expect(vergleicheProduktion('Ich mag', 'Ich mag Katzen', 'de').bewertung).toBe('wrong');

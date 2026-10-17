@@ -33,8 +33,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'home.vocabCount': 'คำศัพท์ {{count}} คำ',
 
   'picker.chooseA11y': 'เลือกภาษา',
-  // เป้าหมายภาษาเยอรมัน: ทำไมคลังคำจึงต่างจาก th/en/es
-  'goal.deutschDescription': 'เป้าหมายคือภาษาเยอรมัน — ฝึกไวยากรณ์เยอรมัน (คำนำหน้านาม รูปกริยา) ไปด้วย',
 
   'dashboard.cta': 'ฝึก{{direction}}',
 
@@ -60,9 +58,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'legend.spellingTitle': 'การออกเสียง',
   'legend.spellingBody':
     'ต่างจากไทยและสเปน ที่นี่ไม่มีกฎ: ตัวสะกดชุดเดียวกันออกเสียงต่างกันทุกคำ — ต้องจำทีละคำ',
-  'feature.tones': 'วรรณยุกต์',
-  'feature.stress': 'การเน้นพยางค์',
-  'feature.pronunciation': 'การออกเสียง',
 
   'flashcard.listenA11y': 'ฟัง{{language}}',
   'flashcard.listenGermanA11y': 'ฟังภาษาเยอรมัน',
@@ -94,7 +89,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'skill.hoeren': 'ฟัง',
   'skill.lesen': 'อ่าน',
   'skill.sprechen': 'พูด',
-  'skill.schreiben': 'เขียน',
   'skill.grammatik': 'ไวยากรณ์',
   'cards.loadFailedTitle': 'โหลดชุดฝึกไม่สำเร็จ',
   'cards.assembleFailed': 'ประชุดไม่สำเร็จ: {{message}}',
@@ -134,7 +128,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'topic.market': 'ตลาดและช้อปปิ้ง',
   'topic.restaurant': 'ร้านอาหาร',
   'topic.travel': 'เดินทาง',
-
 
   'progress.subtitle': 'ประวัติการเรียน',
   'progress.subtitleLanguage': 'ประวัติการเรียน · {{language}}',
@@ -373,7 +366,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   'sentence.hintShadowing':
     'ฟังประโยคก่อน แล้วพูดตามระหว่างที่เสียงต้นแบบเล่น ใส่หูฟัง: ถ้าเปิดลำโพง เสียงต้นแบบอาจหลุดเข้ามาในการวัดไมโครโฟน',
   'sentence.prepare': 'ต้องเตรียมตัวก่อน · เหลือ {{seconds}} วินาที',
-'sentence.prepareBody':
+  'sentence.prepareBody':
     'ทำความหมายให้ชัดและวางแผนทั้งประโยค {{focus}}',
   'sentence.listen': 'ฟังประโยค',
   'sentence.listenAgain': 'ฟังประโยคอีกครั้ง',
@@ -406,7 +399,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'diagnostics.backends': 'ที่เก็บข้อมูล: {{data}} · คลังภาพ: {{images}} · คลังคลิป: {{clips}}',
   'diagnostics.loading': 'กำลังโหลด …',
 
-  /* ---------- การ์ดเจนเนอเรเตอร์ (generator-card, ดีบัก) ---------- */
   /* ---------- Lern-Reiter-Ausbau 13.09.2026 (Kategorien, Wort-Nachsprechen) ---------- */
   'drill.deutschLesen': 'อ่านคำ',
   'drill.polite': 'คำลงท้ายสุภาพ',
@@ -463,7 +455,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'roleplay.progress': 'บรรทัดที่ {{index}} จาก {{total}}',
   'roleplay.score': 'บรรทัดของคุณ: {{done}} · มั่นใจ: {{correct}}',
   'roleplay.done': 'ฉากจบแล้ว',
-  'roleplay.summary': 'คุณพูดบรรทัดของตัวเอง {{done}} บรรทัด มั่นใจ {{correct}} บรรทัด',
   'roleplay.otherScene': 'ฉากอื่น',
   'roleplay.note': 'แอปพูดฝ่ายตรงข้าม คุณสร้างเฉพาะบรรทัดของตัวเอง การสวมบทบาทไม่เปลี่ยนแผนทบทวน',
 
@@ -477,7 +468,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   'texts.questionMeaning': 'บรรทัดใดมีความหมายนี้?',
   'texts.questionSpeaker': 'ใครพูดบรรทัดนี้?',
   'texts.done': 'บทอ่านจบแล้ว',
-  'texts.note': 'บทอ่านคือสถานการณ์ที่มีอยู่ในรูปบทสนทนาเต็ม คำที่แตะได้จะแสดงความหมายจากคลังคำที่ตรวจสอบแล้ว',
 
   /* ---------- Grammatik-Ausbau (13.09.2026, Schritt 5) ---------- */
   'drill.zaehlerwort': 'ลักษณนาม',
@@ -497,7 +487,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   "tone.noMark": "ไม่มีเครื่องหมาย",
   "sentence.stockGenerated": "ประโยคตัวอย่างที่สร้างด้วย AI และตรวจทานร่วมกับคำศัพท์: {{count}}",
   "sentence.stockEmpty": "คลังปัจจุบันยังไม่มีประโยคตัวอย่างสำหรับภาษานี้",
-  "sentence.stockLegacy": "ประโยคสมบูรณ์จากตัวอย่างเดิมที่ตรวจทานแล้ว: {{count}}",
   "sentence.audioClip": "เสียง AI ไม่ใช่เสียงบันทึกเจ้าของภาษา ตัวอย่างเสียงไม่ใช่เกณฑ์ให้คะแนน",
   "sentence.audioSystem": "เสียงระบบของอุปกรณ์ ยังไม่ได้ตรวจสอบการออกเสียง",
   "sentence.limits": "ฝึกกับคนจริงด้วย แบบฝึกนี้ช่วยเตรียมตัวและฝึกสนทนาซ้ำ",
@@ -667,16 +656,8 @@ const th: Partial<Record<TranslationKey, string>> = {
   "progress.milestoneNote": "เรียงตามคลังคำศัพท์ — คำที่ใช้บ่อยในชีวิตประจำวันอยู่ก่อน",
   /* Geführter Lernpfad */
   "path.next": "ขั้นต่อไปของคุณ",
-  "path.title": "เข้าใจและสร้างประโยค",
-  "path.intro": "เริ่มจากเรียนรู้โครงสร้างประโยคง่าย ๆ แล้วนำไปใช้ในการฟัง เขียน และพูด",
   "path.sequence": "คำอธิบาย → ตัวอย่าง → ฝึกฝน → ใช้ด้วยตนเอง",
   "path.open": "เปิดบทเรียน",
-  "path.sentenceStructure": "ประโยคประกอบขึ้นอย่างไร?",
-  "path.structureNote": "ประโยคง่าย ๆ บอกได้ว่าใครทำอะไรและสิ่งใดได้รับผล ลำดับคำแตกต่างกันไปตามภาษา",
-  "path.subject": "ใคร? · ประธาน",
-  "path.verb": "ทำอะไร? · กริยา",
-  "path.object": "อะไร? · กรรม",
-  "path.practiceNote": "ดูตัวอย่าง แล้วฝึกด้วยคำศัพท์ใหม่และประโยคเต็ม",
   "path.areas": "ทักษะการเรียนรู้ทั้งห้า",
   "path.vocabulary": "ฝึกบัตรคำได้สูงสุด 20 ใบต่อรอบ แล้วลองพิมพ์คำด้วยตนเอง",
   "path.listening": "ฟังประโยคโดยไม่ดูข้อความ ฟังซ้ำ และตรวจด้วยการเขียนตามเสียง",
@@ -688,7 +669,6 @@ const th: Partial<Record<TranslationKey, string>> = {
   "chapter.completed": "เสร็จแล้ว",
   "chapter.words": "คำศัพท์ {{count}} คำสำหรับบทนี้",
   "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
-  "chapter.all": "ทุกบท",
   "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
   "advanced.title": "เจาะลึก: ข้อความยาว",
   "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ แบบฝึกนี้ไม่ใช่การรับรองระดับภาษา",

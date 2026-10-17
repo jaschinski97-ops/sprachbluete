@@ -31,8 +31,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'home.vocabCount': "{{count, plural, one {# word} other {# words}}}",
 
   'picker.chooseA11y': 'Choose language',
-  // German goal: why its stock differs from th/en/es.
-  'goal.deutschDescription': 'German as a learning goal — German grammar (articles, verb forms) is practised along the way.',
 
   'dashboard.cta': 'Practise {{direction}}',
 
@@ -58,9 +56,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'legend.spellingTitle': 'Pronunciation',
   'legend.spellingBody':
     'Unlike Thai and Spanish there is no rule here: the same letter sequence sounds different from word to word. That is not a flaw of this app but the finding — you have to know it word by word.',
-  'feature.tones': 'Tones',
-  'feature.stress': 'Stress',
-  'feature.pronunciation': 'Pronunciation',
 
   'flashcard.listenA11y': 'Listen to {{language}}',
   'flashcard.listenGermanA11y': 'Listen to German',
@@ -92,7 +87,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'skill.hoeren': 'Listening',
   'skill.lesen': 'Reading',
   'skill.sprechen': 'Speaking',
-  'skill.schreiben': 'Writing',
   'skill.grammatik': 'Grammar',
   'cards.loadFailedTitle': 'Session could not be loaded',
   'cards.assembleFailed': 'Could not be assembled: {{message}}',
@@ -133,7 +127,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'topic.market': 'Market & shopping',
   'topic.restaurant': 'Restaurant & food',
   'topic.travel': 'On the move',
-
 
   'progress.subtitle': 'Learning history',
   'progress.subtitleLanguage': 'Learning history · {{language}}',
@@ -389,7 +382,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   'sentence.hintShadowing':
     'Listen to the sentence first. Then speak along while the model plays. Use headphones: over a loudspeaker the model can end up in your microphone measurement.',
   'sentence.prepare': 'Mandatory preparation · {{seconds}} seconds left',
-'sentence.prepareBody':
+  'sentence.prepareBody':
     'Clarify the meaning and plan the whole sentence. {{focus}}',
   'sentence.listen': 'Listen to the sentence',
   'sentence.listenAgain': 'Listen to the sentence again',
@@ -426,7 +419,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'diagnostics.backends': 'Data store: {{data}} · image store: {{images}} · clip store: {{clips}}',
   'diagnostics.loading': 'Loading …',
 
-  /* ---------- Generator card (generator-card, debug) ---------- */
   /* ---------- Lern-Reiter-Ausbau 13.09.2026 (Kategorien, Wort-Nachsprechen) ---------- */
   'drill.deutschLesen': 'Word reading',
   'drill.polite': 'Polite particles',
@@ -483,7 +475,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'roleplay.progress': 'Line {{index}} of {{total}}',
   'roleplay.score': 'Own lines: {{done}} · confident: {{correct}}',
   'roleplay.done': 'Scene finished',
-  'roleplay.summary': 'You spoke {{done}} own lines, {{correct}} with confidence.',
   'roleplay.otherScene': 'Another scene',
   'roleplay.note': 'The app plays the other role; you produce only your own lines. Role-play does not change your review schedule.',
 
@@ -497,7 +488,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   'texts.questionMeaning': 'Which line means this?',
   'texts.questionSpeaker': 'Who says this line?',
   'texts.done': 'Text finished',
-  'texts.note': 'The texts are the existing situations as whole dialogues. Tappable words show their meaning from the checked stock when tapped.',
 
   /* ---------- Grammatik-Ausbau (13.09.2026, Schritt 5) ---------- */
   'drill.zaehlerwort': 'Counters',
@@ -517,7 +507,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   "tone.noMark": "no mark",
   "sentence.stockGenerated": "AI-generated example sentences, cross-checked with their vocabulary entries: {{count}}.",
   "sentence.stockEmpty": "There are no example sentences for this language in the current collection.",
-  "sentence.stockLegacy": "Reviewed complete sentence readings from the existing examples: {{count}}.",
   "sentence.audioClip": "AI voice, not a native-speaker recording. The audio example is not a scoring reference.",
   "sentence.audioSystem": "Device system voice. Its pronunciation has not been checked.",
   "sentence.limits": "Practise with people too. These exercises help you prepare and repeat conversations.",
@@ -679,16 +668,8 @@ const en: Partial<Record<TranslationKey, string>> = {
   "progress.milestoneNote": "Same order as the vocabulary — common everyday words come first.",
   /* Geführter Lernpfad */
   "path.next": "Your next step",
-  "path.title": "Understand and build sentences",
-  "path.intro": "First learn how a simple sentence works. Then use it in listening, writing and speaking.",
   "path.sequence": "Explanation → examples → practice → use it yourself",
   "path.open": "Open lesson",
-  "path.sentenceStructure": "How is a sentence built?",
-  "path.structureNote": "A simple sentence can show who acts, what happens and what is affected. Word order varies by language.",
-  "path.subject": "Who? · subject",
-  "path.verb": "What happens? · verb",
-  "path.object": "What? · object",
-  "path.practiceNote": "Study the example, then practise with new words and complete sentences.",
   "path.areas": "Your five learning areas",
   "path.vocabulary": "Up to 20 cards per round; then type words yourself.",
   "path.listening": "Understand sentences without text, replay them and check with dictation.",
@@ -700,7 +681,6 @@ const en: Partial<Record<TranslationKey, string>> = {
   "chapter.completed": "Completed",
   "chapter.words": "{{count, plural, one {# word} other {# words}}} for this chapter",
   "chapter.finish": "Mark chapter complete",
-  "chapter.all": "All chapters",
   "chapter.doneCount": "{{done}} of {{total}} completed",
   "advanced.title": "Deep dive: longer text",
   "advanced.intro": "A longer text, questions and your own answer. This exercise does not certify a CEFR level.",

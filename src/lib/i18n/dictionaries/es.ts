@@ -30,8 +30,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'home.vocabCount': "{{count, plural, one {# vocablo} other {# vocablos}}}",
 
   'picker.chooseA11y': 'Elegir idioma',
-  // Meta alemán: por qué su stock difiere del de th/en/es.
-  'goal.deutschDescription': 'El alemán como meta — también se practica la gramática alemana (artículos, formas verbales).',
 
   'dashboard.cta': 'Practicar {{direction}}',
 
@@ -57,9 +55,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'legend.spellingTitle': 'Pronunciación',
   'legend.spellingBody':
     'A diferencia del tailandés y del español, aquí no hay regla: la misma secuencia de letras suena distinta de palabra a palabra. No es un defecto de esta app, sino el hallazgo — hay que conocerlo palabra por palabra.',
-  'feature.tones': 'Tonos',
-  'feature.stress': 'Acentuación',
-  'feature.pronunciation': 'Pronunciación',
 
   'flashcard.listenA11y': 'Escuchar {{language}}',
   'flashcard.listenGermanA11y': 'Escuchar alemán',
@@ -91,7 +86,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'skill.hoeren': 'Escuchar',
   'skill.lesen': 'Leer',
   'skill.sprechen': 'Hablar',
-  'skill.schreiben': 'Escribir',
   'skill.grammatik': 'Gramática',
   'cards.loadFailedTitle': 'No se pudo cargar la sesión',
   'cards.assembleFailed': 'No se pudo componer: {{message}}',
@@ -132,7 +126,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'topic.market': 'Mercado y compras',
   'topic.restaurant': 'Restaurante y comida',
   'topic.travel': 'En camino',
-
 
   'progress.subtitle': 'Historial de aprendizaje',
   'progress.subtitleLanguage': 'Historial de aprendizaje · {{language}}',
@@ -387,7 +380,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'sentence.hintShadowing':
     'Escucha primero la frase. Luego habla mientras suena el modelo. Usa auriculares: por altavoz el modelo puede colarse en la medición de tu micrófono.',
   'sentence.prepare': 'Preparación obligatoria · quedan {{seconds}} segundos',
-'sentence.prepareBody':
+  'sentence.prepareBody':
     'Aclara el significado y planifica la frase entera. {{focus}}',
   'sentence.listen': 'Escuchar la frase',
   'sentence.listenAgain': 'Escuchar la frase de nuevo',
@@ -424,7 +417,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'diagnostics.backends': 'Almacén de datos: {{data}} · almacén de imágenes: {{images}} · almacén de clips: {{clips}}',
   'diagnostics.loading': 'Cargando …',
 
-  /* ---------- Tarjeta de generador (generator-card, depuración) ---------- */
   /* ---------- Lern-Reiter-Ausbau 13.09.2026 (Kategorien, Wort-Nachsprechen) ---------- */
   'drill.deutschLesen': 'Lectura de palabras',
   'drill.polite': 'Partículas de cortesía',
@@ -481,7 +473,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'roleplay.progress': 'Línea {{index}} de {{total}}',
   'roleplay.score': 'Líneas propias: {{done}} · seguras: {{correct}}',
   'roleplay.done': 'Escena terminada',
-  'roleplay.summary': 'Dijiste {{done}} líneas propias, {{correct}} con seguridad.',
   'roleplay.otherScene': 'Otra escena',
   'roleplay.note': 'La app hace el otro papel; tú produces solo tus líneas. El juego de rol no cambia tu plan de repaso.',
 
@@ -495,7 +486,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   'texts.questionMeaning': '¿Qué línea significa esto?',
   'texts.questionSpeaker': '¿Quién dice esta línea?',
   'texts.done': 'Texto terminado',
-  'texts.note': 'Los textos son las situaciones existentes como diálogos completos. Las palabras tocables muestran su significado del stock comprobado.',
 
   /* ---------- Grammatik-Ausbau (13.09.2026, Schritt 5) ---------- */
   'drill.zaehlerwort': 'Clasificadores',
@@ -515,7 +505,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   "tone.noMark": "sin marca",
   "sentence.stockGenerated": "Ejemplos generados por IA y cotejados con su entrada de vocabulario: {{count}}.",
   "sentence.stockEmpty": "No hay frases de ejemplo para este idioma en el contenido actual.",
-  "sentence.stockLegacy": "Lecturas completas revisadas de los ejemplos existentes: {{count}}.",
   "sentence.audioClip": "Voz de IA, no una grabación de un hablante nativo. El audio no es una referencia de evaluación.",
   "sentence.audioSystem": "Voz del sistema del dispositivo. Su pronunciación no ha sido revisada.",
   "sentence.limits": "Practica también con personas. Estos ejercicios ayudan a preparar y repetir conversaciones.",
@@ -685,16 +674,8 @@ const es: Partial<Record<TranslationKey, string>> = {
   "progress.milestoneNote": "Mismo orden que el vocabulario: las palabras cotidianas más frecuentes van primero.",
   /* Geführter Lernpfad */
   "path.next": "Tu siguiente paso",
-  "path.title": "Comprender y formar oraciones",
-  "path.intro": "Primero aprende cómo funciona una oración sencilla. Después úsala al escuchar, escribir y hablar.",
   "path.sequence": "Explicación → ejemplos → práctica → uso propio",
   "path.open": "Abrir lección",
-  "path.sentenceStructure": "¿Cómo se forma una oración?",
-  "path.structureNote": "Una oración sencilla puede indicar quién actúa, qué ocurre y qué recibe la acción. El orden de las palabras varía según el idioma.",
-  "path.subject": "¿Quién? · sujeto",
-  "path.verb": "¿Qué ocurre? · verbo",
-  "path.object": "¿Qué? · objeto",
-  "path.practiceNote": "Observa el ejemplo y luego practica con palabras nuevas y oraciones completas.",
   "path.areas": "Tus cinco áreas de aprendizaje",
   "path.vocabulary": "Hasta 20 tarjetas por ronda; después escribe las palabras tú mismo.",
   "path.listening": "Comprende oraciones sin texto, vuelve a escucharlas y compruébalas con un dictado.",
@@ -706,7 +687,6 @@ const es: Partial<Record<TranslationKey, string>> = {
   "chapter.completed": "Completado",
   "chapter.words": "{{count, plural, one {# palabra} other {# palabras}}} para este capítulo",
   "chapter.finish": "Marcar capítulo como completado",
-  "chapter.all": "Todos los capítulos",
   "chapter.doneCount": "{{done}} de {{total}} completados",
   "advanced.title": "Profundización: texto largo",
   "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta. Este ejercicio no certifica un nivel del MCER.",

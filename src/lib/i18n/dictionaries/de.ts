@@ -2,9 +2,9 @@
  * Deutsches Referenz-Wörterbuch — DIE Quelle für `TranslationKey`.
  *
  * Jeder Schlüssel, den irgendein Screen oder eine Komponente benutzt, steht
- * HIER. Die anderen Sprachen (en, es, fr, th) übersetzen dieses Set; was dort
- * fehlt, fällt in `translate()` auf Deutsch zurück und wird vom
- * Vollständigkeitstest gegen `FALLBACK_ALLOWED_KEYS` gerechnet.
+ * HIER. Die anderen 19 App-Sprachen übersetzen dieses Set; was dort fehlt,
+ * fällt in `translate()` auf Englisch zurück. Der Vollständigkeitstest prüft
+ * en, es, th und ar gegen `FALLBACK_ALLOWED_KEYS`.
  *
  * Gruppierung nach Screen/Vereinbarung (`tabs.`, `home.`, `review.`, …) —
  * die Punkte im Schlüssel sind Konvention, nicht Verschachtelung.
@@ -39,8 +39,6 @@ const de = {
 
   /* ---------- Sprachauswahl (language-picker) ---------- */
   'picker.chooseA11y': 'Sprache wählen',
-  // Deutsch-Ziel: warum der Bestand ein anderer ist als bei th/en/es.
-  'goal.deutschDescription': 'Deutsch als Lernziel — die deutsche Grammatik (Artikel, Stammformen) wird mitgeübt.',
 
   /* ---------- Fällig-Badges der Lernziel-Zeilen (language-picker) ---------- */
   'dashboard.cta': '{{direction}} üben',
@@ -68,9 +66,6 @@ const de = {
   'legend.spellingTitle': 'Aussprache',
   'legend.spellingBody':
     'Anders als bei Thai und Spanisch gibt es hier keine Regel: Dieselbe Buchstabenfolge klingt von Wort zu Wort anders. Das ist kein Mangel dieser App, sondern der Befund — man muss sie Wort für Wort kennen.',
-  'feature.tones': 'Töne',
-  'feature.stress': 'Betonung',
-  'feature.pronunciation': 'Aussprache',
 
   /* ---------- Karteikarte (flashcard) ---------- */
   'flashcard.listenA11y': '{{language}} anhören',
@@ -118,7 +113,6 @@ const de = {
   // Umbau dazu).
   'skill.lesenSchreiben': 'Lesen & Schreiben',
   'skill.lesen': 'Lesen',
-  'skill.schreiben': 'Schreiben',
   'skill.sprechen': 'Sprechen',
   'skill.grammatik': 'Grammatik',
   'cards.loadFailedTitle': 'Sitzung konnte nicht geladen werden',
@@ -153,7 +147,6 @@ const de = {
   'production.accentHint': 'Richtig — die genaue Schreibung ist: {{target}}',
   'production.note':
     'Getippt wird tolerant geprüft: Groß-/Kleinschreibung und Satzzeichen zählen nicht, Akzente und Tonzeichen stehen als Hinweis in der Rückmeldung.',
-
 
   /* ---------- Heutige Runde (today-round-runner) ---------- */
   'round.cta': '▶ Heutige Runde · ~{{minutes}} Min',
@@ -197,7 +190,6 @@ const de = {
   'topic.market': 'Markt & Einkaufen',
   'topic.restaurant': 'Restaurant & Essen',
   'topic.travel': 'Unterwegs',
-
 
   /* ---------- Fortschritt (progress.tsx) ---------- */
   'progress.subtitle': 'Lernverlauf',
@@ -471,7 +463,7 @@ const de = {
   'sentence.hintShadowing':
     'Höre den Satz zuerst. Sprich danach während des Vorbilds mit. Nutze Kopfhörer: Über Lautsprecher kann das Vorbild in deiner Mikrofonmessung landen.',
   'sentence.prepare': 'Verpflichtende Vorbereitung · noch {{seconds}} Sekunden',
-'sentence.prepareBody':
+  'sentence.prepareBody':
     'Kläre die Bedeutung und plane den ganzen Satz. {{focus}}',
   'sentence.listen': 'Satz hören',
   'sentence.listenAgain': 'Satz erneut hören',
@@ -508,8 +500,6 @@ const de = {
   'texts.questionMeaning': 'Welche Zeile bedeutet das?',
   'texts.questionSpeaker': 'Wer sagt diese Zeile?',
   'texts.done': 'Text beendet',
-  'texts.note':
-    'Die Texte sind die vorhandenen Situationen als ganze Dialoge. Tippbare Wörter zeigen beim Antippen ihre Bedeutung aus dem geprüften Bestand.',
 
   /* ---------- Rollenspiel (roleplay-runner, Schritt 3) ---------- */
   'roleplay.pick': 'Wähle eine Szene',
@@ -518,7 +508,6 @@ const de = {
   'roleplay.progress': 'Zeile {{index}} von {{total}}',
   'roleplay.score': 'Eigene Zeilen: {{done}} · sicher: {{correct}}',
   'roleplay.done': 'Szene beendet',
-  'roleplay.summary': '{{done}} eigene Zeilen gesprochen, davon {{correct}} sicher.',
   'roleplay.otherScene': 'Andere Szene',
   'roleplay.note':
     'Die Gegenseite spricht die Szene; du produzierst nur deine Zeilen. Das Rollenspiel schreibt den Wiederholungsplan nicht fort.',
@@ -541,7 +530,6 @@ const de = {
   "tone.noMark": "kein Zeichen",
   "sentence.stockGenerated": "KI-erzeugte, mit dem Worteintrag kreuzgeprüfte Beispielsätze im Bestand: {{count}}.",
   "sentence.stockEmpty": "Im aktuellen Bestand gibt es für diese Sprache keine Beispielsätze.",
-  "sentence.stockLegacy": "Geprüfte vollständige Satzlesarten aus den vorhandenen Beispielen: {{count}}.",
   "sentence.audioClip": "KI-Stimme, keine Muttersprachler-Aufnahme. Das Hörbeispiel ist kein Bewertungsmaßstab.",
   "sentence.audioSystem": "Systemstimme des Geräts. Die Aussprache wurde nicht geprüft.",
   "sentence.limits": "Übe zusätzlich mit Menschen. Diese Übungen helfen beim Vorbereiten und Wiederholen von Gesprächen.",
@@ -704,16 +692,8 @@ const de = {
   "progress.milestoneNote": "Reihenfolge wie im Wortschatz — häufige Alltagswörter stehen vorn.",
   /* Geführter Lernpfad */
   "path.next": "Dein nächster Schritt",
-  "path.title": "Sätze verstehen und bilden",
-  "path.intro": "Lerne erst, wie ein einfacher Satz aufgebaut ist. Wende ihn danach beim Hören, Schreiben und Sprechen an.",
   "path.sequence": "Erklärung → Beispiele → Üben → selbst anwenden",
   "path.open": "Lektion öffnen",
-  "path.sentenceStructure": "Wie entsteht ein Satz?",
-  "path.structureNote": "Ein einfacher Satz kann zeigen, wer handelt, was geschieht und was betroffen ist. Die Wortstellung unterscheidet sich je nach Sprache.",
-  "path.subject": "Wer? · Subjekt",
-  "path.verb": "Was geschieht? · Verb",
-  "path.object": "Was? · Objekt",
-  "path.practiceNote": "Sieh dir das Beispiel an. Übe anschließend mit neuen Wörtern und ganzen Sätzen.",
   "path.areas": "Deine fünf Lernbereiche",
   "path.vocabulary": "Bis zu 20 Karten pro Runde; danach Wörter selbst eintippen.",
   "path.listening": "Sätze ohne Text verstehen, erneut hören und im Diktat prüfen.",
@@ -725,7 +705,6 @@ const de = {
   "chapter.completed": "Abgeschlossen",
   "chapter.words": "{{count, plural, one {# Wort} other {# Wörter}}} für dieses Kapitel",
   "chapter.finish": "Kapitel als abgeschlossen markieren",
-  "chapter.all": "Alle Kapitel",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
   "advanced.title": "Vertiefung: längerer Text",
   "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort. Diese Übung bescheinigt keine GER-Stufe.",

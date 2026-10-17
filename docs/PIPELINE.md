@@ -54,6 +54,7 @@ Gegenmessung der Töne über alle Clips:
 
 ```bash
 npm run content:measure-tones                          # Katalog + Referenzstimmen
+npm run content:tone-report                            # Thai-Einsilber je Stimme × Sprechanweisung
 node scripts/content/measure-speaker-reference.cjs     # Sprecherreferenz ableiten
 ```
 

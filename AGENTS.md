@@ -27,8 +27,8 @@ Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest                         # Typen + Tests (~1256 Tests)
-npm run test:scripts                                 # alle Skript-Tests (node --test, 76; ein Rauchtest wird übersprungen, wenn gh installiert ist)
+npx tsc --noEmit && npx jest                         # Typen + Tests (~1264 Tests)
+npm run test:scripts                                 # alle Skript-Tests (node --test, 77; ein Rauchtest wird übersprungen, wenn gh installiert ist)
 npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)
 ```
@@ -67,12 +67,13 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 - Bildanbieter `comfyui`: FLUX.2 klein 4B distilled FP8, ComfyUI nur auf 127.0.0.1:8188, Helper 8082. Encoder-Gerät `default` (GPU mit ComfyUI-Auslagerung), 768-Pixel-Erzeugung → 512-WebP, vier Schritte, seriell ohne Cloud-Pause. Start: `scripts/content/start-local-images.ps1`; Einrichtung/Probelauf: `docs/lokale-bilder.md`. Runtime/Modelle unter `_Local/` sind gitignored.
 - Lokale Bildläufe übernehmen technisch geprüfte Bilder automatisch, das 512-MiB-Gesamtbudget bleibt verbindlich. Die Motivpassung braucht weiterhin einen Vorschau-Blick. Anbieter für Text/Audio unverändert. Studio-Läufe speichern neue Medien direkt beim Helper statt in der begrenzten Browser-Metadatenablage.
 
-## Thai-Ton-Gate (`src/lib/content/tone-gate.ts`, Stand `f0-syllables-4`)
+## Thai-Ton-Gate (`src/lib/content/tone-gate.ts`, Stand `f0-syllables-5`)
 
 - Prüft silbenweise gegen den Sollton; bei Sätzen kommt der Soll aus der Roman-Umschrift (`roman-tone.ts`). Der Vorlagenabgleich (`tone-template.ts`) stuft nur hoch, verwirft nie.
 - Ein Verwurf kostet Geld: Das Audio ist weg und wird beim nächsten Lauf neu erzeugt. Deshalb gilt: Geratene Silbengrenzen verwerfen nie über die Ordnung. Tiefere Silbe vorn wird nicht gewertet. Ein steigender Ton in einer nicht-letzten Silbe gilt als „knapp“.
-- Grenze: Einsilber mit mittlerem oder tiefem Ton sind einzeln nicht beweisbar; dafür gibt es die Register-Laufprobe im Batch. Der Ton-Notstopp beendet einen Lauf bei ≥6/10 Verwürfen.
-- Stimmen: coral ist bei fallend/steigend schwach, onyx war in der Diagnose besser. Nutzer will kein Gemini für Audio.
+- Messkern (`speaking/analysis.ts`, seit 17.10.): stetiger Tonhöhenpfad (Viterbi über Korrelationskandidaten) statt globalem Maximum — vorher hatten 65 % der Clips Oktavsprünge. Oktavkorrektur nur bei echtem Sprung zum Nachbarfenster (große Fälle bis 12 Halbtöne bleiben). Verschmolzene Züge und Züge unter 80 ms gelten als geratene Grenze; ein Fall im Nachlauf (≤ 150 ms) zählt mit.
+- Grenze: Einsilber mit mittlerem oder tiefem Ton sind einzeln nicht beweisbar; dafür gibt es die Register-Laufprobe im Batch. Die Stimme selbst trennt sie kaum (coral: mittel fällt im Median 5,7 Halbtöne, Microsoft-Referenz 2,6/4,2). `npm run content:tone-report` misst das je Stimme und Sprechanweisung. Der Ton-Notstopp beendet einen Lauf bei ≥6/10 Verwürfen.
+- Stimmen: coral ist bei fallend/steigend schwach, onyx war in der Diagnose besser. Nutzer will kein Gemini für Audio. Thai-Clips gehen seit 17.10. mit Sprechanweisung (`clips/tts-instructions.ts`, Kennung `th-ton-1` am Clip) an gpt-4o-…-tts; Wirkung noch ungemessen — nach einem kleinen Probelauf den Tonbericht vergleichen.
 
 ## Offene Punkte
 

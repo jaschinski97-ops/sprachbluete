@@ -7,6 +7,13 @@
 - „Satz verstehen“, „Satz wiederholen“, Shadowing und das eigenständige Diktat ziehen ohne Kapitel aus dem Grundwortschatz (die 400 ersten Wörter in Erzeugungsreihenfolge) statt aus allen 2.000 Sätzen. Die Heutige Runde und Kapitel nutzen weiter ihre eigenen Wörter.
 - Pluralformen auch für ar (one/two/few/many), ur, hi, mr, te, ta; ta „Silbenkerne“ war „மந்திரக்கருகள்“, hi „स्वरक“.
 - Studio: Der Prüfbericht fragt vor „Neu erzeugen“ nicht mehr mit Kostenangabe nach (Regel „keine Kostendialoge“). Neuer Knopf „Dialogwörter ohne Eintrag übernehmen“ in der Wortschatz-Karte (Thai): schreibt die 55 Dialogwörter ohne Wortschatzeintrag (Zahlen, บาท, คะ, ชื่อ, ประเทศ, ไหน, จาก …) als Pflichtwörter ins Thema; der Lauf selbst startet wie immer von Hand.
+- Aufgeräumt (Modulgraph, Referenzsuche je Export, `tsc --noUnusedLocals`, ESLint): nichts davon war in der App erreichbar.
+  - Tote Funktionen und Konstanten entfernt, u. a. `loadSituation`/`clearSituations`, `retrievabilityPercent`, `DRILL_PROMPTS`, `pairLabel`, `isPackManifest`, `packAssetUri`, `clipLanguageOf`, `packInstallState`, `latestVersion` und nie aufgerufene Test-Rücksetzer. Nur noch von Tests genutzte Altteile ebenso: Monatsnamen-Tabelle (der Fortschritt nutzt längst `Intl`), `LERNZIELE`, `DIRECTIONS`, `SPEAKING_PRIVACY_NOTICE`, die Einzel-Kreuzprüfung neben der Paket-Kreuzprüfung (Tests laufen jetzt über `pruefeVocabKreuzBatch`).
+  - Sprachmodell: Alias-Namen aus der Paarmatrix-Zeit (`TARGET_LANGUAGES`, `BRIDGE_LOCALES`, `TargetLanguage`, `TargetDirection`, `TargetVocabEntry`, `pairLanguageOf`, `languageOfDirection`, `languageOfTargetDirection`, `pairsFor`, `producesTargetLanguage`) durch die eigentlichen Namen ersetzt; Kopfkommentar ohne Französisch und 20-Paare-Stand.
+  - 17 unbenutzte Texte aus allen 20 Wörterbüchern (alter Lernpfad-Satzbau `path.*`, `feature.*`, `texts.note`, `roleplay.summary`, `chapter.all`, `skill.schreiben` …), drei leere Abschnittsüberschriften.
+  - Expo-Vorlage: `AnimatedIcon` (nativ und Web) mit CSS-Modul und `logo-glow.png`, ungenutzte Bilder (react-logo, expo-badge, tutorial-web, tabIcons) und die Abhängigkeit `expo-web-browser` samt Plugin.
+  - Kleinkram: ungenutzte Importe und Variablen, doppelte Importe, ein Import mitten in `manifest.ts`; ESLint ignoriert das erzeugte `scripts/tone-analysis.js` und erlaubt Node-Skripten dynamische `process.env`-Zugriffe. Ein Brücken-Test prüfte seinen Fall nicht (Variable ungenutzt), jetzt schon.
+  - Offen gelassen: 20 Meldungen `react-hooks/set-state-in-effect` und 4 `react-hooks/refs` (React-Compiler-Regeln, Ladeeffekte mit Zurücksetzen); ein Umbau ändert Verhalten und gehört in eine eigene Runde.
 
 ## 16.10.2026
 

@@ -11,3 +11,11 @@ export function stageForLevel(level: string): LearningStage {
   return level.startsWith('C') ? 'pro' : level.startsWith('B') ? 'experienced' : 'beginner';
 }
 export const levelLabelKey = (level: string): TranslationKey => STAGE_KEYS[stageForLevel(level)];
+
+/**
+ * Jede sichtbare Stufe fasst zwei GER-Stufen zusammen (A1/A2 …). Ohne Teil-
+ * Angabe standen „Auf dem Obstmarkt“ (A1) und „Obstkauf auf dem Markt“ (A2)
+ * als scheinbare Dubletten unter „Anfänger“ (Nutzertest 17.10.2026).
+ */
+export const levelPartKey = (level: string): TranslationKey =>
+  level.endsWith('2') ? 'level.partTwo' : 'level.partOne';

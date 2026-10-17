@@ -440,12 +440,13 @@ function HoerenSegment({
   const frage = fragen && fragen.length > 0 ? fragen[position % fragen.length] : null;
   useEffect(() => setChosen(null), [position]);
 
-  useEffect(() => {
+  const spiele = useCallback(() => {
     if (!frage?.speak) return;
     const speak = frage.speak;
+    // Dieselbe Quelle wie die Einzelübung: Ton-Fragen nur mit tongeprüftem Clip.
+    const request = { text: speak.text, language: speak.language, purpose: frage.drill === 'tone' ? 'tone' as const : 'general' as const };
     void (async () => {
       try {
-        const request = { text: speak.text, language: speak.language };
         if (!await hasPronunciationClip(request) && await isLanguageAvailable(speak.language) === false) {
           return;
         }
@@ -455,6 +456,10 @@ function HoerenSegment({
       }
     })();
   }, [frage]);
+
+  useEffect(() => {
+    spiele();
+  }, [spiele]);
 
   if (!drill || leer || !frage) {
     return (
@@ -467,6 +472,17 @@ function HoerenSegment({
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t(PROMPT_KEYS[frage.drill])}</ThemedText>
+      {/* Töne hört man selten beim ersten Mal (Nutzertest 17.10.2026: die
+          Runde spielte das Wort nur einmal ab). */}
+      {frage.speak ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('drill.playAgainA11y')}
+          onPress={spiele}
+          style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
+          <ThemedText type="smallBold" themeColor="accent">{t('drill.playAgain')}</ThemedText>
+        </Pressable>
+      ) : null}
       {frage.visible ? <ThemedText type="subtitle">{frage.visible}</ThemedText> : null}
       {frage.visibleRoman ? (
         <ThemedText type="small" themeColor="textSecondary">{frage.visibleRoman}</ThemedText>
@@ -487,15 +503,13 @@ function HoerenSegment({
               if (chosen !== null) return;
               setChosen(i);
               void recordDrill(i === frage.correctIndex, Date.now(), undefined, frage.drill, direction).catch(() => {});
-              setTimeout(onAnswered, 900);
             }}
             disabled={chosen !== null}
             accessibilityRole="button"
+            accessibilityState={{ selected: chosen === i, disabled: chosen !== null }}
             style={({ pressed }) => [styles.optionWrap, pressed && styles.pressed]}>
-            <ThemedView
-              type={chosen === i ? 'accent' : 'backgroundSelected'}
-              style={styles.optionButton}>
-              <ThemedText type="small" themeColor={chosen === i ? 'accentText' : 'text'}>
+            <ThemedView type={optionFlaeche(chosen, i, frage.correctIndex)} style={styles.optionButton}>
+              <ThemedText type="small" themeColor={optionSchrift(chosen, i, frage.correctIndex)}>
                 {option.label}
               </ThemedText>
               {option.roman ? <ThemedText type="small" themeColor="textSecondary">{option.roman}</ThemedText> : null}
@@ -503,12 +517,38 @@ function HoerenSegment({
           </Pressable>
         ))}
       </View>
-      {chosen !== null ? <View>
-        <ThemedText type="small" themeColor="textSecondary">{frage.solution}</ThemedText>
-        {frage.solutionRoman ? <ThemedText type="small" themeColor="textSecondary">{frage.solutionRoman}</ThemedText> : null}
+      {chosen !== null ? <View style={styles.feedback}>
+        <ThemedText type="smallBold" themeColor={chosen === frage.correctIndex ? 'success' : 'error'}>
+          {chosen === frage.correctIndex ? t('drill.correct') : t('drill.wrong')}
+        </ThemedText>
+        <ThemedText type="small">{frage.solution}</ThemedText>
+        {frage.solutionRoman && frage.solutionRoman !== frage.solution ? (
+          <ThemedText type="small" themeColor="textSecondary">{frage.solutionRoman}</ThemedText>
+        ) : null}
+        {/* Bei der Ton-Frage steht hier „Ton: Fallend“ — die Lösung allein
+            nannte den Ton nicht. */}
+        {frage.explanation ? <ThemedText type="small" themeColor="textSecondary">{frage.explanation}</ThemedText> : null}
+        <ThemedButton label={t('common.next')} onPress={onAnswered} variant="primary" />
       </View> : null}
     </ThemedView>
   );
+}
+
+/**
+ * Antwortflächen nach der Wahl: die richtige grün, eine falsche Wahl rot —
+ * vorher wurde jede Wahl blau markiert, auch eine falsche (Nutzertest
+ * 17.10.2026). Die Farbpaare sind die AA-geprüften der Bewertungsknöpfe.
+ */
+function optionFlaeche<T>(chosen: T | null, option: T, correct: T): ThemeColor {
+  if (chosen === null) return 'backgroundSelected';
+  if (option === correct) return 'rateGoodBg';
+  return option === chosen ? 'rateAgainBg' : 'backgroundElement';
+}
+
+function optionSchrift<T>(chosen: T | null, option: T, correct: T): ThemeColor {
+  if (chosen === null) return 'text';
+  if (option === correct) return 'rateGoodText';
+  return option === chosen ? 'rateAgainText' : 'textSecondary';
 }
 
 /* ---------- Satz bilden (Bedeutung → geprüfter Satz) ---------- */
@@ -573,32 +613,32 @@ function SatzSegment({
             onPress={() => {
               if (chosen !== null) return;
               setChosen(option.label);
-              setTimeout(onAnswered, 900);
             }}
             disabled={chosen !== null}
             accessibilityRole="button"
+            accessibilityState={{ selected: chosen === option.label, disabled: chosen !== null }}
             style={({ pressed }) => [styles.optionWrap, pressed && styles.pressed]}>
-            <ThemedView
-              type={
-                chosen !== null && option.correct
-                  ? 'accent'
-                  : chosen === option.label
-                    ? 'backgroundSelected'
-                    : 'backgroundElement'
-              }
-              style={styles.optionButton}>
-              <ThemedText
-                type="small"
-                themeColor={chosen !== null && option.correct ? 'accentText' : 'text'}>
+            <ThemedView type={optionFlaeche(chosen, option.label, aufgabe.text)} style={styles.optionButton}>
+              <ThemedText type="small" themeColor={optionSchrift(chosen, option.label, aufgabe.text)}>
                 {option.label}
               </ThemedText>
+              {/* Die Umschrift in derselben Farbe wie der Satz: grau auf der
+                  hervorgehobenen Fläche war kaum lesbar. */}
               {sprache === 'th' && option.roman ? (
-                <ThemedText type="small" themeColor="textSecondary">{option.roman}</ThemedText>
+                <ThemedText type="small" themeColor={chosen === null ? 'textSecondary' : optionSchrift(chosen, option.label, aufgabe.text)}>
+                  {option.roman}
+                </ThemedText>
               ) : null}
             </ThemedView>
           </Pressable>
         ))}
       </View>
+      {chosen !== null ? <View style={styles.feedback}>
+        <ThemedText type="smallBold" themeColor={chosen === aufgabe.text ? 'success' : 'error'}>
+          {chosen === aufgabe.text ? t('drill.correct') : t('drill.wrong')}
+        </ThemedText>
+        <ThemedButton label={t('common.next')} onPress={onAnswered} variant="primary" />
+      </View> : null}
     </ThemedView>
   );
 }
@@ -663,7 +703,6 @@ function DiktatSegment({
       } finally {
         setBusy(false);
       }
-      setTimeout(onAnswered, 1600);
     })();
   };
 
@@ -708,15 +747,22 @@ function DiktatSegment({
       {ergebnis === null ? (
         <ThemedButton label={t('dictation.check')} disabled={!draft.trim()} onPress={pruefen} />
       ) : (
-        <View>
-          <ThemedText type="small" themeColor="textSecondary">
-            {ergebnis === 'passed'
-              ? t('dictation.passed')
-              : `${t('dictation.failed')} · ${task.text}`}
+        // Die eigene Eingabe bleibt oben im Feld stehen; darunter Lösung,
+        // Umschrift und Bedeutung wie im eigenständigen Diktat. Vorher sprang
+        // die Runde nach 1,6 s weiter (Nutzertest 17.10.2026).
+        <View style={styles.feedback}>
+          <ThemedText type="smallBold" themeColor={ergebnis === 'passed' ? 'success' : 'error'}>
+            {ergebnis === 'passed' ? t('dictation.passed') : t('dictation.failed')}
           </ThemedText>
-          {ergebnis === 'failed' && sprache === 'th' && task.roman ? (
+          <ThemedText type="small">{task.text}</ThemedText>
+          {sprache === 'th' && task.roman ? (
             <ThemedText type="small" themeColor="textSecondary">{task.roman}</ThemedText>
           ) : null}
+          {/* Die deutsche Bedeutung nur auf der de-Brücke, wie im Diktat. */}
+          {anchorOf(direction) === 'de' && task.german ? (
+            <ThemedText type="small" themeColor="textSecondary">{task.german}</ThemedText>
+          ) : null}
+          <ThemedButton label={t('common.next')} onPress={onAnswered} variant="primary" />
         </View>
       )}
     </ThemedView>
@@ -834,6 +880,9 @@ const styles = StyleSheet.create({
   },
   options: {
     gap: Spacing.two,
+  },
+  feedback: {
+    gap: Spacing.one,
   },
   optionWrap: {
     flexShrink: 1,

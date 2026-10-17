@@ -1,4 +1,4 @@
-import { LEARNING_STAGES, levelLabelKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
+import { LEARNING_STAGES, levelLabelKey, levelPartKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
 import { LearningStagePicker } from '@/components/learning-stage-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { VocabEntry } from '@/data/vocab-types';
@@ -18,6 +18,7 @@ import { ThemedView } from '@/components/themed-view';
 import { WritingRunner } from '@/components/writing-runner';
 import { Spacing, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import type { DrillId } from '@/lib/drills/types';
 import { Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale } from '@/lib/i18n';
 import {
@@ -55,7 +56,15 @@ import { AdvancedLessonRunner } from '@/components/advanced-lesson-runner';
 import { ChapterGrammarRunner } from '@/components/chapter-grammar-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
-import { finishChapter, finishedChapterIds, chaptersForDirection, type LearningChapter } from '@/lib/learning-path';
+import {
+  chapterGrammarDrill,
+  chaptersForDirection,
+  finishChapter,
+  finishedChapterIds,
+  markStepPractised,
+  practisedSteps,
+  type LearningChapter,
+} from '@/lib/learning-path';
 import { situationTranslation, spokenText, type ConversationSituation } from '@/lib/conversation/types';
 
 const RATINGS: Rating[] = [1, 2, 3, 4];
@@ -94,6 +103,31 @@ const RATING_COLORS: Record<Rating, { bg: ThemeColor; text: ThemeColor }> = {
  * richtungen. Die Laufzeitprüfung sitzt im Sprachmodell (`lib/languages/
  * types`), damit Profil, Auswahl und Screens dieselbe Schranke lesen.
  */
+
+/** Die Übungen, die ein Kapitel als Schritt 1 (Grammatik) öffnen kann. */
+const CHAPTER_GRAMMAR_MODES: readonly Mode[] = ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse', 'toneRule'];
+
+type ChapterStep = readonly [Mode, TranslationKey];
+
+/**
+ * Die sieben Schritte eines Kapitels. Schrittliste und „Weiter: …“ in der
+ * Übung lesen dieselbe Reihenfolge. Schritt 1 übt die Regel, die die Szene
+ * erklärt (Nutzertest 17.10.2026: vorher folgte auf die Regel das ganze
+ * Rollenspiel, dieselbe Übung wie Schritt 7).
+ */
+function chapterSteps(direction: PairDirection, chapter: LearningChapter): ChapterStep[] {
+  const grammar: Mode = chapterGrammarDrill(chapter.situation, modesForDirection(direction))
+    ?? (targetLanguageOf(direction) === 'th' ? 'polite' : groupsForDirection(direction)[4].modes[0]);
+  return [
+    [grammar, 'skill.grammatik'],
+    ['cards', 'mode.cards'],
+    ['sentenceListening', 'mode.sentenceListening'],
+    ['lesestoffe', 'mode.lesestoffe'],
+    ['writing', 'mode.writing'],
+    ['sentenceRepeat', 'mode.sentenceRepeat'],
+    ['rollenspiel', 'mode.rollenspiel'],
+  ];
+}
 
 /** Fehlertext eines gescheiterten Ladevorgangs — wie im Fortschritts-Reiter. */
 function messageOf(e: unknown): string {
@@ -274,6 +308,7 @@ function ReviewBody({
   const [writingPack, setWritingPack] = useState<VocabEntry[] | null>(null);
   const [chapters, setChapters] = useState<LearningChapter[] | null>(null);
   const [finished, setFinished] = useState<string[]>([]);
+  const [practised, setPractised] = useState<Record<string, string[]>>({});
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [practiceChapter, setPracticeChapter] = useState<LearningChapter | null>(null);
   const [chapterError, setChapterError] = useState<string | null>(null);
@@ -294,9 +329,11 @@ function ReviewBody({
         const situations = await loadSituations();
         const next = chaptersForDirection(direction, situations, activeVocabularyFor(targetLanguageOf(direction)));
         const done = await finishedChapterIds(direction, next);
+        const steps = await Promise.all(next.map((item) => practisedSteps(direction, item.id)));
         if (!cancelled) {
           setChapters(next);
           setFinished(done);
+          setPractised(Object.fromEntries(next.map((item, index) => [item.id, steps[index]])));
         }
       } catch (error) {
         if (!cancelled) {
@@ -320,6 +357,21 @@ function ReviewBody({
   // Richtungen ohne Lernziel — en_to_de/es_to_de aus gemerkten Profilen oder
   // alten Adressen — fällt der ehrliche Richtungstext zurück.
   const ziel = zielFuerDirection(direction);
+
+  // Einen Kapitelschritt öffnen und als geübt merken (Häkchen in der Liste).
+  const openChapterStep = (picked: Mode, chapter: LearningChapter) => {
+    void markStepPractised(direction, chapter.id, picked)
+      .then((steps) => setPractised((current) => ({ ...current, [chapter.id]: steps })))
+      .catch(() => {});
+    setWritingPack(null);
+    setPracticeChapter(chapter);
+    onOpen(direction, picked);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  };
+  const steps = practiceChapter ? chapterSteps(direction, practiceChapter) : [];
+  const stepIndex = steps.findIndex(([candidate]) => candidate === mode);
+  const nextStep = stepIndex >= 0 ? steps[stepIndex + 1] : undefined;
+  const chapterGrammar = Boolean(practiceChapter && CHAPTER_GRAMMAR_MODES.includes(mode));
 
   return (
     <ScreenScaffold
@@ -365,9 +417,14 @@ function ReviewBody({
                 .catch((error) => setChapterError(messageOf(error)))
                 .finally(() => setFinishing(false));
             }}
+            practised={practised}
             onOpen={(picked, chapter) => {
+              if (chapter) {
+                openChapterStep(picked, chapter);
+                return;
+              }
               setWritingPack(null);
-              setPracticeChapter(chapter ?? null);
+              setPracticeChapter(null);
               onOpen(direction, picked);
             }}
           />
@@ -375,14 +432,34 @@ function ReviewBody({
         </>
       ) : (
         <>
-          <ThemedButton label={t('common.back')} onPress={onExit} />
-          <ThemedText type="smallBold">{t(practiceChapter && ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse'].includes(mode) ? 'skill.grammatik' : modeKey(mode))}</ThemedText>
-          {practiceChapter ? <ThemedText type="small" themeColor="textSecondary">
-            {situationTranslation(practiceChapter.situation, uiLanguage).title}
-          </ThemedText> : null}
+          {/* Ein Block statt drei Zeilen mit je eigenem Abstand: Auf 375 px lagen
+              die Bewertungsknöpfe der Karteikarten sonst unter dem Rand
+              (Nutzertest 17.10.2026). */}
+          <View style={styles.exerciseHeader}>
+            <View style={styles.exerciseActions}>
+              <ThemedButton label={t('common.back')} onPress={onExit} />
+              {practiceChapter && nextStep ? (
+                <ThemedButton
+                  label={t('path.nextStep', { step: `${stepIndex + 2}. ${t(nextStep[1])}` })}
+                  onPress={() => openChapterStep(nextStep[0], practiceChapter)}
+                />
+              ) : null}
+            </View>
+            <ThemedText type="smallBold">
+              {t(chapterGrammar ? 'skill.grammatik' : modeKey(mode))}
+              {practiceChapter ? ` · ${situationTranslation(practiceChapter.situation, uiLanguage).title}` : ''}
+            </ThemedText>
+          </View>
 
-          {practiceChapter && ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse'].includes(mode) ? (
-        <ChapterGrammarRunner key={practiceChapter.id} situation={practiceChapter.situation} direction={direction} onExit={onExit} />
+          {practiceChapter && chapterGrammar ? (
+        <ChapterGrammarRunner
+          key={`${practiceChapter.id}:${mode}`}
+          situation={practiceChapter.situation}
+          direction={direction}
+          // CHAPTER_GRAMMAR_MODES sind ausnahmslos Drill-Kennungen.
+          drill={mode as DrillId}
+          onExit={onExit}
+        />
       ) : mode === 'cards' ? (
         <CardSession
           direction={direction}
@@ -392,6 +469,7 @@ function ReviewBody({
             setWritingPack(entries);
             onOpen(direction, 'writing');
           }}
+          onReveal={() => scrollRef.current?.scrollToEnd({ animated: true })}
           key={direction}
         />
       ) : mode === 'writing' ? (
@@ -486,10 +564,12 @@ function LearnPath({
   onOpen,
   openArea,
   setOpenArea,
+  practised,
 }: {
   direction: PairDirection;
   chapters: LearningChapter[] | null;
   finished: string[];
+  practised: Record<string, string[]>;
   selectedChapterId: string | null;
   chapterError: string | null;
   finishing: boolean;
@@ -503,7 +583,6 @@ function LearnPath({
 }) {
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
-  const groups = groupsForDirection(direction);
   // Anfänger · Fortgeschritten · Profi (Nutzerwunsch 04.10.2026): Ohne eigene
   // Wahl gilt die Stufe des nächsten offenen Kapitels.
   const [pickedStage, setPickedStage] = useState<LearningStage | null>(null);
@@ -517,18 +596,16 @@ function LearnPath({
   const titelZaehler = new Map<string, number>();
   const titelVon = new Map(stageChapters.map((item) => {
     const titel = situationTranslation(item.situation, uiLanguage).title;
-    const nr = (titelZaehler.get(titel) ?? 0) + 1;
-    titelZaehler.set(titel, nr);
+    // Einstieg und Aufbau stehen am Kapitel — gleicher Titel dort ist keine Variante.
+    const schluessel = `${titel}|${item.situation.level}`;
+    const nr = (titelZaehler.get(schluessel) ?? 0) + 1;
+    titelZaehler.set(schluessel, nr);
     return [item.id, nr === 1 ? titel : `${titel}${t('conversation.variant', { count: nr })}`];
   }));
   const chapter = stageChapters.find((item) => item.id === selectedChapterId)
     ?? stageChapters.find((item) => !finished.includes(item.id))
     ?? stageChapters[0];
-  const grammar = targetLanguageOf(direction) === 'th'
-    ? chapter?.situation.topic === 'market' ? 'zaehlerwort'
-      : chapter?.situation.topic === 'travel' ? 'konsonantenklasse'
-        : 'polite'
-    : groups[4].modes[0];
+  const stufenText = (level: string) => `${t(levelLabelKey(level))} · ${t(levelPartKey(level))}`;
   const position = chapter ? stageChapters.findIndex((item) => item.id === chapter.id) + 1 : 0;
   const translated = chapter ? situationTranslation(chapter.situation, uiLanguage) : null;
   const turnIndex = chapter?.situation.scriptTurns.findIndex((turn) => turn.speaker === 'learner') ?? -1;
@@ -549,7 +626,7 @@ function LearnPath({
             {finished.includes(chapter.id) ? t('chapter.completed') : t('path.next')}
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {t('chapter.position', { index: position, total: stageChapters.length, level: t(levelLabelKey(chapter.situation.level)) })}
+            {t('chapter.position', { index: position, total: stageChapters.length, level: stufenText(chapter.situation.level) })}
           </ThemedText>
           <ThemedText type="subtitle">{titelVon.get(chapter.id) ?? translated.title}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">{translated.setting}</ThemedText>
@@ -577,30 +654,29 @@ function LearnPath({
 
       {lessonOpen && chapter ? (
         <ThemedView type="backgroundElement" style={styles.lessonPanel}>
-          <ThemedText type="smallBold">{t(levelLabelKey(chapter.situation.level))} · {translated?.title}</ThemedText>
+          <ThemedText type="smallBold">{stufenText(chapter.situation.level)} · {translated?.title}</ThemedText>
           <ThemedText type="small">{translated?.setting}</ThemedText>
           <ThemedButton label={t('common.back')} onPress={() => setLessonOpen(false)} />
           <ThemedText type="smallBold">
             {t('chapter.words', { count: chapter.vocabulary.length })}
           </ThemedText>
-          {([
-            [grammar, 'skill.grammatik'],
-            ['cards', 'mode.cards'],
-            ['sentenceListening', 'mode.sentenceListening'],
-            ['lesestoffe', 'mode.lesestoffe'],
-            ['writing', 'mode.writing'],
-            ['sentenceRepeat', 'mode.sentenceRepeat'],
-            ['rollenspiel', 'mode.rollenspiel'],
-          ] as const).map(([candidate, key], index) => (
-            <Pressable
-              key={`${candidate}:${index}`}
-              onPress={() => onOpen(candidate, chapter)}
-              accessibilityRole="button"
-              style={({ pressed }) => [styles.pathStep, pressed && styles.pressed]}>
-              <ThemedText type="smallBold">{index + 1}. {t(key)}</ThemedText>
-              <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
-            </Pressable>
-          ))}
+          {chapterSteps(direction, chapter).map(([candidate, key], index) => {
+            const geuebt = (practised[chapter.id] ?? []).includes(candidate);
+            const label = `${index + 1}. ${t(key)}`;
+            return (
+              <Pressable
+                key={`${candidate}:${index}`}
+                onPress={() => onOpen(candidate, chapter)}
+                accessibilityRole="button"
+                accessibilityLabel={geuebt ? t('path.stepPractisedA11y', { step: label }) : label}
+                style={({ pressed }) => [styles.pathStep, pressed && styles.pressed]}>
+                <ThemedText type="smallBold">{label}</ThemedText>
+                {geuebt
+                  ? <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
+                  : <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />}
+              </Pressable>
+            );
+          })}
           <ThemedButton
             label={finished.includes(chapter.id) ? t('chapter.completed') : t('chapter.finish')}
             disabled={finishing || finished.includes(chapter.id)}
@@ -632,7 +708,7 @@ function LearnPath({
               <ThemedView type={current ? 'backgroundSelected' : 'backgroundElement'} style={styles.chapterRow}>
                 <View style={styles.skillText}>
                   <ThemedText type="smallBold">
-                    {t('chapter.position', { index: index + 1, total: stageChapters.length, level: t(levelLabelKey(item.situation.level)) })}
+                    {t('chapter.position', { index: index + 1, total: stageChapters.length, level: stufenText(item.situation.level) })}
                   </ThemedText>
                   <ThemedText type="default">{label}</ThemedText>
                 </View>
@@ -799,11 +875,14 @@ function CardSession({
   onlyVocabIds,
   situation,
   onWrite,
+  onReveal,
 }: {
   direction: PairDirection;
   onlyVocabIds?: ReadonlySet<string>;
   situation?: ConversationSituation;
   onWrite: (entries: VocabEntry[]) => void;
+  /** Nach dem Aufdecken: die Bewertungsknöpfe in Sicht holen (375 px). */
+  onReveal?: () => void;
 }) {
   const { t } = useLocale();
   const colors = useTheme();
@@ -816,13 +895,21 @@ function CardSession({
   const ratingInFlight = useRef(false);
   const [rated, setRated] = useState(0);
   const [again, setAgain] = useState(0);
+  // Karten bis zu dieser Stelle sind die fällige Runde; dahinter hängen die
+  // „Nochmal“-Karten zur Wiederholung in derselben Runde (Nutzertest
+  // 17.10.2026: sie kamen erst am nächsten Tag wieder). Die Wiederholung
+  // schreibt FSRS NICHT ein zweites Mal fort — die Karte ist schon bewertet.
+  const [runde, setRunde] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     setQueueError(null);
     buildReviewQueue(direction, undefined, undefined, onlyVocabIds)
       .then((items) => {
-        if (!cancelled) setQueue(items.slice(0, 20));
+        if (cancelled) return;
+        const due = items.slice(0, 20);
+        setQueue(due);
+        setRunde(due.length);
       })
       .catch((e) => {
         if (!cancelled) setQueueError(messageOf(e));
@@ -837,14 +924,18 @@ function CardSession({
       if (ratingInFlight.current || !queue) return;
       const item = queue[index];
       if (!item) return;
+      const wiederholung = index >= runde;
 
       ratingInFlight.current = true;
       setBusy(true);
       setSaveError(null);
       try {
-        await rateCard(item.card, rating);
-        setRated((value) => value + 1);
-        if (rating === 1) setAgain((value) => value + 1);
+        if (!wiederholung) {
+          await rateCard(item.card, rating);
+          setRated((value) => value + 1);
+          if (rating === 1) setAgain((value) => value + 1);
+        }
+        if (rating === 1) setQueue((current) => (current ? [...current, item] : current));
         setIndex((value) => value + 1);
         setRevealed(false);
       } catch (error) {
@@ -854,7 +945,7 @@ function CardSession({
         setBusy(false);
       }
     },
-    [queue, index]
+    [queue, index, runde]
   );
 
   const restart = useCallback(() => {
@@ -863,8 +954,16 @@ function CardSession({
     setQueueError(null);
     setIndex(0);
     setRevealed(false);
+    // Zähler zurück: Sonst stand nach „Erneut prüfen“ ohne fällige Karten
+    // wieder „Sitzung beendet“ mit den alten Zahlen — als täte der Knopf nichts.
+    setRated(0);
+    setAgain(0);
     buildReviewQueue(direction, undefined, undefined, onlyVocabIds)
-      .then((items) => setQueue(items.slice(0, 20)))
+      .then((items) => {
+        const due = items.slice(0, 20);
+        setQueue(due);
+        setRunde(due.length);
+      })
       .catch((e) => setQueueError(messageOf(e)));
   }, [direction, onlyVocabIds]);
 
@@ -903,7 +1002,11 @@ function CardSession({
         </ThemedText>
         <View style={styles.actions}>
           <ThemedButton label={t('common.recheck')} onPress={restart} />
-          {rated > 0 ? <ThemedButton label={t('mode.writing')} onPress={() => onWrite(queue.map((item) => item.entry))} variant="primary" /> : null}
+          {rated > 0 ? <ThemedButton
+            label={t('mode.writing')}
+            onPress={() => onWrite([...new Map(queue.map((item) => [item.entry.id, item.entry])).values()])}
+            variant="primary"
+          /> : null}
         </View>
       </ThemedView>
     );
@@ -925,6 +1028,9 @@ function CardSession({
         <ThemedText type="small" themeColor="textSecondary">
           {t('cards.progress', { index: index + 1, total: queue.length })}
         </ThemedText>
+        {index >= runde ? (
+          <ThemedText type="small" themeColor="textSecondary">{t('cards.repeatNote')}</ThemedText>
+        ) : null}
       </View>
 
       <Flashcard
@@ -963,7 +1069,11 @@ function CardSession({
         <ThemedButton
           label={t('card.reveal')}
           accessibilityLabel={t('card.revealA11y')}
-          onPress={() => setRevealed(true)}
+          onPress={() => {
+            setRevealed(true);
+            // Erst nach dem Layout der Bewertungsreihe scrollen.
+            setTimeout(() => onReveal?.(), 50);
+          }}
           variant="primary"
         />
       )}
@@ -977,6 +1087,14 @@ function CardSession({
 const styles = StyleSheet.create({
   learnHome: {
     gap: Spacing.three,
+  },
+  exerciseHeader: {
+    gap: Spacing.two,
+  },
+  exerciseActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
   },
   pathHero: {
     borderRadius: Spacing.three,

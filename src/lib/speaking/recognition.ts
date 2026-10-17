@@ -9,17 +9,41 @@
  * (`verfuegbar: false`), und der Runner zeigt den Selbstbewertungsweg.
  *
  * Die Erkennung sendet an den Browseranbieter — sie läuft deshalb bewusst
- * nur auf Zuruf (Knopfdruck) und überträgt nur die eine Antwort.
+ * nur auf Zuruf (Knopfdruck) und überträgt nur die eine Antwort. Die Runner
+ * sagen das neben dem Knopf (`production.recognitionPrivacy`).
  */
+
+import type { TranslationKey } from '@/lib/i18n/keys';
+
+/** Warum nichts erkannt wurde — die Runner zeigen dazu einen Satz. */
+export type ErkennungsFehler = 'nicht-erlaubt' | 'kein-netz' | 'nichts';
+
+export const ERKENNUNGS_FEHLER_KEYS: Record<ErkennungsFehler, TranslationKey> = {
+  'nicht-erlaubt': 'production.recognitionDenied',
+  'kein-netz': 'production.recognitionOffline',
+  nichts: 'production.recognitionNothing',
+};
+
+/** Die Fehlercodes der Web Speech API, auf die drei Fälle der Oberfläche verteilt. */
+export function erkennungsFehlerAus(code: string | undefined): ErkennungsFehler {
+  if (code === 'not-allowed' || code === 'service-not-allowed' || code === 'audio-capture') return 'nicht-erlaubt';
+  if (code === 'network') return 'kein-netz';
+  return 'nichts';
+}
 
 export type ErkennungsNaht = {
   verfuegbar: boolean;
   /**
    * Hört einmalig auf eine Antwort und liefert den erkannten Text — `null`
    * bei Fehler oder Abbruch. `onHören` wird beim Start aufgerufen, damit die
-   * UI den Hör-Zustand zeigen kann.
+   * UI den Hör-Zustand zeigen kann. `onFehler` sagt bei `null`, warum —
+   * vorher sprang der Knopf ohne jede Meldung zurück (Nutzertest 17.10.2026).
    */
-  erkennen?: (options: { language: string; onHoeren?: (hoert: boolean) => void }) => Promise<string | null>;
+  erkennen?: (options: {
+    language: string;
+    onHoeren?: (hoert: boolean) => void;
+    onFehler?: (grund: ErkennungsFehler) => void;
+  }) => Promise<string | null>;
 };
 
 interface FensterSpeechRecognition {
@@ -49,7 +73,7 @@ export function spracherkennung(): ErkennungsNaht {
   if (!Ctor) return { verfuegbar: false };
   return {
     verfuegbar: true,
-    erkennen({ language, onHoeren }) {
+    erkennen({ language, onHoeren, onFehler }) {
       return new Promise((resolve) => {
         const erkenner = new Ctor();
         erkenner.lang = language;
@@ -58,10 +82,11 @@ export function spracherkennung(): ErkennungsNaht {
         erkenner.continuous = false;
 
         let beendet = false;
-        const fertig = (text: string | null) => {
+        const fertig = (text: string | null, grund: ErkennungsFehler = 'nichts') => {
           if (beendet) return;
           beendet = true;
           onHoeren?.(false);
+          if (!text) onFehler?.(grund);
           resolve(text);
           try {
             erkenner.abort();
@@ -75,14 +100,14 @@ export function spracherkennung(): ErkennungsNaht {
           const text = alternativen?.[0]?.transcript ?? null;
           fertig(text ? text.trim() : null);
         };
-        erkenner.onerror = () => fertig(null);
+        erkenner.onerror = (event) => fertig(null, erkennungsFehlerAus(event?.error));
         erkenner.onend = () => fertig(null);
 
         onHoeren?.(true);
         try {
           erkenner.start();
         } catch {
-          fertig(null);
+          fertig(null, 'nicht-erlaubt');
         }
       });
     },

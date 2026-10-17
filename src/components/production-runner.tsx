@@ -27,7 +27,7 @@ import {
   produktionsAufgaben,
   type ProduktionsAufgabe,
 } from '@/lib/production/tasks';
-import { spracherkennung } from '@/lib/speaking/recognition';
+import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler } from '@/lib/speaking/recognition';
 
 /**
  * „Sag es auf …“ (Schritt 3, Lern-Reiter-Ausbau): Die App zeigt die
@@ -81,6 +81,7 @@ export function ProductionRunner({
   const [ergebnis, setErgebnis] = useState<ProduktionsErgebnis | null>(null);
   const [selbstOffen, setSelbstOffen] = useState(false);
   const [hoert, setHoert] = useState(false);
+  const [erkennungsFehler, setErkennungsFehler] = useState<ErkennungsFehler | null>(null);
   const [falschBewertung, setFalschBewertung] = useState<Rating | null>(null);
 
   const laden = useCallback(() => {
@@ -137,10 +138,12 @@ export function ProductionRunner({
 
   const sprechenStarten = useCallback(() => {
     if (!naht.erkennen) return;
+    setErkennungsFehler(null);
     void (async () => {
       const text = await naht.erkennen!({
         language: SR_LOCALE[sprache],
         onHoeren: setHoert,
+        onFehler: setErkennungsFehler,
       });
       if (text) pruefen(text);
       else setHoert(false);
@@ -166,6 +169,7 @@ export function ProductionRunner({
   }, [aufgabe, sprache]);
 
   const weiter = useCallback(() => {
+    setErkennungsFehler(null);
     setIndex((value) => value + 1);
   }, []);
 
@@ -276,6 +280,14 @@ export function ProductionRunner({
                 </ThemedText>
               </Pressable>
             </View>
+            {erkennungsFehler ? (
+              <ThemedText type="small" themeColor="error" accessibilityLiveRegion="polite">
+                {t(ERKENNUNGS_FEHLER_KEYS[erkennungsFehler])}
+              </ThemedText>
+            ) : null}
+            {naht.verfuegbar ? (
+              <ThemedText type="small" themeColor="textSecondary">{t('production.recognitionPrivacy')}</ThemedText>
+            ) : null}
           </>
         ) : null}
 

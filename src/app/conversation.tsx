@@ -1,4 +1,4 @@
-import { LEARNING_STAGES, levelLabelKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
+import { LEARNING_STAGES, levelLabelKey, levelPartKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
 import { LearningStagePicker } from '@/components/learning-stage-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
@@ -118,8 +118,10 @@ export default function ConversationScreen() {
     const counts = new Map<string, number>();
     const suffix = new Map<string, string>();
     for (const situation of visible) {
-      const count = (counts.get(situation.title) ?? 0) + 1;
-      counts.set(situation.title, count);
+      // Gleicher Titel auf Einstieg und Aufbau ist keine Variante.
+      const key = `${situation.title}|${situation.level}`;
+      const count = (counts.get(key) ?? 0) + 1;
+      counts.set(key, count);
       suffix.set(situation.id, count === 1 ? '' : t('conversation.variant', { count }));
     }
     return suffix;
@@ -308,7 +310,7 @@ function SituationCard({
             {/* WHY: Das Thema steht einmal am Abschnittslabel — die Karte
                 trägt nur noch Stufe und Varianten-Anhang. */}
             <ThemedText type="small" themeColor="textSecondary">
-              {t(levelLabelKey(situation.level))}
+              {t(levelLabelKey(situation.level))} · {t(levelPartKey(situation.level))}
               {variantSuffix}
             </ThemedText>
           </View>

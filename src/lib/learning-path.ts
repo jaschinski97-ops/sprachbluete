@@ -1,5 +1,7 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
+import type { DrillId } from './drills/types';
+
 import { TOPICS, type ConversationSituation } from './conversation/types';
 import type { PairDirection } from './languages/types';
 import { contentDirectionOf, targetLanguageOf } from './languages/types';
@@ -55,6 +57,32 @@ export function chaptersForDirection(
   });
 }
 
+/**
+ * Welche Übung zu den Regeln der Szene passt — gelesen an den Überschriften
+ * der Regeln (`corrections[].issue`, im Bestand Deutsch); die Erklärungen
+ * erwähnen Nebenbei-Begriffe („fallender Ton“) und führten in die Irre.
+ * Höflichkeitspartikeln kommen in fast jeder Thai-Szene vor und zählen
+ * deshalb erst, wenn nichts Spezielleres passt.
+ */
+const REGEL_UEBUNGEN: readonly (readonly [RegExp, DrillId])[] = [
+  [/Zählw|Klassifikator|Mengen/i, 'zaehlerwort'],
+  [/ไกล|ใกล้|\bTon\b|Töne|Tonzeichen/i, 'toneRule'],
+  [/Partizip|Perfekt|Präteritum|Vergangenheit|eingezogen/i, 'irregularPast'],
+  [/\bser\b|\bestar\b/i, 'serEstar'],
+  // \b: „Höflichkeitspartikel“ enthält „artikel“.
+  [/\bArtikel|Kasus|Akkusativ|Dativ/i, 'article'],
+  [/Partikel|ครับ|ค่ะ/i, 'polite'],
+];
+
+/** Die Übung für Schritt 1 eines Kapitels — `undefined`, wenn keine Regel passt. */
+export function chapterGrammarDrill(
+  situation: ConversationSituation,
+  available: readonly string[]
+): DrillId | undefined {
+  const regeln = situation.corrections.map((hint) => hint.issue).join(' | ');
+  return REGEL_UEBUNGEN.find(([muster, drill]) => available.includes(drill) && muster.test(regeln))?.[1];
+}
+
 function completionKey(direction: PairDirection, chapterId: string): string {
   return `learning-chapter:${direction}:${chapterId}`;
 }
@@ -69,6 +97,36 @@ export async function finishedChapterIds(
     chapters.map((chapter) => readMeta<boolean>(completionKey(direction, chapter.id), false, store))
   );
   return chapters.filter((_, index) => flags[index]).map((chapter) => chapter.id);
+}
+
+function stepsKey(direction: PairDirection, chapterId: string): string {
+  return `learning-chapter-steps:${direction}:${chapterId}`;
+}
+
+/**
+ * Welche Schritte eines Kapitels schon geöffnet wurden — für das Häkchen in
+ * der Schrittliste (Nutzertest 17.10.2026: erledigte Schritte waren nicht zu
+ * erkennen). Wie der Kapitelabschluss nur auf diesem Gerät.
+ */
+export async function practisedSteps(
+  direction: PairDirection,
+  chapterId: string,
+  store?: DataStore
+): Promise<string[]> {
+  return readMeta<string[]>(stepsKey(direction, chapterId), [], store);
+}
+
+export async function markStepPractised(
+  direction: PairDirection,
+  chapterId: string,
+  step: string,
+  store?: DataStore
+): Promise<string[]> {
+  const before = await practisedSteps(direction, chapterId, store);
+  if (before.includes(step)) return before;
+  const after = [...before, step];
+  await writeMeta(stepsKey(direction, chapterId), after, store);
+  return after;
 }
 
 export async function finishChapter(

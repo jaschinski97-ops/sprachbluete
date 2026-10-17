@@ -38,3 +38,25 @@ it('keeps the same revealed card after a failed save, unlocks ratings, and advan
   expect(JSON.stringify(renderer.toJSON())).toContain(translate('en', 'cards.done'));
   await act(async () => renderer.unmount());
 });
+
+it('zeigt „Nochmal“-Karten in derselben Runde erneut, ohne sie ein zweites Mal zu bewerten (Nutzertest 17.10.2026)', async () => {
+  jest.mocked(rateCard).mockReset().mockResolvedValue({} as never);
+  let renderer!: ReactTestRenderer;
+  await act(async () => { renderer = create(<ReviewScreen />); });
+  const reveal = () => renderer.root.findAllByType(ThemedButton).find(node => node.props.label === translate('en', 'card.reveal'))!;
+  const rating = (key: 'rating.again' | 'rating.good') =>
+    renderer.root.findAll(node => node.props.accessibilityLabel === translate('en', 'rating.a11y', { label: translate('en', key) }))[0];
+  const text = () => JSON.stringify(renderer.toJSON());
+
+  await act(async () => reveal().props.onPress());
+  await act(async () => { await rating('rating.again').props.onPress(); });
+  // Dieselbe Karte kommt als Wiederholung zurück, statt dass die Runde endet.
+  expect(text()).not.toContain(translate('en', 'cards.done'));
+  expect(text()).toContain(translate('en', 'cards.repeatNote'));
+  await act(async () => reveal().props.onPress());
+  await act(async () => { await rating('rating.good').props.onPress(); });
+  expect(rateCard).toHaveBeenCalledTimes(1);
+  expect(text()).toContain(translate('en', 'cards.done'));
+  expect(text()).toContain(translate('en', 'cards.summaryRated', { rated: 1, again: 1 }));
+  await act(async () => renderer.unmount());
+});

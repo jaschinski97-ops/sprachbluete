@@ -23,7 +23,7 @@ import {
   bewertungFuerErgebnis,
   type ProduktionsErgebnis,
 } from '@/lib/production/compare';
-import { spracherkennung, type ErkennungsNaht } from '@/lib/speaking/recognition';
+import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler, type ErkennungsNaht } from '@/lib/speaking/recognition';
 import { compareDialogue } from '@/lib/production/dialogue-compare';
 
 /**
@@ -241,6 +241,7 @@ function SzeneZeile({
   const [ergebnis, setErgebnis] = useState<ProduktionsErgebnis | null>(null);
   const [selbstOffen, setSelbstOffen] = useState(false);
   const [hoert, setHoert] = useState(false);
+  const [erkennungsFehler, setErkennungsFehler] = useState<ErkennungsFehler | null>(null);
 
   const spiele = useCallback(() => {
     void (async () => {
@@ -266,8 +267,13 @@ function SzeneZeile({
 
   const sprechenStarten = () => {
     if (!erkenne) return;
+    setErkennungsFehler(null);
     void (async () => {
-      const text = await erkenne({ language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE' }[sprache], onHoeren: setHoert });
+      const text = await erkenne({
+        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE' }[sprache],
+        onHoeren: setHoert,
+        onFehler: setErkennungsFehler,
+      });
       if (text) { setEingabe(text); setErgebnis(compareDialogue(text, zeile.thai, sprache)); }
       else setHoert(false);
     })();
@@ -336,6 +342,14 @@ function SzeneZeile({
                   </ThemedText>
                 </Pressable>
               </View>
+              {erkennungsFehler ? (
+                <ThemedText type="small" themeColor="error" accessibilityLiveRegion="polite">
+                  {t(ERKENNUNGS_FEHLER_KEYS[erkennungsFehler])}
+                </ThemedText>
+              ) : null}
+              {hatErkennung ? (
+                <ThemedText type="small" themeColor="textSecondary">{t('production.recognitionPrivacy')}</ThemedText>
+              ) : null}
             </>
           ) : null}
           {ergebnis !== null ? (

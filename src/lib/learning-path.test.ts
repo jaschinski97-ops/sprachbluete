@@ -1,7 +1,8 @@
 import { VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 
 import type { ConversationSituation } from './conversation/types';
-import { chaptersForDirection, finishChapter, finishedChapterIds } from './learning-path';
+import { chapterGrammarDrill, chaptersForDirection, finishChapter, finishedChapterIds, markStepPractised, practisedSteps } from './learning-path';
+import { levelPartKey } from './learning-stages';
 import { MemoryDataStore } from './storage';
 import type { VocabEntry } from '@/data/vocab-types';
 
@@ -50,4 +51,35 @@ test('Kapitelabschluss bleibt pro Lernrichtung und Dialog lokal gespeichert', as
   await finishChapter('de_to_th', chapters[0].id, store);
   expect(await finishedChapterIds('de_to_th', chapters, store)).toEqual([chapters[0].id]);
   expect(await finishedChapterIds('th_to_de', chapters, store)).toEqual([]);
+});
+
+test('merkt geübte Kapitelschritte je Richtung und Kapitel, ohne Dubletten', async () => {
+  const store = new MemoryDataStore();
+  await store.init();
+  expect(await practisedSteps('de_to_th', 'market-A1', store)).toEqual([]);
+  await markStepPractised('de_to_th', 'market-A1', 'cards', store);
+  await markStepPractised('de_to_th', 'market-A1', 'cards', store);
+  expect(await markStepPractised('de_to_th', 'market-A1', 'writing', store)).toEqual(['cards', 'writing']);
+  expect(await practisedSteps('de_to_th', 'greeting-A1', store)).toEqual([]);
+  expect(await practisedSteps('th_to_de', 'market-A1', store)).toEqual([]);
+});
+
+test('unterscheidet Einstieg und Aufbau innerhalb einer sichtbaren Stufe', () => {
+  expect(levelPartKey('A1')).toBe('level.partOne');
+  expect(levelPartKey('A2')).toBe('level.partTwo');
+  expect(levelPartKey('B1')).toBe('level.partOne');
+  expect(levelPartKey('C2')).toBe('level.partTwo');
+});
+
+test('wählt für Schritt 1 die Übung zur Regel der Szene (Nutzertest 17.10.2026)', () => {
+  const mit = (...issues: string[]) => ({ ...scene('x', 'market', 'A1'), corrections: issues.map((issue) => ({ issue, explanation: 'fallender Ton, Artikel' })) });
+  const thai = ['polite', 'zaehlerwort', 'toneRule', 'konsonantenklasse'];
+  expect(chapterGrammarDrill(mit('Höflichkeitspartikel (ครับ / ค่ะ / คะ)', 'Satzstellung bei Mengenangaben (Zählwörter)'), thai)).toBe('zaehlerwort');
+  expect(chapterGrammarDrill(mit('Verwechslung von ไกล (glai) und ใกล้ (glâi)'), thai)).toBe('toneRule');
+  // „Höflichkeitspartikel“ ist kein Artikel; die Erklärungen zählen nicht.
+  expect(chapterGrammarDrill(mit('Vergessen der Höflichkeitspartikel (ครับ / ค่ะ)'), [...thai, 'article'])).toBe('polite');
+  expect(chapterGrammarDrill(mit('„Ich bin gestern einziehen“ statt „eingezogen“'), ['article', 'irregularPast'])).toBe('irregularPast');
+  expect(chapterGrammarDrill(mit('Falscher Artikel oder Kasus bei „zwei Kilo Äpfel“'), ['article', 'irregularPast'])).toBe('article');
+  // Nicht verfügbare Übungen werden übersprungen; ohne Treffer entscheidet der Aufrufer.
+  expect(chapterGrammarDrill(mit('Satzstellung bei Mengenangaben'), ['article'])).toBeUndefined();
 });

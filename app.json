@@ -49,8 +49,7 @@
       "expo-asset",
       "expo-localization",
       "expo-image",
-      "expo-sharing",
-      "expo-web-browser"
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

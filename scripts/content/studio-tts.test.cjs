@@ -222,3 +222,19 @@ test('End-to-End durch den Helper-Server: Route, CORS, falscher Origin, alte Rou
   const state = await fetch(`http://127.0.0.1:${server.address().port}/state`);
   assert.equal(state.status, 200);
 });
+
+test('Sprechanweisung: wird an OpenAI durchgereicht und ist auf 1000 Zeichen begrenzt (17.10.2026)', async () => {
+  const calls = [];
+  const openaiFetch = async (url, init) => { calls.push(JSON.parse(init.body)); return { ok: true, status: 200, headers: { get: () => 'audio/mpeg' }, body: webStream([Buffer.from('x'.repeat(200))]) }; };
+  const ok = fakeResponse();
+  await handleTtsProxy(jsonRequest({ text: 'มา', instructions: 'Say it in citation form.' }), ok, { ...base, openaiFetch });
+  assert.equal(ok.state.statusCode, 200);
+  assert.equal(calls[0].instructions, 'Say it in citation form.');
+  const ohne = fakeResponse();
+  await handleTtsProxy(jsonRequest({ text: 'มา' }), ohne, { ...base, openaiFetch });
+  assert.equal('instructions' in calls[1], false);
+  const zuLang = fakeResponse();
+  await handleTtsProxy(jsonRequest({ text: 'มา', instructions: 'x'.repeat(1001) }), zuLang, { ...base, openaiFetch });
+  assert.equal(zuLang.state.statusCode, 400);
+  assert.equal(calls.length, 2);
+});

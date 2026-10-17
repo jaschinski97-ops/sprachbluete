@@ -6,6 +6,7 @@ import {
   wavDurationMs,
 } from '../clips/bytes';
 
+import { supportsTtsInstructions } from '../clips/tts-instructions';
 import { describeHttpError, fieldNamesOf, postForBytes, postJson } from './http';
 import { AudioClient, AudioRequest, AudioResponse, ProviderId, unsupported } from './types';
 
@@ -133,6 +134,8 @@ export function createOpenAiAudioClient(apiKey: string, model: string, voice: st
     model,
     voice,
     async synthesize(request: AudioRequest): Promise<AudioResponse> {
+      // `instructions` nur für Modelle, die das Feld kennen (gpt-4o-…-tts).
+      const instructions = request.instructions && supportsTtsInstructions(model) ? request.instructions : undefined;
       const { bytes, contentType } = await postForBytes({
         url: OPENAI_SPEECH_ENDPOINT,
         headers: { Authorization: `Bearer ${apiKey}` },
@@ -141,10 +144,9 @@ export function createOpenAiAudioClient(apiKey: string, model: string, voice: st
           input: request.text,
           voice,
           // mp3 statt pcm: OpenAI verdichtet selbst, das spart gegenueber
-          // Gemini-PCM etwa den Faktor zehn (AE-30). `instructions` wird
-          // bewusst nicht gesetzt - das Feld gibt es nur bei einem Teil der
-          // Modelle, und der Modellname ist Freitext.
+          // Gemini-PCM etwa den Faktor zehn (AE-30).
           response_format: 'mp3',
+          ...(instructions ? { instructions: instructions.text } : {}),
         },
       });
       if (contentType && !/audio\/mpeg|audio\/mp3|octet-stream/i.test(contentType)) {
@@ -153,7 +155,10 @@ export function createOpenAiAudioClient(apiKey: string, model: string, voice: st
       if (bytes.byteLength < 100) {
         throw new Error(`Antwort zu klein für eine Audiodatei (${bytes.byteLength} Byte).`);
       }
-      return { base64: bytesToBase64(new Uint8Array(bytes)), format: 'mp3', model, voice };
+      return {
+        base64: bytesToBase64(new Uint8Array(bytes)), format: 'mp3', model, voice,
+        ...(instructions ? { instructionsId: instructions.id } : {}),
+      };
     },
   };
 }
@@ -180,12 +185,16 @@ export function createOpenAiHelperAudioClient(model: string, voice: string): Aud
     model,
     voice,
     async synthesize(request: AudioRequest): Promise<AudioResponse> {
+      const instructions = request.instructions && supportsTtsInstructions(model) ? request.instructions : undefined;
       const { bytes, contentType } = await postForBytes({
         url: OPENAI_HELPER_TTS_ENDPOINT,
         headers: {},
         // `purpose` ist beim Helper ein freier kurzer Text und landet im
         // Lauf-Protokoll — die Sprache ist der Zweck, den wir kennen.
-        body: { text: request.text, voice, model, purpose: request.language },
+        body: {
+          text: request.text, voice, model, purpose: request.language,
+          ...(instructions ? { instructions: instructions.text } : {}),
+        },
       });
       if (contentType && !/audio\/mpeg|audio\/mp3|octet-stream/i.test(contentType)) {
         throw new Error(`Unerwarteter Inhaltstyp "${contentType}" statt Audio.`);
@@ -193,7 +202,10 @@ export function createOpenAiHelperAudioClient(model: string, voice: string): Aud
       if (bytes.byteLength < 100) {
         throw new Error(`Antwort zu klein für eine Audiodatei (${bytes.byteLength} Byte).`);
       }
-      return { base64: bytesToBase64(new Uint8Array(bytes)), format: 'mp3', model, voice };
+      return {
+        base64: bytesToBase64(new Uint8Array(bytes)), format: 'mp3', model, voice,
+        ...(instructions ? { instructionsId: instructions.id } : {}),
+      };
     },
   };
 }

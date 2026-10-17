@@ -99,12 +99,14 @@ async function handleTtsProxy(req, res, {
     try { data = JSON.parse(Buffer.concat(parts).toString('utf8')); }
     catch { throw ttsRequestError(400, 'Ungültiges JSON.'); }
     if (typeof data !== 'object' || data === null) throw ttsRequestError(400, 'JSON-Objekt erwartet.');
-    const { text, voice = limits.defaultVoice, model = limits.defaultModel, purpose } = data;
+    const { text, voice = limits.defaultVoice, model = limits.defaultModel, purpose, instructions } = data;
     if (typeof text !== 'string' || !text.trim()) throw ttsRequestError(400, 'text fehlt oder ist leer.');
     if (text.length > limits.maxTextLength) throw ttsRequestError(400, `text überschreitet ${limits.maxTextLength} Zeichen (${text.length}).`);
     if (typeof model !== 'string' || !SAFE_NAME.test(model)) throw ttsRequestError(400, 'model enthält unerwartete Zeichen.');
     if (typeof voice !== 'string' || !SAFE_NAME.test(voice)) throw ttsRequestError(400, 'voice enthält unerwartete Zeichen.');
     if (purpose !== undefined && (typeof purpose !== 'string' || purpose.length > 200)) throw ttsRequestError(400, 'purpose ist kein kurzer Text.');
+    // Sprechanweisung (Thai-Töne, src/lib/clips/tts-instructions.ts) — nur durchgereicht, nie ausgewertet.
+    if (instructions !== undefined && (typeof instructions !== 'string' || !instructions.trim() || instructions.length > 1000)) throw ttsRequestError(400, 'instructions ist kein Text bis 1000 Zeichen.');
 
     const apiKey = getApiKey();
     if (!apiKey) throw ttsRequestError(500, 'OPENAI_API_KEY ist im Helper nicht gesetzt (Umgebung, nicht Datei).');
@@ -114,7 +116,7 @@ async function handleTtsProxy(req, res, {
       upstream = await openaiFetch(OPENAI_SPEECH_URL, {
         method: 'POST',
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, voice, input: text, response_format: 'mp3' }),
+        body: JSON.stringify({ model, voice, input: text, response_format: 'mp3', ...(instructions ? { instructions } : {}) }),
         signal: AbortSignal.timeout(limits.timeoutMs),
       });
     } catch (error) {

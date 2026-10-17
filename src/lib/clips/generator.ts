@@ -1,6 +1,7 @@
 import { clipDurationMs, createAudioClient } from '../providers/audio';
 import { AudioClient, ProviderId } from '../providers/types';
 
+import { ttsInstructionsFor } from './tts-instructions';
 import { AudioClipSpec, GeneratedClip } from './types';
 
 /**
@@ -17,7 +18,12 @@ export type ClipGenerationClient = {
 export function createClipClient(audio: AudioClient): ClipGenerationClient {
   return {
     async generate(spec) {
-      const response = await audio.synthesize({ text: spec.text, language: spec.language });
+      const instructions = ttsInstructionsFor(spec);
+      const response = await audio.synthesize({
+        text: spec.text,
+        language: spec.language,
+        ...(instructions ? { instructions } : {}),
+      });
       if (!response.base64 || response.base64.length < 100) {
         throw new Error('Anbieter lieferte keine Audiodaten.');
       }
@@ -28,6 +34,7 @@ export function createClipClient(audio: AudioClient): ClipGenerationClient {
         voice: response.voice,
         provider: audio.provider,
         durationMs: clipDurationMs(response),
+        ...(response.instructionsId ? { instructionsId: response.instructionsId } : {}),
       };
     },
   };

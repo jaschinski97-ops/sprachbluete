@@ -274,6 +274,11 @@ export type AudioRequest = {
    * durch bis in die Clip-ID und muss dort stimmen.
    */
   language: SpeechLanguage;
+  /**
+   * Sprechanweisung (Thai-Töne, `clips/tts-instructions`). Nur Modelle, die
+   * das Feld kennen, bekommen sie; die Antwort sagt, ob sie mitging.
+   */
+  instructions?: { id: string; text: string };
 };
 
 export type AudioResponse = {
@@ -282,6 +287,8 @@ export type AudioResponse = {
   format: AudioFormat;
   model: string;
   voice: string;
+  /** Kennung der mitgeschickten Sprechanweisung — fehlt, wenn keine mitging. */
+  instructionsId?: string;
   /** Bekannt bei PCM/WAV; bei komprimierten Formaten nicht aus der Antwort ablesbar. */
   sampleRate?: number;
 };

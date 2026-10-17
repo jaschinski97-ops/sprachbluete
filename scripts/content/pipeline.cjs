@@ -61,7 +61,7 @@ function assertDocument(kind, doc, vocabulary = []) {
     // 17.09.: 'chatgpt-helper' ergänzt — der Helper-Weg der Audio-Karte erzeugt
     // Clips mit genau diesem Provider; ohne ihn verwarf der Stage-Export jeden
     // Clip mit „Inhalt verletzt den audio-Vertrag" (141 im Nutzer-Lauf).
-    kind === 'audio' ? isValidAudioClip(doc) && doc.id === clipIdFor(doc.language, doc.text) && ['vocab','example','turn'].includes(doc.kind) && ['gemini','chatgpt','chatgpt-helper'].includes(doc.provider) && typeof doc.voice === 'string' && typeof doc.model === 'string' && Number.isFinite(doc.generatedAt) :
+    kind === 'audio' ? isValidAudioClip(doc) && doc.id === clipIdFor(doc.language, doc.text) && ['vocab','example','turn'].includes(doc.kind) && ['gemini','chatgpt','chatgpt-helper'].includes(doc.provider) && typeof doc.voice === 'string' && typeof doc.model === 'string' && (doc.instructionsId === undefined || (typeof doc.instructionsId === 'string' && /^[\w.-]{1,40}$/.test(doc.instructionsId))) && Number.isFinite(doc.generatedAt) :
     // Phase 2, Schritt 4: Wortschatz als Inhaltsart — derselbe Weg über
     // Stage und catalog.json. 'de' ist gültig (abgeleiteter de-Pool).
     kind === 'vocabulary' ? isValidVocabEntry(doc) :
@@ -72,7 +72,7 @@ function assertDocument(kind, doc, vocabulary = []) {
   const fields = {
     situations: 'id level topic direction title setting scriptTurns corrections generatedAt modelUsed translations',
     images: 'id vocabId format byteSize blobKey prompt model generatedAt',
-    audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice generatedAt synthetic',
+    audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice instructionsId generatedAt synthetic',
     vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman sourceVerified source verificationNote note',
   }[kind].split(' ');
   if (Object.keys(doc).some((key) => !fields.includes(key))) throw Error('Unbekannte Metadatenfelder; Export verweigert.');

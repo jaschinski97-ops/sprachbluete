@@ -74,6 +74,12 @@ export type AudioClip = {
   provider: ProviderId;
   model: string;
   voice: string;
+  /**
+   * Kennung der Sprechanweisung, mit der der Clip erzeugt wurde
+   * (`clips/tts-instructions`) — fehlt bei Clips ohne Anweisung. Der
+   * Tonbericht vergleicht die Gruppen.
+   */
+  instructionsId?: string;
   generatedAt: number;
   /** Immer `true` — ein Sprachmodell, keine Muttersprachler-Aufnahme. */
   synthetic: true;
@@ -87,6 +93,7 @@ export type GeneratedClip = {
   voice: string;
   provider: ProviderId;
   durationMs?: number;
+  instructionsId?: string;
 };
 
 export const AUDIO_MIME: Record<AudioFormat, string> = {

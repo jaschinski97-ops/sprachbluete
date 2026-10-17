@@ -153,6 +153,7 @@ function clipTask(
         provider: clip.provider,
         model: clip.model,
         voice: clip.voice,
+        ...(clip.instructionsId ? { instructionsId: clip.instructionsId } : {}),
         generatedAt: now(),
         synthetic: true,
       };

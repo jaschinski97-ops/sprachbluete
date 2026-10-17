@@ -34,6 +34,9 @@ import {
   vocabSchluessel,
 } from '@/lib/content/vocab-schema';
 import { listeAusAntwort } from '@/lib/content/ki-json';
+import { bundledDocuments } from '@/lib/content/bundled';
+import { thaiDialogwoerterOhneEintrag } from '@/lib/content/dialogue-gaps';
+import { activeVocabulary } from '@/data/active-vocabulary';
 import type { VocabEntry } from '@/data/vocab-types';
 import { LEARNING_LANGUAGES } from '@/lib/languages/definitions';
 import { isLanguageCode, LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
@@ -751,8 +754,30 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           placeholder="z. B. Im Restaurant"
           placeholderTextColor={theme.textSecondary}
           editable={!running}
+          multiline
           style={[styles.input, { color: theme.text, borderColor: Colors.dark.backgroundSelected }]}
         />
+        {/* Testlauf 16.10.2026: Zahlen, บาท, ชื่อ, ประเทศ … fehlten im Grundstock.
+            Der Knopf schreibt die Lücken als Pflichtwörter ins Thema; erzeugt
+            wird erst mit dem normalen Start. */}
+        {sprache === 'th' && !alleSprachen ? (
+          <Pressable
+            accessibilityRole="button"
+            disabled={running}
+            onPress={() => {
+              const fehlend = thaiDialogwoerterOhneEintrag(bundledDocuments('situations'), activeVocabulary());
+              if (fehlend.length === 0) {
+                setMeldung('Alle Wörter der Thai-Dialoge haben einen Wortschatzeintrag.');
+                return;
+              }
+              setThema(`Pflichtwörter aus den Dialogen — für genau diese Wörter je einen Eintrag (Eigennamen weglassen): ${fehlend.join(', ')}`);
+              setPaketText(String(Math.min(fehlend.length, 100)));
+              setMeldung(`${fehlend.length} Dialogwörter ohne Eintrag als Thema übernommen. Liste vor dem Start prüfen.`);
+            }}
+            style={({ pressed }) => [styles.chip, pressed && styles.pressed]}>
+            <ThemedText type="small">Dialogwörter ohne Eintrag übernehmen</ThemedText>
+          </Pressable>
+        ) : null}
       </View>
 
       <View style={styles.field}>

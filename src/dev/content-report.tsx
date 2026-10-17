@@ -5,13 +5,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
-import { LANGUAGE_LABELS } from '@/lib/languages/registry';
 import { loadApiKey } from '@/lib/api-key';
 import { defaultVoiceFor, loadGeneratorSettings } from '@/lib/providers/settings';
 import { createClipGenerationClient } from '@/lib/clips/generator';
 import { runClipBatch } from '@/lib/clips/batch';
 import { clipIdFor } from '@/lib/clips/types';
-import { estimateRunCost } from './run-cost';
 import { deleteContent, exportDrafts, studioRequest, type ReportEntry, type StudioState } from './content-client';
 
 type GroupKey = 'failed' | 'unchecked' | 'passed';
@@ -282,8 +280,6 @@ function GroupBody({
 
 function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => void }) {
   const theme = useTheme();
-  // Aktionenzustand: 'idle' → 'confirm' (Kosten stehen da) → 'läuft' → fertig.
-  const [phase, setPhase] = useState<'idle' | 'confirm'>('idle');
   const [busy, setBusy] = useState<'regenerate' | 'delete' | null>(null);
   const [message, setMessage] = useState('');
 
@@ -312,7 +308,11 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
     }
   }, [entry.kind, entry.id, onChanged]);
 
-  /** Neu erzeugen: derselbe Clip-Auftrag, neuer Lauf — erst nach Bestätigung. */
+  /**
+   * Neu erzeugen: derselbe Clip-Auftrag, neuer Lauf. Ohne Kosten-Rückfrage —
+   * es gibt bewusst keine Kostendialoge (Nutzerentscheidung, AGENTS.md); bis
+   * zum 17.10.2026 stand hier noch einer.
+   */
   const neuErzeugen = useCallback(async () => {
     if (entry.kind !== 'audio' || !entry.text || !entry.language) return;
     setBusy('regenerate');
@@ -351,14 +351,8 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
       setMessage(error instanceof Error ? error.message : String(error));
     } finally {
       setBusy(null);
-      setPhase('idle');
     }
   }, [entry, onChanged]);
-
-  const kosten =
-    entry.kind === 'audio' && entry.text
-      ? estimateRunCost('audio', 'chatgpt-helper', 'gpt-4o-mini-tts-2025-12-15', [{ text: entry.text }])
-      : null;
 
   if (entry.status === 'failed') {
     return (
@@ -375,9 +369,7 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
           </ThemedText>
         ) : null}
         <EntryActions
-          entry={entry} phase={phase} busy={busy} message={message} kosten={kosten}
-          theme={theme}
-          onConfirm={() => setPhase('confirm')} onCancel={() => setPhase('idle')}
+          entry={entry} busy={busy} message={message} theme={theme}
           onRegenerate={neuErzeugen} onDelete={loeschen}
         />
       </View>
@@ -396,9 +388,7 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
           {grund}
         </ThemedText>
         <EntryActions
-          entry={entry} phase={phase} busy={busy} message={message} kosten={kosten}
-          theme={theme}
-          onConfirm={() => setPhase('confirm')} onCancel={() => setPhase('idle')}
+          entry={entry} busy={busy} message={message} theme={theme}
           onRegenerate={neuErzeugen} onDelete={loeschen}
         />
       </View>
@@ -416,33 +406,19 @@ function EntryRow({ entry, onChanged }: { entry: ReportEntry; onChanged: () => v
   );
 }
 
-/**
- * Die zwei Aktionen unter ungeprüften und ausgeschiedenen Einträgen
- * (Phase 2, Schritt 1). „Neu erzeugen" ist kostenpflichtig — Menge,
- * Anbieter und Kostenschätzung stehen deshalb vor dem Ausführen da und
- * der erste Knopfdruck bestätigt nur; der zweite führt aus (Regel: kein
- * kostenpflichtiger Lauf ohne angezeigte Schätzung und Bestätigung).
- */
+/** Die zwei Aktionen unter ungeprüften und ausgeschiedenen Einträgen (Phase 2, Schritt 1). */
 function EntryActions({
   entry,
-  phase,
   busy,
   message,
-  kosten,
   theme,
-  onConfirm,
-  onCancel,
   onRegenerate,
   onDelete,
 }: {
   entry: ReportEntry;
-  phase: 'idle' | 'confirm';
   busy: 'regenerate' | 'delete' | null;
   message: string;
-  kosten: { count: number; usd: number | null; basis: string } | null;
   theme: ReturnType<typeof useTheme>;
-  onConfirm: () => void;
-  onCancel: () => void;
   onRegenerate: () => void;
   onDelete: () => void;
 }) {
@@ -451,50 +427,16 @@ function EntryActions({
     <View style={styles.actions}>
       <View style={styles.actionRow}>
         {kannNeu ? (
-          phase === 'idle' ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Neu erzeugen: ${entry.text ?? entry.id}`}
-              disabled={busy !== null}
-              onPress={onConfirm}
-              style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
-              <ThemedText type="smallBold" style={{ color: theme.accent }}>
-                ↻ Neu erzeugen
-              </ThemedText>
-            </Pressable>
-          ) : (
-            <View style={styles.confirmBox}>
-              <ThemedText selectable type="small" themeColor="textSecondary">
-                {kosten
-                  ? `1 Clip · Anbieter: lokaler Helper (OpenAI) · geschätzte Kosten ${kosten.usd === null ? 'ohne Tarif hinterlegt' : `≈ ${kosten.usd.toFixed(4)} $`}`
-                  : '1 Eintrag neu erzeugen'}
-                {' · '}
-                {kosten?.basis}
-              </ThemedText>
-              <View style={styles.actionRow}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Kosten bestätigen und neu erzeugen"
-                  disabled={busy !== null}
-                  onPress={onRegenerate}
-                  style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
-                  <ThemedText type="smallBold" style={{ color: theme.accent }}>
-                    {busy === 'regenerate' ? 'läuft …' : 'Ja, neu erzeugen'}
-                  </ThemedText>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Abbrechen"
-                  disabled={busy !== null}
-                  onPress={onCancel}
-                  style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Abbrechen
-                  </ThemedText>
-                </Pressable>
-              </View>
-            </View>
-          )
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Neu erzeugen: ${entry.text ?? entry.id}`}
+            disabled={busy !== null}
+            onPress={onRegenerate}
+            style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
+            <ThemedText type="smallBold" style={{ color: theme.accent }}>
+              {busy === 'regenerate' ? 'läuft …' : '↻ Neu erzeugen'}
+            </ThemedText>
+          </Pressable>
         ) : null}
         <Pressable
           accessibilityRole="button"
@@ -592,9 +534,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'center',
     gap: Spacing.two,
-  },
-  confirmBox: {
-    gap: Spacing.one,
   },
   pressed: {
     opacity: 0.7,

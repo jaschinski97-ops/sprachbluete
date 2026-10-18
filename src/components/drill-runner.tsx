@@ -13,6 +13,7 @@ import { buildDrillSession, DrillSession, scoreAnswers } from '@/lib/drills/sess
 import { DRILL_META, DrillAnswer, DrillId, DrillQuestion } from '@/lib/drills/types';
 import { useLocale, type TranslationKey, type UiLanguage } from '@/lib/i18n';
 import { PairDirection, LanguageCode, anchorOf } from '@/lib/languages/types';
+import type { LearningStage } from '@/lib/learning-stages';
 import { DerivationStep } from '@/lib/reading/syllable';
 import { recordDrill } from '@/lib/review-log';
 
@@ -74,11 +75,14 @@ export function DrillRunner({
   drill,
   language,
   direction,
+  stage,
   onExit,
 }: {
   drill: DrillId;
   language: LanguageCode;
   direction?: PairDirection;
+  /** Wörter nur aus dieser Stufe (Stufenschalter im Lern-Reiter). */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const meta = DRILL_META[drill];
@@ -112,7 +116,7 @@ export function DrillRunner({
     setChosen(null);
     setAnswers([]);
     setHeardId(null);
-    buildDrillSession({ drill, language, direction, anchor, uiLanguage, size: drill === 'polite' ? 5 : undefined, ...(drill === 'tone' ? {
+    buildDrillSession({ drill, language, direction, anchor, uiLanguage, stage, size: drill === 'polite' ? 5 : undefined, ...(drill === 'tone' ? {
       isEligible: (entry: import('@/data/vocab-types').VocabEntry) => hasPronunciationClip({ text: entry.term, language: 'th', purpose: 'tone' }),
     } : {}) }).then((built) => {
       if (!cancelled) setSession(built);
@@ -124,7 +128,7 @@ export function DrillRunner({
     return () => {
       cancelled = true;
     };
-  }, [drill, language, direction, anchor, uiLanguage, round]);
+  }, [drill, language, direction, anchor, uiLanguage, stage, round]);
 
   // Jede HOERuebung braucht eine Stimme - seit Phase 18 sind das drei statt
   // einer. Gewarnt wird ausschliesslich bei einem eindeutigen "nein"; siehe

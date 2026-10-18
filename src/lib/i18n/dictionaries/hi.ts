@@ -650,6 +650,8 @@ const hi = {
   "studio.localText": "स्थानीय टेक्स्ट मॉडल · API कुंजी की जरूरत नहीं",
   "flashcard.ambiguous": "कई शब्द सही बैठते हैं – खोजा गया शब्द: {{start}}",
   "path.stageEmpty": "“{{stage}}” के लिए अभी कोई अध्याय नहीं है।",
+  "path.stageWords": "नए कार्ड और अभ्यास सिर्फ़ इसी स्तर से · {{count}} शब्द",
+  "path.stageNoWords": "इस स्तर के लिए अभी कोई शब्द नहीं है। जिन दोहरावों का समय हो गया है, वे कार्ड और आज के राउंड में बने रहते हैं।",
   "conversation.stageEmpty": "इस भाषा में “{{stage}}” के लिए अभी कोई बातचीत नहीं है।",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "भाषा पैक",

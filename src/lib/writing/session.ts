@@ -4,6 +4,7 @@ import { seededRandom, shuffled } from '../drills/random';
 import { retrievability } from '../fsrs/fsrs';
 import { FSRSCardState, Rating } from '../fsrs/types';
 import type { PairDirection } from '../languages/types';
+import { inStage, type LearningStage } from '../learning-stages';
 import { loadOrCreateCardState, rateCard } from '../repository';
 import { ensureCardStates } from '../review-session';
 import { DataStore, getStore } from '../storage';
@@ -57,6 +58,8 @@ export type WritingSessionOptions = {
   size?: number;
   seed?: number;
   entries?: VocabEntry[];
+  /** Ohne eigene Wortliste: nur Wörter dieser Stufe (18.10.2026). */
+  stage?: LearningStage;
 };
 
 function weakness(card: FSRSCardState | undefined, now: number): number {
@@ -73,7 +76,7 @@ export async function buildWritingSession(
 
   const db = options.store ?? (await getStore());
   const { entries, cards } = await ensureCardStates(direction, db, now);
-  const pool = options.entries ?? entries;
+  const pool = options.entries ?? (options.stage ? inStage(entries, options.stage) : entries);
 
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
   const candidates = writingCandidates(direction, pool);

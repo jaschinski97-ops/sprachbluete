@@ -650,6 +650,8 @@ const te = {
   "studio.localText": "స్థానిక టెక్స్ట్ మోడల్ · API కీ అవసరం లేదు",
   "flashcard.ambiguous": "అనేక పదాలు సరిపోతాయి – కావలసిన పదం: {{start}}",
   "path.stageEmpty": "“{{stage}}” కోసం ఇంకా అధ్యాయాలు లేవు.",
+  "path.stageWords": "కొత్త కార్డులు, అభ్యాసాలు ఈ స్థాయి నుంచి మాత్రమే · {{count, plural, one {# పదం} other {# పదాలు}}}",
+  "path.stageNoWords": "ఈ స్థాయికి ఇంకా పదాలు లేవు. సమయం వచ్చిన పునశ్చరణలు కార్డులు, ఈరోజు రౌండ్‌లో కొనసాగుతాయి.",
   "conversation.stageEmpty": "ఈ భాషలో “{{stage}}” కోసం ఇంకా సంభాషణలు లేవు.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "భాషా ప్యాక్‌లు",

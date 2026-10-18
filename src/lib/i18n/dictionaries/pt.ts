@@ -650,6 +650,8 @@ const pt = {
   "studio.localText": "Modelo de texto local · sem chave API",
   "flashcard.ambiguous": "Várias palavras servem – procuramos: {{start}}",
   "path.stageEmpty": "Ainda não há capítulos para “{{stage}}”.",
+  "path.stageWords": "Novos cartões e exercícios só deste nível · {{count, plural, one {# palavra} other {# palavras}}}",
+  "path.stageNoWords": "Ainda não há palavras para este nível. As revisões pendentes continuam em Flashcards e na Rodada de hoje.",
   "conversation.stageEmpty": "Ainda não há conversas de “{{stage}}” neste idioma.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Pacotes de idioma",

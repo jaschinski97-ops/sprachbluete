@@ -11,6 +11,7 @@ import type { VocabEntry } from '@/data/vocab-types';
 import { useMicrophoneCapture } from '@/hooks/use-microphone-capture';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus, stopPronunciation } from '@/lib/audio';
 import { useLocale, type UiLanguage } from '@/lib/i18n';
+import type { LearningStage } from '@/lib/learning-stages';
 import type { CapturedPcm } from '@/lib/speaking';
 import { MIC_ERROR_KEYS } from '@/lib/speaking/mic-error-keys';
 import { measureSentence, preparationRemaining, sentenceAnswers, sentenceSession,
@@ -29,15 +30,16 @@ export function SentenceAction({ label, onPress, disabled = false }: {
 }
 
 
-export function SentenceRunner({ mode, language, anchor = 'de', words, situation, onExit }: {
-  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; situation?: ConversationSituation; onExit: () => void;
+export function SentenceRunner({ mode, language, anchor = 'de', words, situation, learningStage, onExit }: {
+  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; situation?: ConversationSituation;
+  /** Ohne Kapitel: Stoff nur aus dieser Stufe. */ learningStage?: LearningStage; onExit: () => void;
 }) {
   const { t, uiLanguage, languageName } = useLocale();
   // Die Aussaat ist ein eigener Zustand: „Neue Runde“ würfelt sie neu, damit
   // nicht dieselbe Satzfolge und Antwortmischung wie in der Runde davor
   // herauskommt.
   const [seed, setSeed] = useState(() => Date.now());
-  const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor) : sentenceSession(language, seed, anchor, words), [language, seed, anchor, words, situation]);
+  const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor) : sentenceSession(language, seed, anchor, words, learningStage), [language, seed, anchor, words, situation, learningStage]);
   const [index, setIndex] = useState(0);
   const [round, setRound] = useState(0);
   const [preparedAt, setPreparedAt] = useState(() => Date.now());

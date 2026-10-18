@@ -2,6 +2,7 @@ import { translate, type UiLanguage } from '@/lib/i18n';
 import { bridgeText } from '@/lib/languages/bridge';
 import { spokenText, situationTranslation, type ConversationSituation } from '@/lib/conversation/types';
 import { LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
+import { inStage, type LearningStage } from '@/lib/learning-stages';
 
 import { activeVocabulary } from './active-vocabulary';
 import type { VocabEntry } from './vocab-types';
@@ -150,20 +151,23 @@ export function satzaufgabenFuer(language: SatzSprache, anchor: UiLanguage = 'de
  * Anfängerstufe Sätze wie „Besucher müssen am Wachhäuschen ihren Ausweis
  * hinterlegen“. Die ersten Wörter in Erzeugungsreihenfolge sind die häufigen
  * (dieselbe Ordnung wie neue Karteikarten in `review-session.ts`).
+ *
+ * SEIT 18.10.2026 JE STUFE: Mit gewählter Stufe zählen nur deren Wörter —
+ * die häufigsten 400 der Stufe, nicht die ersten 400 aller Stufen.
  */
 export const GRUNDWORTSCHATZ_GROESSE = 400;
 
-/** Die häufigsten Wörter einer Lernsprache, in Erzeugungsreihenfolge. */
-export function grundwortschatz(language: SatzSprache): VocabEntry[] {
-  return activeVocabulary()
+/** Die häufigsten Wörter einer Lernsprache (optional einer Stufe), in Erzeugungsreihenfolge. */
+export function grundwortschatz(language: SatzSprache, stage?: LearningStage): VocabEntry[] {
+  return inStage(activeVocabulary(), stage)
     .filter((word) => String(word.language) === language)
     .sort((a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id))
     .slice(0, GRUNDWORTSCHATZ_GROESSE);
 }
 
 /** Satzaufgaben aus dem Grundwortschatz — für Übungen, die ohne Kapitel starten. */
-export function grundsaetzeFuer(language: SatzSprache, anchor: UiLanguage = 'de'): SentenceTask[] {
-  return buildSentenceTasks(grundwortschatz(language), anchor);
+export function grundsaetzeFuer(language: SatzSprache, anchor: UiLanguage = 'de', stage?: LearningStage): SentenceTask[] {
+  return buildSentenceTasks(grundwortschatz(language, stage), anchor);
 }
 
 /** Die Satzaufgaben je Lernsprache (lazy — der Katalog kann sich zur Laufzeit ändern). */

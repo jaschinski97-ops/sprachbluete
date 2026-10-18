@@ -650,6 +650,8 @@ const mr = {
   "studio.localText": "स्थानिक मजकूर मॉडेल · API की आवश्यक नाही",
   "flashcard.ambiguous": "अनेक शब्द जुळतात – हवा असलेला शब्द: {{start}}",
   "path.stageEmpty": "“{{stage}}” साठी अजून कोणतेही प्रकरण नाही.",
+  "path.stageWords": "नवीन कार्ड आणि सराव फक्त याच पातळीतून · {{count}} शब्द",
+  "path.stageNoWords": "या पातळीसाठी अजून कोणतेही शब्द नाहीत. वेळ झालेल्या उजळण्या कार्ड आणि आजच्या फेरीत राहतात.",
   "conversation.stageEmpty": "या भाषेत “{{stage}}” साठी अजून संवाद नाहीत.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "भाषा पॅक",

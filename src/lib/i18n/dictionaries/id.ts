@@ -650,6 +650,8 @@ const id = {
   "studio.localText": "Model teks lokal · tanpa kunci API",
   "flashcard.ambiguous": "Beberapa kata cocok – yang dicari: {{start}}",
   "path.stageEmpty": "Belum ada bab untuk “{{stage}}”.",
+  "path.stageWords": "Kartu baru dan latihan hanya dari tingkat ini · {{count}} kata",
+  "path.stageNoWords": "Belum ada kata untuk tingkat ini. Ulangan yang jatuh tempo tetap ada di Kartu dan Sesi hari ini.",
   "conversation.stageEmpty": "Belum ada percakapan “{{stage}}” dalam bahasa ini.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Paket bahasa",

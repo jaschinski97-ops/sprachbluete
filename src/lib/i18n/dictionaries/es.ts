@@ -743,6 +743,8 @@ const es: Partial<Record<TranslationKey, string>> = {
   "studio.localText": "Modelo de texto local · sin clave API",
   "flashcard.ambiguous": "Varias palabras encajan – buscamos: {{start}}",
   "path.stageEmpty": "Todavía no hay capítulos para «{{stage}}».",
+  "path.stageWords": "Tarjetas nuevas y ejercicios solo de este nivel · {{count, plural, one {# vocablo} other {# vocablos}}}",
+  "path.stageNoWords": "Todavía no hay palabras para este nivel. Los repasos pendientes siguen en Tarjetas y en la Ronda de hoy.",
   "conversation.stageEmpty": "Todavía no hay conversaciones de «{{stage}}» en este idioma.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Paquetes de idioma",

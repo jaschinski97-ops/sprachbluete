@@ -650,6 +650,8 @@ const zh = {
   "studio.localText": "本地文本模型 · 无需API密钥",
   "flashcard.ambiguous": "有多个词符合 – 要找的词以 {{start}} 开头",
   "path.stageEmpty": "「{{stage}}」暂时还没有章节。",
+  "path.stageWords": "新卡片和练习只来自这个阶段 · {{count}} 个单词",
+  "path.stageNoWords": "这个阶段还没有单词。到期的复习仍在卡片和今日一轮中。",
   "conversation.stageEmpty": "此语言暂时还没有「{{stage}}」对话。",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "语言包",

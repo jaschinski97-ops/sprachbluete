@@ -14,6 +14,7 @@ import { ThemedText, displayLineHeight } from './themed-text';
 import { ThemedView } from './themed-view';
 import { TranslationKey, useLocale } from '@/lib/i18n';
 import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
+import type { LearningStage } from '@/lib/learning-stages';
 import {
   buildWordSpeakingSession,
   type WordSpeakingTask,
@@ -33,9 +34,12 @@ import {
  */
 export function WordSpeakingRunner({
   direction,
+  stage,
   onExit,
 }: {
   direction: PairDirection;
+  /** Wörter nur aus dieser Stufe. */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const { t, languageName } = useLocale();
@@ -55,7 +59,7 @@ export function WordSpeakingRunner({
     setEmpty(false);
     setLoadError(null);
     setIndex(0);
-    buildWordSpeakingSession({ direction })
+    buildWordSpeakingSession({ direction, stage })
       .then((session) => {
         if (generation.current !== turn) return;
         if (session.tasks.length === 0) setEmpty(true);
@@ -65,7 +69,7 @@ export function WordSpeakingRunner({
         if (generation.current !== turn) return;
         setLoadError(e instanceof Error ? e.message : String(e));
       });
-  }, [direction]);
+  }, [direction, stage]);
 
   useEffect(() => {
     restart();

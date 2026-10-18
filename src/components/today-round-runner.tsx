@@ -16,6 +16,7 @@ import {
 } from '@/lib/audio';
 import { dictationConfigFor } from '@/data/dictation-config';
 import { dictationTasksFor } from '@/lib/dictation/tasks';
+import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
 import { buildDrillSession } from '@/lib/drills/session';
 import { seededRandom, shuffled } from '@/lib/drills/random';
@@ -24,6 +25,7 @@ import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale, type UiLanguage } from '@/lib/i18n';
 import { anchorOf, targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import { hoerDrillFuer } from '@/lib/languages/definitions';
+import { inStage, type LearningStage } from '@/lib/learning-stages';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
 import {
@@ -111,9 +113,12 @@ function satzAufgaben(tasks: SentenceTask[], anzahl: number, seed: number): Satz
 
 export function TodayRoundRunner({
   direction,
+  stage,
   onExit,
 }: {
   direction: PairDirection;
+  /** Stufe aus dem Lern-Reiter: neue Karten und Mischstoff nur aus ihr. */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const { t } = useLocale();
@@ -128,7 +133,7 @@ export function TodayRoundRunner({
 
   useEffect(() => {
     let cancelled = false;
-    buildTodayRound(direction)
+    buildTodayRound(direction, undefined, undefined, stage)
       .then((neu) => {
         if (!cancelled) setRunde(neu);
       })
@@ -139,17 +144,17 @@ export function TodayRoundRunner({
       cancelled = true;
       void stopPronunciation();
     };
-  }, [direction]);
+  }, [direction, stage]);
 
   const restart = useCallback(() => {
     setRunde(null);
     setErledigt(0);
     setUebersprungen([]);
     setLoadError(null);
-    buildTodayRound(direction)
+    buildTodayRound(direction, undefined, undefined, stage)
       .then(setRunde)
       .catch((e) => setLoadError(e instanceof Error ? e.message : String(e)));
-  }, [direction]);
+  }, [direction, stage]);
 
   // Die aktuelle Stelle im Strang: Segmente abarbeiten, bis der Zeiger passt.
   const { segment, position, segIndex } = (() => {
@@ -167,6 +172,13 @@ export function TodayRoundRunner({
       .map((item) => item.entry.id) ?? []),
     [runde]
   );
+  // Die Mischbereiche üben die Wörter der Kartenrunde (fällige Wiederholungen
+  // jeder Stufe eingeschlossen). Ohne Karten üben sie den Stoff der Stufe.
+  const stageWordIds = useMemo(
+    () => stage ? new Set(inStage(activeVocabularyFor(sprache), stage).map((entry) => entry.id)) : undefined,
+    [sprache, stage]
+  );
+  const mixWordIds = roundWordIds.size > 0 ? roundWordIds : stageWordIds;
 
   if (loadError) {
     return (
@@ -265,7 +277,7 @@ export function TodayRoundRunner({
         <HoerenSegment
           sprache={sprache}
           direction={direction}
-          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
+          onlyVocabIds={mixWordIds}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
@@ -274,7 +286,7 @@ export function TodayRoundRunner({
         <SatzSegment
           sprache={sprache}
           anchor={anchorOf(direction)}
-          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
+          onlyVocabIds={mixWordIds}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
@@ -283,7 +295,7 @@ export function TodayRoundRunner({
         <DiktatSegment
           sprache={sprache}
           direction={direction}
-          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
+          onlyVocabIds={mixWordIds}
           anzahl={segment.items}
           position={position}
           onAnswered={() => setErledigt((value) => value + 1)}
@@ -293,7 +305,7 @@ export function TodayRoundRunner({
           key={`shadowing:${position}`}
           sprache={sprache}
           anchor={anchorOf(direction)}
-          onlyVocabIds={roundWordIds.size > 0 ? roundWordIds : undefined}
+          onlyVocabIds={mixWordIds}
           anzahl={segment.items}
           position={position}
           onDone={() => setErledigt((value) => value + 1)}

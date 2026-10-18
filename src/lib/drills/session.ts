@@ -4,6 +4,7 @@ import { retrievability } from '../fsrs/fsrs';
 import { FSRSCardState } from '../fsrs/types';
 import { anchorOf, LanguageCode, PairDirection } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
+import { stageOfEntry, type LearningStage } from '../learning-stages';
 import { ensureCardStates } from '../review-session';
 import { DataStore, getStore } from './../storage';
 
@@ -93,6 +94,8 @@ export type DrillSessionOptions = {
   isEligible?: (entry: VocabEntry) => boolean | Promise<boolean>;
   /** Optionally restrict a mixed round to the words it just reviewed. */
   onlyVocabIds?: ReadonlySet<string>;
+  /** Nur Wörter dieser Stufe (Stufenschalter im Lern-Reiter, 18.10.2026). */
+  stage?: LearningStage;
 };
 
 export type DrillSession = {
@@ -218,6 +221,7 @@ export async function buildDrillSession(options: DrillSessionOptions): Promise<D
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
   const potential = entries.filter((entry) =>
     (!options.onlyVocabIds || options.onlyVocabIds.has(entry.id)) &&
+    (!options.stage || stageOfEntry(entry) === options.stage) &&
     canBuild(drill, entry) &&
     (drill !== 'deutschLesen' || String(entry.language) !== 'de' || Boolean(entry.translations?.[direction.split('_to_')[0] as UiLanguage]))
   );

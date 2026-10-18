@@ -650,6 +650,8 @@ const ko = {
   "studio.localText": "로컬 텍스트 모델 · API 키 불필요",
   "flashcard.ambiguous": "여러 단어가 맞습니다 – 찾는 단어: {{start}}",
   "path.stageEmpty": "‘{{stage}}’ 단계의 장이 아직 없습니다.",
+  "path.stageWords": "새 카드와 연습은 이 단계에서만 · {{count}} 단어",
+  "path.stageNoWords": "이 단계의 단어가 아직 없습니다. 복습할 때가 된 카드는 플래시카드와 오늘의 라운드에 계속 나옵니다.",
   "conversation.stageEmpty": "이 언어에는 아직 ‘{{stage}}’ 대화가 없습니다.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "언어 팩",

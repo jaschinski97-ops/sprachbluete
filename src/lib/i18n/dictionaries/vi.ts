@@ -650,6 +650,8 @@ const vi = {
   "studio.localText": "Mô hình văn bản cục bộ · không cần khóa API",
   "flashcard.ambiguous": "Có nhiều từ phù hợp – từ cần tìm: {{start}}",
   "path.stageEmpty": "Chưa có chương nào cho “{{stage}}”.",
+  "path.stageWords": "Thẻ mới và bài tập chỉ lấy từ cấp độ này · {{count}} từ",
+  "path.stageNoWords": "Cấp độ này chưa có từ nào. Các thẻ đến hạn ôn vẫn có trong Thẻ học và Vòng hôm nay.",
   "conversation.stageEmpty": "Chưa có hội thoại “{{stage}}” cho ngôn ngữ này.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Gói ngôn ngữ",

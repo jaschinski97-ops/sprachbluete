@@ -35,6 +35,7 @@ import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
 import { resolveClipUri } from '@/lib/clips/lookup';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
+import type { LearningStage } from '@/lib/learning-stages';
 import { dictationPromptKey, learningLanguage } from '@/lib/languages/definitions';
 
 import { ratingExplanation } from '@/lib/writing';
@@ -81,10 +82,13 @@ const RATING_KEYS: Record<Rating, TranslationKey> = {
 export function DictationRunner({
   language,
   direction,
+  stage,
   onExit,
 }: {
   language: SatzSprache;
   direction: PairDirection;
+  /** Sätze nur aus dem Grundwortschatz dieser Stufe. */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const theme = useTheme();
@@ -96,7 +100,7 @@ export function DictationRunner({
   // Übungen, damit „Neue Runde" nicht dieselbe Folge zeigt. Die Zusammen-
   // stellung ist reine Datenrechnung (kein Store), deshalb synchron abgeleitet.
   const [seed, setSeed] = useState(() => Date.now());
-  const session = useMemo(() => buildDictationSession(language, direction, seed), [language, direction, seed]);
+  const session = useMemo(() => buildDictationSession(language, direction, seed, undefined, stage), [language, direction, seed, stage]);
 
   const [index, setIndex] = useState(0);
   const [draft, setDraft] = useState('');

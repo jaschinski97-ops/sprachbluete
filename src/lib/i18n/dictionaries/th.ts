@@ -725,6 +725,8 @@ const th: Partial<Record<TranslationKey, string>> = {
   "studio.localText": "โมเดลข้อความในเครื่อง · ไม่ต้องใช้คีย์ API",
   "flashcard.ambiguous": "มีหลายคำที่ตรงความหมาย – คำที่ต้องการขึ้นต้นด้วย {{start}}",
   "path.stageEmpty": "ยังไม่มีบทเรียนสำหรับระดับ „{{stage}}“",
+  "path.stageWords": "บัตรคำใหม่และแบบฝึกหัดมาจากระดับนี้เท่านั้น · คำศัพท์ {{count}} คำ",
+  "path.stageNoWords": "ระดับนี้ยังไม่มีคำศัพท์ คำที่ถึงเวลาทบทวนยังอยู่ในบัตรคำและรอบวันนี้",
   "conversation.stageEmpty": "ยังไม่มีบทสนทนาระดับ „{{stage}}“ ในภาษานี้",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "แพ็กภาษา",

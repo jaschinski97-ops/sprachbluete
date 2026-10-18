@@ -23,6 +23,7 @@ import {
 } from '@/lib/speaking';
 import { bridgeText } from '@/lib/languages/bridge';
 import { anchorOf, type PairDirection } from '@/lib/languages/types';
+import type { LearningStage } from '@/lib/learning-stages';
 import { MIC_ERROR_KEYS } from '@/lib/speaking/mic-error-keys';
 import { buildSpeakingSession, SpeakingSession } from '@/lib/speaking/session';
 
@@ -100,7 +101,12 @@ type AttemptResult = {
  * den verifizierten Silbendaten; `playPronunciation` ist nur das sichtbar so
  * bezeichnete Hörbeispiel und wird nie an die Auswertung übergeben (AE-32).
  */
-export function SpeakingRunner({ direction, onExit }: { direction: PairDirection; onExit: () => void }) {
+export function SpeakingRunner({ direction, stage, onExit }: {
+  direction: PairDirection;
+  /** Wörter nur aus dieser Stufe. */
+  stage?: LearningStage;
+  onExit: () => void;
+}) {
   const { t } = useLocale();
   const [session, setSession] = useState<SpeakingSession | null>(null);
   const [buildFailed, setBuildFailed] = useState<string | null>(null);
@@ -131,7 +137,7 @@ export function SpeakingRunner({ direction, onExit }: { direction: PairDirection
     setAttempts(0);
     setResult(null);
     capture.cancel();
-    buildSpeakingSession()
+    buildSpeakingSession({ stage })
       .then((built) => {
         if (!cancelled) setSession(built);
       })
@@ -146,9 +152,9 @@ export function SpeakingRunner({ direction, onExit }: { direction: PairDirection
       void stopPronunciation();
     };
     // Der Capture-Controller aendert seine Objektidentitaet mit seinem Status;
-    // ein Neustart der Sitzung soll nur von `round` abhaengen.
+    // ein Neustart der Sitzung soll nur von `round` (und der Stufe) abhaengen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round]);
+  }, [round, stage]);
 
   const prompt = session?.prompts[index] ?? null;
 

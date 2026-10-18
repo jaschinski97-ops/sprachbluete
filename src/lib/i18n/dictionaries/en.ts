@@ -737,6 +737,8 @@ const en: Partial<Record<TranslationKey, string>> = {
   "studio.localText": "Local text model · no API key",
   "flashcard.ambiguous": "Several words fit – looking for: {{start}}",
   "path.stageEmpty": "There are no chapters for “{{stage}}” yet.",
+  "path.stageWords": "New cards and exercises from this stage only · {{count, plural, one {# word} other {# words}}}",
+  "path.stageNoWords": "There are no words for this stage yet. Due reviews stay in Flashcards and Today’s round.",
   "conversation.stageEmpty": "There are no conversations for “{{stage}}” in this language yet.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Language packs",

@@ -650,6 +650,8 @@ const tr = {
   "studio.localText": "Yerel metin modeli · API anahtarı gerekmez",
   "flashcard.ambiguous": "Birden fazla kelime uyuyor – aranan: {{start}}",
   "path.stageEmpty": "“{{stage}}” için henüz bölüm yok.",
+  "path.stageWords": "Yeni kartlar ve alıştırmalar yalnızca bu seviyeden · {{count}} kelime",
+  "path.stageNoWords": "Bu seviye için henüz kelime yok. Zamanı gelen tekrarlar Kartlar'da ve Bugünün turunda kalır.",
   "conversation.stageEmpty": "Bu dilde “{{stage}}” için henüz konuşma yok.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Dil paketleri",

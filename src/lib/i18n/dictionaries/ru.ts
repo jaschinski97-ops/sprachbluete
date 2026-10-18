@@ -650,6 +650,8 @@ const ru = {
   "studio.localText": "Локальная текстовая модель · без ключа API",
   "flashcard.ambiguous": "Подходят несколько слов – искомое: {{start}}",
   "path.stageEmpty": "Для уровня «{{stage}}» пока нет глав.",
+  "path.stageWords": "Новые карточки и упражнения только с этого уровня · {{count, plural, one {# слово} few {# слова} many {# слов} other {# слова}}}",
+  "path.stageNoWords": "Для этого уровня пока нет слов. Повторения по расписанию остаются в «Карточках» и в «Сегодняшнем раунде».",
   "conversation.stageEmpty": "На этом языке пока нет диалогов уровня «{{stage}}».",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Языковые пакеты",

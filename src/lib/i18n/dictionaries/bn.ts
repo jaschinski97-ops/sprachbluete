@@ -650,6 +650,8 @@ const bn = {
   "studio.localText": "স্থানীয় টেক্সট মডেল · API কী লাগে না",
   "flashcard.ambiguous": "একাধিক শব্দ মেলে – খোঁজা শব্দটি: {{start}}",
   "path.stageEmpty": "“{{stage}}”-এর জন্য এখনও কোনো অধ্যায় নেই।",
+  "path.stageWords": "নতুন কার্ড ও অনুশীলন শুধু এই স্তর থেকে · {{count}} শব্দ",
+  "path.stageNoWords": "এই স্তরের জন্য এখনও কোনো শব্দ নেই। যেসব পুনরাবৃত্তির সময় হয়েছে, সেগুলো কার্ড ও আজকের রাউন্ডে থাকবে।",
   "conversation.stageEmpty": "এই ভাষায় “{{stage}}”-এর জন্য এখনও কোনো কথোপকথন নেই।",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "ভাষা প্যাক",

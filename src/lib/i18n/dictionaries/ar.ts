@@ -650,6 +650,8 @@ const ar = {
   "studio.localText": "نموذج نص محلي · دون مفتاح API",
   "flashcard.ambiguous": "تناسب عدة كلمات – المطلوبة تبدأ بـ: {{start}}",
   "path.stageEmpty": "لا توجد فصول لمستوى «{{stage}}» بعد.",
+  "path.stageWords": "بطاقات جديدة وتمارين من هذا المستوى فقط · {{count, plural, one {كلمة واحدة} two {كلمتان} few {# كلمات} many {# كلمة} other {# كلمة}}}",
+  "path.stageNoWords": "لا توجد كلمات لهذا المستوى بعد. تبقى المراجعات المستحقة في البطاقات وفي جولة اليوم.",
   "conversation.stageEmpty": "لا توجد محادثات لمستوى «{{stage}}» بهذه اللغة بعد.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "حزم اللغات",

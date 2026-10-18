@@ -53,6 +53,16 @@ const SPRACHEN: { code: VocabSprache; label: string }[] = LANGUAGE_CODES.map((co
 
 const ZIEL_PRESETS = [250, 500, 1000, 2000];
 
+/**
+ * Das Wortschatz-Ziel gilt je Sprache UND Stufe (18.10.2026): Gezählt wurde
+ * schon je Stufe, gespeichert aber nur je Sprache — 2.000 Anfänger-Wörter
+ * hätten das Profi-Ziel als erreicht gemeldet. Anfänger behält den alten
+ * Schlüssel, damit gesetzte Ziele weitergelten.
+ */
+export function zielSchluessel(code: VocabSprache, stage: LearningStage): string {
+  return stage === 'beginner' ? `vocabZiel-${code}` : `vocabZiel-${code}-${stage}`;
+}
+
 type LaufErgebnis = {
   erzeugt: number;
   kreuzGeprueft: number;
@@ -191,6 +201,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   const [sprache, setSprache] = useState<VocabSprache>('th');
   const [alleSprachen, setAlleSprachen] = useState(false);
   const [ziele, setZiele] = useState<Partial<Record<string, number>>>({});
+  /** Für welche Stufe `ziele` geladen ist — vorher startet kein Lauf. */
+  const [zieleStufe, setZieleStufe] = useState<LearningStage | null>(null);
   const [bestand, setBestand] = useState<Partial<Record<string, number>> | null>(null);
   const [paketText, setPaketText] = useState('50');
   const [thema, setThema] = useState('');
@@ -229,9 +241,15 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   }, [stage]);
 
   useEffect(() => {
+    let aktuell = true;
     void Promise.resolve().then(ladeBestand).catch(error => setMeldung(error instanceof Error ? error.message : String(error)));
-    void Promise.all(SPRACHEN.map(async ({ code }) => [code, await readMeta(`vocabZiel-${code}`, 250)] as const)).then(values => setZiele(Object.fromEntries(values)));
-  }, [ladeBestand]);
+    void Promise.all(SPRACHEN.map(async ({ code }) => [code, await readMeta(zielSchluessel(code, stage), 250)] as const)).then(values => {
+      if (!aktuell) return;
+      setZiele(Object.fromEntries(values));
+      setZieleStufe(stage);
+    });
+    return () => { aktuell = false; };
+  }, [ladeBestand, stage]);
 
   const ziel = ziele[sprache] ?? 250;
   const vorhanden = bestand?.[sprache] ?? 0;
@@ -248,7 +266,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
 
   const zielSetzenFuer = (code: VocabSprache, wert: number) => {
     setZiele((alt) => ({ ...alt, [code]: wert }));
-    void writeMeta(`vocabZiel-${code}`, wert).catch(() => {});
+    void writeMeta(zielSchluessel(code, stage), wert).catch(() => {});
   };
   const zielSetzen = (wert: number) => zielSetzenFuer(sprache, wert);
 
@@ -631,8 +649,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
 
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
-      <LearningStagePicker value={stage} onChange={value => { setBestand(null); setStage(value); }} disabled={running || blocked} />
-      <ThemedText type="smallBold">Wortschatz — {t(STAGE_KEYS[stage])} · Zielgröße je Sprache</ThemedText>
+      <LearningStagePicker value={stage} onChange={value => { setBestand(null); setZiele({}); setZieleStufe(null); setStage(value); }} disabled={running || blocked} />
+      <ThemedText type="smallBold">Wortschatz — {t(STAGE_KEYS[stage])} · Zielgröße je Sprache und Stufe</ThemedText>
 
       <View style={styles.zeile}>
         {SPRACHEN.map(({ code, label }) => (
@@ -853,7 +871,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       ) : null}
 
       <View style={styles.zeile}>
-        <Button label={running ? 'Wörter werden erzeugt …' : 'Fehlende Wörter erzeugen …'} onPress={erzeugen} disabled={running || blocked || gesamtMenge === 0} />
+        <Button label={running ? 'Wörter werden erzeugt …' : 'Fehlende Wörter erzeugen …'} onPress={erzeugen} disabled={running || blocked || gesamtMenge === 0 || zieleStufe !== stage} />
       </View>
       <ThemedText type="small" themeColor="textSecondary">
         {alleSprachen

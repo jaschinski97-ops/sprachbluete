@@ -6,6 +6,7 @@ import { retrievability } from '../fsrs/fsrs';
 import { type FSRSCardState } from '../fsrs/types';
 import { type PairDirection, targetLanguageOf, anchorOf } from '../languages/types';
 import { bridgeText } from '../languages/bridge';
+import { inStage, type LearningStage } from '../learning-stages';
 import { ensureCardStates } from '../review-session';
 import { seededRandom, shuffled } from '../drills/random';
 import { type DataStore } from '../storage';
@@ -82,11 +83,14 @@ export async function produktionsAufgaben(options: {
   anzahl?: number;
   store?: DataStore;
   seed?: number;
+  /** Nur Wörter dieser Stufe (Stufenschalter im Lern-Reiter, 18.10.2026). */
+  stage?: LearningStage;
 }): Promise<ProduktionsAufgabe[]> {
   const anzahl = options.anzahl ?? PRODUKTION_ANZAHL;
   const random = seededRandom(options.seed ?? Date.now());
   const sprache = targetLanguageOf(options.direction);
-  const { entries, cards } = await ensureCardStates(options.direction, options.store, Date.now());
+  const { entries: alle, cards } = await ensureCardStates(options.direction, options.store, Date.now());
+  const entries = inStage(alle, options.stage);
 
   // Sätze zuerst — wo geprüfte Sätze liegen, werden sie gebildet. Der
   // Satzbestand trägt seine Bedeutungen NUR auf Deutsch (`exampleGerman`) —

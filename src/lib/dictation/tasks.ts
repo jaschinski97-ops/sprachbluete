@@ -5,6 +5,7 @@ import { grundsaetzeFuer, satzaufgabenFuer, sentenceFootnote, type SatzSprache }
 import { seededRandom, shuffled } from '@/lib/drills/random';
 
 import { anchorOf, type PairDirection } from '@/lib/languages/types';
+import type { LearningStage } from '@/lib/learning-stages';
 
 /**
  * Diktat-Aufgaben aus den Satz-Daten der Zielsprache — NICHT aus einem
@@ -49,7 +50,7 @@ export function dictationTasksFor(
    * Nur Sätze des Grundwortschatzes — für die eigenständige Übung (16.10.2026).
    * Die Heutige Runde filtert selbst auf ihre Karten und braucht alle Sätze.
    */
-  options: { grundwortschatz?: boolean } = {}
+  options: { grundwortschatz?: boolean; stage?: LearningStage } = {}
 ): DictationTask[] {
   // Der Konfigurationseintrag ist die Fachlichkeit-Prüfung: Eine Sprache
   // ohne Diktat-Regeln kann keine Diktate urteilen.
@@ -58,7 +59,7 @@ export function dictationTasksFor(
   // ZIELsprache — der Anker ändert hier nur, welche Aufgabenbasis der
   // Registry-Cache liefert (de-Brücke: Bedeutungsstoff, sonst derselbe).
   const anchor = anchorOf(direction);
-  return (options.grundwortschatz ? grundsaetzeFuer(language, anchor) : satzaufgabenFuer(language, anchor))
+  return (options.grundwortschatz ? grundsaetzeFuer(language, anchor, options.stage) : satzaufgabenFuer(language, anchor))
     .filter((task) => task.text.trim().length > 0)
     .map((task) => ({
       id: `dictation-${task.vocabId}`,
@@ -83,9 +84,11 @@ export function buildDictationSession(
   language: SatzSprache,
   direction: PairDirection,
   seed: number = Date.now(),
-  size: number = DICTATION_SESSION_SIZE
+  size: number = DICTATION_SESSION_SIZE,
+  /** Nur Sätze aus dem Grundwortschatz dieser Stufe (18.10.2026). */
+  stage?: LearningStage
 ): DictationTask[] {
-  return shuffled(dictationTasksFor(language, direction, { grundwortschatz: true }), seededRandom(seed)).slice(0, size);
+  return shuffled(dictationTasksFor(language, direction, { grundwortschatz: true, stage }), seededRandom(seed)).slice(0, size);
 }
 
 /** Der ehrliche Fußtext je Sprache — geerbt von den Satzübungen. */

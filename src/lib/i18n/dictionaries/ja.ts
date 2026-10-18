@@ -650,6 +650,8 @@ const ja = {
   "studio.localText": "ローカルテキストモデル · APIキー不要",
   "flashcard.ambiguous": "複数の語が当てはまります – 探している語：{{start}}",
   "path.stageEmpty": "「{{stage}}」の章はまだありません。",
+  "path.stageWords": "新しいカードと練習はこのレベルからのみ · {{count}} 語",
+  "path.stageNoWords": "このレベルの単語はまだありません。復習時期が来たカードは、フラッシュカードと今日のラウンドに引き続き出ます。",
   "conversation.stageEmpty": "この言語には「{{stage}}」の会話がまだありません。",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "言語パック",

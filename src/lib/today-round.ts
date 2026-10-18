@@ -4,6 +4,7 @@ import { dictationTasksFor } from './dictation/tasks';
 import { hoerDrillFuer } from './languages/definitions';
 import { anchorOf, type PairDirection } from './languages/types';
 import { targetLanguageOf } from './languages/types';
+import type { LearningStage } from './learning-stages';
 import { loadReviewLog, type ReviewDayLog } from './review-log';
 import { buildReviewQueue, type ReviewItem } from './review-session';
 import { type DataStore } from './storage';
@@ -213,9 +214,11 @@ export type TodayRound = {
 export async function buildTodayRound(
   direction: PairDirection,
   store?: DataStore,
-  jetzt: number = Date.now()
+  jetzt: number = Date.now(),
+  /** Neue Karten nur aus dieser Stufe; fällige Wiederholungen aus allen. */
+  stage?: LearningStage
 ): Promise<TodayRound> {
-  const due = await buildReviewQueue(direction, store, jetzt);
+  const due = await buildReviewQueue(direction, store, jetzt, undefined, stage);
   const tage = await loadReviewLog(store);
   const plan = planTodayRound({
     dueCount: due.length,

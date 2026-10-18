@@ -1,5 +1,6 @@
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
-import { VocabZieleCard } from './vocab-ziele-card';
+import { VocabZieleCard, zielSchluessel } from './vocab-ziele-card';
+import { LearningStagePicker } from '@/components/learning-stage-picker';
 import { Button, ProgressPanel } from '@/components/generator-card';
 import { createTextClient } from '@/lib/providers/text';
 import { clearContentSelection, studioRequest } from './content-client';
@@ -167,3 +168,26 @@ test('blacklisted terms skip the paid check and rejected terms land on the black
     jest.useRealTimers();
   }
 });
+
+test('the word goal is stored per language and stage; beginners keep the old key', async () => {
+  expect(zielSchluessel('th', 'beginner')).toBe('vocabZiel-th');
+  expect(zielSchluessel('th', 'experienced')).toBe('vocabZiel-th-experienced');
+  expect(zielSchluessel('es', 'pro')).toBe('vocabZiel-es-pro');
+
+  jest.mocked(readMeta).mockClear();
+  jest.mocked(writeMeta).mockClear();
+  let tree!: ReactTestRenderer;
+  await act(async () => { tree = create(<VocabZieleCard onFinished={() => {}} />); });
+  expect(readMeta).toHaveBeenCalledWith('vocabZiel-th', 250);
+  expect(readMeta).not.toHaveBeenCalledWith('vocabZiel-th-pro', 250);
+
+  await act(async () => { tree.root.findByType(LearningStagePicker).props.onChange('pro'); });
+  expect(readMeta).toHaveBeenCalledWith('vocabZiel-th-pro', 250);
+  const freiesZiel = tree.root.findAllByProps({ accessibilityLabel: 'Freies Ziel für th' })
+    .find(node => typeof node.props.onChangeText === 'function')!;
+  await act(async () => { freiesZiel.props.onChangeText('2000'); });
+  expect(writeMeta).toHaveBeenCalledWith('vocabZiel-th-pro', 2000);
+  expect(writeMeta).not.toHaveBeenCalledWith('vocabZiel-th', 2000);
+  await act(async () => { tree.unmount(); });
+});
+

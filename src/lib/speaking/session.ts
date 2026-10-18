@@ -3,6 +3,7 @@ import type { VocabEntry } from '@/data/vocab-types';
 import { shuffled, seededRandom } from '../drills/random';
 import { retrievability } from '../fsrs/fsrs';
 import { FSRSCardState } from '../fsrs/types';
+import { inStage, type LearningStage } from '../learning-stages';
 import { loadCardStatesForDirection, loadVocabulary } from '../repository';
 import { DataStore, getStore } from '../storage';
 import { buildSpeakingPrompt, canBuildSpeakingPrompt, SpeakingPrompt } from './domain';
@@ -29,6 +30,8 @@ export type SpeakingSessionOptions = {
   size?: number;
   /** Für reproduzierbare Tests; im Betrieb wechselt die Auswahl je Start. */
   seed?: number;
+  /** Nur Wörter dieser Stufe (Stufenschalter im Lern-Reiter, 18.10.2026). */
+  stage?: LearningStage;
 };
 
 function weakness(card: FSRSCardState | undefined, now: number): number {
@@ -51,7 +54,7 @@ export async function buildSpeakingSession(
     loadVocabulary(db),
     loadCardStatesForDirection('de_to_th', db),
   ]);
-  const candidates = speakingCandidates(entries);
+  const candidates = speakingCandidates(inStage(entries, options.stage));
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
 
   const ranked = [...candidates].sort(

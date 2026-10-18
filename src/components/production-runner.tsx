@@ -17,6 +17,7 @@ import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale } from '@/lib/i18n';
 import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
+import type { LearningStage } from '@/lib/learning-stages';
 import { recordDrill } from '@/lib/review-log';
 import {
   bewertungFuerErgebnis,
@@ -64,9 +65,12 @@ const SELBST_RATINGS: { rating: Rating; key: TranslationKey }[] = [
 
 export function ProductionRunner({
   direction,
+  stage,
   onExit,
 }: {
   direction: PairDirection;
+  /** Wörter und Sätze nur aus dieser Stufe. */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const { t, languageName } = useLocale();
@@ -88,12 +92,12 @@ export function ProductionRunner({
     setAufgaben(null);
     setLoadError(null);
     setIndex(0);
-    produktionsAufgaben({ direction })
+    produktionsAufgaben({ direction, stage })
       .then((aufgaben) => {
         setAufgaben(aufgaben.length > 0 ? aufgaben : []);
       })
       .catch((e) => setLoadError(e instanceof Error ? e.message : String(e)));
-  }, [direction]);
+  }, [direction, stage]);
 
   useEffect(() => {
     laden();

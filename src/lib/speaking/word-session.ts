@@ -4,6 +4,7 @@ import { retrievability } from '../fsrs/fsrs';
 import { type FSRSCardState } from '../fsrs/types';
 import { bridgeText } from '../languages/bridge';
 import { anchorOf, type PairDirection } from '../languages/types';
+import { inStage, type LearningStage } from '../learning-stages';
 import { ensureCardStates } from '../review-session';
 import { seededRandom, shuffled } from '../drills/random';
 import { type DataStore } from '../storage';
@@ -65,12 +66,15 @@ export async function buildWordSpeakingSession(options: {
   now?: number;
   seed?: number;
   size?: number;
+  /** Nur Wörter dieser Stufe (Stufenschalter im Lern-Reiter, 18.10.2026). */
+  stage?: LearningStage;
 }): Promise<WordSpeakingSession> {
   const now = options.now ?? Date.now();
   const size = options.size ?? WORD_SPEAKING_SIZE;
   const random = seededRandom(options.seed ?? now);
 
-  const { entries, cards } = await ensureCardStates(options.direction, options.store, now);
+  const { entries: alle, cards } = await ensureCardStates(options.direction, options.store, now);
+  const entries = inStage(alle, options.stage);
   const byVocabId = new Map(cards.map((card) => [card.vocabId, card]));
 
   // Wie gut sitzt das Wort gerade? Kleiner heißt wackliger — dieselbe

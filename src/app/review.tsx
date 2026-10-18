@@ -1,4 +1,4 @@
-import { LEARNING_STAGES, levelLabelKey, levelPartKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
+import { inStage, LEARNING_STAGES, levelLabelKey, levelPartKey, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
 import { LearningStagePicker } from '@/components/learning-stage-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { VocabEntry } from '@/data/vocab-types';
@@ -35,6 +35,7 @@ import {
   isDeAnchored,
   isPairDirection,
   targetLanguageOf,
+  type LanguageCode,
   type PairDirection,
 } from '@/lib/languages/types';
 import { LearnerProfile, loadProfile, setLanguage, setReviewSpot } from '@/lib/profile';
@@ -64,6 +65,8 @@ import {
   finishChapter,
   finishedChapterIds,
   markStepPractised,
+  pickedStage,
+  pickStage,
   practisedSteps,
   type LearningChapter,
 } from '@/lib/learning-path';
@@ -326,11 +329,48 @@ function ReviewBody({
     () => practiceChapter ? new Set(practiceChapter.vocabulary.map((word) => word.id)) : undefined,
     [practiceChapter]
   );
+  const sprache = targetLanguageOf(direction);
+  // Für welche Richtung die Kapitel zuletzt vollständig geladen wurden.
+  const chaptersDirection = useRef<PairDirection | null>(null);
+
+  // Anfänger · Fortgeschritten · Profi (Nutzerwunsch 04.10.2026). Die Wahl
+  // gilt seit 18.10.2026 für den ganzen Lern-Reiter — neue Karten, Übungen,
+  // Heutige Runde — und bleibt je Lernsprache gespeichert. Ohne eigene Wahl
+  // gilt die Stufe des nächsten offenen Kapitels.
+  const [stagePick, setStagePick] = useState<{ language: LanguageCode; stage: LearningStage | null } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void pickedStage(sprache)
+      .catch(() => null)
+      .then((stage) => { if (!cancelled) setStagePick({ language: sprache, stage }); });
+    return () => { cancelled = true; };
+  }, [sprache]);
+  const stageLoaded = stagePick?.language === sprache;
+  const naechstes = chapters?.find((item) => !finished.includes(item.id)) ?? chapters?.[0];
+  const stage: LearningStage = (stageLoaded ? stagePick.stage : null)
+    ?? (naechstes ? stageForLevel(naechstes.situation.level) : 'beginner');
+  // Übungen starten erst mit feststehender Stufe — sonst bauten sie ihren
+  // Stoff zweimal und zeigten kurz den falschen.
+  const stageReady = stageLoaded && (stagePick.stage !== null || chapters !== null);
+  const chooseStage = (value: LearningStage) => {
+    setStagePick({ language: sprache, stage: value });
+    void pickStage(sprache, value).catch(() => {});
+  };
+  // Kapitelübungen üben ihre Dialogwörter, gleich welcher Stufe; freie
+  // Übungen nur den Stoff der gewählten Stufe.
+  const freeStage = practiceChapter ? undefined : stage;
 
   useEffect(() => {
-    if (mode !== 'path') return;
+    // Auch eine Übung, die über eine Adresse startet (Fortschritt → „Üben“),
+    // braucht die Kapitel einmal: Ohne eigene Stufenwahl bestimmt das nächste
+    // offene Kapitel die Stufe.
+    if (mode !== 'path' && chaptersDirection.current === direction) return;
     let cancelled = false;
-    setChapters(null);
+    if (mode === 'path') {
+      // Neu laden; bricht man ab, lädt die nächste Übung selbst nach.
+      chaptersDirection.current = null;
+      setChapters(null);
+    }
     setChapterError(null);
     void (async () => {
       try {
@@ -341,6 +381,7 @@ function ReviewBody({
         const done = await finishedChapterIds(direction, ids.map((id) => ({ id })));
         const steps = await Promise.all(ids.map((id) => practisedSteps(direction, id)));
         if (!cancelled) {
+          chaptersDirection.current = direction;
           setChapters(next);
           setFinished(done);
           setPractised(Object.fromEntries(ids.map((id, index) => [id, steps[index]])));
@@ -411,10 +452,12 @@ function ReviewBody({
             : direction
       }>
       {mode === 'heute' ? (
-        <TodayRoundRunner key={direction} direction={direction} onExit={onExit} />
+        stageReady ? <TodayRoundRunner key={direction} direction={direction} stage={stage} onExit={onExit} /> : null
       ) : mode === 'path' ? (
         <>
           <LearnPath
+            stage={stage}
+            onStage={chooseStage}
             openArea={openArea}
             setOpenArea={setOpenArea}
             direction={direction}
@@ -479,7 +522,7 @@ function ReviewBody({
             </ThemedText>
           </View>
 
-          {isFoundationMode(mode) ? (
+          {!stageReady ? null : isFoundationMode(mode) ? (
         <FoundationsRunner key={`${direction}:${mode}`} mode={mode} direction={direction} onExit={onExit} />
       ) : practiceChapter && chapterGrammar ? (
         <ChapterGrammarRunner
@@ -494,6 +537,7 @@ function ReviewBody({
         <CardSession
           direction={direction}
           onlyVocabIds={chapterWordIds}
+          stage={freeStage}
           situation={practiceChapter?.situation}
           onWrite={(entries) => {
             setWritingPack(entries);
@@ -508,6 +552,7 @@ function ReviewBody({
           direction={direction}
           entries={writingPack ?? practiceChapter?.vocabulary}
           size={writingPack || practiceChapter ? 20 : undefined}
+          stage={freeStage}
           onExit={onExit}
         />
       ) : mode === 'advanced' ? (
@@ -517,6 +562,7 @@ function ReviewBody({
           key={`${direction}:dictation`}
           language={targetLanguageOf(direction)}
           direction={direction}
+          stage={freeStage}
           onExit={onExit}
         />
       ) : mode === 'shadowing' || mode === 'sentenceRepeat' || mode === 'sentenceListening' ? (
@@ -527,12 +573,13 @@ function ReviewBody({
           anchor={anchorOf(direction)}
           words={practiceChapter?.vocabulary}
           situation={practiceChapter?.situation}
+          learningStage={freeStage}
           onExit={onExit}
         />
       ) : mode === 'lesestoffe' ? (
         <ReadingTextsRunner key={direction} direction={direction} situationId={practiceChapter?.id} onExit={onExit} />
       ) : mode === 'sagen' ? (
-        <ProductionRunner key={direction} direction={direction} onExit={onExit} />
+        <ProductionRunner key={direction} direction={direction} stage={freeStage} onExit={onExit} />
       ) : mode === 'rollenspiel' ? (
         <RoleplayRunner key={direction} direction={direction} situationId={practiceChapter?.id} onExit={onExit} />
       ) : mode === 'speaking' ? (
@@ -540,15 +587,16 @@ function ReviewBody({
         // Nachsprechen mit Musterlösung und ehrlicher Selbst-Einschätzung —
         // eine Kontur-Messung gibt es dort nicht, und behauptet wird keine.
         learningLanguage(targetLanguageOf(direction)).wordSpeaking === 'tone-contour' ? (
-          <SpeakingRunner key={`${direction}:speaking`} direction={direction} onExit={onExit} />
+          <SpeakingRunner key={`${direction}:speaking`} direction={direction} stage={freeStage} onExit={onExit} />
         ) : (
-          <WordSpeakingRunner key={`${direction}:speaking`} direction={direction} onExit={onExit} />
+          <WordSpeakingRunner key={`${direction}:speaking`} direction={direction} stage={freeStage} onExit={onExit} />
         )
       ) : (
         <DrillRunner
           drill={mode}
           direction={direction}
           language={targetLanguageOf(direction)}
+          stage={freeStage}
           key={`${direction}:${mode}`}
           onExit={onExit}
         />
@@ -581,6 +629,8 @@ function HeutigeRundeKnopf({ onPress }: { onPress: () => void }) {
 }
 
 function LearnPath({
+  stage,
+  onStage,
   direction,
   chapters,
   finished,
@@ -597,6 +647,8 @@ function LearnPath({
   setOpenArea,
   practised,
 }: {
+  stage: LearningStage;
+  onStage: (stage: LearningStage) => void;
   direction: PairDirection;
   chapters: LearningChapter[] | null;
   finished: string[];
@@ -615,12 +667,12 @@ function LearnPath({
 }) {
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
-  // Anfänger · Fortgeschritten · Profi (Nutzerwunsch 04.10.2026): Ohne eigene
-  // Wahl gilt die Stufe des nächsten offenen Kapitels.
-  const [pickedStage, setPickedStage] = useState<LearningStage | null>(null);
-  const naechstes = chapters?.find((item) => !finished.includes(item.id)) ?? chapters?.[0];
-  const stage: LearningStage = pickedStage ?? (naechstes ? stageForLevel(naechstes.situation.level) : 'beginner');
   const stageChapters = (chapters ?? []).filter((item) => stageForLevel(item.situation.level) === stage);
+  // Wie viele Wörter der Stufe neue Karten und freie Übungen speisen.
+  const stageWordCount = useMemo(
+    () => inStage(activeVocabularyFor(targetLanguageOf(direction)), stage).length,
+    [direction, stage]
+  );
   const stageCounts = Object.fromEntries(LEARNING_STAGES.map((value) => [
     value, (chapters ?? []).filter((item) => stageForLevel(item.situation.level) === value).length,
   ])) as Record<LearningStage, number>;
@@ -672,8 +724,11 @@ function LearnPath({
       <LearningStagePicker
         value={stage}
         counts={stageCounts}
-        onChange={(value) => { setPickedStage(value); setLessonOpen(false); }}
+        onChange={(value) => { onStage(value); setLessonOpen(false); }}
       />
+      <ThemedText type="small" themeColor="textSecondary">
+        {stageWordCount > 0 ? t('path.stageWords', { count: stageWordCount }) : t('path.stageNoWords')}
+      </ThemedText>
       {chapters === null ? <ThemedText type="small" themeColor="textSecondary">
         {t('round.assembling')}
       </ThemedText> : foundationsActive ? (lessonOpen ? null : (
@@ -952,12 +1007,15 @@ function DirectionBar({ onSwitch }: { onSwitch: () => void }) {
 function CardSession({
   direction,
   onlyVocabIds,
+  stage,
   situation,
   onWrite,
   onReveal,
 }: {
   direction: PairDirection;
   onlyVocabIds?: ReadonlySet<string>;
+  /** Neue Karten nur aus dieser Stufe; fällige Wiederholungen aus allen. */
+  stage?: LearningStage;
   situation?: ConversationSituation;
   onWrite: (entries: VocabEntry[]) => void;
   /** Nach dem Aufdecken: die Bewertungsknöpfe in Sicht holen (375 px). */
@@ -983,7 +1041,7 @@ function CardSession({
   useEffect(() => {
     let cancelled = false;
     setQueueError(null);
-    buildReviewQueue(direction, undefined, undefined, onlyVocabIds)
+    buildReviewQueue(direction, undefined, undefined, onlyVocabIds, stage)
       .then((items) => {
         if (cancelled) return;
         const due = items.slice(0, 20);
@@ -996,7 +1054,7 @@ function CardSession({
     return () => {
       cancelled = true;
     };
-  }, [direction, onlyVocabIds]);
+  }, [direction, onlyVocabIds, stage]);
 
   const rate = useCallback(
     async (rating: Rating) => {
@@ -1037,14 +1095,14 @@ function CardSession({
     // wieder „Sitzung beendet“ mit den alten Zahlen — als täte der Knopf nichts.
     setRated(0);
     setAgain(0);
-    buildReviewQueue(direction, undefined, undefined, onlyVocabIds)
+    buildReviewQueue(direction, undefined, undefined, onlyVocabIds, stage)
       .then((items) => {
         const due = items.slice(0, 20);
         setQueue(due);
         setRunde(due.length);
       })
       .catch((e) => setQueueError(messageOf(e)));
-  }, [direction, onlyVocabIds]);
+  }, [direction, onlyVocabIds, stage]);
 
   if (queueError) {
     return (

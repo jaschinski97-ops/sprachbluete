@@ -19,3 +19,20 @@ export const levelLabelKey = (level: string): TranslationKey => STAGE_KEYS[stage
  */
 export const levelPartKey = (level: string): TranslationKey =>
   level.endsWith('2') ? 'level.partTwo' : 'level.partOne';
+
+export function isLearningStage(value: unknown): value is LearningStage {
+  return typeof value === 'string' && (LEARNING_STAGES as readonly string[]).includes(value);
+}
+
+/** Die Stufe eines Wortes. Wörter ohne Feld (älterer Bestand) gelten als Anfänger. */
+export const stageOfEntry = (entry: { learningStage?: LearningStage }): LearningStage =>
+  entry.learningStage ?? 'beginner';
+
+/**
+ * Der Wortpool einer Stufe für neue Karten und freie Übungen (18.10.2026).
+ * Ohne Stufe bleibt der Pool unverändert — Kapitel üben ihre Dialogwörter,
+ * gleich welcher Stufe sie angehören.
+ */
+export function inStage<T extends { learningStage?: LearningStage }>(entries: readonly T[], stage?: LearningStage): T[] {
+  return stage ? entries.filter((entry) => stageOfEntry(entry) === stage) : [...entries];
+}

@@ -650,6 +650,8 @@ const ur = {
   "studio.localText": "مقامی ٹیکسٹ ماڈل · API کلید کی ضرورت نہیں",
   "flashcard.ambiguous": "کئی الفاظ موزوں ہیں – مطلوبہ لفظ: {{start}}",
   "path.stageEmpty": "“{{stage}}” کے لیے ابھی کوئی باب نہیں ہے۔",
+  "path.stageWords": "نئے کارڈ اور مشقیں صرف اسی سطح سے · {{count, plural, one {# لفظ} other {# الفاظ}}}",
+  "path.stageNoWords": "اس سطح کے لیے ابھی کوئی الفاظ نہیں ہیں۔ جن دہرائیوں کا وقت ہو گیا ہے وہ فلیش کارڈ اور آج کے راؤنڈ میں رہتی ہیں۔",
   "conversation.stageEmpty": "اس زبان میں “{{stage}}” کے لیے ابھی کوئی گفتگو نہیں ہے۔",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "زبان کے پیک",

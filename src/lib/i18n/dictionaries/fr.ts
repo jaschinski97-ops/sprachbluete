@@ -650,6 +650,8 @@ const fr = {
   "studio.localText": "Modèle de texte local · sans clé API",
   "flashcard.ambiguous": "Plusieurs mots conviennent – mot recherché : {{start}}",
   "path.stageEmpty": "Aucun chapitre pour « {{stage}} » pour l’instant.",
+  "path.stageWords": "Nouvelles cartes et exercices de ce niveau uniquement · {{count, plural, one {# mot} other {# mots}}}",
+  "path.stageNoWords": "Aucun mot pour ce niveau pour l’instant. Les révisions dues restent dans Cartes mémoire et dans la Séance du jour.",
   "conversation.stageEmpty": "Aucune conversation « {{stage}} » dans cette langue pour l’instant.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Packs de langue",

@@ -13,6 +13,7 @@
  */
 import type { ContentCatalog, ContentEntry } from '@/lib/content/types';
 import type { VocabEntry } from '@/data/vocab-types';
+import type { LearningStage } from '@/lib/learning-stages';
 
 import { VOCABULARY, VOCABULARY_TH } from './legacy-vocabulary';
 
@@ -59,3 +60,16 @@ export const FIXTURE_CATALOG: ContentCatalog = {
   vocabularySource: 'generated',
   entries: FIXTURE_VOCABULARY.map(fixtureEntry),
 };
+
+/**
+ * Der Testkatalog mit Wörtern mehrerer Stufen (18.10.2026): Die genannten
+ * Einträge tragen ihre Stufe, alle anderen bleiben ohne Feld und gelten damit
+ * als Anfänger — wie der echte Bestand vor den ersten Profi-Läufen.
+ */
+export function fixtureCatalogWithStages(stages: Readonly<Record<string, LearningStage>>): ContentCatalog {
+  return {
+    ...FIXTURE_CATALOG,
+    entries: FIXTURE_VOCABULARY.map((word) =>
+      fixtureEntry(stages[word.id] ? { ...word, learningStage: stages[word.id] } : word)),
+  };
+}

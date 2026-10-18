@@ -650,6 +650,8 @@ const ta = {
   "studio.localText": "உள்ளூர் உரை மாதிரி · API விசை தேவையில்லை",
   "flashcard.ambiguous": "பல சொற்கள் பொருந்தும் – தேடப்படும் சொல்: {{start}}",
   "path.stageEmpty": "“{{stage}}” நிலைக்கு இன்னும் அத்தியாயங்கள் இல்லை.",
+  "path.stageWords": "புதிய கார்டுகளும் பயிற்சிகளும் இந்த நிலையிலிருந்து மட்டும் · {{count, plural, one {# வார்த்தை} other {# வார்த்தைகள்}}}",
+  "path.stageNoWords": "இந்த நிலைக்கு இன்னும் வார்த்தைகள் இல்லை. நேரம் வந்த மீள்பார்வைகள் கார்டுகளிலும் இன்றைய சுற்றிலும் தொடரும்.",
   "conversation.stageEmpty": "இந்த மொழியில் “{{stage}}” நிலைக்கு இன்னும் உரையாடல்கள் இல்லை.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "மொழித் தொகுப்புகள்",

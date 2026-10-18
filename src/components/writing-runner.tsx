@@ -13,6 +13,7 @@ import type { VocabEntry } from '@/data/vocab-types';
 
 import { type Rating } from '@/lib/fsrs/types';
 import type { PairDirection } from '@/lib/languages/types';
+import type { LearningStage } from '@/lib/learning-stages';
 import {
   buildWritingSession,
   ratingExplanation,
@@ -49,11 +50,14 @@ export function WritingRunner({
   direction,
   entries,
   size,
+  stage,
   onExit,
 }: {
   direction: PairDirection;
   entries?: VocabEntry[];
   size?: number;
+  /** Ohne eigene Wortliste: Wörter nur aus dieser Stufe. */
+  stage?: LearningStage;
   onExit: () => void;
 }) {
   const theme = useTheme();
@@ -79,13 +83,13 @@ export function WritingRunner({
     setResult(null);
     setResults([]);
     setAssisted(false); setAssistedCount(0); setPaletteOpen(false);
-    buildWritingSession({ direction, entries, size }).then((next) => {
+    buildWritingSession({ direction, entries, size, stage }).then((next) => {
       if (!cancelled) setSession(next);
     });
     return () => {
       cancelled = true;
     };
-  }, [direction, entries, size, round]);
+  }, [direction, entries, size, stage, round]);
 
   const prompt = session?.prompts[index] ?? null;
 

@@ -3,8 +3,9 @@ import type { VocabEntry } from '@/data/vocab-types';
 import type { DrillId } from './drills/types';
 
 import { TOPICS, type ConversationSituation } from './conversation/types';
-import type { PairDirection } from './languages/types';
+import type { LanguageCode, PairDirection } from './languages/types';
 import { contentDirectionOf, targetLanguageOf } from './languages/types';
+import { isLearningStage, type LearningStage } from './learning-stages';
 import { poolWoerterDerSzene } from './reading-texts';
 import { readMeta, writeMeta } from './repository';
 import type { DataStore } from './storage';
@@ -135,4 +136,22 @@ export async function finishChapter(
   store?: DataStore
 ): Promise<void> {
   await writeMeta(completionKey(direction, chapterId), true, store);
+}
+
+function stageKey(language: LanguageCode): string {
+  return `learning-stage:${language}`;
+}
+
+/**
+ * Die im Lern-Reiter gewählte Stufe je Lernsprache, `null` ohne eigene Wahl
+ * (Nutzerentscheidung 18.10.2026: bleibt über einen Neustart). Wie der
+ * Kapitelabschluss nur auf diesem Gerät.
+ */
+export async function pickedStage(language: LanguageCode, store?: DataStore): Promise<LearningStage | null> {
+  const stored = await readMeta<unknown>(stageKey(language), null, store);
+  return isLearningStage(stored) ? stored : null;
+}
+
+export async function pickStage(language: LanguageCode, stage: LearningStage, store?: DataStore): Promise<void> {
+  await writeMeta(stageKey(language), stage, store);
 }

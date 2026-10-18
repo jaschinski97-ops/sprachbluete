@@ -761,6 +761,8 @@ const de = {
   "studio.localText": "Lokales Textmodell · kein API-Schlüssel",
   "flashcard.ambiguous": "Mehrere Wörter passen – gesucht: {{start}}",
   "path.stageEmpty": "Für „{{stage}}“ gibt es noch keine Kapitel.",
+  "path.stageWords": "Neue Karten und Übungen nur aus dieser Stufe · {{count, plural, one {# Wort} other {# Wörter}}}",
+  "path.stageNoWords": "Für diese Stufe gibt es noch keine Wörter. Fällige Wiederholungen bleiben bei den Karteikarten und in der Heutigen Runde.",
   "conversation.stageEmpty": "Für „{{stage}}“ gibt es in dieser Sprache noch keine Gespräche.",
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Sprachpakete",

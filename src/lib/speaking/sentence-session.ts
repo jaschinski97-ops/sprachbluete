@@ -3,6 +3,7 @@ import { analyzeToneContour, type ToneContourMeasurement } from './analysis';
 import { buildSentenceTasks, dialogueSentenceTasks, grundsaetzeFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
 import { bundledDocuments } from '../content/bundled';
 import { targetLanguageOf } from '../languages/types';
+import { stageForLevel, type LearningStage } from '../learning-stages';
 import type { VocabEntry } from '@/data/vocab-types';
 import type { UiLanguage } from '@/lib/i18n/types';
 import { shuffled, seededRandom } from '../drills/random';
@@ -30,12 +31,15 @@ export function sentenceSession(
   language: SatzSprache,
   seed: number,
   anchor: UiLanguage = 'de',
-  words?: VocabEntry[]
+  words?: VocabEntry[],
+  /** Ohne eigene Wortliste: nur Stoff dieser Stufe (18.10.2026). */
+  stage?: LearningStage
 ): SentenceTask[] {
   const tasks = anchor !== 'de' && !words
-    ? bundledDocuments('situations').filter(scene => targetLanguageOf(scene.direction) === language)
+    ? bundledDocuments('situations').filter(scene => targetLanguageOf(scene.direction) === language
+      && (!stage || stageForLevel(scene.level) === stage))
       .flatMap(scene => dialogueSentenceTasks(scene, anchor))
-    : words ? buildSentenceTasks(words, anchor) : grundsaetzeFuer(language, anchor);
+    : words ? buildSentenceTasks(words, anchor) : grundsaetzeFuer(language, anchor, stage);
   return shuffled(tasks, seededRandom(seed))
     .slice(0, SENTENCE_SESSION_SIZE);
 }

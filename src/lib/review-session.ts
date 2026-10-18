@@ -10,6 +10,7 @@ import {
   PairDirection,
   targetLanguageOf,
 } from './languages/types';
+import { stageOfEntry, type LearningStage } from './learning-stages';
 import { loadCardStatesForDirection, loadVocabulary, seedVocabulary } from './repository';
 import { DataStore, getStore } from './storage';
 
@@ -140,12 +141,25 @@ export async function buildReviewQueue(
   direction: PairDirection,
   store?: DataStore,
   now: number = Date.now(),
-  onlyVocabIds?: ReadonlySet<string>
+  onlyVocabIds?: ReadonlySet<string>,
+  /**
+   * Die im Lern-Reiter gewählte Stufe (18.10.2026): NEUE Karten kommen nur
+   * aus ihr. Begonnene Karten bleiben fällig, gleich welcher Stufe — sonst
+   * verschwände Gelerntes mit dem Stufenschalter. Ohne Stufe (Kapitel) gilt
+   * der ganze Pool.
+   */
+  stage?: LearningStage
 ): Promise<ReviewItem[]> {
   const { entries, cards } = await ensureCardStates(direction, store, now);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
+  const pool = cards.filter((card) => {
+    if (onlyVocabIds && !onlyVocabIds.has(card.vocabId)) return false;
+    if (!stage || card.state !== 'new') return true;
+    const entry = byId.get(card.vocabId);
+    return entry !== undefined && stageOfEntry(entry) === stage;
+  });
 
-  return dueCards(onlyVocabIds ? cards.filter((card) => onlyVocabIds.has(card.vocabId)) : cards, now)
+  return dueCards(pool, now)
     .map((card) => {
       const entry = byId.get(card.vocabId);
       if (!entry) return null;

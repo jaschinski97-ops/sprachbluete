@@ -90,7 +90,7 @@ function completionKey(direction: PairDirection, chapterId: string): string {
 /** Completion is an explicit learner decision, stored only on this device. */
 export async function finishedChapterIds(
   direction: PairDirection,
-  chapters: LearningChapter[],
+  chapters: readonly { id: string }[],
   store?: DataStore
 ): Promise<string[]> {
   const flags = await Promise.all(

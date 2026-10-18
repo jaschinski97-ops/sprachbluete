@@ -13,6 +13,7 @@ Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nu
 - **20 App-Sprachen** (`UI_LANGUAGES`, Wörterbücher `src/lib/i18n/`) sind NUR Oberflächen- und Bedeutungssprachen, **niemals Lernziele** (Nutzerentscheidung). Unbekannte Systemsprache → Englisch.
 - Lernrichtung: Die Lernsprache ist die rechte Seite (`targetLanguageOf`); Inhalte liegen je Sprache in `contentDirectionOf(code)`. Die App-Sprache ist nie Lernziel (Deutsch auf deutscher, Thai auf thailändischer Oberfläche ausgeblendet, auch im Gespräch).
 - Lern-Reiter: A1/A2-Kapitel aus vorhandenen Dialogsituationen (`src/lib/learning-path.ts`), lokal gespeicherter manueller Abschluss, Satzbau-Einstieg und 5 getrennte Kategorien (Wortschatz · Hören · Lesen & Schreiben · Sprechen · Grammatik); Karteikartenrunden maximal 20. Eine Prüfungsvorbereitung (früher Goethe) gibt es nicht mehr (Nutzerentscheidung 08.10.2026).
+- Kapitel 0 „Grundlagen“ (18.10.2026, `src/lib/foundations.ts`, `components/foundations-runner.tsx`): Zahlen/Preise aus `data/numbers.ts`, Thai-Schrift + Töne bzw. ABC/Buchstabieren aus `data/latin-alphabet.ts` — feste, quellengeprüfte Daten, nicht per KI. Kapitelschritte beginnen seit 18.10. mit dem Dialog (Satz verstehen → Lesetexte → Karten → Grammatik …, Nutzerentscheidung).
 - Thai-Zieltexte und Antworten in Übungen zeigen Thai-Schrift plus Umschrift; verdeckte Hör-/Schreibantworten erst nach der Auswertung. Die App-Sprachwahl zeigt Eigennamen plus englische Namen, ohne die Aufgabenübersetzungen zu ändern.
 - Erste B1-Vertiefung mit je einer Einheit in allen 4 Lernsprachen: Texte/Fragen in `src/data/advanced-lessons.ts`, Ablauf in `src/components/advanced-lesson-runner.tsx`. Texte noch ohne unabhängige Sprachprüfung. Freie Antworten werden lokal gespeichert und nur selbst geprüft; System-TTS ersetzt keine geprüften Hörclips und die Übung bescheinigt keine GER-Stufe.
 - Nutzervision: Lernsprache in der Übersicht wählen; neue Lernsprache = Vorlage kopieren + KI-Erzeugung im Studio.
@@ -27,7 +28,7 @@ Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest                         # Typen + Tests (~1264 Tests)
+npx tsc --noEmit && npx jest                         # Typen + Tests (~1292 Tests)
 npm run test:scripts                                 # alle Skript-Tests (node --test, 77; ein Rauchtest wird übersprungen, wenn gh installiert ist)
 npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)

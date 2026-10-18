@@ -1,4 +1,5 @@
 import { DRILL_META, DrillId, drillsForDirection } from '@/lib/drills/types';
+import type { FoundationMode } from '@/lib/foundations';
 import type { SentenceMode } from '@/lib/speaking/sentence-session';
 import type { TranslationKey } from '@/lib/i18n';
 import { learningLanguage } from '@/lib/languages/definitions';
@@ -35,7 +36,20 @@ export type Mode =
   | 'writing'
   | 'dictation'
   | SentenceMode
-  | 'heute';
+  | 'heute'
+  /** Kapitel 0 „Grundlagen“ (18.10.2026) — nur über den Lernpfad erreichbar. */
+  | FoundationMode;
+
+/** Die Schritte von Kapitel 0 als Übersetzungsschlüssel. */
+const FOUNDATION_KEYS: Record<FoundationMode, TranslationKey> = {
+  zahlen: 'foundations.numbers',
+  preise: 'foundations.prices',
+  abc: 'foundations.alphabet',
+  buchstabieren: 'foundations.spelling',
+  konsonanten: 'foundations.consonants',
+  vokale: 'foundations.vowels',
+  toene: 'foundations.tones',
+};
 
 /** Die Wort-Sprechübung und die Auswahlübungen als Übersetzungsschlüssel. */
 export const DRILL_KEYS: Record<DrillId, TranslationKey> = {
@@ -100,7 +114,8 @@ export function modeKey(mode: Mode): TranslationKey {
   if (mode === 'sentenceRepeat') return 'mode.sentenceRepeat';
   if (mode === 'sentenceListening') return 'mode.sentenceListening';
   if (mode === 'dictation') return 'mode.dictation';
-  return DRILL_KEYS[mode];
+  if (mode in FOUNDATION_KEYS) return FOUNDATION_KEYS[mode as FoundationMode];
+  return DRILL_KEYS[mode as DrillId];
 }
 
 /** Beschriftung eines Übungsmodus in der aktuellen UI-Sprache. */

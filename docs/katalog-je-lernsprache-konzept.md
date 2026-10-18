@@ -1,7 +1,8 @@
 # Inhaltskatalog je Lernsprache: Konzept (18.10.2026)
 
 Stand: Entwurf zur Entscheidung, noch **kein Code**. Grundlage ist der schlanke App-Katalog vom 18.10.2026
-(`scripts/metro-app-catalog.cjs`, Commit `ec1516fc`), die Messnotiz `schlanker-katalog-messung.md` und eine
+(`scripts/metro-app-catalog.cjs`, Commit `ec1516fc`), die Messwerte dazu in `CHANGELOG.md` (18.10.2026, „Schlanker
+Inhaltskatalog im App-Build“) und eine
 Auswertung des echten Katalogs mit diesem Stand. Gebaut wird erst nach Zustimmung und nach der TestFlight-Runde.
 
 ## 1. Kurzfassung

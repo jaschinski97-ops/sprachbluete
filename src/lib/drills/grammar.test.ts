@@ -7,9 +7,12 @@ import { MemoryDataStore, type DataStore } from '../storage';
 import { DRILL_META } from './types';
 
 import {
+  buildKonsonantenklasseQuestion,
   buildPoliteQuestion,
   buildSerEstarQuestion,
 } from './grammar';
+import { THAI_CONSONANTS } from '@/data/thai-script';
+import { thaiConsonantSyllable } from '../foundations';
 import type { VocabEntry } from '@/data/vocab-types';
 import { translate } from '../i18n';
 
@@ -86,6 +89,39 @@ describe('ser oder estar', () => {
       buildSerEstarQuestion(SER_ESTAR_ITEMS.find((item) => item.id === id)!).solution;
     expect(loesung('se-aburrido')).toBe('Yo estoy aburrido.');
     expect(loesung('se-ninos')).toBe('Los niños están cansados.');
+  });
+});
+
+describe('Konsonantenklassen (Paiboon-Umschrift)', () => {
+  const konsonant = (symbol: string) => THAI_CONSONANTS.find((k) => k.symbol === symbol)!;
+
+  it('nennt den Konsonanten wie Kapitel 0: Silbe plus Merkwort aus dem Wortschatz', () => {
+    const frage = buildKonsonantenklasseQuestion(konsonant('ก'));
+    const name = 'gɔɔ gài'.normalize('NFC');
+    expect(frage.visibleRoman).toBe(name);
+    expect(frage.solutionRoman).toBe(name);
+    expect(frage.visibleHint).toBe(`Huhn · ${name}`);
+  });
+
+  it('zeigt ohne Merkwort im Katalog nur die Konsonantensilbe', () => {
+    // ถุง steht nicht im Testkatalog; auf der fr-Brücke gibt es keine Merkwort-Bedeutung.
+    const frage = buildKonsonantenklasseQuestion(konsonant('ถ'), 'fr', 'fr');
+    const silbe = 'thɔ̌ɔ'.normalize('NFC');
+    expect(frage.visibleRoman).toBe(silbe);
+    expect(frage.visibleHint).toBe(silbe);
+    expect(frage.solutionRoman).toBe(silbe);
+  });
+
+  it('zeigt in keiner Aufgabe mehr die RTGS-Umschrift', async () => {
+    const session = await buildDrillSession({ drill: 'konsonantenklasse', language: 'th', store: await freshStore(), now: T0, size: 50 });
+    expect(session.questions.length).toBe(session.available);
+    for (const frage of session.questions) {
+      const k = konsonant(frage.vocabId);
+      for (const text of [frage.visibleRoman, frage.visibleHint, frage.solutionRoman]) {
+        expect(text).toContain(thaiConsonantSyllable(k));
+        expect(text).not.toContain(k.nameRtgs);
+      }
+    }
   });
 });
 

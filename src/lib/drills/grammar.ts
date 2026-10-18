@@ -2,7 +2,9 @@ import { ZAEHLER_ITEMS, ZAEHLER_OPTIONEN, type ZaehlerItem } from '@/data/gramma
 import { POLITE_ITEMS, type PoliteItem } from '@/data/grammar-th';
 import { SER_ESTAR_ITEMS, type SerEstarItem } from '@/data/grammar-es';
 import { CONSONANT_MEANING_DE, THAI_CONSONANTS, type ThaiConsonant } from '@/data/thai-script';
+import { activeVocabularyFor } from '@/data/active-vocabulary';
 
+import { thaiConsonantKeyword, thaiConsonantSyllable } from '../foundations';
 import type { UiLanguage } from '../i18n/types';
 import { translate } from '../i18n';
 import { Random, shuffled } from './random';
@@ -128,27 +130,54 @@ function konsonantBedeutung(konsonant: ThaiConsonant, anchor: UiLanguage): strin
   return null;
 }
 
-export function buildKonsonantenklasseQuestion(konsonant: ThaiConsonant, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
+/** Merkwort (Thai-Schrift) → Paiboon-Umschrift aus dem Thai-Wortschatz des Katalogs. */
+function thaiMerkwortUmschrift(): Map<string, string> {
+  return new Map(
+    activeVocabularyFor('th')
+      .filter((entry) => entry.romanization)
+      .map((entry) => [entry.term, entry.romanization])
+  );
+}
+
+/**
+ * Der Konsonantenname in der Umschrift der App, wie Kapitel 0 ihn zeigt:
+ * ถ ถุง → „thɔ̌ɔ thǔng“. Die Silbe ist hergeleitet (`thaiConsonantSyllable`),
+ * das Merkwort kommt aus dem Wortschatz. Fehlt es dort, bleibt nur die Silbe —
+ * die RTGS-Spalte der Schrifttabelle (`nameRtgs`, „tho thung“) bricht die
+ * Paiboon-Umschrift der App und wird nicht gezeigt (18.10.2026).
+ */
+export function konsonantUmschrift(konsonant: ThaiConsonant, merkwortUmschrift: ReadonlyMap<string, string>): string {
+  const silbe = thaiConsonantSyllable(konsonant);
+  const merkwort = merkwortUmschrift.get(thaiConsonantKeyword(konsonant));
+  return merkwort ? `${silbe} ${merkwort}` : silbe;
+}
+
+export function buildKonsonantenklasseQuestion(
+  konsonant: ThaiConsonant,
+  anchor: UiLanguage = 'de',
+  ui: UiLanguage = 'de',
+  merkwortUmschrift: ReadonlyMap<string, string> = thaiMerkwortUmschrift()
+): DrillQuestion {
   const klassenLabel = (klasse: 'mid' | 'high' | 'low'): string => translate(ui, `consonantClass.${klasse}`);
   const optionen = (['mid', 'high', 'low'] as const).map((klasse) => ({ label: klassenLabel(klasse) }));
   const richtige = klassenLabel(konsonant.consonantClass);
+  const umschrift = konsonantUmschrift(konsonant, merkwortUmschrift);
+  const bedeutung = konsonantBedeutung(konsonant, anchor);
   return {
     id: `konsonantenklasse:${konsonant.symbol}`,
     drill: 'konsonantenklasse',
     direction: directionForDrill('konsonantenklasse', 'th'),
     vocabId: konsonant.symbol,
     visible: konsonant.name,
-    visibleRoman: konsonant.nameRtgs,
+    visibleRoman: umschrift,
     // Die Merkwort-Bedeutung gibt es englisch (Quelle) und deutsch
-    // (CONSONANT_MEANING_DE) — auf anderen Brücken bleibt die RTGS-Umschrift.
-    visibleHint: konsonantBedeutung(konsonant, anchor)
-      ? `${konsonantBedeutung(konsonant, anchor)} · ${konsonant.nameRtgs}`
-      : konsonant.nameRtgs,
+    // (CONSONANT_MEANING_DE) — auf anderen Brücken bleibt nur die Umschrift.
+    visibleHint: bedeutung ? `${bedeutung} · ${umschrift}` : umschrift,
     speak: null,
     options: optionen,
     correctIndex: optionen.findIndex((option) => option.label === richtige),
     solution: `${konsonant.name} — ${richtige}`,
-    solutionRoman: konsonant.nameRtgs,
+    solutionRoman: umschrift,
     explanation: translate(ui, 'grammar.classIntro'),
   };
 }
@@ -184,10 +213,11 @@ export function buildGrammarSession(
   const konsonanten = THAI_CONSONANTS.filter(
     (k) => !k.meaning.includes('obsolete')
   );
+  const merkwortUmschrift = thaiMerkwortUmschrift();
   return {
     questions: shuffled(konsonanten, random)
       .slice(0, size)
-      .map((konsonant) => buildKonsonantenklasseQuestion(konsonant, anchor, ui)),
+      .map((konsonant) => buildKonsonantenklasseQuestion(konsonant, anchor, ui, merkwortUmschrift)),
     available: konsonanten.length,
   };
 }

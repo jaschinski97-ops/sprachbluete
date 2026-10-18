@@ -795,6 +795,8 @@ const es: Partial<Record<TranslationKey, string>> = {
   "foundations.specialVowels": "Vocales con final incorporado",
   "foundations.tonesIntro": "El tailandés tiene cinco tonos. La misma sílaba con otro tono es otra palabra. La transcripción marca el tono con un signo sobre la vocal.",
   "foundations.toneNoClip": "Aún no hay un clip con el tono comprobado: la palabra solo aparece por escrito.",
+  "catalog.loading": "Cargando contenido …",
+  "catalog.loadFailed": "No se pudo cargar el contenido de este idioma. Inténtalo de nuevo; si no funciona, reinstala la app.",
 };
 
 export default es;

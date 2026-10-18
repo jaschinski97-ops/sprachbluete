@@ -702,6 +702,8 @@ const vi = {
   "foundations.specialVowels": "Nguyên âm có sẵn âm cuối",
   "foundations.tonesIntro": "Tiếng Thái có năm thanh điệu. Cùng một âm tiết nhưng khác thanh là một từ khác. Phiên âm thể hiện thanh điệu bằng dấu trên nguyên âm.",
   "foundations.toneNoClip": "Chưa có đoạn âm thanh đã kiểm tra thanh điệu cho thanh này: từ chỉ được hiển thị bằng chữ.",
+  "catalog.loading": "Đang tải nội dung …",
+  "catalog.loadFailed": "Không thể tải nội dung học cho ngôn ngữ này. Hãy thử lại; nếu vẫn không được, hãy cài đặt lại ứng dụng.",
 } as const;
 
 export default vi;

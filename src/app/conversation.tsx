@@ -5,9 +5,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ScreenScaffold } from '@/components/screen-scaffold';
+import { ThemedButton } from '@/components/themed-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useCatalogLanguages, useCatalogRevision } from '@/hooks/use-catalog-languages';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
 import { PlaybackKind, playPronunciation } from '@/lib/audio';
 import {
@@ -41,7 +43,8 @@ const TOPIC_KEYS: Record<ConversationSituation['topic'], TranslationKey> = {
 
 export default function ConversationScreen() {
   const { t, languageName, uiLanguage } = useLocale();
-  const [situations, setSituations] = useState<ConversationSituation[] | null>(null);
+  // Mit dem Katalogstand, aus dem die Liste kam (Katalog je Lernsprache).
+  const [geladen, setGeladen] = useState<{ revision: number; list: ConversationSituation[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Der Reiter listet Sprachen, keine Richtungen (14.09.): Jeder Eintrag
   // öffnet die Menge, in der diese Sprache die Dialogseite ist. Vorgabe ist
@@ -88,11 +91,17 @@ export default function ConversationScreen() {
       return folge;
     });
 
+  // Katalog je Lernsprache (E3): Der Reiter behält seine eigene Sprachwahl
+  // und hält deren Sprachdatei geladen — neben der Lernsprache der Karten.
+  // Mit den Clip-Einträgen kommen Wiedergabe und Thai-Ton-Gate wie bisher.
+  const katalog = useCatalogLanguages([sprache]);
+  const revision = useCatalogRevision();
   useEffect(() => {
+    if (!katalog.ready) return;
     let cancelled = false;
     loadSituations()
       .then((all) => {
-        if (!cancelled) setSituations(all);
+        if (!cancelled) setGeladen({ revision, list: all });
       })
       .catch((e) => {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
@@ -100,7 +109,9 @@ export default function ConversationScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [katalog.ready, revision]);
+  const situations = geladen?.list ?? null;
+  const laedt = !katalog.ready || geladen?.revision !== revision;
 
   const imRichtung = useMemo(
     () => (situations ?? []).filter((s) => s.direction === direction),
@@ -159,7 +170,7 @@ export default function ConversationScreen() {
     );
   }
 
-  if (!situations) {
+  if (!situations && !katalog.error) {
     return (
       <ScreenScaffold title={t('tabs.conversation')} subtitle={t('conversation.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">
@@ -215,11 +226,22 @@ export default function ConversationScreen() {
         {t('conversation.meaningLanguage', { language: languageName(imRichtung.every(s => s.translations?.[uiLanguage]) ? uiLanguage : 'de') })}
       </ThemedText>
 
-      {imRichtung.length > 0 ? (
+      {katalog.error ? (
+        <View style={styles.failed}>
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('catalog.loadFailed')}
+          </ThemedText>
+          <ThemedButton label={t('common.retry')} onPress={katalog.retry} />
+        </View>
+      ) : laedt ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {t('catalog.loading')}
+        </ThemedText>
+      ) : imRichtung.length > 0 ? (
         <LearningStagePicker value={stage} counts={stageCounts} onChange={setStage} />
       ) : null}
 
-      {imRichtung.length > 0 && visible.length === 0 ? (
+      {laedt || katalog.error ? null : imRichtung.length > 0 && visible.length === 0 ? (
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="small" themeColor="textSecondary">
             {t('conversation.stageEmpty', { stage: t(STAGE_KEYS[stage]) })}
@@ -424,6 +446,9 @@ function TurnSpeakButton({ text, sprechSprache }: { text: string; sprechSprache:
 }
 
 const styles = StyleSheet.create({
+  failed: {
+    gap: Spacing.two,
+  },
   turnSpeak: {
     flexDirection: 'row',
     alignItems: 'center',

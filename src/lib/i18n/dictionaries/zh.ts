@@ -702,6 +702,8 @@ const zh = {
   "foundations.specialVowels": "自带尾音的元音",
   "foundations.tonesIntro": "泰语有五个声调。同一个音节换一个声调就是另一个词。转写在元音上方用符号标出声调。",
   "foundations.toneNoClip": "这个声调还没有经过声调检查的音频，单词只以文字显示。",
+  "catalog.loading": "正在加载内容 …",
+  "catalog.loadFailed": "无法加载这门语言的学习内容。请重试；如果仍然不行，请重新安装应用。",
 } as const;
 
 export default zh;

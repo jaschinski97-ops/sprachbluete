@@ -11,7 +11,7 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { languageDisplayName, useLocale } from '@/lib/i18n';
 import { LANGUAGE_CODES } from '@/lib/languages/types';
-import { activeVocabulary } from '@/data/active-vocabulary';
+import { activeVocabularyIds } from '@/data/active-vocabulary';
 
 /**
  * „Über die App" (UI-Review 10.09.): Version, was an Lernmaterial drinsteckt
@@ -38,7 +38,7 @@ export default function AboutScreen() {
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{t('settings.version', { version: version ?? '—' })}</ThemedText>
         <ThemedText type="small">
-          {t('settings.materialCount', { count: activeVocabulary().length, languages: LANGUAGE_CODES.map(code => languageDisplayName(code, uiLanguage)).join(', ') })}
+          {t('settings.materialCount', { count: activeVocabularyIds().size, languages: LANGUAGE_CODES.map(code => languageDisplayName(code, uiLanguage)).join(', ') })}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {t('settings.materialBody')}

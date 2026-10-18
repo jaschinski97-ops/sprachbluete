@@ -813,6 +813,8 @@ const de = {
   "foundations.specialVowels": "Vokale mit eingebautem Endlaut",
   "foundations.tonesIntro": "Thai hat fünf Töne. Dieselbe Silbe mit anderem Ton ist ein anderes Wort. Die Umschrift zeigt den Ton als Zeichen über dem Vokal.",
   "foundations.toneNoClip": "Noch kein tongeprüfter Clip für diesen Ton – das Wort steht nur geschrieben da.",
+  "catalog.loading": "Inhalte werden geladen …",
+  "catalog.loadFailed": "Die Lerninhalte dieser Sprache ließen sich nicht laden. Bitte erneut versuchen; hilft das nicht, die App neu installieren.",
 } as const;
 
 export default de;

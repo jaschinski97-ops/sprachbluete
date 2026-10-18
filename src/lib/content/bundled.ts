@@ -4,24 +4,26 @@ import { Platform } from 'react-native';
 import { CONTENT_ASSETS } from '../../content/assets';
 import type { ContentCatalog, ContentDocuments, ContentEntry, ContentKind } from './types';
 import { isDeliverableEntry } from './audio-policy';
-import { currentCatalog, setCurrentCatalog } from './catalog-state';
+import { catalogRevision, currentCatalog, setCurrentCatalog } from './catalog-state';
 
 /**
  * Die auslieferbaren Einträge, einmal je Katalogstand nach Art und ID
  * abgelegt (18.10.2026). Vorher lief jeder Aufruf über alle 26.000 Einträge,
- * ein Tipp auf „Anhören" also viermal. Neu gebaut wird nach `setLiveCatalog`
- * und, über den Objektvergleich, nach jedem `setCurrentCatalog`.
+ * ein Tipp auf „Anhören" also viermal. Neu gebaut wird nach jeder Änderung
+ * des Katalogs (`catalogRevision`): Studio, Tests und, im App-Build, jede
+ * geladene oder entfernte Lernsprache.
  */
 type DeliverableIndex = {
-  catalog: ContentCatalog;
+  revision: number;
   byId: Map<ContentKind, Map<string, ContentEntry>>;
   documents: Map<ContentKind, unknown[]>;
 };
 let index: DeliverableIndex | null = null;
 
 function deliverableIndex(): DeliverableIndex {
+  const revision = catalogRevision();
+  if (index?.revision === revision) return index;
   const catalog = currentCatalog();
-  if (index?.catalog === catalog) return index;
   const byId = new Map<ContentKind, Map<string, ContentEntry>>();
   const documents = new Map<ContentKind, unknown[]>();
   for (const entry of catalog.entries) {
@@ -34,13 +36,12 @@ function deliverableIndex(): DeliverableIndex {
     if (!docs) documents.set(entry.kind, (docs = []));
     docs.push(entry.document);
   }
-  return (index = { catalog, byId, documents });
+  return (index = { revision, byId, documents });
 }
 
 /** Developer mutations are visible immediately, before Metro reloads the bundle. */
 export function setLiveCatalog(value: ContentCatalog) {
   setCurrentCatalog(value);
-  index = null;
 }
 export function isDeletedDraft(kind: ContentKind, doc: { id: string; generatedAt?: number; language?: string; direction?: string; vocabId?: string }, source: ContentCatalog = currentCatalog()) {
   if (kind === 'vocabulary' && !doc.id.startsWith('ki-')) return false;

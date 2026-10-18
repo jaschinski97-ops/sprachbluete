@@ -54,8 +54,10 @@ function langesDatum(iso: string, language: UiLanguage): string {
 
 export default function ProgressScreen() {
   const { t, languageName, uiLanguage } = useLocale();
-  const [selected, setSelected] = useState<PairDirection>('de_to_th');
-  const direction = directionForBridge(uiLanguage, selected);
+  // Erst das Profil, dann die Zahlen: Ein fester Vorgabewert lud im App-Build
+  // sonst kurz eine fremde Sprachdatei (Katalog je Lernsprache).
+  const [selected, setSelected] = useState<PairDirection | null>(null);
+  const direction = selected ? directionForBridge(uiLanguage, selected) : null;
   const [loaded, setLoaded] = useState<{
     direction: PairDirection; stats?: LearningStats; error?: string;
   } | null>(null);
@@ -70,12 +72,16 @@ export default function ProgressScreen() {
         uiLanguage, profile.review?.direction ?? contentDirectionOf(profile.language)
       ));
     }).catch((e) => {
-      if (!cancelled) setLoaded({ direction: directionForBridge(uiLanguage, 'de_to_th'), error: String(e) });
+      if (!cancelled) {
+        setSelected('de_to_th');
+        setLoaded({ direction: directionForBridge(uiLanguage, 'de_to_th'), error: String(e) });
+      }
     });
     return () => { cancelled = true; };
   }, [uiLanguage]));
 
   useFocusEffect(useCallback(() => {
+    if (!direction) return;
     let cancelled = false;
     loadLearningStats(undefined, Date.now(), 14, direction)
       .then((result) => {
@@ -99,7 +105,7 @@ export default function ProgressScreen() {
     );
   }
 
-  if (!stats) {
+  if (!stats || !direction) {
     return (
       <ScreenScaffold title={t('tabs.progress')} subtitle={t('progress.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">

@@ -44,17 +44,21 @@ test('Die App-Fassung behält Inhalt und Auslieferungsdaten, nicht die Studio-Fe
   assert.equal(CATALOG.entries[0].digest, 'd');
 });
 
-test('Nur der Katalog im Nicht-Entwicklungsbau wird ersetzt', async () => {
+test('Nur der Katalog im Nicht-Entwicklungsbau wird zum Index', async () => {
   const calls = [];
-  const transform = wrapTransform(async (...args) => { calls.push(args); return 'ok'; });
+  const asked = [];
+  const index = Buffer.from('{"entries":[],"appIndex":{}}');
+  const transform = wrapTransform(async (...args) => { calls.push(args); return 'ok'; }, (root, bytes) => { asked.push([root, bytes]); return index; });
   const data = Buffer.from(JSON.stringify(CATALOG, null, 2));
   const file = path.join('src', 'content', 'catalog.json');
 
   assert.equal(await transform({}, '/root', file, data, { dev: true }), 'ok');
   assert.equal(calls.at(-1)[3], data);
+  assert.equal(asked.length, 0);
 
   await transform({}, '/root', file, data, { dev: false, platform: 'ios' });
-  assert.deepEqual(JSON.parse(calls.at(-1)[3].toString('utf8')), slimCatalog(CATALOG));
+  assert.equal(calls.at(-1)[3], index);
+  assert.deepEqual(asked, [['/root', data]]);
   assert.deepEqual(calls.at(-1)[4], { dev: false, platform: 'ios' });
 
   const other = Buffer.from('{"entries":[]}');

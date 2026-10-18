@@ -1,0 +1,73 @@
+import catalog from '../../content/catalog.json';
+import { LANGUAGE_CODES, type LanguageCode } from '../languages/types';
+import { planDeliveryAudio } from './audio-plan';
+import { isDeliverableEntry } from './audio-policy';
+import type { ContentCatalog, ContentEntry } from './types';
+
+// Katalog je Lernsprache am ECHTEN Katalog: Die Sprachdateien zusammen sind
+// genau die schlanke App-Fassung, jede Datei trägt jeden Clip, den ihre
+// Sprache abspielen kann (auch die deutschen Bedeutungen), und der Index
+// zählt wie der volle Katalog.
+jest.unmock('../../content/catalog.json');
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { splitCatalog } = require('../../../scripts/app-catalog-files.cjs') as {
+  splitCatalog: (value: ContentCatalog, rules: unknown, sha: string) => {
+    files: Record<LanguageCode, { entries: ContentEntry[] }>;
+    index: ContentCatalog & { appIndex: { languages: Record<LanguageCode, { vocabulary: string[] }> } };
+  };
+};
+const { slimCatalog } = require('../../../scripts/metro-app-catalog.cjs') as { slimCatalog: (value: ContentCatalog) => ContentCatalog };
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+const full = catalog as unknown as ContentCatalog;
+const { files, index } = splitCatalog(full, { languages: LANGUAGE_CODES, isDeliverableEntry, planDeliveryAudio }, 'sha');
+const key = (entry: ContentEntry) => `${entry.kind}:${entry.id}`;
+
+test('die Sprachdateien zusammen sind genau die schlanke App-Fassung', () => {
+  const union = new Map<string, ContentEntry>();
+  for (const code of LANGUAGE_CODES) {
+    for (const entry of files[code].entries) {
+      const previous = union.get(key(entry));
+      if (previous) expect(entry).toEqual(previous);
+      else union.set(key(entry), entry);
+    }
+  }
+  const slim = slimCatalog(full).entries;
+  expect(union.size).toBe(slim.length);
+  for (const entry of slim) expect(union.get(key(entry))).toEqual(entry);
+  expect(index.deleted).toEqual(full.deleted);
+  expect(index.clearedBefore).toEqual(full.clearedBefore);
+  expect(index.entries).toEqual([]);
+});
+
+test('jede Datei trägt alle Clips, die ihre Lernsprache abspielen kann', () => {
+  for (const code of LANGUAGE_CODES) {
+    const own = new Set(files[code].entries.map(key));
+    const words = full.entries
+      .filter((entry) => entry.kind === 'vocabulary' && isDeliverableEntry(entry))
+      .map((entry) => entry.document as never);
+    const situations = full.entries
+      .filter((entry) => entry.kind === 'situations' && isDeliverableEntry(entry))
+      .map((entry) => entry.document as { direction: string })
+      .filter((situation) => situation.direction.split('_to_')[1] === code);
+    const shipped = new Set(full.entries.filter((entry) => entry.kind === 'audio').map((entry) => entry.id));
+    const planned = planDeliveryAudio(situations as never, code, words).map((spec) => spec.id).filter((id) => shipped.has(id));
+    expect(planned.length).toBeGreaterThan(0);
+    expect(planned.filter((id) => !own.has(`audio:${id}`))).toEqual([]);
+  }
+});
+
+test('der Index zählt den auslieferbaren Wortschatz wie der volle Katalog', () => {
+  for (const code of LANGUAGE_CODES) {
+    const expected = [...new Map(full.entries
+      .filter((entry) => entry.kind === 'vocabulary' && isDeliverableEntry(entry))
+      .map((entry) => [entry.id, entry.document as { language: string }])).entries()]
+      .filter(([, word]) => word.language === code).map(([id]) => id);
+    expect(index.appIndex.languages[code].vocabulary).toEqual(expected);
+  }
+});
+
+test('jede Sprachdatei ist deutlich kleiner als die ganze App-Fassung', () => {
+  const slim = JSON.stringify(slimCatalog(full)).length;
+  for (const code of LANGUAGE_CODES) expect(JSON.stringify(files[code]).length).toBeLessThan(slim / 2);
+});

@@ -702,6 +702,8 @@ const fr = {
   "foundations.specialVowels": "Voyelles avec finale intégrée",
   "foundations.tonesIntro": "Le thaï a cinq tons. La même syllabe avec un autre ton est un autre mot. La transcription indique le ton par un signe au-dessus de la voyelle.",
   "foundations.toneNoClip": "Pas encore de clip au ton vérifié pour ce ton : le mot n'apparaît qu'à l'écrit.",
+  "catalog.loading": "Chargement du contenu …",
+  "catalog.loadFailed": "Le contenu d’apprentissage de cette langue n’a pas pu être chargé. Réessayez ; si cela ne suffit pas, réinstallez l’app.",
 } as const;
 
 export default fr;

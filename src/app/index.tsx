@@ -1,5 +1,5 @@
 import { Link, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useDirectionSummariesFor } from '@/components/direction-dashboard';
@@ -10,11 +10,14 @@ import { ScreenScaffold } from '@/components/screen-scaffold';
 import { ThemedText } from '@/components/themed-text';
 
 import { Spacing } from '@/constants/theme';
+import { useCatalogLanguages } from '@/hooks/use-catalog-languages';
 import { useLearnerLanguage } from '@/hooks/use-learner-language';
 import { useTheme } from '@/hooks/use-theme';
+import { ensureLanguages } from '@/lib/content/catalog-languages';
+import { isLanguageLoaded } from '@/lib/content/catalog-state';
 import { useLocale } from '@/lib/i18n';
 import { featureIsImplemented } from '@/lib/languages/feature';
-import { zieleFuerBruecke, goalLanguage, directionForBridge } from '@/lib/languages/goals';
+import { defaultGoalDirection, zieleFuerBruecke, goalLanguage } from '@/lib/languages/goals';
 import { learningLanguage } from '@/lib/languages/definitions';
 import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import { setReviewSpot } from '@/lib/profile';
@@ -52,15 +55,9 @@ export default function DashboardScreen() {
   // Lesezeichen noch geschrieben wird — sonst spränge die Markierung des
   // Deutsch-Ziels (gleiche Profil-Sprache wie Thai) kurz zurück.
   const [wahlRichtung, setWahlRichtung] = useState<PairDirection | null>(null);
-  const requestedDirection = wahlRichtung ?? profile?.review?.direction ?? null;
-  const selectedDirection = requestedDirection
-    ? directionForBridge(uiLanguage, requestedDirection)
-    // Ohne gemerkte Wahl nie die eigene Oberflächensprache vorwählen: Die
-    // Profil-Sprache ist anfangs 'th', und eine Thai-Oberfläche begann sonst
-    // mit „Thai lernen“ (Testlauf 08.10.2026).
-    : (ziele.find(ziel => ziel.language === language && ziel.language !== uiLanguage)
-      ?? ziele.find(ziel => ziel.language !== uiLanguage)
-      ?? ziele[0]).direction;
+  // Dieselbe Regel wie im Ladetor beim Start (`defaultGoalDirection`): So ist
+  // die Sprache des vorgewählten Ziels immer schon geladen.
+  const selectedDirection = defaultGoalDirection(uiLanguage, profile ?? { language, review: null }, wahlRichtung);
 
   // Die Beschreibung unter dem Picker hängt am GEWÄHLTEN Ziel: Beim Deutsch-
   // Ziel war sonst der Thai-Tontext zu lesen (gleiche Paarsprache, anderes
@@ -72,6 +69,12 @@ export default function DashboardScreen() {
   // „Weiter lernen“ öffnet die Sitzung des aktiven Ziels — die Zahl gehört dazu.
   const totalDue =
     due.summaries?.find((item) => item.direction === aktivesZiel.direction)?.due ?? null;
+  // Katalog je Lernsprache: Die Sprache des aktiven Ziels bleibt geladen
+  // (Merkhilfe, Lern-Reiter). Das Ladetor hat sie beim Start schon geholt.
+  useCatalogLanguages([aktivesZiel.language]);
+  const [ladeRichtung, setLadeRichtung] = useState<PairDirection | null>(null);
+  const [ladeFehler, setLadeFehler] = useState(false);
+  const letzteWahl = useRef(0);
 
   /**
    * Lernziel gewählt: Paarsprache UND Richtung in einem. Reihenfolge ist
@@ -82,12 +85,34 @@ export default function DashboardScreen() {
    * Fehler werden geschluckt; navigiert wird über den CTA oben oder den
    * „Lernen”-Knopf der Zeile.
    */
+  //
+  // Katalog je Lernsprache: Erst wird die Sprachdatei geladen (die Zeile sagt
+  // „lädt …“), dann gewählt — so sehen Merkhilfe und Lern-Reiter nie eine
+  // leere Sprache. Die bisherige Sprache bleibt geladen, bis eine dritte
+  // gebraucht wird. Gilt nur die jeweils letzte Wahl; meldet, ob gewählt wurde.
   const chooseGoal = useCallback(
-    (direction: PairDirection) => {
+    async (direction: PairDirection): Promise<boolean> => {
+      const sprache = targetLanguageOf(direction);
+      const nummer = ++letzteWahl.current;
+      setLadeFehler(false);
+      if (!isLanguageLoaded(sprache)) setLadeRichtung(direction);
+      try {
+        await ensureLanguages([sprache]);
+      } catch (error) {
+        console.warn('[catalog] Sprachwechsel:', error);
+        if (nummer === letzteWahl.current) {
+          setLadeRichtung(null);
+          setLadeFehler(true);
+        }
+        return false;
+      }
+      if (nummer !== letzteWahl.current) return false;
+      setLadeRichtung(null);
       setWahlRichtung(direction);
-      void chooseLanguage(targetLanguageOf(direction))
+      void chooseLanguage(sprache)
         .then(() => setReviewSpot({ direction, mode: 'cards' }))
         .catch(() => {});
+      return true;
     },
     [chooseLanguage]
   );
@@ -96,12 +121,13 @@ export default function DashboardScreen() {
    * Direkter Einstieg aus einer Ziel-Zeile (Nutzerwunsch 13.09.): wählt wie
    * die Zeile selbst und öffnet den Lern-Reiter SOFORT mit der Richtung als
    * Adresse — der Screen liest den Parameter vor dem Profil und wartet nicht
-   * auf das (asynchrone) Profil-Schreiben.
+   * auf das (asynchrone) Profil-Schreiben, nur auf die Sprachdatei.
    */
   const startGoal = useCallback(
     (direction: PairDirection) => {
-      chooseGoal(direction);
-      router.push(`/review?direction=${direction}`);
+      void chooseGoal(direction).then((gewaehlt) => {
+        if (gewaehlt) router.push(`/review?direction=${direction}`);
+      });
     },
     [chooseGoal, router]
   );
@@ -162,10 +188,16 @@ export default function DashboardScreen() {
           // genau der Zeilenschlüssel des Pickers (beim Deutsch-Ziel 'th').
           selected={aktivesZiel.language}
           selectedDirection={selectedDirection}
-          onSelect={chooseGoal}
+          onSelect={(direction) => void chooseGoal(direction)}
           onStart={startGoal}
           due={due.summaries}
+          loadingDirection={ladeRichtung}
         />
+        {ladeFehler ? (
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('catalog.loadFailed')}
+          </ThemedText>
+        ) : null}
       </View>
 
       {/* Seit Phase 18 hat jede Sprache ihre eigene Merkhilfe: Tonfarben bei

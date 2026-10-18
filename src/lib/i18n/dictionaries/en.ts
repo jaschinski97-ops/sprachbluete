@@ -789,6 +789,8 @@ const en: Partial<Record<TranslationKey, string>> = {
   "foundations.specialVowels": "Vowels with a built-in ending",
   "foundations.tonesIntro": "Thai has five tones. The same syllable with a different tone is a different word. The transcription shows the tone as a mark above the vowel.",
   "foundations.toneNoClip": "No tone-checked clip for this tone yet – the word is shown in writing only.",
+  "catalog.loading": "Loading content …",
+  "catalog.loadFailed": "The learning content for this language could not be loaded. Please try again; if that does not help, reinstall the app.",
 };
 
 export default en;

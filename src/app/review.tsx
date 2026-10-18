@@ -10,6 +10,7 @@ import { DrillRunner } from '@/components/drill-runner';
 import { DictationRunner } from '@/components/dictation-runner';
 import { Flashcard } from '@/components/flashcard';
 import { ScreenScaffold } from '@/components/screen-scaffold';
+import { CatalogLanguages } from '@/components/catalog-gate';
 import { SpeakingRunner } from '@/components/speaking-runner';
 import { SentenceRunner } from '@/components/sentence-runner';
 import { ThemedButton } from '@/components/themed-button';
@@ -266,21 +267,30 @@ export default function ReviewScreen() {
   // Ohne ausdrücklichen Übungsmodus beginnt Lernen immer auf dem Lernpfad.
   const mode = parseMode(params.mode, direction);
 
+  // Katalog je Lernsprache: Der Lernbereich startet erst mit geladener
+  // Sprache (auch beim Direkteinstieg über `?direction=`); danach laufen alle
+  // Sitzungen wie bisher synchron.
   return (
-    <ReviewBody
-      direction={direction}
-      mode={mode}
-      onOpen={open}
-      onSwitch={() => {
-        remember(null);
-        router.setParams({ direction: undefined, mode: undefined, waehlen: '1' });
-      }}
-      onRemember={remember}
-      onExit={() => {
-        // Ein expliziter Pfadmodus schließt auch direkte Übungsadressen.
-        router.setParams({ direction, mode: 'path' });
-      }}
-    />
+    <CatalogLanguages
+      languages={[targetLanguageOf(direction)]}
+      title={t('tabs.learn')}
+      subtitle={t('review.subtitle')}
+      headerAction={<ZurueckZurUebersicht />}>
+      <ReviewBody
+        direction={direction}
+        mode={mode}
+        onOpen={open}
+        onSwitch={() => {
+          remember(null);
+          router.setParams({ direction: undefined, mode: undefined, waehlen: '1' });
+        }}
+        onRemember={remember}
+        onExit={() => {
+          // Ein expliziter Pfadmodus schließt auch direkte Übungsadressen.
+          router.setParams({ direction, mode: 'path' });
+        }}
+      />
+    </CatalogLanguages>
   );
 }
 

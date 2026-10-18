@@ -1,4 +1,4 @@
-import { activeVocabularyFor } from '@/data/active-vocabulary';
+import { vocabularyCountFor } from '@/data/active-vocabulary';
 import { UI_LANGUAGES } from '@/lib/i18n/types';
 
 import { LEARNING_LANGUAGES } from './definitions';
@@ -90,7 +90,30 @@ export function goalEndonym(ziel: Lernziel): string {
   return LEARNING_LANGUAGES[ziel.language].endonym;
 }
 
-/** Wie viele Wörter ein Ziel hat: der Wortschatz seiner Zielsprache. */
+/** Wie viele Wörter ein Ziel hat: der Wortschatz seiner Zielsprache (aus dem Index, auch ungeladen). */
 export function wortschatzFuerZiel(ziel: Lernziel): number {
-  return activeVocabularyFor(ziel.language).length;
+  return vocabularyCountFor(ziel.language);
+}
+
+/**
+ * Das Ziel, mit dem die Übersicht startet — und damit die Lernsprache, die
+ * das Ladetor beim Start lädt (Katalog je Lernsprache). Eine Funktion für
+ * beide, damit Ladetor und Übersicht nie verschiedene Sprachen meinen.
+ *
+ * Reihenfolge: eine ausdrückliche Wahl, sonst der gemerkte Lernstand (auf die
+ * aktuelle Oberfläche umgelegt), sonst die Profil-Sprache. Nie die eigene
+ * Oberflächensprache vorwählen: Die Profil-Sprache ist anfangs 'th', und
+ * eine Thai-Oberfläche begann sonst mit „Thai lernen“ (Testlauf 08.10.2026).
+ */
+export function defaultGoalDirection(
+  bridge: Lang | ForeignBridge,
+  profile: { language: LanguageCode; review: { direction: PairDirection } | null } | null,
+  chosen: PairDirection | null = null
+): PairDirection {
+  const requested = chosen ?? profile?.review?.direction ?? null;
+  if (requested) return directionForBridge(bridge, requested);
+  const ziele = zieleFuerBruecke(bridge);
+  return (ziele.find(ziel => ziel.language === profile?.language && ziel.language !== bridge)
+    ?? ziele.find(ziel => ziel.language !== bridge)
+    ?? ziele[0]).direction;
 }

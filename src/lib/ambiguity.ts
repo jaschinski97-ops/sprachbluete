@@ -1,6 +1,6 @@
 import type { VocabEntry } from '@/data/vocab-types';
 import { activeVocabulary } from '@/data/active-vocabulary';
-import { currentCatalog } from '@/lib/content/catalog-state';
+import { catalogRevision } from '@/lib/content/catalog-state';
 
 import { bridgeText } from './languages/bridge';
 import type { UiLanguage } from './i18n/types';
@@ -23,10 +23,10 @@ const cache = new WeakMap<VocabEntry[], Map<string, Map<string, VocabEntry[]>>>(
 
 // Der aktive Bestand wird je Katalogstand nur einmal gebaut — sonst liefe
 // pro Karte ein Durchgang über den ganzen Katalog.
-let pooled: { catalog: unknown; pool: VocabEntry[] } | null = null;
+let pooled: { revision: number; pool: VocabEntry[] } | null = null;
 function defaultPool(): VocabEntry[] {
-  const catalog = currentCatalog();
-  if (pooled?.catalog !== catalog) pooled = { catalog, pool: activeVocabulary() };
+  const revision = catalogRevision();
+  if (pooled?.revision !== revision) pooled = { revision, pool: activeVocabulary() };
   return pooled.pool;
 }
 

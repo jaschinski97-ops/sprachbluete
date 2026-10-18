@@ -59,6 +59,7 @@ export function LanguagePicker({
   onSelect,
   onStart,
   due,
+  loadingDirection = null,
 }: {
   selected: LanguageCode;
   /** Gemerkte Richtung des Profils — entscheidet mit, WELCHES Ziel der Paarsprache aktiv ist. */
@@ -69,6 +70,8 @@ export function LanguagePicker({
   onStart: (direction: PairDirection) => void;
   /** Geladene Fälligkeitszahlen der Brücke; `null`, solange nichts geladen ist. */
   due: readonly DirectionSummary[] | null;
+  /** Ziel, dessen Sprachdatei gerade lädt (Katalog je Lernsprache): Die Zeile sagt es. */
+  loadingDirection?: PairDirection | null;
 }) {
   const toneColor = useToneColor();
   const theme = useTheme();
@@ -162,7 +165,11 @@ export function LanguagePicker({
               </ThemedText>
 
               {/* Badge nur, wenn die Zahl wirklich geladen ist — niemals geraten. */}
-              {fällig !== undefined ? (
+              {loadingDirection === ziel.direction ? (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('catalog.loading')}
+                </ThemedText>
+              ) : fällig !== undefined ? (
                 <ThemedView type="accent" style={styles.badge}>
                   <ThemedText type="smallBold" themeColor="accentText">
                     {t('home.dueBadge', { count: fällig })}

@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { CatalogGate } from '@/components/catalog-gate';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
 import { installClipLookup } from '@/lib/clips/lookup';
 import { I18nProvider } from '@/lib/i18n';
@@ -29,11 +30,16 @@ export default function TabLayout() {
       {/* auto statt der Systemvorgabe: ohne diese Angabe blieben die
           Statusbar-Icons weiss und waren im Hellmodus unlesbar. */}
       <StatusBar style="auto" />
-      <AnimatedSplashOverlay />
       {/* App-Sprache (Roadmap v2): Systemsprache erkennen, Einstellung aus
           dem Speicher lesen — für alle Screens und Komponenten darunter. */}
       <I18nProvider>
-        <AppTabs />
+        {/* Katalog je Lernsprache: Das Tor lädt erst die Lernsprache; bis
+            dahin bleibt der native Splash stehen, weil das Overlay ihn erst
+            bei seinem ersten Layout ausblendet. */}
+        <CatalogGate>
+          <AnimatedSplashOverlay />
+          <AppTabs />
+        </CatalogGate>
       </I18nProvider>
     </ThemeProvider>
   );

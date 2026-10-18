@@ -702,6 +702,8 @@ const tr = {
   "foundations.specialVowels": "Sonu kendinden olan ünlüler",
   "foundations.tonesIntro": "Tayca'nın beş tonu vardır. Aynı hece farklı tonla başka bir kelimedir. Okunuş, tonu ünlünün üstündeki bir işaretle gösterir.",
   "foundations.toneNoClip": "Bu ton için henüz tonu kontrol edilmiş bir kayıt yok: kelime yalnızca yazılı gösterilir.",
+  "catalog.loading": "İçerik yükleniyor …",
+  "catalog.loadFailed": "Bu dilin öğrenme içeriği yüklenemedi. Tekrar deneyin; işe yaramazsa uygulamayı yeniden yükleyin.",
 } as const;
 
 export default tr;

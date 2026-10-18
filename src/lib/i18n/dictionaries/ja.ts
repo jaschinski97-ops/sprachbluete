@@ -702,6 +702,8 @@ const ja = {
   "foundations.specialVowels": "語尾を含む母音",
   "foundations.tonesIntro": "タイ語には5つの声調があります。同じ音節でも声調が違えば別の単語です。発音表記では母音の上の記号で声調を示します。",
   "foundations.toneNoClip": "この声調には声調チェック済みの音声がまだありません。単語は文字だけで表示されます。",
+  "catalog.loading": "コンテンツを読み込み中 …",
+  "catalog.loadFailed": "この言語の学習コンテンツを読み込めませんでした。もう一度お試しください。解決しない場合はアプリを再インストールしてください。",
 } as const;
 
 export default ja;

@@ -1,5 +1,8 @@
 import type { BridgeEntry, VocabEntry } from '@/data/vocab-types';
+import { vocabularyIdsFor } from '@/data/active-vocabulary';
 
+import { ensureLanguages } from './content/catalog-languages';
+import { isLanguageLoaded } from './content/catalog-state';
 import { createCardState, dueCards } from './fsrs/fsrs';
 import { FSRSCardState } from './fsrs/types';
 import { directionLabel } from './languages/registry';
@@ -73,6 +76,9 @@ export async function ensureCardStates(
   now: number = Date.now()
 ): Promise<{ entries: VocabEntry[]; cards: FSRSCardState[] }> {
   const db = store ?? (await getStore());
+  // Katalog je Lernsprache: Eine Sitzung braucht ihre Sprache geladen. Die
+  // Bildschirme laden sie selbst vorher; das hier fängt jeden anderen Weg ab.
+  await ensureLanguages([targetLanguageOf(direction)]);
 
   let alle = await loadVocabulary(db);
   if (alle.length === 0) {
@@ -178,6 +184,27 @@ export type DirectionSummary = {
   mastered: number;
 };
 
+/**
+ * Die Karten einer Richtung NUR LESEND: Wörter aus dem Index (gilt für jede
+ * Sprache, auch ungeladene), Kartenstände aus dem Speicher, fehlende Karten
+ * als neu — aber nichts wird angelegt. Das holt `ensureCardStates` nach,
+ * sobald die Sprache aktiv ist. Für Zählungen gleichwertig (Vergleichstest).
+ */
+export async function readCardStates(
+  direction: PairDirection,
+  store?: DataStore,
+  now: number = Date.now()
+): Promise<{ cards: FSRSCardState[] }> {
+  const db = store ?? (await getStore());
+  const existing = await loadCardStatesForDirection(direction, db);
+  const byVocabId = new Map(existing.map((card) => [card.vocabId, card]));
+  return {
+    cards: vocabularyIdsFor(targetLanguageOf(direction)).map(
+      (id) => byVocabId.get(id) ?? createCardState(id, direction, now)
+    ),
+  };
+}
+
 /** Kennzahlen je Richtung — das Dashboard zeigt sie bewusst getrennt. */
 export async function summarizeDirection(
   // SEIT DEN KREUZRICHTUNGEN AUF `PairDirection`: Auch Kreuz-Ziele bekommen
@@ -188,7 +215,12 @@ export async function summarizeDirection(
   store?: DataStore,
   now: number = Date.now()
 ): Promise<DirectionSummary> {
-  const { cards } = await ensureCardStates(direction, store, now);
+  // Die Übersicht zählt alle Ziele der Oberfläche. Eine ungeladene Sprache
+  // (App-Build, Katalog je Lernsprache) wird dafür nicht geladen: Die Zahlen
+  // kommen lesend aus dem Index und den gespeicherten Karten.
+  const { cards } = isLanguageLoaded(targetLanguageOf(direction))
+    ? await ensureCardStates(direction, store, now)
+    : await readCardStates(direction, store, now);
   return {
     direction,
     due: dueCards(cards, now).length,

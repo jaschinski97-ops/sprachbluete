@@ -3,14 +3,29 @@ const { getDefaultConfig } = require('expo/metro-config');
 require('./scripts/limit-build-io.cjs').install();
 require('./scripts/metro-content-assets.cjs').install(require('node:path').join(__dirname, 'assets/content'));
 
+// KATALOG JE LERNSPRACHE (Schritt 1, docs/katalog-je-lernsprache-konzept.md):
+// Die Sprachdateien `assets/catalog/<lang>.catalog` entstehen hier, vor dem
+// ersten Crawl — Metro löst nur Dateien auf, die beim Start schon da sind.
+// Ein Stempel überspringt den Lauf, solange catalog.json gleich bleibt. Ein
+// Fehler hält den Entwicklungsserver nicht auf; im App-Build bricht dann der
+// Transformer ab, weil der Stempel nicht passt.
+try {
+  require('./scripts/app-catalog-files.cjs').writeCatalogFiles();
+} catch (error) {
+  console.warn(`[app-catalog] Sprachdateien nicht erzeugt: ${error.message}`);
+}
+
 const config = getDefaultConfig(__dirname);
 config.transformerPath = require.resolve('./scripts/metro-worker.cjs');
-// SCHLANKER APP-KATALOG (18.10.2026): Der Worker ersetzt in jedem
-// Nicht-Entwicklungsbau `src/content/catalog.json` durch die App-Fassung
-// ohne Studio- und Prüfdaten (scripts/metro-app-catalog.cjs, 28 → 12,5 MB).
-// Die Cache-Version trägt dessen Stand, weil Expo eigene Transformer nicht in
-// den Cache-Schlüssel aufnimmt.
+// Der Worker ersetzt in jedem Nicht-Entwicklungsbau `src/content/catalog.json`
+// durch den kleinen Index (scripts/metro-app-catalog.cjs); den Inhalt lädt die
+// App je Lernsprache aus den Sprachdateien. Die Cache-Version trägt den Stand
+// von Transformer und Erzeuger, weil Expo eigene Transformer nicht in den
+// Cache-Schlüssel aufnimmt.
 config.cacheVersion = require('./scripts/metro-app-catalog.cjs').CACHE_KEY;
+// Eigene Endung: Metro behandelt die Sprachdateien als Asset, nicht als
+// Quellcode (Expo „Customizing Metro“, `resolver.assetExts`).
+config.resolver.assetExts.push('catalog');
 
 // WINDOWS-EMFILE-GEGENMASSNAHME (09.09.2026, Ursache per Messung belegt):
 // Ohne Watchman watcht Metros FallbackWatcher JEDES Verzeichnis einzeln

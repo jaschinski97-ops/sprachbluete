@@ -702,6 +702,8 @@ const id = {
   "foundations.specialVowels": "Vokal dengan akhiran bawaan",
   "foundations.tonesIntro": "Bahasa Thai punya lima nada. Suku kata yang sama dengan nada lain adalah kata lain. Transkripsi menunjukkan nada sebagai tanda di atas vokal.",
   "foundations.toneNoClip": "Belum ada klip yang nadanya sudah diperiksa untuk nada ini: kata ini hanya ditampilkan sebagai tulisan.",
+  "catalog.loading": "Memuat konten …",
+  "catalog.loadFailed": "Konten belajar untuk bahasa ini tidak dapat dimuat. Coba lagi; jika tidak berhasil, instal ulang aplikasi.",
 } as const;
 
 export default id;

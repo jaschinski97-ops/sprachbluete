@@ -702,6 +702,8 @@ const ko = {
   "foundations.specialVowels": "끝소리가 붙은 모음",
   "foundations.tonesIntro": "태국어에는 다섯 성조가 있습니다. 같은 음절도 성조가 다르면 다른 단어입니다. 발음 표기는 모음 위의 기호로 성조를 보여 줍니다.",
   "foundations.toneNoClip": "이 성조에는 아직 성조 검사를 통과한 음성이 없습니다. 단어는 글로만 표시됩니다.",
+  "catalog.loading": "콘텐츠를 불러오는 중 …",
+  "catalog.loadFailed": "이 언어의 학습 콘텐츠를 불러오지 못했습니다. 다시 시도해 주세요. 그래도 안 되면 앱을 다시 설치해 주세요.",
 } as const;
 
 export default ko;

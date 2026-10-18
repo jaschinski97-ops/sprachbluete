@@ -1,4 +1,4 @@
-import { activeVocabularyFor } from '@/data/active-vocabulary';
+import { vocabularyCountFor } from '@/data/active-vocabulary';
 import { languageDisplayName, type UiLanguage } from '@/lib/i18n';
 
 import { LEARNING_LANGUAGES } from './definitions';
@@ -26,7 +26,8 @@ export const LANGUAGES: Record<LanguageCode, LanguageDefinition> = Object.fromEn
       speechLocale: def.speechLocale,
       challenge: def.challenge,
       feature: def.feature,
-      get entryCount() { return activeVocabularyFor(code).length; },
+      // Aus dem Index: Die Anzahl gilt auch für ungeladene Sprachen (App-Build).
+      get entryCount() { return vocabularyCountFor(code); },
       delivered: true,
       hasGermanModules: true,
     };

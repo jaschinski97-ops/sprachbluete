@@ -33,3 +33,24 @@ export type ContentEntry<K extends ContentKind = ContentKind> = {
   check?: ContentCheck;
 };
 export type ContentCatalog = { version: 2; vocabularySource?: 'generated'; entries: ContentEntry[]; deleted?: Record<string, number>; clearedBefore?: Record<string, number> };
+
+/**
+ * Der Index im App-Build (Katalog je Lernsprache, scripts/app-catalog-files.cjs):
+ * Statt des Inhalts trägt `catalog.json` dort `entries: []` und dieses Feld.
+ * Die Einträge kommen je Lernsprache aus `assets/catalog/`.
+ */
+export type CatalogIndex = {
+  format: 1;
+  /** sha256 der `catalog.json`, aus der Index und Sprachdateien entstanden sind. */
+  sourceCatalogSha256: string;
+  /** Je Lernsprache die IDs des auslieferbaren Wortschatzes (Anzahlen, Datenpflege). */
+  languages: Partial<Record<string, { vocabulary: string[] }>>;
+};
+
+/** Eine Sprachdatei des App-Builds (`assets/catalog/<lang>.catalog`). */
+export type LanguageCatalogFile = {
+  format: 1;
+  language: string;
+  sourceCatalogSha256: string;
+  entries: ContentEntry[];
+};

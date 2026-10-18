@@ -10,3 +10,9 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 // bekannten Wörtern statt des echten, sich ändernden Bestands. Bundle-Tests
 // setzen bei Bedarf einen eigenen Katalog; delivered.test.ts liest den echten.
 jest.mock('./src/content/catalog.json', () => require('./src/test-fixtures/fixture-catalog').FIXTURE_CATALOG);
+
+// Katalog je Lernsprache: Die Sprachdateien (`assets/catalog/*.catalog`)
+// entstehen erst beim Metro-Start und sind kein JS. Jest hat den vollen
+// Katalog im Modul und braucht sie nicht; Ladetests setzen eigene Dateien
+// (`setCatalogSource`).
+jest.mock('./src/content/catalog-files', () => ({ CATALOG_FILES: {} }));

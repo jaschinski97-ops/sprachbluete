@@ -59,6 +59,12 @@ yarn-error.*
 /pipeline/reports/
 /pipeline/logs/
 
+# Katalog je Lernsprache: beim Metro-Start erzeugt (scripts/app-catalog-files.cjs)
+/assets/catalog/
+
+# Messungen von scripts/measure-android-start.sh
+/measurements/
+
 # Web-Content-Spiegel (204 MB Binärdateien, per `npm run web:content` regeneriert)
 /public/
 

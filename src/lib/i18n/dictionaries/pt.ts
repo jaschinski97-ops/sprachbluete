@@ -702,6 +702,8 @@ const pt = {
   "foundations.specialVowels": "Vogais com final embutido",
   "foundations.tonesIntro": "O tailandês tem cinco tons. A mesma sílaba com outro tom é outra palavra. A transcrição mostra o tom como um sinal sobre a vogal.",
   "foundations.toneNoClip": "Ainda não há clipe com o tom verificado para este tom: a palavra aparece só por escrito.",
+  "catalog.loading": "Carregando conteúdo …",
+  "catalog.loadFailed": "Não foi possível carregar o conteúdo deste idioma. Tente novamente; se não resolver, reinstale o app.",
 } as const;
 
 export default pt;

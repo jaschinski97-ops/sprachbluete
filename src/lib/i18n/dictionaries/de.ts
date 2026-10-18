@@ -195,6 +195,14 @@ const de = {
   'topic.market': 'Markt & Einkaufen',
   'topic.restaurant': 'Restaurant & Essen',
   'topic.travel': 'Unterwegs',
+  'topic.appointments': 'Uhrzeit & Termine',
+  'topic.home': 'Familie & Wohnen',
+  'topic.leisure': 'Freizeit & Wetter',
+  'topic.health': 'Gesundheit & Arzt',
+  'topic.work': 'Arbeit & Beruf',
+  'topic.services': 'Behörden & Bank',
+  'topic.opinion': 'Meinung & Diskussion',
+  'topic.society': 'Nachrichten & Gesellschaft',
 
   /* ---------- Fortschritt (progress.tsx) ---------- */
   'progress.subtitle': 'Lernverlauf',

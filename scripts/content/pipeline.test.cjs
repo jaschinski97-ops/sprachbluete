@@ -57,6 +57,14 @@ const situation = {
   scriptTurns: [{ speaker: 'learner', thai: 'สวัสดี', roman: 'sà-wàt-dii', german: 'Hallo' }],
   corrections: [], generatedAt: 1, modelUsed: 'test-fixture',
 };
+test('situation contract accepts every planned topic and rejects unknown topics', () => {
+  const { assertDocument } = require('./pipeline.cjs');
+  const { TOPICS } = domain.load('src/lib/conversation/types');
+  for (const { id } of TOPICS) {
+    assert.doesNotThrow(() => assertDocument('situations', { ...situation, id: `${id}-C1-de_to_th-001`, level: 'C1', topic: id }));
+  }
+  assert.throws(() => assertDocument('situations', { ...situation, topic: 'weather' }));
+});
 async function setup(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'thaispeaker-content-test-'));
   assert.equal(path.dirname(root), os.tmpdir());

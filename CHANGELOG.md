@@ -2,6 +2,13 @@
 
 ## 18.10.2026
 
+- Gesprächsthemen für alle Stufen (Nutzerentscheidung): 12 statt 4 Themen, damit Fortgeschritten und Profi nicht nur Markt-, Restaurant-, Weg- und Kennenlern-Szenen bekommen. Neu: Uhrzeit & Termine (A1–B2), Familie & Wohnen (A1–C2), Freizeit & Wetter (A1–B2), Gesundheit & Arzt (A2–C2), Arbeit & Beruf (A2–C2), Behörden & Bank (B1–C2), Meinung & Diskussion (B1–C2), Nachrichten & Gesellschaft (B2–C2).
+  - Der Planer plant jedes Thema nur auf seinen Stufen (`TOPICS[].levels`). Der Prompt nennt zu jedem Thema typische Szenen.
+  - Studio-Gesprächslauf: Probelauf 59 Situationen je Sprache (Anfänger 16, Fortgeschritten 23, Profi 20) statt 24; der volle Lauf hat 4 Varianten statt 11, also 236 statt 264 je Sprache. Die Hinweistexte rechnen die Zahlen aus dem Plan.
+  - Die vorhandenen 28 Dialoge und ihre IDs bleiben gültig; ein Lauf überspringt sie. `content:integrity` zählt fehlende Situationen jetzt gegen den Studio-Plan (alle Stufen, 4 Varianten): 916 statt 996 gegen den alten A1/A2-Plan mit 32 Varianten.
+  - Die Pipeline nimmt die Themen aus `TOPICS`. Vorher waren die vier alten Themen fest eingetragen, neue Dialoge wären bei der Übernahme abgelehnt worden. Studio-Helper nach dem Update neu starten.
+  - Kapitel sortieren je Niveau nach der neuen Themenreihenfolge; die Themen-Labels stehen in allen 20 Wörterbüchern.
+
 - Lern-Reiter: neues Kapitel 0 „Grundlagen“ vor Kapitel 1, für alle vier Lernsprachen (Anfänger-Stufe, eigene Häkchen und eigener Abschluss).
   - Zahlen 0–20, Zehner, 100, 1000 und zusammengesetzte Beispiele (21 = 20 + 1 …), antippbar zum Anhören, danach eine Runde aus Hör- und Lesefragen. Preise in der Währung des Marktdialogs (Baht, Pfund, Euro). Die Grundwörter stehen als geprüfte Daten in `src/data/numbers.ts` (Wikipedia-Rohtext, abgerufen 18.10.2026); alles darüber wird nach den Regeln der Quelle zusammengesetzt (Thai: เอ็ด für die Eins, ยี่ für die Zwanzig; Spanisch gegen die Quellliste 10–99 abgeglichen). Thai-Umschrift im Paiboon-Stil, durch den Umschrift-Wächter geprüft; die Regeln des Wächters liegen jetzt in `src/lib/content/thai-romanization.ts`.
   - Thai-Schrift: alle 44 Konsonanten nach Klasse mit hergeleitetem Namen (ก gɔɔ gài), danach die vorhandene Klassenübung; Vokalzeichen als Paare kurz/lang mit Beispielwörtern aus dem Katalog (über die Silbenanalyse gefunden); die fünf Töne mit Tonlegende und je einem Beispielwort, das nur mit tongeprüftem Clip abspielt; danach „Töne hören“.

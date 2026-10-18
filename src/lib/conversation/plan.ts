@@ -1,7 +1,9 @@
 import { Direction } from '../fsrs/types';
 import { directionsFor, LANGUAGE_CODES, LanguageCode } from '../languages/types';
 
-import { Level, LEVELS, situationId, SituationSpec, TopicId, TOPICS, Situationssprache, SITUATION_SPRACHEN } from './types';
+import {
+  ALL_LEVELS, Level, LEVELS, situationId, SituationSpec, TopicId, topicFitsLevel, TOPICS, Situationssprache, SITUATION_SPRACHEN,
+} from './types';
 
 /**
  * Der Bauplan eines Laufs.
@@ -26,14 +28,19 @@ export type PlanOptions = {
   variantsPerCombo?: number;
 };
 
-/** Ein kleiner Probelauf: alle Kombinationen einmal — 16 Situationen. */
-export const TEST_RUN: PlanOptions = { variantsPerCombo: 1 };
+/**
+ * Probelauf des Studios: jedes Thema einmal auf jeder passenden Stufe A1–C2,
+ * 59 Situationen je Sprache (Anfänger 16, Fortgeschritten 23, Profi 20).
+ */
+export const TEST_RUN: PlanOptions = { variantsPerCombo: 1, levels: ALL_LEVELS };
 
 /**
- * Der große Lauf, den der Nutzer später selbst startet: 4 Themen × 2 Niveaus
- * × 2 Richtungen × 32 Varianten = 512 Situationen.
+ * Der große Lauf, den der Nutzer im Studio selbst startet: 4 Varianten je
+ * Thema und passender Stufe = 236 Situationen je Sprache (Nutzerentscheidung
+ * 18.10.2026: mehr Themen statt mehr Varianten). `content:integrity` zählt
+ * die fehlenden Situationen gegen genau diesen Plan.
  */
-export const FULL_RUN: PlanOptions = { variantsPerCombo: 32 };
+export const FULL_RUN: PlanOptions = { variantsPerCombo: 4, levels: ALL_LEVELS };
 
 export function planSituations(options: PlanOptions = {}): SituationSpec[] {
   const language = options.language ?? 'th';
@@ -57,6 +64,8 @@ export function planSituations(options: PlanOptions = {}): SituationSpec[] {
   for (let variant = 1; variant <= variants; variant++) {
     for (const topic of topics) {
       for (const level of levels) {
+        // Themen gelten nur auf ihren Stufen („Behörden & Bank“ erst ab B1).
+        if (!topicFitsLevel(topic, level)) continue;
         for (const direction of directions) {
           specs.push({
             id: situationId(topic, level, direction, variant),

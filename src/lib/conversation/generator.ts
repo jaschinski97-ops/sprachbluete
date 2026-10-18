@@ -11,6 +11,7 @@ import {
   CorrectionHint,
   SituationSpec,
   TOPIC_LABELS,
+  TOPICS,
 } from './types';
 
 /**
@@ -62,8 +63,9 @@ export function userPrompt(spec: SituationSpec): string {
   const language = SITUATION_SPRACHEN.find(item => item.direction === spec.direction)?.sprache;
   if (!language) throw Error('Unbekannte Gesprächssprache.');
   const name = LEARNING_LANGUAGES[language].label;
+  const focus = TOPICS.find((topic) => topic.id === spec.topic)?.focus;
   return `Erstelle eine natürliche Dialogsituation zum Üben von ${name}.
-Thema: ${TOPIC_LABELS[spec.topic]}. Niveau: ${spec.level}. Variante: ${spec.variant}.
+Thema: ${TOPIC_LABELS[spec.topic]}${focus ? ` (zum Beispiel ${focus})` : ''}. Niveau: ${spec.level}. Variante: ${spec.variant}.
 6 bis 10 abwechselnde Gesprächszüge (speaker: learner oder partner), mindestens eine learner-Zeile.
 ${spec.level.startsWith('A') ? 'Benutze häufigen Alltagswortschatz und kurze vollständige Sätze.' : spec.level.startsWith('B') ? 'Selbstständige Alltagsgespräche, Meinungen und Begründungen mit abwechslungsreicher Grammatik.' : 'Differenzierte Diskussion, präzise idiomatische Formulierungen und komplexe Satzstrukturen.'}
 Alle targetText-Zeilen sind ausschließlich auf ${name}, unabhängig vom Sprecher.

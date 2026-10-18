@@ -26,9 +26,17 @@ import { TranslationKey, useLocale } from '@/lib/i18n';
 /** Gesprächsthemen als Übersetzungsschlüssel statt als deutsche Konstante. */
 const TOPIC_KEYS: Record<ConversationSituation['topic'], TranslationKey> = {
   greeting: 'topic.greeting',
+  appointments: 'topic.appointments',
+  home: 'topic.home',
   market: 'topic.market',
   restaurant: 'topic.restaurant',
+  leisure: 'topic.leisure',
   travel: 'topic.travel',
+  health: 'topic.health',
+  work: 'topic.work',
+  services: 'topic.services',
+  opinion: 'topic.opinion',
+  society: 'topic.society',
 };
 
 export default function ConversationScreen() {

@@ -5,9 +5,10 @@ describe('learning groups retain compatible content IDs',()=>{
     expect(['A1','A2','B1','B2','C1','C2'].map(stageForLevel)).toEqual(['beginner','beginner','experienced','experienced','pro','pro']);
   });
   it('creates experienced and pro plans without changing the old default plan',()=>{
-    for(const stage of ['experienced','pro'] as const){
+    // Themen gelten nur auf ihren Stufen: B1/B2 haben 23, C1/C2 20 Paare.
+    for(const [stage,count] of [['experienced',23],['pro',20]] as const){
       const specs=planSituations({levels:STAGE_LEVELS[stage],targetLanguage:'de',variantsPerCombo:1});
-      expect(specs).toHaveLength(8);
+      expect(specs).toHaveLength(count);
       expect(specs.every(s=>stageForLevel(s.level)===stage && s.id.includes(s.level))).toBe(true);
     }
     expect(planSituations().every(s=>stageForLevel(s.level)==='beginner')).toBe(true);

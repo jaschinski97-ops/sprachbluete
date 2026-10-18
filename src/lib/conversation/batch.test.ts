@@ -3,7 +3,7 @@ import { DataStore, MemoryDataStore } from '../storage';
 
 import { BatchProgress, missingSpecs, runGenerationBatch } from './batch';
 import { GenerationClient, parseSituation } from './generator';
-import { FULL_RUN, planSituations, TEST_RUN } from './plan';
+import { FULL_RUN, PlanOptions, planSituations, TEST_RUN } from './plan';
 import { ConversationSituation, SituationSpec } from './types';
 
 const T0 = Date.UTC(2026, 7, 30);
@@ -54,17 +54,50 @@ function clientThatFailsOn(failing: string[]): GenerationClient & { calls: strin
  */
 const ZWEI: { directions: ('de_to_th' | 'th_to_de')[] } = { directions: ['de_to_th', 'th_to_de'] };
 
+/**
+ * Feste kleine Menge für die Lauf-Tests: die vier ersten Themen auf A1/A2 in
+ * beiden Richtungen = 16 Situationen. Die Robustheitsregeln hängen nicht an
+ * der Themenzahl; die echten Planumfänge prüft `planSituations` oben.
+ */
+const KLEIN: PlanOptions = {
+  ...TEST_RUN, ...ZWEI, topics: ['greeting', 'market', 'restaurant', 'travel'], levels: ['A1', 'A2'],
+};
+
 describe('planSituations', () => {
   it('plant ohne Angabe genau die Inhalts-Richtung der Sprache', () => {
     expect(new Set(planSituations(TEST_RUN).map((s) => s.direction))).toEqual(new Set(['de_to_th']));
     expect(new Set(planSituations({ ...TEST_RUN, targetLanguage: 'de' }).map((s) => s.direction))).toEqual(new Set(['th_to_de']));
   });
 
-  it('deckt im Probelauf jede Kombination genau einmal ab', () => {
+  it('deckt im Probelauf jede passende Kombination genau einmal ab', () => {
     const specs = planSituations({ ...TEST_RUN, ...ZWEI });
-    // 4 Themen x 2 Niveaus x 2 Richtungen
-    expect(specs).toHaveLength(16);
-    expect(new Set(specs.map((s) => s.id)).size).toBe(16);
+    // 59 Paare aus Thema und passender Stufe A1–C2 x 2 Richtungen
+    expect(specs).toHaveLength(118);
+    expect(new Set(specs.map((s) => s.id)).size).toBe(118);
+  });
+
+  it('teilt den Probelauf je Sprache auf Anfänger 16, Fortgeschritten 23, Profi 20', () => {
+    const specs = planSituations(TEST_RUN);
+    const count = (levels: string[]) => specs.filter((s) => levels.includes(s.level)).length;
+    expect([count(['A1', 'A2']), count(['B1', 'B2']), count(['C1', 'C2'])]).toEqual([16, 23, 20]);
+  });
+
+  it('plant jedes Thema nur auf seinen Stufen', () => {
+    const specs = planSituations(TEST_RUN);
+    const levelsOf = (topic: string) => specs.filter((s) => s.topic === topic).map((s) => s.level);
+    expect(levelsOf('services')).toEqual(['B1', 'B2', 'C1', 'C2']);
+    expect(levelsOf('society')).toEqual(['B2', 'C1', 'C2']);
+    expect(levelsOf('leisure')).toEqual(['A1', 'A2', 'B1', 'B2']);
+    expect(levelsOf('health')).toEqual(['A2', 'B1', 'B2', 'C1', 'C2']);
+    expect(levelsOf('greeting')).toEqual(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
+  });
+
+  it('behält die IDs der vorhandenen A1/A2-Dialoge im vollen Plan', () => {
+    const ids = new Set(['th', 'en', 'es', 'de'].flatMap((targetLanguage) =>
+      planSituations({ ...FULL_RUN, targetLanguage: targetLanguage as 'th' }).map((s) => s.id)));
+    for (const id of ['greeting-A1-de_to_th-001', 'market-A2-th_to_de-001', 'restaurant-A2-de_to_es-001', 'travel-A1-de_to_en-001']) {
+      expect(ids.has(id)).toBe(true);
+    }
   });
 
   it('ist deterministisch - gleiche Eingabe, gleiche IDs', () => {
@@ -73,8 +106,9 @@ describe('planSituations', () => {
     );
   });
 
-  it('kommt beim vollen Lauf auf 512 Situationen', () => {
-    expect(planSituations({ ...FULL_RUN, ...ZWEI })).toHaveLength(512);
+  it('kommt beim vollen Lauf auf 236 Situationen je Sprache', () => {
+    expect(planSituations(FULL_RUN)).toHaveLength(236);
+    expect(planSituations({ ...FULL_RUN, ...ZWEI })).toHaveLength(472);
   });
 
   it('deckt beide Richtungen gleich stark ab', () => {
@@ -87,15 +121,16 @@ describe('planSituations', () => {
   it('durchlaeuft erst alle Themen, bevor die zweite Variante beginnt', () => {
     // Damit ein abgebrochener Lauf breit abdeckt statt nur ein Thema.
     const specs = planSituations({ variantsPerCombo: 2, ...ZWEI });
-    expect(specs.slice(0, 16).every((s) => s.variant === 1)).toBe(true);
-    expect(specs.slice(16).every((s) => s.variant === 2)).toBe(true);
+    const perVariant = planSituations({ variantsPerCombo: 1, ...ZWEI }).length;
+    expect(specs.slice(0, perVariant).every((s) => s.variant === 1)).toBe(true);
+    expect(specs.slice(perVariant).every((s) => s.variant === 2)).toBe(true);
   });
 });
 
 describe('runGenerationBatch - Normalfall', () => {
   it('erzeugt und speichert alle Situationen', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const client = clientThatFailsOn([]);
 
     const result = await runGenerationBatch({ specs, client, store });
@@ -108,7 +143,7 @@ describe('runGenerationBatch - Normalfall', () => {
 
   it('meldet Fortschritt laufend, nicht erst am Ende', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI }).slice(0, 3);
+    const specs = planSituations(KLEIN).slice(0, 3);
     const seen: BatchProgress[] = [];
 
     await runGenerationBatch({
@@ -131,7 +166,7 @@ describe('runGenerationBatch - Normalfall', () => {
 describe('runGenerationBatch - Teilausfaelle', () => {
   it('bricht bei einem Fehler mitten im Lauf nicht ab', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const client = clientThatFailsOn([specs[3].id, specs[7].id]);
 
     const result = await runGenerationBatch({ specs, client, store });
@@ -146,7 +181,7 @@ describe('runGenerationBatch - Teilausfaelle', () => {
 
   it('behaelt die bereits erzeugten Situationen', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const client = clientThatFailsOn([specs[0].id, specs[1].id, specs[2].id]);
 
     await runGenerationBatch({ specs, client, store });
@@ -157,7 +192,7 @@ describe('runGenerationBatch - Teilausfaelle', () => {
 
   it('haelt zu jedem Fehlschlag ID und Grund fest', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const result = await runGenerationBatch({
       specs,
       client: clientThatFailsOn([specs[5].id]),
@@ -171,7 +206,7 @@ describe('runGenerationBatch - Teilausfaelle', () => {
 
   it('zaehlt Erfolge und Fehler getrennt', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const result = await runGenerationBatch({
       specs,
       client: clientThatFailsOn(specs.slice(0, 6).map((s) => s.id)),
@@ -187,7 +222,7 @@ describe('runGenerationBatch - Teilausfaelle', () => {
 describe('runGenerationBatch - Fortsetzen', () => {
   it('ueberspringt beim zweiten Lauf, was schon da ist', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
 
     // Erster Lauf: vier Ausfaelle.
     const failing = specs.slice(0, 4).map((s) => s.id);
@@ -207,7 +242,7 @@ describe('runGenerationBatch - Fortsetzen', () => {
 
   it('macht beim dritten Lauf gar keinen Aufruf mehr', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     await runGenerationBatch({ specs, client: clientThatFailsOn([]), store });
 
     const again = clientThatFailsOn([]);
@@ -220,7 +255,7 @@ describe('runGenerationBatch - Fortsetzen', () => {
 
   it('missingSpecs nennt genau das Fehlende', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     await runGenerationBatch({
       specs,
       client: clientThatFailsOn([specs[2].id]),
@@ -235,7 +270,7 @@ describe('runGenerationBatch - Fortsetzen', () => {
 describe('runGenerationBatch - Abbrechen', () => {
   it('haelt an und behaelt das bereits Erzeugte', async () => {
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI });
+    const specs = planSituations(KLEIN);
     const client = clientThatFailsOn([]);
 
     let processed = 0;
@@ -257,7 +292,7 @@ describe('runGenerationBatch - Abbrechen', () => {
 });
 
 describe('parseSituation', () => {
-  const spec = planSituations({ ...TEST_RUN, ...ZWEI })[0];
+  const spec = planSituations(KLEIN)[0];
 
   const valid = JSON.stringify({
     title: 'Am Marktstand',
@@ -343,7 +378,7 @@ describe('parseSituation', () => {
     // Ein Parse-Fehler muss sich wie jeder andere Fehlschlag verhalten:
     // gezaehlt, protokolliert, aber nichts Halbes gespeichert.
     const store = await freshStore();
-    const specs = planSituations({ ...TEST_RUN, ...ZWEI }).slice(0, 2);
+    const specs = planSituations(KLEIN).slice(0, 2);
     const client: GenerationClient = {
       async generate(s) {
         return parseSituation('{}', s, 'm', T0);

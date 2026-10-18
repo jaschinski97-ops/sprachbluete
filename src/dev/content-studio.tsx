@@ -1,4 +1,4 @@
-import { LEARNING_STAGES, STAGE_LEVELS } from '@/lib/learning-stages';
+import { stageForLevel } from '@/lib/learning-stages';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ApiKeysCard } from '@/components/api-keys-card';
@@ -31,7 +31,7 @@ import { AudioClipSpec } from '@/lib/clips/types';
 import { runGenerationBatch, missingSpecs } from '@/lib/conversation/batch';
 import { ConversationSituation } from '@/lib/conversation/types';
 import { createGenerationClient } from '@/lib/conversation/generator';
-import { planSituations } from '@/lib/conversation/plan';
+import { FULL_RUN, planSituations, TEST_RUN } from '@/lib/conversation/plan';
 import { getActiveBlobBackend, getImageBlobStore } from '@/lib/images/blob-store';
 import { runImageBatch, missingImageSpecs } from '@/lib/images/batch';
 import { createImageGenerationClient } from '@/lib/images/generator';
@@ -79,16 +79,22 @@ import {
  * Text verschieden einstellen will, soll das weiter können.
  */
 
+// Die Zahlen kommen aus dem Plan selbst: Themen gelten nur auf ihren Stufen,
+// eine feste Zahl wäre nach der nächsten Themenänderung wieder falsch.
+const testRunSpecs = planSituations(TEST_RUN);
+const stageCount = (stage: ReturnType<typeof stageForLevel>) =>
+  testRunSpecs.filter((spec) => stageForLevel(spec.level) === stage).length;
+
 const SITUATION_RUNS: RunOption[] = [
   {
     id: 'test',
     label: 'Probelauf',
-    hint: '24 Situationen je Sprache — jedes Thema einmal je Niveau A1–C2 (Anfänger, Fortgeschritten, Profi)',
+    hint: `${testRunSpecs.length} Situationen je Sprache — jedes Thema einmal je passendem Niveau A1–C2 (Anfänger ${stageCount('beginner')}, Fortgeschritten ${stageCount('experienced')}, Profi ${stageCount('pro')})`,
   },
   {
     id: 'full',
     label: 'Vollständiger Lauf',
-    hint: '264 Situationen je Sprache, alle drei Stufen — vorhandene werden übersprungen',
+    hint: `${planSituations(FULL_RUN).length} Situationen je Sprache (${FULL_RUN.variantsPerCombo} Varianten je Thema und Niveau), alle drei Stufen — vorhandene werden übersprungen`,
   },
 ];
 
@@ -403,12 +409,10 @@ export default function ContentStudio() {
     const { steps, all } = await planChain(
       chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
       (key) => planSituations({
-        // Ein Textlauf bedient alle drei Stufen (Nutzerwunsch 04.10.2026):
-        // A1–C2 je Thema; der volle Lauf hält mit 11 Varianten etwa die
-        // bisherige Menge je Sprache.
-        ...(optionId === 'full' ? { variantsPerCombo: 11 } : { variantsPerCombo: 1 }),
+        // Ein Textlauf bedient alle drei Stufen (Nutzerwunsch 04.10.2026);
+        // jedes Thema nur auf seinen Stufen, der volle Lauf mit 4 Varianten.
+        ...(optionId === 'full' ? FULL_RUN : TEST_RUN),
         targetLanguage: key as LanguageCode,
-        levels: LEARNING_STAGES.flatMap((stage) => [...STAGE_LEVELS[stage]]),
       }),
       (specs) => missingSpecs(specs),
       maxNew

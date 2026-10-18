@@ -6,7 +6,7 @@ const { promisify } = require('node:util');
 const exec = promisify(execFile);
 const ffmpeg = require('ffmpeg-static');
 const domain = require('./domain.cjs');
-const { isValidSituation } = domain.load('src/lib/conversation/types');
+const { isValidSituation, TOPICS } = domain.load('src/lib/conversation/types');
 const { isValidVocabEntry, pruefeVocabDoc } = domain.load('src/lib/content/vocab-schema');
 const { isValidAudioClip, clipIdFor } = domain.load('src/lib/clips/types');
 const { checkThaiTone, TONE_GATE_LIMITS, TONE_GATE_VERSION } = domain.load('src/lib/content/tone-gate');
@@ -57,7 +57,7 @@ async function atomicJson(file, value) {
 }
 function assertDocument(kind, doc, vocabulary = []) {
   if (!KINDS.includes(kind) || !doc || !/^[a-zA-Z0-9_-]{1,180}$/.test(doc.id)) throw Error('Ungültige Inhaltsart oder ID.');
-  const valid = kind === 'situations' ? isValidSituation(doc) && ['A1','A2','B1','B2','C1','C2'].includes(doc.level) && ['greeting','market','restaurant','travel'].includes(doc.topic) && Number.isFinite(doc.generatedAt) && typeof doc.modelUsed === 'string' :
+  const valid = kind === 'situations' ? isValidSituation(doc) && ['A1','A2','B1','B2','C1','C2'].includes(doc.level) && TOPICS.some((topic) => topic.id === doc.topic) && Number.isFinite(doc.generatedAt) && typeof doc.modelUsed === 'string' :
     // 17.09.: 'chatgpt-helper' ergänzt — der Helper-Weg der Audio-Karte erzeugt
     // Clips mit genau diesem Provider; ohne ihn verwarf der Stage-Export jeden
     // Clip mit „Inhalt verletzt den audio-Vertrag" (141 im Nutzer-Lauf).

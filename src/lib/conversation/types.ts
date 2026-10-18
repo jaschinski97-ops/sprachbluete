@@ -20,6 +20,8 @@ import type { UiLanguage } from '../i18n/types';
 
 export const LEVELS = ['A1', 'A2'] as const;
 export type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+/** Alle GER-Stufen, die ein Studio-Gesprächslauf plant (Anfänger bis Profi). */
+export const ALL_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const satisfies readonly Level[];
 
 /**
  * Sprachcode eines Gesprächs-Eintrags. Deutsch ist als Dialogsprache dabei,
@@ -50,12 +52,39 @@ export function situationSprachenFuerBruecke(bridge: UiLanguage) {
   return SITUATION_SPRACHEN.filter(entry => lernsprachen.has(entry.sprache));
 }
 
+/**
+ * Gesprächsthemen in Kapitel-Reihenfolge: `learning-path.ts` sortiert je
+ * Niveau nach dieser Liste. `levels` nennt die GER-Stufen, auf denen der
+ * Studio-Lauf das Thema plant. „Behörden & Bank“ passt erst ab B1, „Freizeit &
+ * Wetter“ nur bis B2 (Nutzerentscheidung 18.10.2026). `focus` lenkt den Prompt
+ * auf typische Szenen. Die IDs stecken in den Situations-IDs und bleiben fest.
+ */
 export const TOPICS = [
-  { id: 'greeting', label: 'Begrüßung & Kennenlernen' },
-  { id: 'market', label: 'Markt & Einkaufen' },
-  { id: 'restaurant', label: 'Restaurant & Essen' },
-  { id: 'travel', label: 'Unterwegs' },
-] as const;
+  { id: 'greeting', label: 'Begrüßung & Kennenlernen', levels: ALL_LEVELS,
+    focus: 'sich vorstellen, Small Talk, Herkunft, Kontakte knüpfen' },
+  { id: 'appointments', label: 'Uhrzeit & Termine', levels: ['A1', 'A2', 'B1', 'B2'],
+    focus: 'Uhrzeit, Wochentage, Termine vereinbaren, verschieben und absagen' },
+  { id: 'home', label: 'Familie & Wohnen', levels: ALL_LEVELS,
+    focus: 'Familie, Wohnung, Nachbarn, Haushalt, Wohnungssuche und Miete' },
+  { id: 'market', label: 'Markt & Einkaufen', levels: ALL_LEVELS,
+    focus: 'einkaufen, Preise, Mengen und Größen, umtauschen und reklamieren' },
+  { id: 'restaurant', label: 'Restaurant & Essen', levels: ALL_LEVELS,
+    focus: 'bestellen, Vorlieben und Unverträglichkeiten, bezahlen, Essen bewerten' },
+  { id: 'leisure', label: 'Freizeit & Wetter', levels: ['A1', 'A2', 'B1', 'B2'],
+    focus: 'Hobbys, Sport, Wochenende, Wetter, Verabredungen' },
+  { id: 'travel', label: 'Unterwegs', levels: ALL_LEVELS,
+    focus: 'Weg fragen, Verkehrsmittel, Tickets, Hotel, Probleme auf Reisen' },
+  { id: 'health', label: 'Gesundheit & Arzt', levels: ['A2', 'B1', 'B2', 'C1', 'C2'],
+    focus: 'Beschwerden schildern, Arzt und Apotheke, Notfall, gesunde Lebensweise' },
+  { id: 'work', label: 'Arbeit & Beruf', levels: ['A2', 'B1', 'B2', 'C1', 'C2'],
+    focus: 'Beruf, Arbeitsalltag, Kollegen, Bewerbung, Besprechungen' },
+  { id: 'services', label: 'Behörden & Bank', levels: ['B1', 'B2', 'C1', 'C2'],
+    focus: 'Bank, Post, Amt, Formulare, Visum und Aufenthalt, Versicherung' },
+  { id: 'opinion', label: 'Meinung & Diskussion', levels: ['B1', 'B2', 'C1', 'C2'],
+    focus: 'Meinungen äußern und begründen, zustimmen, widersprechen, Kompromisse finden' },
+  { id: 'society', label: 'Nachrichten & Gesellschaft', levels: ['B2', 'C1', 'C2'],
+    focus: 'aktuelle Nachrichten, Umwelt, Technik, Bildung, gesellschaftliche Fragen' },
+] as const satisfies readonly { id: string; label: string; levels: readonly Level[]; focus: string }[];
 
 export type TopicId = (typeof TOPICS)[number]['id'];
 
@@ -63,6 +92,11 @@ export const TOPIC_LABELS: Record<TopicId, string> = TOPICS.reduce(
   (acc, topic) => ({ ...acc, [topic.id]: topic.label }),
   {} as Record<TopicId, string>
 );
+
+/** Ob ein Studio-Lauf das Thema auf dieser GER-Stufe plant. */
+export function topicFitsLevel(topic: TopicId, level: Level): boolean {
+  return (TOPICS.find((entry) => entry.id === topic)?.levels as readonly Level[] | undefined)?.includes(level) ?? false;
+}
 
 /** Eine Zeile im Dialog. */
 export type ConversationTurn = {

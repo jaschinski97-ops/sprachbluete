@@ -13,7 +13,8 @@ const payload = (text: string) => ({
 
 test.each(['th','en','es','de'] as const)('erzeugt und vertont %s, Bedeutungen folgen der App-Sprache', async targetLanguage => {
   const specs = planSituations({ targetLanguage });
-  expect(specs).toHaveLength(8);
+  // Ohne Stufenangabe A1/A2: 7 Themen auf A1, 9 auf A2.
+  expect(specs).toHaveLength(16);
   expect(specs.every(s => s.direction.endsWith(`_to_${targetLanguage}`))).toBe(true);
   const text = { th: 'สวัสดี', en: 'Hello', es: 'Hola', de: 'Guten Tag' }[targetLanguage];
   const body = payload(text);

@@ -4,7 +4,19 @@
 
 - Übersetzungen je App-Sprache (Schritt 1b aus `docs/katalog-je-lernsprache-konzept.md`): Jede Lernsprache hat eine Basisdatei ohne die Übersetzungen der 20 App-Sprachen und je App-Sprache einen eigenen Teil (`<lang>-<ui>.catalog`). Geladen werden nur App-Sprache und Englisch, auf das die Bedeutungen ohnehin zurückfallen. Hörclips stehen in der Basis als kompakte Tabelle.
   - Wechselt die App-Sprache, lädt die App zuerst die passenden Teile der geladenen Lernsprachen und schaltet dann um; ein Fehler hält die Umstellung nicht auf.
-  - Thai mit englischer Oberfläche: 3,9 → 2,3 MB beim Start (Parsen 19 → 11 ms auf dem Emulator). Mit dem synthetischen Zukunftskatalog (~1.000 weitere Dialoge, 8.000 Wörter Fortgeschritten/Profi) lädt eine Lernsprache 5,5 statt 12,6 Mio. Zeichen.
+  - Gemessen auf dem Android-Emulator (API 36, Release-APK mit Sprachpaket-Medien, Thai-Profil, Median aus 12 Kaltstarts, alle Stände im selben Emulator-Start) und im Web (frischer Tab, je eine Messung). „Zukunft“ ist ein synthetischer Katalog mit je Lernsprache 250 weiteren Dialogen, 2.000 Wörtern Fortgeschritten/Profi und 7.000 Clip-Einträgen (schlank 65 statt 14 MB):
+
+    | | Start | Speicher (PSS) | JS-Heap | Bytecode | Web-Heap | Web bis DOMContentLoaded |
+    |---|---|---|---|---|---|---|
+    | vorher | 1.741 ms | 268 MB | 43,9 MB | 83,2 MB | 59,5 MB | 303 ms |
+    | Schritt 1 | 1.109 ms | 219 MB | 38,8 MB | 75,6 MB | | |
+    | Schritt 1 + 1b | 1.074 ms | 218 MB | 37,2 MB | 75,3 MB | 27,4 MB | 124 ms |
+    | Zukunft, vorher | 2.732 ms | 404 MB | 121,1 MB | 129,7 MB | 204,6 MB | 895 ms |
+    | Zukunft, Schritt 1 | 1.505 ms | 275 MB | 54,6 MB | 75,4 MB | | |
+    | Zukunft, 1 + 1b | 1.298 ms | 259 MB | 45,2 MB | 75,5 MB | 31,3 MB | 129 ms |
+
+  - Die absoluten Startzeiten schwanken stark zwischen Emulator-Starts (in einem anderen Start lag Schritt 1 bei ~620 ms); verglichen wird nur innerhalb eines Starts. Thai lädt beim Start 2,2 statt 3,4 Mio. Zeichen (Ladetor nach 50 ms, Parsen 11 ms), mit dem Zukunftskatalog 5,5 statt 12,6 Mio. (Ladetor 119 statt 271 ms). Sprachwechsel Thai → Spanisch in der Übersicht: 66 ms.
+  - JS-Bundle Android (Sprachpaket-Build) 13,3 → 5,3 MB, Web-JS 19,8 → 4,1 MB (Zukunft: 60,9 bzw. 91,3 MB auf heutigem Weg, 5,4 bzw. 4,2 MB jetzt). `expo export` für alle drei Plattformen (eingebettete Medien): Bytecode Android 18,2 → 11,4 MB, iOS 18,0 → 11,2 MB, Dauer 8:28 → 8:18. Geprüft im Web-Export: Thai ↔ Spanisch, Karteikarten, Thai-Clip, Gesprächs-Reiter mit eigener Sprache, App-Sprache Japanisch (Teile in 17 ms nachgeladen).
   - Übersicht und Gesprächs-Reiter laden ihre Sprache erst mit gelesenem Profil; vorher lud ein Spanisch-Profil beim Start Thai mit.
   - `npm run verify:production` prüft, dass alle Sprachdateien eines Exports aus einem Katalogstand stammen und zu `catalog.json` passen.
   - Ein Ladetest brauchte 3,3 GB je Jest-Worker, weil jeder Modulsatz die 19.000 Asset-Einträge neu lud; jetzt 0,4 GB. Die volle Suite mit vielen Workern neben Emulator und Gradle hatte den Rechner zweimal in den Speicherüberlauf getrieben.
@@ -13,7 +25,7 @@
   - Übersicht, Lern-, Gesprächs- und Fortschritts-Reiter laden ihre Sprache selbst nach; höchstens zwei Lernsprachen bleiben geladen, was ein offener Bildschirm braucht, wird nie entladen. Der Gesprächs-Reiter behält seine eigene Sprachwahl. Die deutschen Bedeutungs-Clips der Karteikarten liegen in jeder Sprachdatei, die sie braucht.
   - Wortzahlen und Fällig-Zahlen ungeladener Sprachen kommen aus dem Index und den gespeicherten Karten, ohne Karten anzulegen. Die Datenpflege im Vokabelspeicher löscht keine Wörter ungeladener Sprachen mehr. Kartenstände bleiben unberührt.
   - Ein Stempel bindet Sprachdateien und Index an genau diese `catalog.json`; passt er nicht, bricht der App-Build ab. `catalog.json`, Studio und Entwicklungsbau (8081) behalten den vollen Katalog.
-  - Android-Emulator, Release-APK mit Sprachpaket-Medien: JS-Bundle 13,3 → 5,3 MB, APK 61,9 → 57,5 MB, Thai geladen in 72–89 ms (Lesen 44 ms, Parsen 20 ms). Speicher (PSS) 255 → 221 MB, JS-Heap 43 → 39 MB. Messskript `scripts/measure-android-start.sh`.
+  - Messwerte stehen beim Eintrag zu Schritt 1b (beide Schritte im selben Emulator-Start gemessen). Messskript `scripts/measure-android-start.sh`.
 
 - Schlanker Inhaltskatalog im App-Build: Jeder Nicht-Entwicklungsbau (`expo export`, EAS-Builds inklusive `testflight` und `production`, Gradle-Release) bekommt `catalog.json` ohne die Daten, die nur Studio, Pipeline und `content:integrity` brauchen (Tonmessung, Digests, Bytezahlen, Prüfzeit und -grund, Anbieter, Modell, Stimme, Bild-Prompts, Clip-Texte). Erhalten bleiben alle Wörter und Dialoge vollständig, Dateinamen, Prüfstatus und Ton-Gate-Status; Auslieferungsregel und Thai-Wiedergabe-Gate arbeiten unverändert. Ein Test vergleicht die App-Sicht von vollem und schlankem echtem Katalog. `catalog.json` selbst und der Entwicklungsbau mit Studio (8081) bleiben vollständig. Umgesetzt im Metro-Worker (`scripts/metro-app-catalog.cjs`), unabhängig von `THAISPEAKER_MEDIA`.
   - Katalog 28,0 → 12,5 Mio. Zeichen. `expo export`: Bytecode Android 24,7 → 18,2 MB, iOS 24,5 → 18,0 MB, Web-JS 34,8 → 19,7 MB.

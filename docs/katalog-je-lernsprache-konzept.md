@@ -380,6 +380,26 @@ Fortgeschritten/Profi eingebettet, kein 2b). Abweichungen und Befunde:
 - **`ensureCardStates`** lädt seine Sprache selbst nach — ein Netz für jeden Weg, der vor einer Sitzung nicht lädt.
 - **verify-production** prüft, dass alle Sprachdateien eines Exports aus einem Katalogstand stammen und zu
   `catalog.json` passen.
+- **Messbedingungen:** Die absoluten Startzeiten schwankten zwischen Emulator-Starts um fast den Faktor 2, und die
+  ersten Minuten nach einem Boot sind langsamer. Gültig sind nur Vergleiche innerhalb eines Starts; die Basis wurde
+  am Ende der Reihe wiederholt (1.741 → 1.735 ms, keine Drift). Der Vorher-Stand wurde mit einer vorübergehenden,
+  nicht eingecheckten Umleitung im Transformer gebaut (schlanker Katalog als Modul wie bis 03d229e4).
+
+### Ergebnis gegen die Ziele aus Abschnitt 10
+
+| Ziel (Schritt 1, echter Katalog) | Ergebnis |
+|---|---|
+| Start ≤ Basis + 5 % | 1.741 → 1.109 ms (−36 %), mit 1b 1.074 ms |
+| Unknown + Code ≥ 10 MB unter der Basis | 127,1 → 114,4 MB (−12,7 MB), mit 1b 112,5 MB (−14,6 MB) |
+| Sprachwechsel ≤ 300 ms | th → es 66 ms |
+| Kartenstände unverändert | lesende Fällig-Zahlen legen keine Karten an (Test); Ladeweg berührt `cards` nicht |
+
+Zukunftskatalog (synthetisch, ~65 MB schlank): Start 2.732 → 1.298 ms, PSS 404 → 259 MB, Heap 121 → 45 MB, Code
+130 → 76 MB; Web-Heap 205 → 31 MB. Nach 1b liegt der Heap einer Lernsprache mit dem großen Lauf nur 8 MB über
+dem heutigen. Schritt 2a ist für den Speicher damit nicht dringend; sinnvoll wird er, wenn der Profi-Bestand weit
+über die Annahmen wächst. Die Spitze beim Start (dumpsys im Sekundentakt) liegt in den geteilten Fassungen etwas
+höher als der eingeschwungene Wert (Text und Objektgraph gleichzeitig), mit 1b synthetisch 379 MB gegen 410 MB
+auf dem heutigen Weg.
 
 ## Anhang A: Messskript
 

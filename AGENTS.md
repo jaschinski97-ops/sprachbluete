@@ -40,6 +40,8 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 
 - Web-Lernstände liegen in IndexedDB (`storage/document-persistence.web.ts`); alte localStorage-Sammlungen werden atomar mit Sicherung übernommen. Bekannte Fehlmotive werden nach Dateihash in `images/reviewed-assets.ts` unterdrückt; neue Bilddateien mit anderem Hash bleiben zulässig. Kapitel berücksichtigen gespeicherte Plurale und einfache englische Nomenplurale.
 
+- App-Builds (jeder Nicht-Entwicklungsbau: `expo export`, EAS, Gradle-Release) bekommen `catalog.json` ohne Studio-/Prüfdaten: Der Metro-Worker verschlankt ihn per `scripts/metro-app-catalog.cjs` (18.10.2026: 28 → 12,5 MB). Liest App-Code ein neues Katalogfeld (etwa Clip-Text, `check.label`), dort in die Liste aufnehmen; `app-catalog.test.ts` vergleicht die App-Sicht beider Fassungen. Dev/Studio (8081) behält den vollen Katalog. `bundled.ts` hält je Katalogstand einen Index nach Art und ID.
+
 - **Keine bezahlten KI-Läufe starten.** Erzeugung startet der Nutzer selbst im Studio. Es gibt bewusst KEINE Kostenbestätigungs-Dialoge; nicht wieder einbauen.
 - **Pfad-genau committen.** Parallel-Chats sind möglich; fremdes WIP nicht mitnehmen.
 - Nicht arbeiten, während im Browser ein Generierungs- oder Audio-Lauf läuft: Ein HMR-Reload stoppt ihn.

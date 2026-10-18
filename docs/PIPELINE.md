@@ -76,6 +76,13 @@ Gesteuert wird das über `THAISPEAKER_MEDIA=packs` (`metro.config.js` ersetzt
 dann `src/content/assets.ts` durch die leere `assets.packs.ts`). Checkliste
 für das iPhone: `docs/release-candidate-2026-09-30.md`.
 
+Unabhängig vom Medienweg bekommt jeder Nicht-Entwicklungsbau (`expo export`,
+EAS, Gradle-Release) den Katalog als schlanke App-Fassung: ohne Tonmessung,
+Digests, Bytezahlen, Anbieter, Stimme und Prompts, aber mit allen Texten,
+Dateinamen, Prüfstatus und Ton-Gate-Status (`scripts/metro-app-catalog.cjs`,
+Stand 18.10.2026 28 → 12,5 MB). `catalog.json` selbst und der
+Entwicklungsbau mit Studio bleiben vollständig.
+
 ## 5. Sprachpakete
 
 Ablauf: Inhalte zu Hause erzeugen → Paket bauen → als GitHub-Release

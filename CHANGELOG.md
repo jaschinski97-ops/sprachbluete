@@ -2,6 +2,11 @@
 
 ## 18.10.2026
 
+- Schlanker Inhaltskatalog im App-Build: Jeder Nicht-Entwicklungsbau (`expo export`, EAS-Builds inklusive `testflight` und `production`, Gradle-Release) bekommt `catalog.json` ohne die Daten, die nur Studio, Pipeline und `content:integrity` brauchen (Tonmessung, Digests, Bytezahlen, Prüfzeit und -grund, Anbieter, Modell, Stimme, Bild-Prompts, Clip-Texte). Erhalten bleiben alle Wörter und Dialoge vollständig, Dateinamen, Prüfstatus und Ton-Gate-Status; Auslieferungsregel und Thai-Wiedergabe-Gate arbeiten unverändert. Ein Test vergleicht die App-Sicht von vollem und schlankem echtem Katalog. `catalog.json` selbst und der Entwicklungsbau mit Studio (8081) bleiben vollständig. Umgesetzt im Metro-Worker (`scripts/metro-app-catalog.cjs`), unabhängig von `THAISPEAKER_MEDIA`.
+  - Katalog 28,0 → 12,5 Mio. Zeichen. `expo export`: Bytecode Android 24,7 → 18,2 MB, iOS 24,5 → 18,0 MB, Web-JS 34,8 → 19,7 MB.
+  - Android-Emulator (API 36, 2 GB RAM, Release-APK mit Sprachpaket-Medien, Median aus 12 Kaltstarts): Start bis erstes Bild 843 → 798 ms, Speicher 275 → 254 MB (PSS), davon JS-Heap 53 → 43 MB. Web: JS-Heap 89 → 68 MB.
+  - Die Suche nach Hörclips, Bildern und Dokumenten läuft über einen Index nach Art und ID, der je Katalogstand einmal entsteht (auch nach Studio-Änderungen). Vorher ging jeder Tipp auf „Anhören“ viermal durch alle 26.469 Einträge.
+
 - Lern-Reiter: Die Stufe eines Wortes (Anfänger, Fortgeschritten, Profi) wirkt jetzt im ganzen Lern-Reiter, nicht nur bei den Kapiteln (Nutzerentscheidung). Vorher wären Profi-Wörter aus einem Studio-Lauf Anfängern als neue Karteikarten vorgelegt worden.
   - Neue Karteikarten und alle freien Übungen (Auswahlübungen, Schreiben, Sprechen, „Sag es“, Satz verstehen, Satz wiederholen, Shadowing, Diktat) nehmen nur Wörter der gewählten Stufe. Fällige Wiederholungen schon gelernter Karten bleiben unabhängig von der Stufe fällig; Gelerntes verschwindet nicht. Kapitelübungen üben weiter genau ihre Dialogwörter.
   - Die Heutige Runde nimmt neue Karten nur aus der Stufe. Ihre Mischbereiche üben die Wörter der Kartenrunde, ohne Karten den Stoff der Stufe.

@@ -5,6 +5,12 @@ require('./scripts/metro-content-assets.cjs').install(require('node:path').join(
 
 const config = getDefaultConfig(__dirname);
 config.transformerPath = require.resolve('./scripts/metro-worker.cjs');
+// SCHLANKER APP-KATALOG (18.10.2026): Der Worker ersetzt in jedem
+// Nicht-Entwicklungsbau `src/content/catalog.json` durch die App-Fassung
+// ohne Studio- und Prüfdaten (scripts/metro-app-catalog.cjs, 28 → 12,5 MB).
+// Die Cache-Version trägt dessen Stand, weil Expo eigene Transformer nicht in
+// den Cache-Schlüssel aufnimmt.
+config.cacheVersion = require('./scripts/metro-app-catalog.cjs').CACHE_KEY;
 
 // WINDOWS-EMFILE-GEGENMASSNAHME (09.09.2026, Ursache per Messung belegt):
 // Ohne Watchman watcht Metros FallbackWatcher JEDES Verzeichnis einzeln

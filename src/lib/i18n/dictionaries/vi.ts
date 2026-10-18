@@ -611,7 +611,7 @@ const vi = {
   "chapter.finish": "Đánh dấu chương đã hoàn thành",
   "chapter.doneCount": "Đã hoàn thành {{done}} / {{total}}",
   "advanced.title": "Chuyên sâu: văn bản dài",
-  "advanced.intro": "Một bài đọc dài hơn, câu hỏi và câu trả lời của bạn. Bài tập này không chứng nhận trình độ CEFR.",
+  "advanced.intro": "Một bài đọc dài hơn, câu hỏi và câu trả lời của bạn.",
   "advanced.listen": "Nghe phần {{index}} trên {{total}}",
   "advanced.audioNote": "Dùng giọng hệ thống nếu có; phát âm chưa được kiểm chứng.",
   "advanced.questions": "Hiểu bài đọc",

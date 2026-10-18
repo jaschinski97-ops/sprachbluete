@@ -722,7 +722,7 @@ const de = {
   "chapter.finish": "Kapitel als abgeschlossen markieren",
   "chapter.doneCount": "{{done}} von {{total}} abgeschlossen",
   "advanced.title": "Vertiefung: längerer Text",
-  "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort. Diese Übung bescheinigt keine GER-Stufe.",
+  "advanced.intro": "Ein längerer Text, Verständnisfragen und deine eigene Antwort.",
   "advanced.listen": "Abschnitt {{index}} von {{total}} anhören",
   "advanced.audioNote": "Systemstimme, falls vorhanden; die Aussprache ist nicht geprüft.",
   "advanced.questions": "Text verstehen",

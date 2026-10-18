@@ -611,7 +611,7 @@ const zh = {
   "chapter.finish": "标记本章已完成",
   "chapter.doneCount": "已完成 {{done}} / {{total}} 章",
   "advanced.title": "深入：较长文本",
-  "advanced.intro": "阅读较长文章、回答问题，并写出自己的答案。本练习不认证 CEFR 等级。",
+  "advanced.intro": "阅读较长文章、回答问题，并写出自己的答案。",
   "advanced.listen": "收听第 {{index}} / {{total}} 部分",
   "advanced.audioNote": "如可用则使用设备语音；发音未经核验。",
   "advanced.questions": "理解文章",

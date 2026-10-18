@@ -611,7 +611,7 @@ const te = {
   "chapter.finish": "అధ్యాయం పూర్తయిందని గుర్తించండి",
   "chapter.doneCount": "{{total}}లో {{done}} పూర్తయ్యాయి",
   "advanced.title": "లోతైన అభ్యాసం: పొడవైన పాఠ్యం",
-  "advanced.intro": "పొడవైన పాఠం, ప్రశ్నలు, మీ స్వంత సమాధానం. ఈ అభ్యాసం CEFR స్థాయిని ధృవీకరించదు.",
+  "advanced.intro": "పొడవైన పాఠం, ప్రశ్నలు, మీ స్వంత సమాధానం.",
   "advanced.listen": "{{total}}లో {{index}}వ భాగం వినండి",
   "advanced.audioNote": "అందుబాటులో ఉంటే పరికర స్వరం; ఉచ్చారణ తనిఖీ కాలేదు.",
   "advanced.questions": "పాఠం అర్థం చేసుకోండి",

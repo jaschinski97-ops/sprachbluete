@@ -611,7 +611,7 @@ const fr = {
   "chapter.finish": "Marquer le chapitre comme terminé",
   "chapter.doneCount": "{{done}} sur {{total}} terminés",
   "advanced.title": "Approfondissement : texte long",
-  "advanced.intro": "Un texte plus long, des questions et votre propre réponse. Cet exercice ne certifie pas un niveau du CECR.",
+  "advanced.intro": "Un texte plus long, des questions et votre propre réponse.",
   "advanced.listen": "Écouter la partie {{index}} sur {{total}}",
   "advanced.audioNote": "Voix du système si disponible ; la prononciation n'est pas vérifiée.",
   "advanced.questions": "Comprendre le texte",

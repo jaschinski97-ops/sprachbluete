@@ -1,6 +1,6 @@
 import { isDeAnchored, isPairDirection } from '../languages/types';
 
-import { situationSprachenFuerBruecke, situationId, SITUATION_SPRACHEN, Situationssprache } from './types';
+import { lesbareLaufkennung, situationSprachenFuerBruecke, situationId, SITUATION_SPRACHEN, Situationssprache } from './types';
 
 /**
  * Der Gesprächs-Reiter listet SPRACHEN (14.09.): Die Zuordnung Sprache →
@@ -44,6 +44,18 @@ describe('SITUATION_SPRACHEN — die Sprachliste des Gesprächs-Reiters', () => 
     // ID-Schlüssel muss unverändert bleiben, sonst findet der Exists-Check
     // laufende Situationen nicht wieder.
     expect(situationId('market', 'A1', 'th_to_de', 7)).toBe('market-A1-th_to_de-007');
+  });
+});
+
+describe('lesbareLaufkennung — Studio-Anzeige ohne GER-Kürzel (18.10.2026)', () => {
+  it('nennt Thema, Stufe und Teil statt A1–C2', () => {
+    expect(lesbareLaufkennung(situationId('market', 'B1', 'de_to_th', 3))).toBe('Markt & Einkaufen · Fortgeschritten Einstieg · de_to_th · Variante 3');
+    expect(lesbareLaufkennung(situationId('society', 'C2', 'th_to_de', 12))).toBe('Nachrichten & Gesellschaft · Profi Aufbau · th_to_de · Variante 12');
+    expect(lesbareLaufkennung(situationId('greeting', 'A2', 'de_to_es', 1))).not.toMatch(/\b[ABC][12]\b/);
+  });
+  it('lässt andere Kennungen unverändert', () => {
+    expect(lesbareLaufkennung('th-37a2e8e7e48050be')).toBe('th-37a2e8e7e48050be');
+    expect(lesbareLaufkennung('unbekannt-B1-de_to_th-001')).toBe('unbekannt-B1-de_to_th-001');
   });
 });
 

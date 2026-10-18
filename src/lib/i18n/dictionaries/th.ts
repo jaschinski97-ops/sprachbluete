@@ -686,7 +686,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "ทำเครื่องหมายว่าจบบทแล้ว",
   "chapter.doneCount": "จบแล้ว {{done}} จาก {{total}} บท",
   "advanced.title": "เจาะลึก: ข้อความยาว",
-  "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ แบบฝึกนี้ไม่ใช่การรับรองระดับภาษา",
+  "advanced.intro": "อ่านข้อความที่ยาวขึ้น ตอบคำถาม และเขียนคำตอบของคุณ",
   "advanced.listen": "ฟังส่วนที่ {{index}} จาก {{total}}",
   "advanced.audioNote": "ใช้เสียงของระบบหากมี ยังไม่ได้ตรวจสอบการออกเสียง",
   "advanced.questions": "เข้าใจเนื้อหา",

@@ -16,6 +16,7 @@ import {
   looksLikeApiKey,
   saveApiKey,
 } from '@/lib/api-key';
+import { lesbareLaufkennung } from '@/lib/conversation/types';
 import { BatchProgress } from '@/lib/generation/batch';
 import {
   GeneratorChoice,
@@ -703,7 +704,7 @@ export function GeneratorCard({
           {showErrors
             ? progress.errors.slice(0, 20).map((error) => (
                 <ThemedText key={error.id} type="small" themeColor="textSecondary">
-                  {error.id}: {error.message}
+                  {lesbareLaufkennung(error.id)}: {error.message}
                 </ThemedText>
               ))
             : null}
@@ -767,7 +768,7 @@ export function ProgressPanel({ progress, active = !progress.done && !progress.c
       <View style={styles.counter}>
         {active ? <ActivityIndicator size="small" color={toneColor('mid')} accessibilityLabel="Generierung läuft" /> : null}
         <ThemedText type="smallBold" accessibilityLiveRegion="polite">
-          {active ? (progress.current ?? 'Ergebnisse werden übernommen …') : progress.cancelled ? 'Lauf angehalten' : progress.done ? 'Lauf beendet' : 'Lauf vorbereitet'}
+          {active ? (progress.current ? lesbareLaufkennung(progress.current) : 'Ergebnisse werden übernommen …') : progress.cancelled ? 'Lauf angehalten' : progress.done ? 'Lauf beendet' : 'Lauf vorbereitet'}
         </ThemedText>
       </View>
       {active ? <ElapsedTime /> : null}

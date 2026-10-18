@@ -2,6 +2,7 @@
 
 ## 18.10.2026
 
+- Keine GER-Kürzel mehr sichtbar (Nutzerentscheidung): Sichtbar sind nur noch Anfänger, Fortgeschritten und Profi (mit Einstieg/Aufbau). Der Vertiefungs-Hinweis nennt keine GER-/CEFR-Stufe mehr (20 Sprachen), die Studio-Hinweise zum Dialoglauf sprechen von Stufe und Teil, und die Studio-Fortschrittsanzeige und Fehlerliste zeigen Situationen als „Markt & Einkaufen · Fortgeschritten Einstieg · de_to_th · Variante 3“ statt der internen ID. Intern bleiben A1–C2 als Kennung und als Schwierigkeitsangabe im KI-Auftrag; vorhandene IDs ändern sich nicht.
 - Gesprächsthemen für alle Stufen (Nutzerentscheidung): 12 statt 4 Themen, damit Fortgeschritten und Profi nicht nur Markt-, Restaurant-, Weg- und Kennenlern-Szenen bekommen. Neu: Uhrzeit & Termine (A1–B2), Familie & Wohnen (A1–C2), Freizeit & Wetter (A1–B2), Gesundheit & Arzt (A2–C2), Arbeit & Beruf (A2–C2), Behörden & Bank (B1–C2), Meinung & Diskussion (B1–C2), Nachrichten & Gesellschaft (B2–C2).
   - Der Planer plant jedes Thema nur auf seinen Stufen (`TOPICS[].levels`). Der Prompt nennt zu jedem Thema typische Szenen.
   - Studio-Gesprächslauf: Probelauf 59 Situationen je Sprache (Anfänger 16, Fortgeschritten 23, Profi 20) statt 24; der volle Lauf hat 4 Varianten statt 11, also 236 statt 264 je Sprache. Die Hinweistexte rechnen die Zahlen aus dem Plan.

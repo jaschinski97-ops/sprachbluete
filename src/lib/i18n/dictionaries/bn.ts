@@ -611,7 +611,7 @@ const bn = {
   "chapter.finish": "অধ্যায় সম্পন্ন হিসেবে চিহ্নিত করুন",
   "chapter.doneCount": "{{total}}টির মধ্যে {{done}}টি সম্পন্ন",
   "advanced.title": "গভীর পাঠ: দীর্ঘ লেখা",
-  "advanced.intro": "দীর্ঘ পাঠ, প্রশ্ন ও আপনার নিজের উত্তর। এই অনুশীলন CEFR স্তরের সনদ নয়।",
+  "advanced.intro": "দীর্ঘ পাঠ, প্রশ্ন ও আপনার নিজের উত্তর।",
   "advanced.listen": "{{total}}টির মধ্যে {{index}} নম্বর অংশ শুনুন",
   "advanced.audioNote": "পাওয়া গেলে সিস্টেমের কণ্ঠ; উচ্চারণ যাচাই করা হয়নি।",
   "advanced.questions": "পাঠ বুঝুন",

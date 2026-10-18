@@ -611,7 +611,7 @@ const ur = {
   "chapter.finish": "باب مکمل نشان زد کریں",
   "chapter.doneCount": "{{total}} میں سے {{done}} مکمل",
   "advanced.title": "گہرائی: طویل متن",
-  "advanced.intro": "طویل متن، سوالات اور آپ کا اپنا جواب۔ یہ مشق CEFR سطح کی سند نہیں دیتی۔",
+  "advanced.intro": "طویل متن، سوالات اور آپ کا اپنا جواب۔",
   "advanced.listen": "حصہ {{index}} از {{total}} سنیں",
   "advanced.audioNote": "دستیاب ہو تو سسٹم کی آواز؛ تلفظ کی جانچ نہیں ہوئی۔",
   "advanced.questions": "متن سمجھیں",

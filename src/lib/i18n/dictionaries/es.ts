@@ -704,7 +704,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Marcar capítulo como completado",
   "chapter.doneCount": "{{done}} de {{total}} completados",
   "advanced.title": "Profundización: texto largo",
-  "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta. Este ejercicio no certifica un nivel del MCER.",
+  "advanced.intro": "Un texto más largo, preguntas y tu propia respuesta.",
   "advanced.listen": "Escuchar la parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz del sistema si está disponible; la pronunciación no se ha verificado.",
   "advanced.questions": "Comprender el texto",

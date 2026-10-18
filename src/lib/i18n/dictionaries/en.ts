@@ -698,7 +698,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   "chapter.finish": "Mark chapter complete",
   "chapter.doneCount": "{{done}} of {{total}} completed",
   "advanced.title": "Deep dive: longer text",
-  "advanced.intro": "A longer text, questions and your own answer. This exercise does not certify a CEFR level.",
+  "advanced.intro": "A longer text, questions and your own answer.",
   "advanced.listen": "Listen to part {{index}} of {{total}}",
   "advanced.audioNote": "System voice if available; pronunciation has not been checked.",
   "advanced.questions": "Understand the text",

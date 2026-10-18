@@ -611,7 +611,7 @@ const ar = {
   "chapter.finish": "تحديد الفصل كمكتمل",
   "chapter.doneCount": "اكتمل {{done}} من {{total}}",
   "advanced.title": "تعمق: نص أطول",
-  "advanced.intro": "نص أطول وأسئلة وإجابتك الخاصة. هذا التمرين لا يمنح شهادة بمستوى CEFR.",
+  "advanced.intro": "نص أطول وأسئلة وإجابتك الخاصة.",
   "advanced.listen": "استمع إلى الجزء {{index}} من {{total}}",
   "advanced.audioNote": "صوت النظام إن توفر؛ لم يُتحقق من النطق.",
   "advanced.questions": "افهم النص",

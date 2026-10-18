@@ -611,7 +611,7 @@ const pt = {
   "chapter.finish": "Marcar capítulo como concluído",
   "chapter.doneCount": "{{done}} de {{total}} concluídos",
   "advanced.title": "Aprofundamento: texto longo",
-  "advanced.intro": "Um texto mais longo, perguntas e a sua resposta. Este exercício não certifica um nível do QECR.",
+  "advanced.intro": "Um texto mais longo, perguntas e a sua resposta.",
   "advanced.listen": "Ouvir a parte {{index}} de {{total}}",
   "advanced.audioNote": "Voz do sistema, se disponível; a pronúncia não foi verificada.",
   "advanced.questions": "Compreender o texto",

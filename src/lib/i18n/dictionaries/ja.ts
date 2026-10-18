@@ -611,7 +611,7 @@ const ja = {
   "chapter.finish": "章を完了にする",
   "chapter.doneCount": "全{{total}}章中{{done}}章完了",
   "advanced.title": "深掘り：長めの文章",
-  "advanced.intro": "少し長い文章を読み、質問に答え、自分の答えを書きます。この練習はCEFRレベルの認定ではありません。",
+  "advanced.intro": "少し長い文章を読み、質問に答え、自分の答えを書きます。",
   "advanced.listen": "{{total}}のうち{{index}}番目を聞く",
   "advanced.audioNote": "利用可能な場合は端末の音声を使用します。発音は検証されていません。",
   "advanced.questions": "文章を理解する",

@@ -611,7 +611,7 @@ const hi = {
   "chapter.finish": "अध्याय को पूरा चिह्नित करें",
   "chapter.doneCount": "{{total}} में से {{done}} पूरे",
   "advanced.title": "गहराई से: लंबा पाठ",
-  "advanced.intro": "लंबा पाठ, प्रश्न और आपका अपना उत्तर। यह अभ्यास CEFR स्तर प्रमाणित नहीं करता।",
+  "advanced.intro": "लंबा पाठ, प्रश्न और आपका अपना उत्तर।",
   "advanced.listen": "भाग {{index}} / {{total}} सुनें",
   "advanced.audioNote": "उपलब्ध हो तो सिस्टम की आवाज़; उच्चारण की जाँच नहीं हुई है।",
   "advanced.questions": "पाठ समझें",

@@ -187,6 +187,23 @@ export function situationId(
   return `${topic}-${level}-${direction}-${String(variant).padStart(3, '0')}`;
 }
 
+const STUDIO_STUFEN = { A: 'Anfänger', B: 'Fortgeschritten', C: 'Profi' } as const;
+
+/**
+ * Situations-ID für die Studio-Laufanzeige: Stufe statt GER-Kürzel
+ * (Nutzerentscheidung 18.10.2026 — sichtbar sind nur Anfänger, Fortgeschritten,
+ * Profi). Die ID selbst bleibt unverändert; andere Kennungen kommen
+ * unverändert zurück.
+ */
+export function lesbareLaufkennung(id: string): string {
+  const treffer = /^([a-z]+)-([ABC])([12])-([a-z]{2}_to_[a-z]{2})-(\d{3})$/.exec(id);
+  const topic = treffer ? TOPICS.find((entry) => entry.id === treffer[1]) : undefined;
+  if (!treffer || !topic) return id;
+  const [, , gruppe, teil, richtung, variante] = treffer;
+  const stufe = STUDIO_STUFEN[gruppe as keyof typeof STUDIO_STUFEN];
+  return `${topic.label} · ${stufe} ${teil === '1' ? 'Einstieg' : 'Aufbau'} · ${richtung} · Variante ${Number(variante)}`;
+}
+
 /**
  * Prüft eine Situation aus dem Speicher, bevor der Gespräch-Screen sie
  * anzeigt.

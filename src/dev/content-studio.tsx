@@ -89,12 +89,12 @@ const SITUATION_RUNS: RunOption[] = [
   {
     id: 'test',
     label: 'Probelauf',
-    hint: `${testRunSpecs.length} Situationen je Sprache — jedes Thema einmal je passendem Niveau A1–C2 (Anfänger ${stageCount('beginner')}, Fortgeschritten ${stageCount('experienced')}, Profi ${stageCount('pro')})`,
+    hint: `${testRunSpecs.length} Situationen je Sprache — jedes passende Thema einmal für Einstieg und Aufbau jeder Stufe (Anfänger ${stageCount('beginner')}, Fortgeschritten ${stageCount('experienced')}, Profi ${stageCount('pro')})`,
   },
   {
     id: 'full',
     label: 'Vollständiger Lauf',
-    hint: `${planSituations(FULL_RUN).length} Situationen je Sprache (${FULL_RUN.variantsPerCombo} Varianten je Thema und Niveau), alle drei Stufen — vorhandene werden übersprungen`,
+    hint: `${planSituations(FULL_RUN).length} Situationen je Sprache (${FULL_RUN.variantsPerCombo} Varianten je Thema, Stufe und Teil), alle drei Stufen — vorhandene werden übersprungen`,
   },
 ];
 

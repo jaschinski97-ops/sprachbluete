@@ -611,7 +611,7 @@ const mr = {
   "chapter.finish": "धडा पूर्ण म्हणून चिन्हांकित करा",
   "chapter.doneCount": "{{total}} पैकी {{done}} पूर्ण",
   "advanced.title": "सखोल: मोठा मजकूर",
-  "advanced.intro": "मोठा मजकूर, प्रश्न आणि तुमचे स्वतःचे उत्तर. हा सराव CEFR स्तराचे प्रमाणपत्र नाही.",
+  "advanced.intro": "मोठा मजकूर, प्रश्न आणि तुमचे स्वतःचे उत्तर.",
   "advanced.listen": "{{total}} पैकी भाग {{index}} ऐका",
   "advanced.audioNote": "उपलब्ध असल्यास प्रणालीचा आवाज; उच्चार तपासलेले नाहीत.",
   "advanced.questions": "मजकूर समजून घ्या",

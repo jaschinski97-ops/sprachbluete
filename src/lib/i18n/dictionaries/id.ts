@@ -611,7 +611,7 @@ const id = {
   "chapter.finish": "Tandai bab selesai",
   "chapter.doneCount": "{{done}} dari {{total}} selesai",
   "advanced.title": "Pendalaman: teks panjang",
-  "advanced.intro": "Teks lebih panjang, pertanyaan, dan jawabanmu sendiri. Latihan ini tidak menyatakan tingkat CEFR.",
+  "advanced.intro": "Teks lebih panjang, pertanyaan, dan jawabanmu sendiri.",
   "advanced.listen": "Dengarkan bagian {{index}} dari {{total}}",
   "advanced.audioNote": "Suara sistem jika tersedia; pengucapan belum diperiksa.",
   "advanced.questions": "Pahami teks",

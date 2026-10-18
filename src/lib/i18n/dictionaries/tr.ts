@@ -611,7 +611,7 @@ const tr = {
   "chapter.finish": "Bölümü tamamlandı olarak işaretle",
   "chapter.doneCount": "{{total}} bölümden {{done}} tanesi tamamlandı",
   "advanced.title": "Derinleşme: uzun metin",
-  "advanced.intro": "Daha uzun bir metin, sorular ve kendi yanıtın. Bu alıştırma CEFR düzeyi belgelemez.",
+  "advanced.intro": "Daha uzun bir metin, sorular ve kendi yanıtın.",
   "advanced.listen": "{{total}} bölümden {{index}}. bölümü dinle",
   "advanced.audioNote": "Varsa sistem sesi kullanılır; telaffuz doğrulanmadı.",
   "advanced.questions": "Metni anla",

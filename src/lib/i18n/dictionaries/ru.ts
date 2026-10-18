@@ -611,7 +611,7 @@ const ru = {
   "chapter.finish": "Отметить главу завершённой",
   "chapter.doneCount": "Завершено {{done}} из {{total}}",
   "advanced.title": "Углубление: длинный текст",
-  "advanced.intro": "Более длинный текст, вопросы и ваш ответ. Это упражнение не подтверждает уровень CEFR.",
+  "advanced.intro": "Более длинный текст, вопросы и ваш ответ.",
   "advanced.listen": "Прослушать часть {{index}} из {{total}}",
   "advanced.audioNote": "Системный голос, если доступен; произношение не проверено.",
   "advanced.questions": "Понять текст",

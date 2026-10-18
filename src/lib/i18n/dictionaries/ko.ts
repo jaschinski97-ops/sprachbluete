@@ -611,7 +611,7 @@ const ko = {
   "chapter.finish": "이 장을 완료로 표시",
   "chapter.doneCount": "{{total}}장 중 {{done}}장 완료",
   "advanced.title": "심화: 긴 글",
-  "advanced.intro": "긴 글을 읽고 질문에 답한 뒤 직접 답을 씁니다. 이 연습은 CEFR 등급을 인증하지 않습니다.",
+  "advanced.intro": "긴 글을 읽고 질문에 답한 뒤 직접 답을 씁니다.",
   "advanced.listen": "{{total}}개 중 {{index}}번째 부분 듣기",
   "advanced.audioNote": "가능하면 기기 음성을 사용합니다. 발음은 검증되지 않았습니다.",
   "advanced.questions": "글 이해하기",

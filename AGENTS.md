@@ -62,7 +62,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 ## Lokale Bilder
 
 - Lokale Textanbieter `local-qwen`/`local-gemma`: Setup/Start unter `scripts/content/*local-text*`, Einrichtung `docs/lokale-texte.md`. llama.cpp-Router auf 127.0.0.1:8090, höchstens ein Modell geladen. Textserver erst nach Bildlauf und Freigabe des GPU-Speichers starten; Audio bleibt unverändert.
-- Sichtbare Inhaltsgruppen Anfänger/Fortgeschritten/Profi entsprechen intern A1/A2, B1/B2, C1/C2. Lernen und Gespräch filtern per Stufenschalter; ein Studio-Gesprächslauf erzeugt A1–C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger.
+- Sichtbare Inhaltsgruppen Anfänger/Fortgeschritten/Profi entsprechen intern A1/A2, B1/B2, C1/C2. A1–C2 nie in sichtbaren Texten (App und Studio, Nutzerentscheidung 18.10.2026); intern nur als ID und im KI-Auftrag. Lernen und Gespräch filtern per Stufenschalter; ein Studio-Gesprächslauf erzeugt A1–C2. Neue Vokabeln tragen `learningStage`; ältere ohne Feld bleiben Anfänger.
 - Gesprächsthemen (seit 18.10.): 12 in `TOPICS` (`conversation/types.ts`), jedes mit eigenen Stufen (`levels`). Die Reihenfolge ist die Kapitelreihenfolge. Probelauf 59 je Sprache, voller Lauf (`FULL_RUN`, 4 Varianten) 236; `content:integrity` zählt gegen `FULL_RUN`. Ein neues Thema braucht Label in allen 20 Wörterbüchern (`topic.<id>`).
 - Thai-Umschrift: Paiboon-Stil wie in den Dialogen (kh/th/ph, g/dt/bp, ɛ ɔ ə ʉ, Ton à â á ǎ; ได้ dâai, น้ำ nám). Wächtertest `src/lib/content/thai-romanization.test.ts` prüft den echten Katalog. Gleiche Vorderseiten: Karte zeigt Wortanfang (`src/lib/ambiguity.ts`), Schreiben akzeptiert Synonyme der ganzen Sprache.
 

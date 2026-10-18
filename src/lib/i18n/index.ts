@@ -332,6 +332,9 @@ export type I18nValue = {
 
 const I18nContext = createContext<I18nValue | null>(null);
 
+/** Wechsel der App-Sprache mit `prepare`, nacheinander (eine App, ein Provider). */
+let uiQueue: Promise<void> = Promise.resolve();
+
 function buildValue(
   setting: LanguageSetting,
   systemLanguage: UiLanguage,
@@ -360,35 +363,61 @@ function buildValue(
  * werden bewusst geschluckt: Fehlt der Speicherstand, ist `'system'` ohnehin
  * der richtige Stand.
  */
-export function I18nProvider({ children }: { children: ReactNode }) {
+export function I18nProvider({
+  children,
+  prepare,
+}: {
+  children: ReactNode;
+  /**
+   * Wird vor jeder (auch der ersten) App-Sprache abgewartet, bevor die
+   * Oberfläche sie zeigt — im App-Build lädt `_layout.tsx` hier die
+   * Übersetzungsteile des Katalogs (Katalog je Lernsprache, Schritt 1b).
+   * Ein Fehler hält die Umstellung nicht auf.
+   */
+  prepare?: (ui: UiLanguage) => Promise<void>;
+}) {
   // NULL bis der Speicherstand da ist: Der erste Render wartet, statt die
   // App kurz in der Fallback-Sprache aufblitzen zu lassen (Kaltstart-Blitz,
   // Nutzerbefund 21.09.). Der Ladevorgang ist derselbe Speicher, den das
   // Profil eh liest — die Verzögerung ist die erste weiße Sekunde.
   const [setting, setSettingState] = useState<LanguageSetting | null>(null);
   const systemLanguage = useMemo(() => detectSystemLocale(), []);
+  // Mit `prepare` wird jede Sprache erst vorbereitet und dann gesetzt — der
+  // Reihe nach, damit bei schnellen Wechseln die zuletzt gewählte gewinnt.
+  const apply = useCallback(
+    (next: LanguageSetting, isCurrent: () => boolean = () => true) => {
+      if (!prepare) {
+        if (isCurrent()) setSettingState(next);
+        return;
+      }
+      const ui = next === SYSTEM_LANGUAGE_SETTING ? systemLanguage : next;
+      uiQueue = uiQueue
+        .then(() => prepare(ui))
+        .catch((error: unknown) => console.warn('[i18n] App-Sprache vorbereiten:', error))
+        .then(() => {
+          if (isCurrent()) setSettingState(next);
+        });
+    },
+    [prepare, systemLanguage]
+  );
 
   useEffect(() => {
     let cancelled = false;
     loadLanguageSetting()
-      .then((stored) => {
-        if (!cancelled) setSettingState(stored);
-      })
-      .catch(() => {
-        // Ohne Speicherstand gilt das System — wie beim Initialwert.
-        if (!cancelled) setSettingState(SYSTEM_LANGUAGE_SETTING);
-      });
+      // Ohne Speicherstand gilt das System — wie beim Initialwert.
+      .catch(() => SYSTEM_LANGUAGE_SETTING)
+      .then((stored) => apply(stored, () => !cancelled));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [apply]);
 
   const setSetting = useCallback((next: LanguageSetting) => {
-    setSettingState(next);
+    apply(next);
     saveLanguageSetting(next).catch(() => {
-      // Fire-and-forget wie die Profil-Setter; der Screen-Zustand stimmt schon.
+      // Fire-and-forget wie die Profil-Setter; der Screen-Zustand stimmt gleich.
     });
-  }, []);
+  }, [apply]);
 
   const value = useMemo(
     () => buildValue(setting ?? SYSTEM_LANGUAGE_SETTING, systemLanguage, setSetting),

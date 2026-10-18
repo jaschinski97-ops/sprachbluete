@@ -23,8 +23,16 @@ const { slimEntry } = require('./metro-app-catalog.cjs');
 //   `planDeliveryAudio` (die deutschen Bedeutungen der Karteikarten). Ein
 //   de-Clip steht dadurch in mehreren Dateien; die Laufzeit nimmt ihn einmal.
 // - Nicht Zuordenbares (unbekannte Art oder Sprache) kommt in jede Datei.
+//
+// SCHRITT 1b — Übersetzungen je App-Sprache: Die Übersetzungen machen bei den
+// Dialogen ~89 % der Größe aus, gebraucht werden aber nur App-Sprache und
+// Englisch (`bridgeText` fällt auf Englisch zurück). Jede Lernsprache hat
+// deshalb eine Basis `<lang>.catalog` ohne die `translations` der 20
+// App-Sprachen und je App-Sprache einen Teil `<lang>-<ui>.catalog`. Die
+// Hörclips stehen in der Basis als kompakte Tabelle
+// `[id, Sprache, Datei, Status, Tonstatus]` statt als ganze Einträge.
 
-const FORMAT = 1;
+const FORMAT = 2;
 const OUT_DIR = path.join('assets', 'catalog');
 const STAMP = 'stamp.json';
 const INDEX = 'index.json';
@@ -36,6 +44,7 @@ const DOMAIN_FILES = [
   'src/lib/clips/plan.ts',
   'src/lib/clips/types.ts',
   'src/lib/conversation/types.ts',
+  'src/lib/i18n/types.ts',
   'src/lib/languages/types.ts',
 ];
 const ROOT = path.resolve(__dirname, '..');
@@ -53,19 +62,69 @@ function domainRules() {
   const domain = require('./content/domain.cjs');
   return {
     languages: domain.load('src/lib/languages/types').LANGUAGE_CODES,
+    uiLanguages: domain.load('src/lib/i18n/types').UI_LANGUAGES,
     isDeliverableEntry: domain.load('src/lib/content/audio-policy').isDeliverableEntry,
     planDeliveryAudio: domain.load('src/lib/content/audio-plan').planDeliveryAudio,
   };
 }
 
 const targetOf = (direction) => (typeof direction === 'string' ? direction.split('_to_')[1] : undefined);
+const isObject = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+/**
+ * Ein schlanker Clip-Eintrag als Tabellenzeile, oder `null`, wenn er nicht
+ * verlustfrei passt (dann bleibt er ein ganzer Eintrag). Umkehrung:
+ * `audioEntryFromRow` in src/lib/content/catalog-languages.ts.
+ */
+function audioRow(entry) {
+  if (entry.kind !== 'audio' || !isObject(entry.document)) return null;
+  const { document, asset, check } = entry;
+  const keys = Object.keys(document).sort().join(',');
+  if (keys !== 'id,language' || document.id !== entry.id || typeof document.language !== 'string') return null;
+  if (asset !== undefined && typeof asset !== 'string') return null;
+  if (Object.keys(entry).some((key) => !['kind', 'id', 'document', 'asset', 'check'].includes(key))) return null;
+  if (check !== undefined) {
+    if (typeof check.status !== 'string' || Object.keys(check).some((key) => key !== 'status' && key !== 'tone')) return null;
+    if (check.tone !== undefined && (typeof check.tone.status !== 'string' || Object.keys(check.tone).length !== 1)) return null;
+  }
+  return [entry.id, document.language, asset ?? null, check ? check.status : null, check?.tone ? check.tone.status : null];
+}
+
+/** Basis-Einträge ohne die Übersetzungen der App-Sprachen, dazu die Teile je App-Sprache. */
+function splitTranslations(entries, uiLanguages) {
+  const parts = Object.fromEntries(uiLanguages.map((ui) => [ui, { vocabulary: {}, situations: {} }]));
+  const base = [];
+  const audio = [];
+  for (const entry of entries) {
+    const row = audioRow(entry);
+    if (row) {
+      audio.push(row);
+      continue;
+    }
+    const translations = entry.document?.translations;
+    if ((entry.kind !== 'vocabulary' && entry.kind !== 'situations') || !isObject(translations)) {
+      base.push(entry);
+      continue;
+    }
+    // Was keine App-Sprache ist, bleibt in der Basis; das leere Objekt auch,
+    // damit die Laufzeit die Teile dort hineinlegt.
+    const rest = { ...translations };
+    for (const ui of uiLanguages) {
+      if (!(ui in rest)) continue;
+      parts[ui][entry.kind][entry.id] = rest[ui];
+      delete rest[ui];
+    }
+    base.push({ ...entry, document: { ...entry.document, translations: rest } });
+  }
+  return { base, audio, parts };
+}
 
 /**
  * Teilt den vollen Katalog in eine schlanke Datei je Lernsprache und den Index.
  * `rules` kommt aus `domainRules()` oder, im Jest-Test, direkt aus den TS-Modulen.
  */
 function splitCatalog(catalog, rules, sourceCatalogSha256) {
-  const { languages, isDeliverableEntry, planDeliveryAudio } = rules;
+  const { languages, uiLanguages, isDeliverableEntry, planDeliveryAudio } = rules;
   const known = new Set(languages);
   const vocabularyLanguage = new Map();
   for (const entry of catalog.entries) {
@@ -99,6 +158,7 @@ function splitCatalog(catalog, rules, sourceCatalogSha256) {
   for (const entry of catalog.entries) if (entry.kind === 'audio' && !audioById.has(entry.id)) audioById.set(entry.id, entry);
 
   const files = {};
+  const translations = {};
   const indexLanguages = {};
   for (const language of languages) {
     const entries = [...own.get(language)];
@@ -112,32 +172,47 @@ function splitCatalog(catalog, rules, sourceCatalogSha256) {
       }
     }
     entries.push(...everywhere);
-    files[language] = { format: FORMAT, language, sourceCatalogSha256, entries: entries.map(slimEntry) };
+    const { base, audio, parts } = splitTranslations(entries.map(slimEntry), uiLanguages);
+    files[language] = { format: FORMAT, language, sourceCatalogSha256, entries: base, audio };
+    translations[language] = Object.fromEntries(uiLanguages.map((ui) => [ui, { format: FORMAT, language, ui, sourceCatalogSha256, ...parts[ui] }]));
     indexLanguages[language] = { vocabulary: words.get(language).map((word) => word.id) };
   }
 
   const { entries: _entries, ...rest } = catalog;
   const index = { ...rest, entries: [], appIndex: { format: FORMAT, sourceCatalogSha256, languages: indexLanguages } };
-  return { files, index };
+  return { files, translations, index };
 }
 
-function fileName(language) {
-  return `${language}.catalog`;
+/** `th.catalog` (Basis) oder `th-de.catalog` (Übersetzungen der App-Sprache de). */
+function fileName(language, ui) {
+  return ui ? `${language}-${ui}.catalog` : `${language}.catalog`;
 }
 
 const MAP_FILE = path.join('src', 'content', 'catalog-files.ts');
 
 /** Der Inhalt von `src/content/catalog-files.ts`: statische requires, wie `assets.ts`. */
-function renderFileMap(languages) {
-  const lines = languages.map((language) => `  ${language}: require('../../assets/catalog/${fileName(language)}'),`);
+function renderFileMap(languages, uiLanguages) {
+  const req = (language, ui) => `require('../../assets/catalog/${fileName(language, ui)}')`;
+  const lines = languages.flatMap((language) => [
+    `  ${language}: {`,
+    `    base: ${req(language)},`,
+    '    translations: {',
+    ...uiLanguages.map((ui) => `      ${ui}: ${req(language, ui)},`),
+    '    },',
+    '  },',
+  ]);
   return [
     '// Erzeugt von `node scripts/app-catalog-files.cjs --write-map`. Nicht von Hand ändern;',
     '// scripts/app-catalog-files.test.cjs vergleicht die Datei mit dem Erzeuger.',
     '// Statische requires: Metro legt die Sprachdateien als Asset in den App-Build',
     '// (Android res/raw, iOS App-Bundle, Web dist/assets).',
+    "import type { UiLanguage } from '@/lib/i18n/types';",
     "import type { LanguageCode } from '@/lib/languages/types';",
     '',
-    'export const CATALOG_FILES: Record<LanguageCode, number> = {',
+    '/** Basis einer Lernsprache und ihre Übersetzungsteile je App-Sprache (Schritt 1b). */',
+    'export type CatalogFileSet = { base: number; translations: Record<UiLanguage, number> };',
+    '',
+    'export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {',
     ...lines,
     '};',
     '',
@@ -172,20 +247,28 @@ function writeCatalogFiles({ root = ROOT, catalogPath = path.join(root, 'src/con
     && Object.entries(stamp.files ?? {}).every(([name, bytes]) => fs.statSync(path.join(dir, name), { throwIfNoEntry: false })?.size === bytes);
   if (fresh && !force) return { written: false, sourceCatalogSha256, dir };
 
-  const { files, index } = splitCatalog(JSON.parse(source.toString('utf8')), rules ?? domainRules(), sourceCatalogSha256);
+  const { files, translations, index } = splitCatalog(JSON.parse(source.toString('utf8')), rules ?? domainRules(), sourceCatalogSha256);
   fs.mkdirSync(dir, { recursive: true });
   const sizes = {};
+  const write = (name, value) => {
+    const content = JSON.stringify(value);
+    writeAtomic(path.join(dir, name), content);
+    sizes[name] = Buffer.byteLength(content);
+  };
   for (const [language, file] of Object.entries(files)) {
-    const content = JSON.stringify(file);
-    writeAtomic(path.join(dir, fileName(language)), content);
-    sizes[fileName(language)] = Buffer.byteLength(content);
+    write(fileName(language), file);
+    for (const [ui, part] of Object.entries(translations[language])) write(fileName(language, ui), part);
+  }
+  // Dateien eines früheren Formats fliegen raus; Metro sähe sie sonst weiter.
+  for (const name of fs.readdirSync(dir)) {
+    if (name.endsWith('.catalog') && !(name in sizes)) fs.unlinkSync(path.join(dir, name));
   }
   const indexContent = JSON.stringify(index);
   writeAtomic(path.join(dir, INDEX), indexContent);
   sizes[INDEX] = Buffer.byteLength(indexContent);
   writeAtomic(path.join(dir, STAMP), JSON.stringify({ format: FORMAT, generator: GENERATOR_KEY, sourceCatalogSha256, files: sizes }, null, 2));
   const total = Object.values(sizes).reduce((sum, bytes) => sum + bytes, 0);
-  log(`[app-catalog] ${Object.keys(files).length} Sprachdateien + Index, ${(total / 1e6).toFixed(1)} MB in ${Date.now() - started} ms`);
+  log(`[app-catalog] ${Object.keys(sizes).length - 1} Dateien für ${Object.keys(files).length} Lernsprachen + Index, ${(total / 1e6).toFixed(1)} MB in ${Date.now() - started} ms`);
   return { written: true, sourceCatalogSha256, dir, sizes };
 }
 
@@ -209,7 +292,8 @@ function appCatalogIndex(projectRoot, catalogData) {
 
 if (require.main === module) {
   if (process.argv.includes('--write-map')) {
-    fs.writeFileSync(path.join(ROOT, MAP_FILE), renderFileMap(domainRules().languages));
+    const { languages, uiLanguages } = domainRules();
+    fs.writeFileSync(path.join(ROOT, MAP_FILE), renderFileMap(languages, uiLanguages));
     console.log(`[app-catalog] ${MAP_FILE} geschrieben`);
   } else {
     const result = writeCatalogFiles({ force: process.argv.includes('--force') });
@@ -217,4 +301,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { FORMAT, GENERATOR_KEY, MAP_FILE, OUT_DIR, appCatalogIndex, domainRules, fileName, renderFileMap, splitCatalog, writeCatalogFiles };
+module.exports = { FORMAT, GENERATOR_KEY, MAP_FILE, OUT_DIR, appCatalogIndex, audioRow, domainRules, fileName, renderFileMap, splitCatalog, writeCatalogFiles };

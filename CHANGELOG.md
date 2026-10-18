@@ -2,6 +2,13 @@
 
 ## 18.10.2026
 
+- Übersetzungen je App-Sprache (Schritt 1b aus `docs/katalog-je-lernsprache-konzept.md`): Jede Lernsprache hat eine Basisdatei ohne die Übersetzungen der 20 App-Sprachen und je App-Sprache einen eigenen Teil (`<lang>-<ui>.catalog`). Geladen werden nur App-Sprache und Englisch, auf das die Bedeutungen ohnehin zurückfallen. Hörclips stehen in der Basis als kompakte Tabelle.
+  - Wechselt die App-Sprache, lädt die App zuerst die passenden Teile der geladenen Lernsprachen und schaltet dann um; ein Fehler hält die Umstellung nicht auf.
+  - Thai mit englischer Oberfläche: 3,9 → 2,3 MB beim Start (Parsen 19 → 11 ms auf dem Emulator). Mit dem synthetischen Zukunftskatalog (~1.000 weitere Dialoge, 8.000 Wörter Fortgeschritten/Profi) lädt eine Lernsprache 5,5 statt 12,6 Mio. Zeichen.
+  - Übersicht und Gesprächs-Reiter laden ihre Sprache erst mit gelesenem Profil; vorher lud ein Spanisch-Profil beim Start Thai mit.
+  - `npm run verify:production` prüft, dass alle Sprachdateien eines Exports aus einem Katalogstand stammen und zu `catalog.json` passen.
+  - Ein Ladetest brauchte 3,3 GB je Jest-Worker, weil jeder Modulsatz die 19.000 Asset-Einträge neu lud; jetzt 0,4 GB. Die volle Suite mit vielen Workern neben Emulator und Gradle hatte den Rechner zweimal in den Speicherüberlauf getrieben.
+
 - Inhaltskatalog je Lernsprache (Schritt 1 aus `docs/katalog-je-lernsprache-konzept.md`): App-Builds tragen den Inhalt nicht mehr als JS-Modul, sondern je Lernsprache als eingebettete Datei (`assets/catalog/<lang>.catalog`, beim Metro-Start von `scripts/app-catalog-files.cjs` erzeugt, gitignored). Im Bundle bleibt ein kleiner Index (Wort-IDs je Sprache, gelöschte Entwürfe). Beim Start lädt ein Ladetor hinter dem Splash nur die Lernsprache des vorgewählten Ziels; scheitert das (Datei fehlt, kaputt, länger als 10 s), erscheint ein Fehler mit „Erneut versuchen“ statt eines ewigen Splashs.
   - Übersicht, Lern-, Gesprächs- und Fortschritts-Reiter laden ihre Sprache selbst nach; höchstens zwei Lernsprachen bleiben geladen, was ein offener Bildschirm braucht, wird nie entladen. Der Gesprächs-Reiter behält seine eigene Sprachwahl. Die deutschen Bedeutungs-Clips der Karteikarten liegen in jeder Sprachdatei, die sie braucht.
   - Wortzahlen und Fällig-Zahlen ungeladener Sprachen kommen aus dem Index und den gespeicherten Karten, ohne Karten anzulegen. Die Datenpflege im Vokabelspeicher löscht keine Wörter ungeladener Sprachen mehr. Kartenstände bleiben unberührt.

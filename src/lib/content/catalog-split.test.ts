@@ -1,8 +1,10 @@
 import catalog from '../../content/catalog.json';
+import { UI_LANGUAGES, type UiLanguage } from '../i18n/types';
 import { LANGUAGE_CODES, type LanguageCode } from '../languages/types';
 import { planDeliveryAudio } from './audio-plan';
 import { isDeliverableEntry } from './audio-policy';
-import type { ContentCatalog, ContentEntry } from './types';
+import { audioEntryFromRow } from './catalog-languages';
+import type { AudioRow, ContentCatalog, ContentEntry } from './types';
 
 // Katalog je Lernsprache am ECHTEN Katalog: Die Sprachdateien zusammen sind
 // genau die schlanke App-Fassung, jede Datei trägt jeden Clip, den ihre
@@ -12,7 +14,8 @@ jest.unmock('../../content/catalog.json');
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { splitCatalog } = require('../../../scripts/app-catalog-files.cjs') as {
   splitCatalog: (value: ContentCatalog, rules: unknown, sha: string) => {
-    files: Record<LanguageCode, { entries: ContentEntry[] }>;
+    files: Record<LanguageCode, { entries: ContentEntry[]; audio: AudioRow[] }>;
+    translations: Record<LanguageCode, Record<UiLanguage, { vocabulary: Record<string, unknown>; situations: Record<string, unknown> }>>;
     index: ContentCatalog & { appIndex: { languages: Record<LanguageCode, { vocabulary: string[] }> } };
   };
 };
@@ -20,13 +23,28 @@ const { slimCatalog } = require('../../../scripts/metro-app-catalog.cjs') as { s
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 const full = catalog as unknown as ContentCatalog;
-const { files, index } = splitCatalog(full, { languages: LANGUAGE_CODES, isDeliverableEntry, planDeliveryAudio }, 'sha');
+const { files, translations, index } = splitCatalog(full, { languages: LANGUAGE_CODES, uiLanguages: UI_LANGUAGES, isDeliverableEntry, planDeliveryAudio }, 'sha');
 const key = (entry: ContentEntry) => `${entry.kind}:${entry.id}`;
+
+/** Eine Lernsprache wie die Laufzeit sie zusammensetzt, hier mit ALLEN App-Sprachen. */
+function assembled(code: LanguageCode): ContentEntry[] {
+  const entries: ContentEntry[] = JSON.parse(JSON.stringify([...files[code].entries, ...files[code].audio.map(audioEntryFromRow)]));
+  const byKey = new Map(entries.map((entry) => [key(entry), entry]));
+  for (const ui of UI_LANGUAGES) {
+    for (const kind of ['vocabulary', 'situations'] as const) {
+      for (const [id, value] of Object.entries(translations[code][ui][kind])) {
+        const document = byKey.get(`${kind}:${id}`)!.document as { translations?: Record<string, unknown> };
+        (document.translations ??= {})[ui] = value;
+      }
+    }
+  }
+  return entries;
+}
 
 test('die Sprachdateien zusammen sind genau die schlanke App-Fassung', () => {
   const union = new Map<string, ContentEntry>();
   for (const code of LANGUAGE_CODES) {
-    for (const entry of files[code].entries) {
+    for (const entry of assembled(code)) {
       const previous = union.get(key(entry));
       if (previous) expect(entry).toEqual(previous);
       else union.set(key(entry), entry);
@@ -42,7 +60,7 @@ test('die Sprachdateien zusammen sind genau die schlanke App-Fassung', () => {
 
 test('jede Datei trägt alle Clips, die ihre Lernsprache abspielen kann', () => {
   for (const code of LANGUAGE_CODES) {
-    const own = new Set(files[code].entries.map(key));
+    const own = new Set(assembled(code).map(key));
     const words = full.entries
       .filter((entry) => entry.kind === 'vocabulary' && isDeliverableEntry(entry))
       .map((entry) => entry.document as never);
@@ -67,7 +85,10 @@ test('der Index zählt den auslieferbaren Wortschatz wie der volle Katalog', () 
   }
 });
 
-test('jede Sprachdatei ist deutlich kleiner als die ganze App-Fassung', () => {
+test('was eine Lernsprache mit einer App-Sprache lädt, ist ein Bruchteil der App-Fassung', () => {
   const slim = JSON.stringify(slimCatalog(full)).length;
-  for (const code of LANGUAGE_CODES) expect(JSON.stringify(files[code]).length).toBeLessThan(slim / 2);
+  for (const code of LANGUAGE_CODES) {
+    const geladen = [files[code], translations[code].ja, translations[code].en].map((file) => JSON.stringify(file).length);
+    expect(geladen.reduce((sum, chars) => sum + chars, 0)).toBeLessThan(slim / 4);
+  }
 });

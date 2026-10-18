@@ -1,6 +1,7 @@
 # Inhaltskatalog je Lernsprache: Konzept (18.10.2026)
 
-Stand: Entwurf zur Entscheidung, noch **kein Code**. Grundlage ist der schlanke App-Katalog vom 18.10.2026
+Stand 18.10.2026 (abends): **Schritt 1 und 1b sind gebaut** (E1–E4 wie empfohlen; Ergebnisse und Messwerte in
+Abschnitt 12 und in `CHANGELOG.md`). Ursprünglich: Entwurf zur Entscheidung. Grundlage ist der schlanke App-Katalog vom 18.10.2026
 (`scripts/metro-app-catalog.cjs`, Commit `ec1516fc`), die Messwerte dazu in `CHANGELOG.md` (18.10.2026, „Schlanker
 Inhaltskatalog im App-Build“) und eine
 Auswertung des echten Katalogs mit diesem Stand. Gebaut wird erst nach Zustimmung und nach der TestFlight-Runde.
@@ -353,6 +354,32 @@ Ziele und Abbruchkriterien für Schritt 1 (echter Katalog):
 - **Konfig-Plugin von `expo-asset`:** unterstützt laut v57-Doku kein JSON und keine eigenen Textformate. Nicht nötig.
 - **Generierte Dateien einchecken:** jeder Publish brächte ~15 MB neue Git-Objekte. Stattdessen werden sie beim
   Bau erzeugt und per Stempel geprüft.
+
+## 12. Umsetzung (18.10.2026)
+
+Gebaut wie in Abschnitt 4 und 5 beschrieben, mit E1–E4 wie empfohlen (Gesprächs-Reiter mit eigener Sprachwahl,
+Fortgeschritten/Profi eingebettet, kein 2b). Abweichungen und Befunde:
+
+- **Dateien:** `assets/catalog/<lang>.catalog` (Basis ohne die Übersetzungen der 20 App-Sprachen, Hörclips als
+  Tabelle `[id, Sprache, Datei, Status, Tonstatus]`) und `<lang>-<ui>.catalog` je App-Sprache, zusammen 84 Dateien.
+  Bindestrich statt Punkt im Namen, damit Metro keinen Plattform- oder Skalierungszusatz herausliest.
+  `src/content/catalog-files.ts` ist erzeugt (`--write-map`), ein Test vergleicht sie mit dem Erzeuger.
+- **Zuordnung der Clips:** Jede Lernsprache bekommt alle eigenen Clips plus die fremden aus `planDeliveryAudio`
+  (deutsche Bedeutungen). So bleiben auch Clips erreichbar, die heute kein Plan nennt (etwa künftige Zahlwörter).
+- **Laufzeit:** `catalog-state.ts` bleibt frei von Expo/React Native (die Node-Werkzeuge laden es über
+  `domain.cjs`); Laden und Halten liegen in `catalog-languages.ts`, die Ein-/Ausgabe in `catalog-loader.ts`.
+  Zwischenspeicher hängen an `catalogRevision()` statt an der Objektidentität.
+- **Höchstens zwei Sprachen** bleiben geladen; was ein Bildschirm hält oder gerade angefragt wird, wird nie
+  entladen (ein Test fand den Fall, dass sonst ausgerechnet die angefragte dritte Sprache entladen wurde).
+- **Anker:** Alle Sitzungen laufen über `directionForBridge(App-Sprache, …)`, der Anker ist also immer die
+  App-Sprache. Geladen werden deshalb App-Sprache und Englisch; ein Anker-Teil zusätzlich ist nicht nötig.
+- **App-Sprachwechsel:** `I18nProvider` bekommt `prepare`; `_layout.tsx` gibt `setCatalogUiLanguage` hinein. Die
+  Oberfläche schaltet erst um, wenn die Übersetzungsteile der geladenen Sprachen da sind (an Ort und Stelle in die
+  Dokumente gelegt, danach neuer Katalogstand).
+- **Fortschritts-Reiter** wartet jetzt auf das Profil, statt mit `de_to_th` vorzuladen (lud sonst kurz Thai).
+- **`ensureCardStates`** lädt seine Sprache selbst nach — ein Netz für jeden Weg, der vor einer Sitzung nicht lädt.
+- **verify-production** prüft, dass alle Sprachdateien eines Exports aus einem Katalogstand stammen und zu
+  `catalog.json` passen.
 
 ## Anhang A: Messskript
 

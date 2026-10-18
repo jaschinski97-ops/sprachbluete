@@ -6,7 +6,23 @@ function filesUnder(root) {
     return entry.isDirectory() ? filesUnder(file) : [file];
   });
 }
-function verify(root) {
+// Katalog je Lernsprache: Alle Sprachdateien im Export müssen aus EINEM
+// Katalogstand stammen, auf Wunsch genau aus `catalogSha` (sha256 der
+// `catalog.json`). Sonst trüge der Build alte Texte.
+function verifyCatalogFiles(files, catalogSha) {
+  const catalogs = files.filter((file) => file.endsWith('.catalog'));
+  const shas = new Set();
+  const bases = new Set();
+  for (const file of catalogs) {
+    const head = JSON.parse(fs.readFileSync(file, 'utf8'));
+    shas.add(head.sourceCatalogSha256);
+    if (head.ui === undefined) bases.add(head.language);
+  }
+  if (shas.size > 1) throw Error(`Sprachdateien aus ${shas.size} verschiedenen Katalogständen im Export.`);
+  if (catalogSha && catalogs.length && !shas.has(catalogSha)) throw Error('Die Sprachdateien im Export passen nicht zu src/content/catalog.json.');
+  return { catalogFiles: catalogs.length, catalogLanguages: [...bases].sort() };
+}
+function verify(root, { catalogSha } = {}) {
   const files = filesUnder(root);
   const maps = files.filter((file) => /entry-.*\.(js|hbc)\.map$/.test(file));
   if (maps.length !== 3) throw Error('Die drei Produktions-Source-Maps für Web, Android und iOS fehlen.');
@@ -26,11 +42,13 @@ function verify(root) {
   const settings = fs.readFileSync(fs.existsSync(settingsIndex)
     ? settingsIndex : path.join(root, 'settings.html'), 'utf8');
   if (/<input\b|<textarea\b|role="progressbar"/.test(settings)) throw Error('Eingabefeld/Fortschrittsbalken in Produktionseinstellungen.');
-  return { verifiedAt: new Date().toISOString(), checked, productionSettingsInputs: 0 };
+  return { verifiedAt: new Date().toISOString(), checked, productionSettingsInputs: 0, ...verifyCatalogFiles(files, catalogSha) };
 }
 if (require.main === module) {
   const root = path.resolve(process.argv.slice(2).find((arg) => !arg.startsWith('--')) ?? 'build-verification/production');
-  console.log(JSON.stringify(verify(root), null, 2));
+  const catalog = path.join(__dirname, '../../src/content/catalog.json');
+  const catalogSha = fs.existsSync(catalog) ? require('node:crypto').createHash('sha256').update(fs.readFileSync(catalog)).digest('hex') : undefined;
+  console.log(JSON.stringify(verify(root, { catalogSha }), null, 2));
   if (process.argv.includes('--serve')) {
     require('node:http').createServer((req, res) => {
       const relative = new URL(req.url, 'http://localhost').pathname;
@@ -42,7 +60,7 @@ if (require.main === module) {
       if (!file.startsWith(root + path.sep)) { res.writeHead(403); res.end(); return; }
       try {
         const content = fs.readFileSync(file);
-        const type = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.ttf': 'font/ttf' }[path.extname(file)] ?? 'application/octet-stream';
+        const type = { '.catalog': 'application/json', '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.ttf': 'font/ttf' }[path.extname(file)] ?? 'application/octet-stream';
         res.writeHead(200, { 'Content-Type': type }); res.end(content);
       } catch { res.writeHead(404); res.end(); }
     }).listen(8083, '127.0.0.1', () => console.log('Produktionsprüfung: http://localhost:8083/settings'));

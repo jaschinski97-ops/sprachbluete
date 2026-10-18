@@ -29,3 +29,23 @@ test('Produktionsgate prüft Ordner-Index und alte Route gleich streng', t => {
   write('ios/entry-test.js.map', JSON.stringify({ sources: ['/src/dev/content-studio.tsx'] }));
   assert.throws(() => verify(root), /Entwicklercode/);
 });
+
+test('Produktionsgate: Sprachdateien nur aus einem Katalogstand', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'thaispeaker-production-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  function write(relative, data) {
+    const file = path.join(root, relative);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, data);
+  }
+  for (const platform of ['ios', 'android', 'web']) write(`${platform}/entry-test.js.map`, JSON.stringify({ sources: [] }));
+  write('settings.html', '<main/>');
+  write('assets/catalog/th.abc.catalog', JSON.stringify({ format: 2, language: 'th', sourceCatalogSha256: 'a' }));
+  write('assets/catalog/th-de.abc.catalog', JSON.stringify({ format: 2, language: 'th', ui: 'de', sourceCatalogSha256: 'a' }));
+  const result = verify(root, { catalogSha: 'a' });
+  assert.equal(result.catalogFiles, 2);
+  assert.deepEqual(result.catalogLanguages, ['th']);
+  assert.throws(() => verify(root, { catalogSha: 'b' }), /passen nicht zu src\/content\/catalog\.json/);
+  write('assets/catalog/es.abc.catalog', JSON.stringify({ format: 2, language: 'es', sourceCatalogSha256: 'alt' }));
+  assert.throws(() => verify(root), /2 verschiedenen Katalogständen/);
+});

@@ -87,6 +87,15 @@ export function installLanguage(language: LanguageCode, entries: ContentEntry[])
   rebuild();
 }
 
+/**
+ * Die Dokumente geladener Sprachen haben sich an Ort und Stelle geändert
+ * (Übersetzungen einer neuen App-Sprache nachgeladen): neuer Katalogstand,
+ * damit Zwischenspeicher neu bauen und Bildschirme neu zeichnen.
+ */
+export function refreshCatalog(): void {
+  if (index !== null) rebuild();
+}
+
 export function removeLanguage(language: LanguageCode): void {
   if (index === null || !loaded.delete(language)) return;
   rebuild();

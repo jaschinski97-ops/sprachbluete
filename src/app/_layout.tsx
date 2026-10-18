@@ -8,6 +8,7 @@ import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
 import { installClipLookup } from '@/lib/clips/lookup';
+import { setCatalogUiLanguage } from '@/lib/content/catalog-languages';
 import { I18nProvider } from '@/lib/i18n';
 
 // Lehnt ab, wenn der Splash schon versteckt oder bereits jemand anders an
@@ -32,7 +33,9 @@ export default function TabLayout() {
       <StatusBar style="auto" />
       {/* App-Sprache (Roadmap v2): Systemsprache erkennen, Einstellung aus
           dem Speicher lesen — für alle Screens und Komponenten darunter. */}
-      <I18nProvider>
+      {/* Katalog je Lernsprache, Schritt 1b: Vor jeder App-Sprache kommen
+          ihre Übersetzungen in den geladenen Katalog. */}
+      <I18nProvider prepare={setCatalogUiLanguage}>
         {/* Katalog je Lernsprache: Das Tor lädt erst die Lernsprache; bis
             dahin bleibt der native Splash stehen, weil das Overlay ihn erst
             bei seinem ersten Layout ausblendet. */}

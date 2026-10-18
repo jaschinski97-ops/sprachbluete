@@ -341,6 +341,44 @@ describe('React-Anbindung', () => {
     expect(mockSaveSetting).toHaveBeenCalledWith('en');
   });
 
+  it('mit prepare zeigt der Provider eine App-Sprache erst nach ihrer Vorbereitung (Katalog je Lernsprache)', async () => {
+    mockedGetLocales.mockReturnValue([{ languageCode: 'th', languageTag: 'th-TH' }]);
+    mockLoadSetting.mockResolvedValue('system');
+    mockSaveSetting.mockResolvedValue(undefined);
+    const vorbereitet: string[] = [];
+    let freigeben: () => void = () => {};
+    const prepare = jest.fn((ui: UiLanguage) => {
+      vorbereitet.push(ui);
+      return ui === 'ja' ? new Promise<void>((resolve) => { freigeben = resolve; }) : Promise.resolve();
+    });
+    await act(async () => {
+      tree = create(createElement(I18nProvider, { prepare }, createElement(Probe)));
+    });
+    expect(vorbereitet).toEqual(['th']);
+    expect(captured?.uiLanguage).toBe('th');
+
+    await act(async () => {
+      captured?.setSetting('ja');
+    });
+    // Noch nicht vorbereitet: Die Oberfläche bleibt bei Thai.
+    expect(captured?.uiLanguage).toBe('th');
+    await act(async () => {
+      freigeben();
+    });
+    expect(captured?.uiLanguage).toBe('ja');
+    expect(vorbereitet).toEqual(['th', 'ja']);
+  });
+
+  it('ein Fehler beim Vorbereiten hält die Umstellung nicht auf', async () => {
+    mockedGetLocales.mockReturnValue([{ languageCode: 'th', languageTag: 'th-TH' }]);
+    mockLoadSetting.mockResolvedValue('es');
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    await act(async () => {
+      tree = create(createElement(I18nProvider, { prepare: () => Promise.reject(new Error('Teil fehlt')) }, createElement(Probe)));
+    });
+    expect(captured?.uiLanguage).toBe('es');
+  });
+
   it('ein Speicherfehler beim Laden verändert die Auflösung nicht', async () => {
     mockedGetLocales.mockReturnValue([{ languageCode: 'es', languageTag: 'es-ES' }]);
     mockLoadSetting.mockRejectedValue(new Error('Speicher zu'));

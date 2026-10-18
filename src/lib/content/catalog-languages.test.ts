@@ -1,6 +1,8 @@
 import { FIXTURE_CATALOG, FIXTURE_VOCABULARY } from '@/test-fixtures/fixture-catalog';
 
+import type { CatalogFileSet } from '../../content/catalog-files';
 import { clipIdFor } from '../clips/types';
+import { UI_LANGUAGES, type UiLanguage } from '../i18n/types';
 import { LANGUAGE_CODES, type LanguageCode } from '../languages/types';
 import { MemoryDataStore } from '../storage';
 import { isDeliverableEntry } from './audio-policy';
@@ -13,8 +15,14 @@ import type { ContentCatalog, ContentEntry } from './types';
 // Jest), einmal mit dem Index (wie im App-Build). Nichts hier importiert den
 // Katalog im Hauptregister — Jest zöge sonst dessen Mock dem isolierten vor.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const { slimEntry } = require('../../../scripts/metro-app-catalog.cjs') as { slimEntry: (entry: ContentEntry) => ContentEntry };
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { splitCatalog } = require('../../../scripts/app-catalog-files.cjs') as {
-  splitCatalog: (catalog: ContentCatalog, rules: unknown, sha: string) => { files: Record<LanguageCode, { entries: ContentEntry[] }>; index: ContentCatalog };
+  splitCatalog: (catalog: ContentCatalog, rules: unknown, sha: string) => {
+    files: Record<LanguageCode, { entries: ContentEntry[] }>;
+    translations: Record<LanguageCode, Record<UiLanguage, unknown>>;
+    index: ContentCatalog;
+  };
 };
 
 const T0 = Date.UTC(2026, 5, 1);
@@ -26,9 +34,17 @@ const clip = (language: LanguageCode, text: string): ContentEntry => ({
   check: { status: 'passed', label: 'automatisch geprüft', checkedAt: 'x', scope: 'schema-integrity-decode', tone: { status: 'not-applicable' } as never },
 });
 const MEANING_CLIP = clip('de', firstThai.german);
-const CATALOG: ContentCatalog = { ...FIXTURE_CATALOG, entries: [...FIXTURE_CATALOG.entries, MEANING_CLIP] };
-const MODULES: Record<LanguageCode, number> = { th: 1, en: 2, es: 3, de: 4 };
-const BY_MODULE = Object.fromEntries(LANGUAGE_CODES.map((code) => [MODULES[code], code])) as Record<number, LanguageCode>;
+// Ein Wort mit Übersetzungen in mehreren App-Sprachen, damit die Teile etwas tragen.
+const UEBERSETZT = { de: 'Hallo', en: 'hello', ja: 'こんにちは', th: 'สวัสดี', fr: 'bonjour' };
+const CATALOG: ContentCatalog = {
+  ...FIXTURE_CATALOG,
+  entries: [
+    ...FIXTURE_CATALOG.entries.map((entry) => entry.id === firstThai.id
+      ? { ...entry, document: { ...entry.document, translations: UEBERSETZT } as ContentEntry['document'] }
+      : entry),
+    MEANING_CLIP,
+  ],
+};
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 function build(catalogJson: ContentCatalog) {
@@ -45,6 +61,9 @@ function build(catalogJson: ContentCatalog) {
   };
   jest.isolateModules(() => {
     jest.doMock('../../content/catalog.json', () => catalogJson);
+    // Die ~19.000 Asset-Requires braucht hier niemand; je Modulsatz neu
+    // geladen, trieben sie den Speicher eines Workers über 3 GB.
+    jest.doMock('../../content/assets', () => ({ CONTENT_ASSETS: {} }));
     modules = {
       state: require('./catalog-state'),
       languages: require('./catalog-languages'),
@@ -62,12 +81,30 @@ function build(catalogJson: ContentCatalog) {
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 const full = build(CATALOG);
-const { files, index } = splitCatalog(CATALOG, { languages: LANGUAGE_CODES, isDeliverableEntry, planDeliveryAudio: full.plan.planDeliveryAudio }, SHA);
+const { files, translations, index } = splitCatalog(
+  CATALOG, { languages: LANGUAGE_CODES, uiLanguages: UI_LANGUAGES, isDeliverableEntry, planDeliveryAudio: full.plan.planDeliveryAudio }, SHA);
 const activeVocabularyFor = full.vocabulary.activeVocabularyFor;
+
+// Je Datei eine Modulnummer wie bei Metro: Basis und 20 Übersetzungsteile je Lernsprache.
+const TEXTS = new Map<number, string>();
+const MODULES = {} as Record<LanguageCode, CatalogFileSet>;
+for (const code of LANGUAGE_CODES) {
+  const base = TEXTS.size + 1;
+  TEXTS.set(base, JSON.stringify(files[code]));
+  const parts = {} as Record<UiLanguage, number>;
+  for (const ui of UI_LANGUAGES) {
+    parts[ui] = TEXTS.size + 1;
+    TEXTS.set(parts[ui], JSON.stringify(translations[code][ui]));
+  }
+  MODULES[code] = { base, translations: parts };
+}
 
 type Reader = (moduleId: number) => Promise<{ text: string; assetMs: number; readMs: number }>;
 const fileText = (code: LanguageCode) => JSON.stringify(files[code]);
-const readFixture: Reader = async (moduleId) => ({ text: fileText(BY_MODULE[moduleId]), assetMs: 0, readMs: 0 });
+const readFixture: Reader = async (moduleId) => ({ text: TEXTS.get(moduleId)!, assetMs: 0, readMs: 0 });
+/** Liest die Basis von `language` mit `broken`, alles andere wie gebaut. */
+const brokenBase = (broken: Reader, language: LanguageCode = 'th'): Reader => (moduleId) =>
+  moduleId === MODULES[language].base ? broken(moduleId) : readFixture(moduleId);
 
 function appBuild(read: Reader = readFixture) {
   const modules = build(index);
@@ -110,11 +147,12 @@ test('eine geladene Sprache sieht die App wie mit vollem Katalog, samt deutschem
   expect(console.log).toHaveBeenCalledWith(expect.stringMatching(/^\[catalog\] th: asset \d+ ms, read \d+ ms, parse \d+ ms/));
 });
 
-test('gleichzeitige Anfragen lesen die Datei einmal; zwei Sprachen teilen den Clip ohne Doppel', async () => {
+test('gleichzeitige Anfragen lesen jede Datei einmal; zwei Sprachen teilen den Clip ohne Doppel', async () => {
   const read = jest.fn(readFixture);
   const app = appBuild(read);
   await Promise.all([app.languages.ensureLanguages(['th']), app.languages.ensureLanguages(['th'])]);
-  expect(read).toHaveBeenCalledTimes(1);
+  // Basis und englischer Teil, je einmal.
+  expect(read.mock.calls.map(([id]) => id).sort((a, b) => a - b)).toEqual([MODULES.th.base, MODULES.th.translations.en]);
   await app.languages.ensureLanguages(['de']);
   const clips = app.state.currentCatalog().entries.filter((entry) => entry.id === MEANING_CLIP.id);
   expect(clips).toHaveLength(1);
@@ -141,11 +179,12 @@ test('höchstens zwei Sprachen; entladen wird die älteste, nie eine gehaltene',
 
 test.each([
   ['fehlende Datei', async () => { throw new Error('ENOENT'); }, /ENOENT/],
-  ['kaputtes JSON', async () => ({ text: '{"format":1,', assetMs: 0, readMs: 0 }), /beschädigt/],
+  ['kaputtes JSON', async () => ({ text: '{"format":2,', assetMs: 0, readMs: 0 }), /beschädigt/],
   ['fremder Katalogstand', async () => ({ text: JSON.stringify({ ...files.th, sourceCatalogSha256: 'alt' }), assetMs: 0, readMs: 0 }), /passt nicht zum Index/],
   ['falsche Sprache', async () => ({ text: fileText('es'), assetMs: 0, readMs: 0 }), /enthält es/],
+  ['altes Format', async () => ({ text: JSON.stringify({ ...files.th, format: 1 }), assetMs: 0, readMs: 0 }), /unbekanntes Format/],
 ] as const)('Fehlerweg: %s', async (_name, broken, message) => {
-  const app = appBuild(broken as Reader);
+  const app = appBuild(brokenBase(broken as Reader));
   await expect(app.languages.ensureLanguages(['th'])).rejects.toThrow(message);
   expect(app.state.isLanguageLoaded('th')).toBe(false);
   // Erneut versuchen klappt, sobald die Datei stimmt.
@@ -157,7 +196,36 @@ test.each([
 test('Sprache ohne Datei im Build', async () => {
   const app = appBuild();
   app.languages.setCatalogSource({ files: {}, read: readFixture });
-  await expect(app.languages.ensureLanguages(['th'])).rejects.toThrow(/Keine Sprachdatei für th/);
+  await expect(app.languages.ensureLanguages(['th'])).rejects.toThrow(/Keine Sprachdatei th/);
+});
+
+test('Schritt 1b: nur App-Sprache und Englisch, beim Wechsel nachgeladen und an Ort und Stelle ergänzt', async () => {
+  const read = jest.fn(readFixture);
+  const app = appBuild(read);
+  await app.languages.setCatalogUiLanguage('ja');
+  await app.languages.ensureLanguages(['th']);
+  expect(read.mock.calls.map(([id]) => id).sort((a, b) => a - b)).toEqual(
+    [MODULES.th.base, MODULES.th.translations.en, MODULES.th.translations.ja].sort((a, b) => a - b));
+
+  const word = app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
+  const vorlage = activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
+  expect(word.translations).toEqual({ en: 'hello', ja: 'こんにちは' });
+  expect(vorlage.translations).toEqual(UEBERSETZT);
+
+  const revision = app.state.catalogRevision();
+  await app.languages.setCatalogUiLanguage('th');
+  expect(app.state.catalogRevision()).toBeGreaterThan(revision);
+  expect(read).toHaveBeenCalledWith(MODULES.th.translations.th);
+  const danach = app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
+  expect(danach.translations).toEqual({ en: 'hello', ja: 'こんにちは', th: 'สวัสดี' });
+  // Englisch wird nicht ein zweites Mal gelesen.
+  expect(read.mock.calls.filter(([id]) => id === MODULES.th.translations.en)).toHaveLength(1);
+});
+
+test('Schritt 1b: Clips aus der Tabelle sind dieselben Einträge wie im vollen Katalog', async () => {
+  const app = appBuild();
+  await app.languages.ensureLanguages(['th']);
+  expect(app.bundled.bundledEntry('audio', MEANING_CLIP.id)).toEqual(slimEntry(MEANING_CLIP));
 });
 
 test('Zeitüberschreitung nach 10 s statt ewigem Splash', async () => {

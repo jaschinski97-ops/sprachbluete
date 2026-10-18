@@ -43,21 +43,21 @@ const CATALOG = {
 // de-Clip der deutschen Bedeutung, sonst nichts Fremdes.
 const RULES = {
   languages: ['th', 'en', 'es', 'de'],
+  uiLanguages: ['de', 'en'],
   isDeliverableEntry: (entry) => entry.check?.status === 'passed' || (entry.kind === 'vocabulary' && entry.check?.status === 'unchecked'),
   planDeliveryAudio: (situations, language, words) => (language === 'th' && words.length ? [{ id: 'de-bedeutung' }, { id: 'th-a' }, { id: 'de-fehlt' }] : []),
 };
 
-const ids = (file) => file.entries.map((entry) => `${entry.kind}:${entry.id}`);
+const ids = (file) => [...file.entries.map((entry) => `${entry.kind}:${entry.id}`), ...file.audio.map((row) => `audio:${row[0]}`)];
 
 test('Aufteilung nach Lernsprache, mit geplanten Bedeutungs-Clips und Unzuordenbarem überall', () => {
   const { files: parts, index } = files.splitCatalog(CATALOG, RULES, 'abc');
   assert.deepEqual(ids(parts.th), [
-    'vocabulary:ki-th-1', 'vocabulary:ki-th-2', 'vocabulary:ki-th-kaputt', 'situations:s-th', 'images:ki-th-1', 'audio:th-a',
-    'audio:de-bedeutung', 'images:waise', 'zukunft:z',
+    'vocabulary:ki-th-1', 'vocabulary:ki-th-2', 'vocabulary:ki-th-kaputt', 'situations:s-th', 'images:ki-th-1',
+    'images:waise', 'zukunft:z', 'audio:th-a', 'audio:de-bedeutung',
   ]);
-  assert.deepEqual(ids(parts.de), ['vocabulary:ki-de-1', 'situations:s-de', 'audio:de-bedeutung', 'audio:de-sonst', 'images:waise', 'zukunft:z']);
-  assert.deepEqual(ids(parts.en), ['audio:en-a', 'images:waise', 'zukunft:z']);
-  assert.deepEqual(parts.th.entries[0], slimEntry(CATALOG.entries[0]));
+  assert.deepEqual(ids(parts.de), ['vocabulary:ki-de-1', 'situations:s-de', 'images:waise', 'zukunft:z', 'audio:de-bedeutung', 'audio:de-sonst']);
+  assert.deepEqual(ids(parts.en), ['images:waise', 'zukunft:z', 'audio:en-a']);
   assert.equal(parts.th.language, 'th');
   assert.equal(parts.th.sourceCatalogSha256, 'abc');
   assert.equal(parts.th.format, files.FORMAT);
@@ -71,6 +71,27 @@ test('Aufteilung nach Lernsprache, mit geplanten Bedeutungs-Clips und Unzuordenb
   assert.deepEqual(index.appIndex.languages.es.vocabulary, ['ki-es-1']);
   assert.deepEqual(index.appIndex.languages.en.vocabulary, []);
   assert.equal(index.appIndex.sourceCatalogSha256, 'abc');
+});
+
+test('Schritt 1b: Basis ohne Übersetzungen der App-Sprachen, Teile je App-Sprache, Clips als Tabelle', () => {
+  const { files: parts, translations } = files.splitCatalog(CATALOG, RULES, 'abc');
+  const slim = slimEntry(CATALOG.entries[0]);
+  assert.deepEqual(parts.th.entries[0], { ...slim, document: { ...slim.document, translations: {} } });
+  assert.deepEqual(Object.keys(translations.th), ['de', 'en']);
+  assert.deepEqual(translations.th.en, { format: files.FORMAT, language: 'th', ui: 'en', sourceCatalogSha256: 'abc', vocabulary: { 'ki-th-1': 'ki-th-1', 'ki-th-2': 'ki-th-2', 'ki-th-kaputt': 'ki-th-kaputt' }, situations: {} });
+  assert.deepEqual(translations.th.de.vocabulary, {});
+  assert.deepEqual(parts.th.audio[0], ['th-a', 'th', 'th-a.mp3', 'passed', 'not-applicable']);
+});
+
+test('Clip-Tabelle nur, wenn sie verlustfrei ist', () => {
+  const plain = slimEntry(clip('th-a', 'th'));
+  assert.deepEqual(files.audioRow(plain), ['th-a', 'th', 'th-a.mp3', 'passed', 'not-applicable']);
+  assert.deepEqual(files.audioRow({ kind: 'audio', id: 'x', document: { id: 'x', language: 'de' } }), ['x', 'de', null, null, null]);
+  assert.deepEqual(files.audioRow({ ...plain, check: { status: 'passed' } }), ['th-a', 'th', 'th-a.mp3', 'passed', null]);
+  assert.equal(files.audioRow({ ...plain, document: { id: 'anders', language: 'th' } }), null);
+  assert.equal(files.audioRow({ ...plain, document: { ...plain.document, text: 'x' } }), null);
+  assert.equal(files.audioRow({ ...plain, check: { status: 'passed', tone: {} } }), null);
+  assert.equal(files.audioRow({ ...plain, kind: 'images' }), null);
 });
 
 test('Jeder Eintrag landet in mindestens einer Sprachdatei', () => {
@@ -91,7 +112,14 @@ test('Stempel: schreibt einmal, überspringt danach, schreibt nach Änderung neu
   const log = () => {};
   const first = files.writeCatalogFiles({ root, rules: RULES, log });
   assert.equal(first.written, true);
-  for (const language of RULES.languages) assert.ok(fs.existsSync(path.join(root, files.OUT_DIR, files.fileName(language))));
+  for (const language of RULES.languages) {
+    assert.ok(fs.existsSync(path.join(root, files.OUT_DIR, files.fileName(language))));
+    for (const ui of RULES.uiLanguages) assert.ok(fs.existsSync(path.join(root, files.OUT_DIR, files.fileName(language, ui))));
+  }
+  // Dateien eines früheren Formats werden aufgeräumt.
+  fs.writeFileSync(path.join(root, files.OUT_DIR, 'alt.catalog'), '{}');
+  assert.equal(files.writeCatalogFiles({ root, rules: RULES, log, force: true }).written, true);
+  assert.ok(!fs.existsSync(path.join(root, files.OUT_DIR, 'alt.catalog')));
   assert.equal(files.writeCatalogFiles({ root, rules: RULES, log }).written, false);
 
   // Eine fehlende Datei macht den Stempel ungültig.
@@ -118,7 +146,8 @@ test('Der Transformer bekommt den Index nur zu genau dem Katalog des Stempels', 
 });
 
 test('src/content/catalog-files.ts entspricht dem Erzeuger', () => {
-  const expected = files.renderFileMap(files.domainRules().languages);
+  const { languages, uiLanguages } = files.domainRules();
+  const expected = files.renderFileMap(languages, uiLanguages);
   const actual = fs.readFileSync(path.join(__dirname, '..', files.MAP_FILE), 'utf8');
   assert.equal(actual, expected, 'node scripts/app-catalog-files.cjs --write-map ausführen');
 });

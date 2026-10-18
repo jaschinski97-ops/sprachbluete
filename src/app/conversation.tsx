@@ -94,10 +94,11 @@ export default function ConversationScreen() {
   // Katalog je Lernsprache (E3): Der Reiter behält seine eigene Sprachwahl
   // und hält deren Sprachdatei geladen — neben der Lernsprache der Karten.
   // Mit den Clip-Einträgen kommen Wiedergabe und Thai-Ton-Gate wie bisher.
-  const katalog = useCatalogLanguages([sprache]);
+  // Erst mit gelesenem Profil, sonst lüde die Vorgabe Thai kurz mit.
+  const katalog = useCatalogLanguages(profile ? [sprache] : []);
   const revision = useCatalogRevision();
   useEffect(() => {
-    if (!katalog.ready) return;
+    if (!profile || !katalog.ready) return;
     let cancelled = false;
     loadSituations()
       .then((all) => {
@@ -109,9 +110,9 @@ export default function ConversationScreen() {
     return () => {
       cancelled = true;
     };
-  }, [katalog.ready, revision]);
+  }, [profile, katalog.ready, revision]);
   const situations = geladen?.list ?? null;
-  const laedt = !katalog.ready || geladen?.revision !== revision;
+  const laedt = !profile || !katalog.ready || geladen?.revision !== revision;
 
   const imRichtung = useMemo(
     () => (situations ?? []).filter((s) => s.direction === direction),

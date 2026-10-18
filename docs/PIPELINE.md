@@ -79,9 +79,15 @@ für das iPhone: `docs/release-candidate-2026-09-30.md`.
 Unabhängig vom Medienweg bekommt jeder Nicht-Entwicklungsbau (`expo export`,
 EAS, Gradle-Release) den Katalog als schlanke App-Fassung: ohne Tonmessung,
 Digests, Bytezahlen, Anbieter, Stimme und Prompts, aber mit allen Texten,
-Dateinamen, Prüfstatus und Ton-Gate-Status (`scripts/metro-app-catalog.cjs`,
-Stand 18.10.2026 28 → 12,5 MB). `catalog.json` selbst und der
-Entwicklungsbau mit Studio bleiben vollständig.
+Dateinamen, Prüfstatus und Ton-Gate-Status (`scripts/metro-app-catalog.cjs`).
+Seit dem 18.10.2026 abends steckt sie nicht mehr im JS-Bundle, sondern liegt
+je Lernsprache als eingebettete Datei bei (`assets/catalog/`, beim Metro-Start
+von `scripts/app-catalog-files.cjs` erzeugt): eine Basis ohne Übersetzungen
+und je App-Sprache ein Übersetzungsteil. Ein Stempel bindet die Dateien an
+genau diese `catalog.json`; passt er nicht, bricht der Bau ab, und
+`npm run verify:production` prüft den Export noch einmal. EAS erzeugt die
+Dateien auf der Baumaschine selbst. `catalog.json` und der Entwicklungsbau mit
+Studio bleiben vollständig.
 
 ## 5. Sprachpakete
 

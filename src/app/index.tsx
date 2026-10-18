@@ -71,7 +71,9 @@ export default function DashboardScreen() {
     due.summaries?.find((item) => item.direction === aktivesZiel.direction)?.due ?? null;
   // Katalog je Lernsprache: Die Sprache des aktiven Ziels bleibt geladen
   // (Merkhilfe, Lern-Reiter). Das Ladetor hat sie beim Start schon geholt.
-  useCatalogLanguages([aktivesZiel.language]);
+  // Erst mit gelesenem Profil: Vorher steht hier die Vorgabe Thai, und eine
+  // Spanisch-Lernerin lud beim Start sonst Thai gleich mit (Messung 18.10.).
+  useCatalogLanguages(profile ? [aktivesZiel.language] : []);
   const [ladeRichtung, setLadeRichtung] = useState<PairDirection | null>(null);
   const [ladeFehler, setLadeFehler] = useState(false);
   const letzteWahl = useRef(0);

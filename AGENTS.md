@@ -83,6 +83,7 @@ Der erste Web-Bundle-Aufbau dauert ~2 Minuten (großer Katalog).
 ## Offene Punkte
 
 - iPhone zuerst: lokaler Quellkandidat und Produktions-Export; native Signierung/Geräteabnahme offen. Aktuelle Checkliste: `docs/release-candidate-2026-09-30.md`. TestFlight-Weg ohne Mac: `docs/testflight.md`. EAS-Profil `testflight` = Store-Build mit eingebetteten Medien, `production` = Sprachpakete (Repo-Eintrag und Releases fehlen noch). Noch kein EAS-Projekt verknüpft (`eas init` macht der Nutzer).
+- Reihenfolge Katalog (`docs/katalog-je-lernsprache-konzept.md`): erst TestFlight, dann Schritt 1 (Katalog je Lernsprache) und 1b (Übersetzungen je App-Sprache), erst danach der VOLLE Studio-Dialoglauf. Der Probelauf (59 je Sprache) ist vorher unkritisch.
 - iOS am Gerät prüfen: Shadowing stellt die Audiokategorie während laufender Aufnahme um (`src/lib/audio-mode.ts`).
 - Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
 - Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.

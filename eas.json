@@ -36,6 +36,13 @@
         "THAISPEAKER_MEDIA": "packs"
       }
     },
+    "testflight": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "env": {
+        "THAISPEAKER_MEDIA": "embedded"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "env": {
@@ -47,6 +54,7 @@
     }
   },
   "submit": {
+    "testflight": {},
     "production": {}
   }
 }

@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.thailernbegleiter.app"
+      "bundleIdentifier": "com.thailernbegleiter.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +45,7 @@
         "expo-audio",
         {
           "recordAudioAndroid": true,
-          "microphonePermission": "Thai Lernbegleiter nutzt das Mikrofon nur für die lokale Sprechübung. Aufnahmen werden nicht übertragen.",
+          "microphonePermission": "The app uses the microphone only for the speaking exercises. The recording stays on this device; the analysis runs locally and sends no audio to any provider.",
           "enableBackgroundRecording": false,
           "enableBackgroundPlayback": false
         }
@@ -51,6 +55,28 @@
       "expo-image",
       "expo-sharing"
     ],
+    "locales": {
+      "en": {
+        "ios": {
+          "NSMicrophoneUsageDescription": "The app uses the microphone only for the speaking exercises. The recording stays on this device; the analysis runs locally and sends no audio to any provider."
+        }
+      },
+      "de": {
+        "ios": {
+          "NSMicrophoneUsageDescription": "Die App nutzt das Mikrofon nur für die Sprechübungen. Die Aufnahme bleibt auf diesem Gerät; die Auswertung läuft lokal und sendet keine Audiodaten an einen Anbieter."
+        }
+      },
+      "es": {
+        "ios": {
+          "NSMicrophoneUsageDescription": "La app usa el micrófono solo para los ejercicios de hablar. La grabación se queda en este dispositivo; el análisis se hace localmente y no envía audio a ningún proveedor."
+        }
+      },
+      "th": {
+        "ios": {
+          "NSMicrophoneUsageDescription": "แอปใช้ไมโครโฟนเฉพาะในแบบฝึกพูด เสียงที่บันทึกจะอยู่ในอุปกรณ์นี้เท่านั้น การวิเคราะห์ทำในเครื่องและไม่ส่งข้อมูลเสียงไปยังผู้ให้บริการใด"
+        }
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

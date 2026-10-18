@@ -1,5 +1,13 @@
 # Changelog
 
+## 18.10.2026
+
+- TestFlight-Vorbereitung (iPhone ohne Mac, Builds über EAS): Neue Anleitung `docs/testflight.md` für Apple Developer Program, Expo-Konto, `eas build`/`eas submit`, App-Store-Connect-Eintrag, interne und externe Tester, Gerätetest-Checkliste und Android-Tester (APK über `preview`, Google Play intern).
+  - Neues EAS-Profil `testflight`: Store-Verteilung mit eingebetteten Medien (≈ 411 MiB), damit die erste TestFlight-Runde ohne veröffentlichte Sprachpakete Ton und Bilder hat. `production` lädt die Medien weiter als Sprachpaket; dafür fehlen noch Paket-Repo in `app.json` und die ersten Releases. Passendes Submit-Profil `testflight`.
+  - `app.json`: `ITSAppUsesNonExemptEncryption: false` (nur System-HTTPS), damit App Store Connect nicht bei jedem Build nach der Exportangabe fragt.
+  - Mikrofon-Hinweis ohne den Namen „Thai Lernbegleiter“ und nicht mehr nur Deutsch: Grundtext Englisch, übersetzt für Deutsch, Spanisch und Thai (`locales`, `CFBundleAllowMixedLocalizations`). Andere App-Sprachen zeigen den englischen Text. Per Prebuild geprüft: vier `InfoPlist.strings`.
+  - Offen (Nutzer): Weg wählen (eingebettet oder Sprachpakete), Apple Developer Program, `eas login`/`eas init`, Apple-Anmeldung beim ersten Build, App-Name.
+
 ## 17.10.2026
 
 - Thai-Tonhöhe, Messung und Erzeugung:

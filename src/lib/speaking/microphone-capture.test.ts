@@ -49,9 +49,27 @@ describe('fluechtige Mikrofonaufnahme', () => {
     const options = plugin[1] as Record<string, unknown>;
 
     expect(options.recordAudioAndroid).toBe(true);
-    expect(options.microphonePermission).toMatch(/lokale Sprechübung/);
-    expect(options.microphonePermission).toMatch(/nicht übertragen/);
+    expect(options.microphonePermission).toMatch(/only for the speaking exercises/);
+    expect(options.microphonePermission).toMatch(/stays on this device/);
     expect(options.enableBackgroundRecording).toBe(false);
     expect(options.enableBackgroundPlayback).toBe(false);
+  });
+
+  it('erklaert die Mikrofonfreigabe in den Lernsprachen, ohne App-Namen', () => {
+    const plugin = appConfig.expo.plugins.find(
+      (candidate) => Array.isArray(candidate) && candidate[0] === 'expo-audio'
+    );
+    if (!Array.isArray(plugin)) throw new Error('expo-audio-Plugin fehlt.');
+    const base = (plugin[1] as Record<string, unknown>).microphonePermission;
+    const locales = appConfig.expo.locales as Record<string, { ios: { NSMicrophoneUsageDescription: string } }>;
+
+    expect(Object.keys(locales).sort()).toEqual(['de', 'en', 'es', 'th']);
+    expect(locales.en.ios.NSMicrophoneUsageDescription).toBe(base);
+    expect(locales.de.ios.NSMicrophoneUsageDescription).toMatch(/bleibt auf diesem Gerät/);
+    for (const text of [base, ...Object.values(locales).map((locale) => locale.ios.NSMicrophoneUsageDescription)]) {
+      expect(text).not.toMatch(/Lernbegleiter/);
+      // InfoPlist.strings schreibt den Text ohne Escaping in Anführungszeichen.
+      expect(text).not.toMatch(/"/);
+    }
   });
 });

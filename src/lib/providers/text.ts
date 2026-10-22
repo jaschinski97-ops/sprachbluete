@@ -5,6 +5,21 @@ import { ProviderId, TextClient, TextRequest, TextResponse, unsupported } from '
 const TEXT_REQUEST_TIMEOUT_MS = 5 * 60_000;
 
 /**
+ * Gemini 4 (Argon, GA 13.10.2026) denkt vor der Antwort; laut Google-Doku
+ * können schwere Anfragen mehrere Minuten dauern (empfohlen: mindestens
+ * 20 Minuten Zeitlimit), und die Denk-Tokens zählen in `maxOutputTokens`.
+ * Eine kleine Grenze (die Kreuzprüfung setzt 4.000) würde vom Denken
+ * aufgebraucht, die Antwort bliebe leer. Google rät, Grenzen unter 32K auf
+ * mindestens 32.768 anzuheben. Bezahlt werden nur tatsächlich erzeugte Tokens.
+ */
+const GEMINI_4_TIMEOUT_MS = 20 * 60_000;
+const GEMINI_4_MIN_OUTPUT_TOKENS = 32_768;
+
+export function isGemini4(model: string): boolean {
+  return /^gemini-4(\b|[-.])/.test(model.trim());
+}
+
+/**
  * Die Textanbieter hinter einer Schnittstelle.
  *
  * Die Prompts stehen weiterhin bei den Generatoren (Phase 4 für Dialoge,
@@ -132,7 +147,8 @@ export function parseGeminiText(payload: unknown, fallbackModel: string): TextRe
   const content = first.content as Record<string, unknown> | undefined;
   const parts = Array.isArray(content?.parts) ? (content!.parts as Record<string, unknown>[]) : [];
   const text = parts
-    .map((part) => (typeof part.text === 'string' ? part.text : ''))
+    // Gedanken-Teile (`thought: true`, nur mit includeThoughts) sind keine Antwort.
+    .map((part) => (typeof part.text === 'string' && part.thought !== true ? part.text : ''))
     .join('')
     .trim();
   const zähler = data?.usageMetadata as Record<string, unknown> | undefined;
@@ -163,9 +179,10 @@ export function createGeminiTextClient(apiKey: string, model: string): TextClien
     provider: 'gemini',
     model,
     async complete(request: TextRequest): Promise<TextResponse> {
+      const gemini4 = isGemini4(model);
       const payload = await postJson({
         url: geminiEndpoint(model, 'generateContent'),
-        timeoutMs: TEXT_REQUEST_TIMEOUT_MS,
+        timeoutMs: gemini4 ? GEMINI_4_TIMEOUT_MS : TEXT_REQUEST_TIMEOUT_MS,
         // Schluessel im HEADER, nicht als `?key=` im Pfad. Beides kommt laut
         // Messung durch CORS; der Header ist der bessere Weg, weil eine URL
         // in Verlaufslisten, Protokollen und Fehlermeldungen landet.
@@ -173,7 +190,9 @@ export function createGeminiTextClient(apiKey: string, model: string): TextClien
         body: {
           systemInstruction: { parts: [{ text: request.system }] },
           contents: [{ role: 'user', parts: [{ text: request.user }] }],
-          generationConfig: { maxOutputTokens: request.maxTokens },
+          generationConfig: {
+            maxOutputTokens: gemini4 ? Math.max(request.maxTokens, GEMINI_4_MIN_OUTPUT_TOKENS) : request.maxTokens,
+          },
         },
       });
       return parseGeminiText(payload, model);

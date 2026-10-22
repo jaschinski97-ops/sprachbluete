@@ -92,8 +92,10 @@ Studio bleiben vollständig.
 ## 5. Sprachpakete
 
 Ablauf: Inhalte zu Hause erzeugen → Paket bauen → als GitHub-Release
-hochladen → Nutzer tippen in der Übersicht auf **Laden · 98 MB** (oder unter
-Einstellungen → Sprachpakete). Danach ist die Sprache offline vollständig.
+hochladen → Nutzer tippen in der Übersicht neben „Lernen“ auf
+**Download · 98 MB** (oder unter Einstellungen → Sprachpakete). Danach ist die
+Sprache offline vollständig. Texte liegen ohnehin in der App; das Paket bringt
+Hörclips und Bilder.
 
 ```bash
 npm run pack:build -- --lang th        # oder --lang all; Version = letzte + 1

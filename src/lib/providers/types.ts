@@ -157,10 +157,14 @@ export const PROVIDER_INFO: Record<ProviderId, ProviderInfo> = {
     keySource: 'aistudio.google.com',
     // Sprachausgabe ueber denselben generateContent-Aufruf wie Text und Bild,
     // mit responseModalities AUDIO; die Doku nennt Thai ("th") als unterstuetzt.
+    // Nutzerwahl 22.10.2026 (Modell-IDs laut ai.google.dev): Gemini 4 Argon
+    // fuer Texte, Gemini 3.8 Flash TTS fuer Hoerclips, Nano Banana 2.1 fuer
+    // Bilder. Die 2.5-Modelle gibt Google seit 18.09.2026 nur noch Projekten
+    // frei, die sie schon genutzt haben.
     modelPlaceholder: {
-      text: 'gemini-2.5-flash',
-      image: 'gemini-2.5-flash-image',
-      audio: 'gemini-2.5-flash-preview-tts',
+      text: 'gemini-4-argon',
+      image: 'gemini-nano-banana-2.1',
+      audio: 'gemini-3.8-flash-tts',
     },
     voicePlaceholder: 'Kore',
     webWarning: null,

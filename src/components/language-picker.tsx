@@ -21,7 +21,7 @@ import {
   LanguageCode,
   PairDirection,
 } from '@/lib/languages/types';
-import { downloadPack, megabytes, packsNeeded, refreshPack, usePackStatus } from '@/lib/packs/state';
+import { downloadPack, megabytes, packActionFor, packsNeeded, refreshPack, usePackStatus } from '@/lib/packs/state';
 import { DirectionSummary } from '@/lib/review-session';
 
 
@@ -180,13 +180,13 @@ export function LanguagePicker({
             </Pressable>
 
             {/* Direkter Einstieg (Nutzerwunsch 13.09.): wählt dieses Ziel und
-                öffnet den Lern-Reiter. Im Sprachpaket-Build steht hier zuerst
-                „Laden“, solange Hörclips und Bilder der Sprache fehlen. */}
-            {packsNeeded() ? (
-              <StartOrDownload language={gelehrteSprache} name={name} onStart={() => onStart(ziel.direction)} />
-            ) : (
+                öffnet den Lern-Reiter. Im Sprachpaket-Build steht daneben der
+                Download-Knopf (22.10.2026), solange Hörclips und Bilder der
+                Sprache fehlen oder veraltet sind. */}
+            <View style={styles.actions}>
               <StartPill name={name} onStart={() => onStart(ziel.direction)} />
-            )}
+              {packsNeeded() ? <DownloadPill language={gelehrteSprache} name={name} /> : null}
+            </View>
           </View>
         );
       })}
@@ -211,33 +211,37 @@ function StartPill({ name, onStart }: { name: string; onStart: () => void }) {
 }
 
 /**
- * Sprachpaket fehlt: „Laden · 98 MB“, während des Downloads die Prozentzahl.
- * Ist das Paket da, wieder der normale Einstieg.
+ * Download neben „Lernen“: „Download · 98 MB“, während des Downloads die
+ * Prozentzahl, bei neuer Version „Aktualisieren“. Ist das Paket aktuell
+ * (oder noch keins veröffentlicht), verschwindet der Knopf.
  */
-function StartOrDownload({ language, name, onStart }: { language: LanguageCode; name: string; onStart: () => void }) {
+function DownloadPill({ language, name }: { language: LanguageCode; name: string }) {
   const theme = useTheme();
   const { t } = useLocale();
   const status = usePackStatus(language);
   useEffect(() => {
     void refreshPack(language);
   }, [language]);
-  if (status.installed !== null && status.phase !== 'error') return <StartPill name={name} onStart={onStart} />;
+  const action = packActionFor(status);
+  if (!action) return null;
 
-  const laeuft = status.phase === 'downloading' || status.phase === 'installing';
+  const laeuft = action.kind === 'busy';
   const label =
-    status.phase === 'downloading'
-      ? t('pack.downloading', { percent: Math.round(status.progress * 100) })
-      : status.phase === 'installing'
-        ? t('pack.installing')
-        : status.latest
-          ? t('pack.downloadSize', { size: megabytes(status.latest.zipBytes) })
+    action.kind === 'busy'
+      ? action.phase === 'downloading'
+        ? t('pack.downloading', { percent: Math.round(action.progress * 100) })
+        : t('pack.installing')
+      : action.kind === 'update'
+        ? t('pack.updateSize', { size: megabytes(action.zipBytes) })
+        : action.zipBytes !== null
+          ? t('pack.downloadSize', { size: megabytes(action.zipBytes) })
           : t('pack.download');
   return (
     <Pressable
       onPress={() => void downloadPack(language)}
       disabled={laeuft}
       accessibilityRole="button"
-      accessibilityLabel={t('pack.downloadA11y', { language: name })}
+      accessibilityLabel={t(action.kind === 'update' ? 'pack.updateA11y' : 'pack.downloadA11y', { language: name })}
       accessibilityState={{ busy: laeuft, disabled: laeuft }}
       style={({ pressed }) => [styles.startPill, { borderColor: theme.decorGrey }, pressed && styles.pressed]}>
       <ThemedText type="smallBold" themeColor="text">
@@ -270,6 +274,14 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'center',
     gap: Spacing.two,
+  },
+  /** „Lernen“ und (im Sprachpaket-Build) „Download“ nebeneinander. */
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: Spacing.two,
+    flexShrink: 1,
   },
   /** Direkter Einstieg in die Sitzung — gleiche Zielhöhe wie die Zeile. */
   startPill: {

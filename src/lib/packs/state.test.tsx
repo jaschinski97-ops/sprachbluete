@@ -9,6 +9,7 @@ import { activePack } from './store';
 import {
   downloadPack,
   megabytes,
+  packActionFor,
   refreshPack,
   resetPackState,
   updateAvailable,
@@ -86,4 +87,32 @@ test('ein fehlgeschlagener Download landet als Fehler im Zustand', async () => {
 test('megabytes rundet für Knöpfe und zeigt nie 0 MB', () => {
   expect(megabytes(98 * 1024 * 1024)).toBe('98 MB');
   expect(megabytes(1000)).toBe('1 MB');
+});
+
+describe('packActionFor — Download neben „Lernen“ (22.10.2026)', () => {
+  const basis: PackStatus = { installed: null, latest: undefined, phase: 'idle', progress: 0 };
+
+  it('bietet ohne Paket den Download an, mit Größe sobald bekannt', () => {
+    expect(packActionFor(basis)).toEqual({ kind: 'download', zipBytes: null });
+    expect(packActionFor({ ...basis, latest: { version: 1, zipBytes: 5 } })).toEqual({ kind: 'download', zipBytes: 5 });
+  });
+
+  it('zeigt keinen Knopf, wenn sicher nichts veröffentlicht ist', () => {
+    expect(packActionFor({ ...basis, latest: null })).toBeNull();
+  });
+
+  it('zeigt den Fortschritt während Download und Einrichtung', () => {
+    expect(packActionFor({ ...basis, phase: 'downloading', progress: 0.4 })).toEqual({ kind: 'busy', phase: 'downloading', progress: 0.4 });
+    expect(packActionFor({ ...basis, phase: 'installing', progress: 1 })?.kind).toBe('busy');
+  });
+
+  it('bietet nach einem Fehler erneut den Download an', () => {
+    expect(packActionFor({ ...basis, phase: 'error', latest: { version: 1, zipBytes: 5 } })?.kind).toBe('download');
+  });
+
+  it('verschwindet bei aktuellem Paket und meldet neuere Versionen', () => {
+    expect(packActionFor({ ...basis, installed: 2, latest: { version: 2, zipBytes: 5 } })).toBeNull();
+    expect(packActionFor({ ...basis, installed: 2, latest: undefined })).toBeNull();
+    expect(packActionFor({ ...basis, installed: 1, latest: { version: 2, zipBytes: 9 } })).toEqual({ kind: 'update', zipBytes: 9 });
+  });
 });

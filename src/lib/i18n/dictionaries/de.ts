@@ -767,8 +767,8 @@ const de = {
   /* ---------- Sprachpakete (language-packs-section, language-picker) ---------- */
   "pack.title": "Sprachpakete",
   "pack.intro": "Hörclips und Bilder jeder Lernsprache kommen als Paket aus dem Internet. Einmal laden, danach funktioniert alles offline. Dein Lernstand bleibt beim Entfernen erhalten.",
-  "pack.download": "Laden",
-  "pack.downloadSize": "Laden · {{size}}",
+  "pack.download": "Download",
+  "pack.downloadSize": "Download · {{size}}",
   "pack.downloadA11y": "Sprachpaket {{language}} laden",
   "pack.downloading": "Lädt … {{percent}} %",
   "pack.installing": "Wird eingerichtet …",

@@ -95,6 +95,33 @@ export function updateAvailable(status: PackStatus): boolean {
   return status.installed !== null && !!status.latest && status.latest.version > status.installed;
 }
 
+/**
+ * Was der Download-Knopf neben „Lernen“ in der Übersicht gerade anbietet
+ * (22.10.2026, Nutzerwunsch: beide Knöpfe nebeneinander, Lernen ist auch
+ * ohne Paket möglich — Texte liegen in der App, nur Ton und Bilder fehlen).
+ * `null`: nichts zu tun (Paket aktuell, oder es ist noch keins veröffentlicht).
+ */
+export type PackAction =
+  | { kind: 'busy'; phase: 'downloading' | 'installing'; progress: number }
+  | { kind: 'download'; zipBytes: number | null }
+  | { kind: 'update'; zipBytes: number };
+
+export function packActionFor(status: PackStatus): PackAction | null {
+  if (status.phase === 'downloading' || status.phase === 'installing') {
+    return { kind: 'busy', phase: status.phase, progress: status.progress };
+  }
+  if (status.installed === null) {
+    // Sicher nichts veröffentlicht: kein Knopf, der nur scheitern kann.
+    if (status.latest === null) return null;
+    // Unbekannt (offline, Abfrage lief nicht) oder bekannt: laden anbieten.
+    return { kind: 'download', zipBytes: status.latest?.zipBytes ?? null };
+  }
+  if (status.latest && status.latest.version > status.installed) {
+    return { kind: 'update', zipBytes: status.latest.zipBytes };
+  }
+  return null;
+}
+
 /** „98 MB“ — gerundete Megabyte für Knöpfe. */
 export function megabytes(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / (1024 * 1024)))} MB`;

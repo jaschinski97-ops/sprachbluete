@@ -83,7 +83,7 @@
     },
     "extra": {
       "pack": {
-        "repo": "OWNER/REPO",
+        "repo": "jaschinski97-ops/nico_sprachApp_Linguistik",
         "baseUrlOverride": null
       }
     }

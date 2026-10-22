@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { LanguageSwitch } from '@/components/language-switch';
 import { ScreenScaffold } from '@/components/screen-scaffold';
+import { useCountUp } from '@/components/fx';
 import { ThemedText, displayLineHeight } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -175,10 +176,13 @@ export default function ProgressScreen() {
 
 /** „75 %“ oder „–“, wenn es noch nichts zu zählen gibt. */
 function prozentText(treffer: Treffer): string {
-  return treffer.total > 0 ? `${Math.round((treffer.correct / treffer.total) * 100)} %` : '–';
+  // Geschütztes Leerzeichen: „100 %“ brach in der schmalen Kachel um.
+  return treffer.total > 0 ? `${Math.round((treffer.correct / treffer.total) * 100)}\u00A0%` : '–';
 }
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  // Seit 22.10.2026 zählt die Kennzahl beim Öffnen hoch.
+  const angezeigt = useCountUp(value);
   return (
     <ThemedView type="backgroundElement" style={styles.tile}>
       <ThemedText type="small" themeColor="textSecondary">
@@ -189,9 +193,10 @@ function Tile({ label, value, hint }: { label: string; value: string; hint?: str
             2026-09-07); die Zeilenhöhe wächst mit der Systemschrift mit. */}
         <ThemedText
           type="stat"
+          numberOfLines={1}
           maxFontSizeMultiplier={2}
           style={{ lineHeight: displayLineHeight(34, 2, 1.17) }}>
-          {value}
+          {angezeigt}
         </ThemedText>
         {hint ? (
           <ThemedText type="small" themeColor="textSecondary">
@@ -606,8 +611,9 @@ const styles = StyleSheet.create({
   },
   tileValue: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
-    gap: Spacing.two,
+    columnGap: Spacing.two,
   },
   card: {
     borderRadius: Spacing.three,

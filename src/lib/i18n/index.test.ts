@@ -352,7 +352,7 @@ describe('React-Anbindung', () => {
       return ui === 'ja' ? new Promise<void>((resolve) => { freigeben = resolve; }) : Promise.resolve();
     });
     await act(async () => {
-      tree = create(createElement(I18nProvider, { prepare }, createElement(Probe)));
+      tree = create(createElement(I18nProvider, { prepare, children: createElement(Probe) }));
     });
     expect(vorbereitet).toEqual(['th']);
     expect(captured?.uiLanguage).toBe('th');
@@ -374,7 +374,7 @@ describe('React-Anbindung', () => {
     mockLoadSetting.mockResolvedValue('es');
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     await act(async () => {
-      tree = create(createElement(I18nProvider, { prepare: () => Promise.reject(new Error('Teil fehlt')) }, createElement(Probe)));
+      tree = create(createElement(I18nProvider, { prepare: () => Promise.reject(new Error('Teil fehlt')), children: createElement(Probe) }));
     });
     expect(captured?.uiLanguage).toBe('es');
   });

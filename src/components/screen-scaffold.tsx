@@ -2,6 +2,7 @@ import { ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AuroraBackground, GradientFill, Reveal } from './fx';
 import { ThemedText } from './themed-text';
 
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -33,24 +34,41 @@ export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, child
   const theme = useTheme();
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top', 'left', 'right']}>
+      {/* Aurora (22.10.2026) liegt fest hinter dem scrollenden Inhalt. */}
+      <AuroraBackground />
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}>
         <View style={styles.column}>
-          <View style={styles.header}>
+          <Reveal style={styles.header}>
             {headerAction}
             <ThemedText type="subtitle">{title}</ThemedText>
+            <View style={styles.titleBar}>
+              <GradientBar />
+            </View>
             {subtitle ? (
               <ThemedText type="small" themeColor="textSecondary">
                 {subtitle}
               </ThemedText>
             ) : null}
-          </View>
-          {children}
+          </Reveal>
+          <Reveal index={1} style={styles.body}>
+            {children}
+          </Reveal>
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+/** Kurzer Leuchtstrich unter dem Seitentitel — Markenzeichen jeder Seite. */
+function GradientBar() {
+  const theme = useTheme();
+  return (
+    <View style={[styles.gradientBar, { boxShadow: `0 0 14px ${theme.gradientStart}` }]}>
+      <GradientFill radius={2} />
+    </View>
   );
 }
 
@@ -72,5 +90,19 @@ const styles = StyleSheet.create({
   },
   header: {
     gap: Spacing.one,
+  },
+  /** Der Inhalt behält den Abstand seiner Kinder wie zuvor die Spalte. */
+  body: {
+    gap: Spacing.four,
+  },
+  titleBar: {
+    marginTop: Spacing.half,
+    marginBottom: Spacing.one,
+  },
+  gradientBar: {
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
   },
 });

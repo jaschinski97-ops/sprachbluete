@@ -198,6 +198,14 @@ describe('Kontrast der semantischen Farben (WCAG 2.1 AA)', () => {
     }
   });
 
+  it.each(MODI)('beschriftet den Knopf-Verlauf im Modus %s an beiden Enden lesbar', (modus) => {
+    // 22.10.2026: Hauptknöpfe tragen einen Verlauf statt einer Fläche — die
+    // Schrift muss an JEDER Stelle 4,5:1 halten, also an beiden Enden.
+    for (const ende of [Colors[modus].gradientStart, Colors[modus].gradientEnd]) {
+      expect(kontrastVerhaeltnis(Colors[modus].gradientText, ende)).toBeGreaterThanOrEqual(AA_TEXT);
+    }
+  });
+
   it('koppelt Richtig/Falsch von den Tonfarben ab', () => {
     // BISHER KODIERTEN „Richtig" und „Falsch" MITTEL und FALLEND - dieselben
     // Farben, die Thai-Töne bedeuten. Wer Tonerkennung übt, bekam damit zwei

@@ -1,9 +1,11 @@
 import { Link, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import { useDirectionSummariesFor } from '@/components/direction-dashboard';
 import { FeatureLegend } from '@/components/feature-legend';
+import { GradientFill, Shine, usePressScale } from '@/components/fx';
 import { LanguageHero } from '@/components/language-hero';
 import { LanguagePicker } from '@/components/language-picker';
 import { ScreenScaffold } from '@/components/screen-scaffold';
@@ -45,6 +47,7 @@ export default function DashboardScreen() {
   const { t, systemLanguage, languageName, uiLanguage } = useLocale();
   const router = useRouter();
   const theme = useTheme();
+  const ctaPress = usePressScale();
   // SEIT STUFE 1 FOLGT DIE ZIELLISTE DER BRÜCKE (App-/Oberflächensprache):
   // Brücke Deutsch sieht die vier Bestandsziele, Brücken th/en/es ihre
   // jeweiligen Paare — inklusive Kreuzzielen mit concept-gekoppeltem Stoff.
@@ -157,23 +160,29 @@ export default function DashboardScreen() {
         <Pressable
           accessible
           accessibilityRole="button"
-          style={({ pressed }) => pressed && styles.pressed}>
-          <View style={[styles.cta, { backgroundColor: theme.accent }]}>
-            <ThemedText type="default" style={[styles.ctaLabel, { color: theme.accentText }]}>
+          onPressIn={ctaPress.onPressIn}
+          onPressOut={ctaPress.onPressOut}>
+          {/* Seit 22.10.2026 der Glanzpunkt der Übersicht: Verlauf, Leuchten
+              und ein wanderndes Glanzlicht; beim Druck federt die Fläche. */}
+          <Animated.View
+            style={[styles.cta, { boxShadow: `0 12px 34px ${theme.gradientStart}59` }, ctaPress.style]}>
+            <GradientFill radius={18} />
+            <Shine />
+            <ThemedText type="default" style={[styles.ctaLabel, { color: theme.gradientText }]}>
               {t('home.heroCta')}
             </ThemedText>
             {totalDue === null ? null : totalDue > 0 ? (
-              <View style={[styles.ctaBadge, { borderColor: theme.accentText }]}>
-                <ThemedText type="smallBold" style={{ color: theme.accentText }}>
+              <View style={[styles.ctaBadge, { borderColor: theme.gradientText }]}>
+                <ThemedText type="smallBold" style={{ color: theme.gradientText }}>
                   {t('home.dueBadge', { count: totalDue })}
                 </ThemedText>
               </View>
             ) : (
-              <ThemedText type="small" style={{ color: theme.accentText }}>
+              <ThemedText type="small" style={{ color: theme.gradientText }}>
                 {t('home.nothingDue')}
               </ThemedText>
             )}
-          </View>
+          </Animated.View>
         </Pressable>
       </Link>
 
@@ -238,21 +247,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.two,
-    minHeight: 44,
-    borderRadius: 14,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+    minHeight: 60,
+    borderRadius: 18,
+    overflow: 'hidden',
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
   },
   ctaLabel: {
-    fontWeight: '700',
+    fontWeight: '800',
+    fontSize: 18,
   },
   ctaBadge: {
     borderWidth: 1,
     borderRadius: 999,
     paddingHorizontal: Spacing.two,
     paddingVertical: 2,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

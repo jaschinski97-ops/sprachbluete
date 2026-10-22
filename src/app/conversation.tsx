@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { GradientFill, Reveal } from '@/components/fx';
 import { ScreenScaffold } from '@/components/screen-scaffold';
 import { ThemedButton } from '@/components/themed-button';
 import { ThemedText } from '@/components/themed-text';
@@ -26,6 +27,22 @@ import { setConversationDirection } from '@/lib/profile';
 import { TranslationKey, useLocale } from '@/lib/i18n';
 
 /** Gesprächsthemen als Übersetzungsschlüssel statt als deutsche Konstante. */
+/** Ein Symbol je Gesprächsthema (22.10.2026) — im Verlaufs-Abzeichen der Themenkarte. */
+const TOPIC_ICONS: Record<ConversationSituation['topic'], React.ComponentProps<typeof Ionicons>['name']> = {
+  greeting: 'hand-left',
+  appointments: 'calendar',
+  home: 'home',
+  market: 'basket',
+  restaurant: 'restaurant',
+  leisure: 'musical-notes',
+  travel: 'airplane',
+  health: 'medkit',
+  work: 'briefcase',
+  services: 'construct',
+  opinion: 'chatbubble-ellipses',
+  society: 'people',
+};
+
 const TOPIC_KEYS: Record<ConversationSituation['topic'], TranslationKey> = {
   greeting: 'topic.greeting',
   appointments: 'topic.appointments',
@@ -43,6 +60,7 @@ const TOPIC_KEYS: Record<ConversationSituation['topic'], TranslationKey> = {
 
 export default function ConversationScreen() {
   const { t, languageName, uiLanguage } = useLocale();
+  const theme = useTheme();
   // Mit dem Katalogstand, aus dem die Liste kam (Katalog je Lernsprache).
   const [geladen, setGeladen] = useState<{ revision: number; list: ConversationSituation[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -258,10 +276,10 @@ export default function ConversationScreen() {
           </ThemedText>
         </ThemedView>
       ) : (
-        groups.map(([topic, gruppe]) => {
+        groups.map(([topic, gruppe], gruppenIndex) => {
           const offen = offeneThemen.has(topic);
           return (
-            <View key={topic} style={styles.topicGroup}>
+            <Reveal key={topic} index={gruppenIndex} style={styles.topicGroup}>
               <Pressable
                 onPress={() => toggleThema(topic)}
                 accessibilityRole="button"
@@ -270,20 +288,23 @@ export default function ConversationScreen() {
                   gruppe.length === 1 ? 'conversation.topicCountOne' : 'conversation.topicCount',
                   { count: gruppe.length }
                 )}`}
-                style={({ pressed }) => [styles.topicHead, pressed && styles.pressed]}>
-                <View style={styles.header}>
-                  <ThemedText type="smallBold" style={styles.headerText}>
+                style={({ pressed }) => pressed && styles.pressed}>
+                {/* Seit 22.10.2026 eine Glas-Karte mit Themen-Symbol. */}
+                <ThemedView type="backgroundElement" style={[styles.topicHead, offen && { borderColor: theme.gradientStart }]}>
+                  <View style={styles.topicIcon}>
+                    <GradientFill radius={12} />
+                    <Ionicons name={TOPIC_ICONS[topic] ?? 'chatbubbles'} size={20} color={theme.gradientText} />
+                  </View>
+                  <ThemedText type="smallBold" style={styles.topicTitle}>
                     {t(TOPIC_KEYS[topic])}
                   </ThemedText>
                   <View style={styles.topicMeta}>
                     <ThemedText type="small" themeColor="textSecondary">
                       {t(gruppe.length === 1 ? 'conversation.topicCountOne' : 'conversation.topicCount', { count: gruppe.length })}
                     </ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary">
-                      {offen ? '▲' : '▼'}
-                    </ThemedText>
+                    <Ionicons name={offen ? 'chevron-up' : 'chevron-down'} size={18} color={theme.textSecondary} />
                   </View>
-                </View>
+                </ThemedView>
               </Pressable>
               {offen
                 ? gruppe.map((situation) => (
@@ -300,7 +321,7 @@ export default function ConversationScreen() {
                     />
                   ))
                 : null}
-            </View>
+            </Reveal>
           );
         })
       )}
@@ -473,7 +494,23 @@ const styles = StyleSheet.create({
   topicHead: {
     // Der Themenkopf ist ein Knopf wie jede Karte: volle 44 Punkte
     // Trefferfläche, der Inneninhalt sitzt zentriert darin.
-    minHeight: 44,
+    minHeight: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    borderRadius: 18,
+  },
+  topicTitle: {
+    flex: 1,
+  },
+  topicIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   topicMeta: {

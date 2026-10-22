@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, type PressableProps } from 'react-native';
+import { StyleSheet, View, type PressableProps } from 'react-native';
 
+import { GradientFill, PressableScale } from './fx';
 import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
 
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -31,37 +31,41 @@ export function ThemedButton({ label, variant = 'secondary', disabled, ...rest }
   const theme = useTheme();
   const primary = variant === 'primary';
 
+  // Seit 22.10.2026: Hauptknopf mit Verlauf und Leuchten, Nebenknopf als
+  // Glas mit Kante; beide sinken beim Druck federnd ein.
   return (
-    <Pressable
+    <PressableScale
       disabled={disabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: Boolean(disabled) }}
-      style={({ pressed }) => [pressed && styles.pressed, disabled && styles.disabled]}
+      style={[
+        styles.button,
+        primary
+          ? { boxShadow: disabled ? undefined : `0 6px 22px ${theme.gradientStart}66` }
+          : { backgroundColor: theme.glass, borderColor: theme.cardBorder, borderWidth: 1 },
+      ]}
       {...rest}>
-      <ThemedView
-        type={primary ? 'background' : 'backgroundSelected'}
-        style={[styles.button, primary && { backgroundColor: theme.accent }]}>
-        <ThemedText type={primary ? 'smallBold' : 'small'} themeColor={primary ? 'accentText' : 'text'}>
+      {primary ? <GradientFill radius={14} /> : null}
+      <View style={styles.label}>
+        <ThemedText type={primary ? 'smallBold' : 'small'} style={primary ? { color: theme.gradientText } : null}>
           {label}
         </ThemedText>
-      </ThemedView>
-    </Pressable>
+      </View>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 44,
+    minHeight: 46,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  label: {
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.two,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  disabled: {
-    opacity: 0.45,
+    alignItems: 'center',
   },
 });

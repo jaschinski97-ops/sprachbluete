@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Reveal } from './fx';
 import { ThemedText, displayLineHeight } from './themed-text';
 import { STRESS_RULE_KEYS } from './feature-legend';
 
@@ -53,25 +54,36 @@ function ThaiHero() {
       accessibilityLabel="สวัสดี — sà wàt dii"
       importantForAccessibility="no-hide-descendants"
       style={styles.wrapper}>
+      {/* Seit 22.10.2026: Die Silben federn nacheinander herein und leuchten
+          in ihrer Tonfarbe. */}
       <View style={styles.word}>
-        {THAI_SEGMENTS.map((segment) => (
-          <View key={segment.text} style={styles.segment}>
+        {THAI_SEGMENTS.map((segment, index) => (
+          <Reveal key={segment.text} index={index + 1} style={styles.segment}>
             <ThemedText
               maxFontSizeMultiplier={1.4}
               style={[
                 styles.thai,
-                { color: toneColor(segment.tone), lineHeight: displayLineHeight(64, 1.4) },
+                {
+                  color: toneColor(segment.tone),
+                  lineHeight: displayLineHeight(64, 1.4),
+                  textShadowColor: toneColor(segment.tone),
+                },
               ]}>
               {segment.text}
             </ThemedText>
-            <View style={[styles.bar, { backgroundColor: toneColor(segment.tone) }]} />
-          </View>
+            <View
+              style={[
+                styles.bar,
+                { backgroundColor: toneColor(segment.tone), boxShadow: `0 0 10px ${toneColor(segment.tone)}` },
+              ]}
+            />
+          </Reveal>
         ))}
       </View>
 
       <View style={styles.translit}>
         {THAI_SYLLABLES.map((syllable, index) => (
-          <View key={syllable.text} style={styles.translitItem}>
+          <Reveal key={syllable.text} index={index + 3} style={styles.translitItem}>
             {index > 0 ? (
               <ThemedText style={[styles.sep, { color: theme.decorGrey }]}>·</ThemedText>
             ) : null}
@@ -80,7 +92,7 @@ function ThaiHero() {
               style={[styles.translitText, { color: toneColor(syllable.tone) }]}>
               {syllable.text}
             </ThemedText>
-          </View>
+          </Reveal>
         ))}
       </View>
     </View>
@@ -95,6 +107,7 @@ function ThaiHero() {
  */
 function GrussHero({ language }: { language: LanguageCode }) {
   const { t } = useLocale();
+  const theme = useTheme();
   const definition = learningLanguage(language);
 
   const gruss = useMemo(() => {
@@ -125,7 +138,10 @@ function GrussHero({ language }: { language: LanguageCode }) {
       accessibilityLabel={gruss.silben ? `${gruss.wort} — ${gruss.silben.join('·')}` : gruss.wort}
       importantForAccessibility="no-hide-descendants"
       style={styles.wrapper}>
-      <ThemedText maxFontSizeMultiplier={1.4} style={[styles.latin, { lineHeight: displayLineHeight(56, 1.4) }]}>
+      <Reveal index={1}>
+      <ThemedText
+        maxFontSizeMultiplier={1.4}
+        style={[styles.latin, styles.latinGlow, { lineHeight: displayLineHeight(56, 1.4), textShadowColor: theme.gradientStart }]}>
         {gruss.silben
           ? gruss.silben.map((silbe, index) => (
               <ThemedText
@@ -136,10 +152,13 @@ function GrussHero({ language }: { language: LanguageCode }) {
             ))
           : gruss.wort}
       </ThemedText>
+      </Reveal>
       {gruss.hilfe ? (
-        <ThemedText type="small" themeColor="textSecondary" style={styles.hilfe}>
-          {gruss.hilfe}
-        </ThemedText>
+        <Reveal index={2}>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.hilfe}>
+            {gruss.hilfe}
+          </ThemedText>
+        </Reveal>
       ) : null}
     </View>
   );
@@ -160,6 +179,12 @@ const styles = StyleSheet.create({
   thai: {
     fontSize: 64,
     fontWeight: '600',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 22,
+  },
+  latinGlow: {
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 26,
   },
   /** Lateinische Grußwörter etwas kleiner als die Thai-Schrift. */
   latin: {

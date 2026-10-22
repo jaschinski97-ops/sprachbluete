@@ -19,12 +19,12 @@
  */
 html,
 body {
-  background-color: #ffffff;
+  background-color: #f6f6fc;
 }
 
 @media (prefers-color-scheme: dark) {
   html,
   body {
-    background-color: #000000;
+    background-color: #07071a;
   }
 }

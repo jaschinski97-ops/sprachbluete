@@ -24,9 +24,12 @@ export default function AppTabs() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.text,
+        // Seit 22.10.2026: Akzentfarbe für den aktiven Reiter, die Leiste in
+        // der Kartenfläche mit feiner Kante statt Systemgrau.
+        tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: { backgroundColor: colors.background },
+        tabBarStyle: { backgroundColor: colors.backgroundElement, borderTopColor: colors.cardBorder },
+        tabBarLabelStyle: { fontWeight: '600' },
       }}>
       <Tabs.Screen
         name="index"

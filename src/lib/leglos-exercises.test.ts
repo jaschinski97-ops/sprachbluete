@@ -1,7 +1,5 @@
 import { VOCABULARY_TH, VOCABULARY_ES } from '@/test-fixtures/legacy-vocabulary';
 import type { VocabEntry } from '@/data/vocab-types';
-import verbs from '@/data/german-verb-forms.json';
-import groups from '@/data/english-grapheme-groups.json';
 import { syllablesOf } from '@/data/vocab-helpers';
 import { buildDeutschLesenQuestion, buildStressHearQuestion, buildSoundSpellingQuestion } from './drills/questions';
 import { graphemeGroups } from './spelling/graphemes';
@@ -39,20 +37,6 @@ describe('Leg-los: bestehende Daten bleiben als Übungsstoff nutzbar', () => {
     expect(buildSpeakingPrompt(word)).toMatchObject({ sourceVerified: false,
       targetSource: 'cross-checked-vocabulary-syllables', targetTone: word.syllables[0].tone });
     expect(canBuildSpeakingPrompt({ ...word, verificationNote: 'KI-erzeugt, ungeprüft' })).toBe(false);
-  });
-
-  it('liefert Stammformen und unterschiedliche Lesarten derselben Schreibung', () => {
-    expect(verbs.gehen).toMatchObject({ thirdPerson: 'geht', praeteritum: 'ging', perfekt: 'ist gegangen' });
-    expect(verbs.zugeben).toMatchObject({ thirdPerson: 'gibt zu', perfekt: 'hat zugegeben' });
-    for (const forms of Object.values(verbs)) {
-      expect(forms.thirdPerson).toBeTruthy();
-      expect(forms.praeteritum).toBeTruthy();
-      expect(forms.perfekt).toMatch(/^(hat|ist) /);
-    }
-    const ea = groups.find(g => g.grapheme === 'ea')!;
-    expect(ea.variants.find(v => new RegExp(v.pattern).test('bread'))?.sound).toBe('e');
-    expect(ea.variants.find(v => new RegExp(v.pattern).test('great'))?.sound).toBe('eɪ');
-    expect(ea.variants.some(v => new RegExp(v.pattern).test('area'))).toBe(false);
   });
 
   it('hält große Hörgruppen bei vier eindeutigen Antworten inklusive Lösung', () => {

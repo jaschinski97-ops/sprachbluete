@@ -16,3 +16,13 @@ jest.mock('./src/content/catalog.json', () => require('./src/test-fixtures/fixtu
 // Katalog im Modul und braucht sie nicht; Ladetests setzen eigene Dateien
 // (`setCatalogSource`).
 jest.mock('./src/content/catalog-files', () => ({ CATALOG_FILES: {} }));
+
+// Animationen (22.10.2026, `components/fx.tsx`): Reanimated und Worklets
+// bringen eigene Attrappen mit; die native Laufzeit fehlt im Testprozess.
+// „Bewegung reduzieren“ gilt in Tests als an — dann stehen Kennzahlen und
+// Inhalte sofort in ihrem Endzustand da, ohne Zeitabhängigkeit.
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
+jest.mock('react-native-reanimated', () => {
+  const mock = require('react-native-reanimated/mock');
+  return { ...mock, useReducedMotion: () => true };
+});

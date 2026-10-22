@@ -9,6 +9,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { DrillRunner } from '@/components/drill-runner';
 import { DictationRunner } from '@/components/dictation-runner';
 import { Flashcard } from '@/components/flashcard';
+import { CardTransition, GradientFill, GradientProgress, PressableScale, Reveal } from '@/components/fx';
 import { ScreenScaffold } from '@/components/screen-scaffold';
 import { CatalogLanguages } from '@/components/catalog-gate';
 import { SpeakingRunner } from '@/components/speaking-runner';
@@ -953,19 +954,27 @@ function ModeBar({ direction, onPick, expanded, setExpanded }: {
     'path.speaking',
     'path.grammar',
   ] as const;
+  // Ein Symbol je Lernbereich im Verlaufs-Abzeichen (22.10.2026), in der
+  // Reihenfolge der Beschreibungen oben.
+  const icons = ['layers', 'headset', 'book', 'mic', 'extension-puzzle'] as const;
 
   return (
     <View style={styles.modeBar}>
       {groupsForDirection(direction).map((group, index) => {
         const open = expanded === group.label;
         return (
-          <ThemedView key={group.label} type="backgroundElement" style={styles.skillCard}>
+          <Reveal key={group.label} index={index}>
+          <ThemedView type="backgroundElement" style={styles.skillCard}>
             <Pressable
               onPress={() => setExpanded(open ? null : group.label)}
               accessibilityRole="button"
               accessibilityLabel={t(group.label)}
               accessibilityState={{ expanded: open }}
               style={({ pressed }) => [styles.skillHeader, pressed && styles.pressed]}>
+              <View style={styles.skillIcon}>
+                <GradientFill radius={12} />
+                <Ionicons name={icons[index] ?? 'sparkles'} size={20} color={colors.gradientText} />
+              </View>
               <View style={styles.skillText}>
                 <ThemedText type="smallBold">{t(group.label)}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">{t(descriptions[index])}</ThemedText>
@@ -983,6 +992,7 @@ function ModeBar({ direction, onPick, expanded, setExpanded }: {
               <ThemedButton label={t('mode.cards')} onPress={() => onPick('cards')} />
             ) : null}
           </ThemedView>
+          </Reveal>
         );
       })}
     </View>
@@ -1166,12 +1176,7 @@ function CardSession({
             Fläche, die man im Augenblick erfasst, kein Satz, den man liest.
             Füllstand VOR der Bewertung — `index` Karten sind geschafft, die
             aktuelle zählt erst, wenn sie bewertet ist. */}
-        <ThemedView type="backgroundSelected" style={styles.progressTrack}>
-          <ThemedView
-            type="accent"
-            style={[styles.progressFill, { width: `${(index / queue.length) * 100}%` }]}
-          />
-        </ThemedView>
+        <GradientProgress value={index / queue.length} />
         <ThemedText type="small" themeColor="textSecondary">
           {t('cards.progress', { index: index + 1, total: queue.length })}
         </ThemedText>
@@ -1180,24 +1185,26 @@ function CardSession({
         ) : null}
       </View>
 
-      <Flashcard
-        entry={item.entry}
-        direction={direction}
-        revealed={revealed}
-        bridgeEntry={item.bridgeEntry}
-        situation={situation}
-      />
+      <CardTransition cardKey={`${index}:${item.entry.id}`} revealed={revealed}>
+        <Flashcard
+          entry={item.entry}
+          direction={direction}
+          revealed={revealed}
+          bridgeEntry={item.bridgeEntry}
+          situation={situation}
+        />
+      </CardTransition>
 
       {revealed ? (
         <View style={styles.ratings}>
           {RATINGS.map((rating) => (
-            <Pressable
+            <PressableScale
               key={rating}
               onPress={() => rate(rating)}
               disabled={busy}
               accessibilityRole="button"
               accessibilityLabel={t('rating.a11y', { label: t(RATING_KEYS[rating]) })}
-              style={({ pressed }) => [styles.ratingWrap, pressed && styles.pressed]}>
+              style={styles.ratingWrap}>
               {/* Fläche und Schrift als Token-PAAR aus dem Theme — die
                   Kontraste gelten nur als Paar (siehe RATING_COLORS). */}
               <View
@@ -1205,11 +1212,11 @@ function CardSession({
                   styles.ratingButton,
                   { backgroundColor: colors[RATING_COLORS[rating].bg] },
                 ]}>
-                <ThemedText type="small" style={{ color: colors[RATING_COLORS[rating].text] }}>
+                <ThemedText type="smallBold" style={{ color: colors[RATING_COLORS[rating].text] }}>
                   {t(RATING_KEYS[rating])}
                 </ThemedText>
               </View>
-            </Pressable>
+            </PressableScale>
           ))}
         </View>
       ) : (
@@ -1299,6 +1306,14 @@ const styles = StyleSheet.create({
     padding: Spacing.two,
     gap: Spacing.one,
   },
+  skillIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   skillHeader: {
     minHeight: 56,
     flexDirection: 'row',
@@ -1368,20 +1383,6 @@ const styles = StyleSheet.create({
    */
   progressBlock: {
     gap: Spacing.two,
-  },
-  /**
-   * Hauchduenne Schiene mit pillfoermiger Fuellung (Mockup „Lernen /
-   * Karteikarten“): `overflow` + Radius schneiden die Fuellung an den
-   * Rundungen sauber ab, auch bei fuellendem oder leerem Stand.
-   */
-  progressTrack: {
-    height: 5,
-    borderRadius: 999,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: 5,
-    borderRadius: 999,
   },
   ratings: {
     flexDirection: 'row',

@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-const DURATION = 600;
+const DURATION = 750;
 
 export function AnimatedSplashOverlay() {
   const [animate, setAnimate] = useState(false);
@@ -13,26 +13,26 @@ export function AnimatedSplashOverlay() {
 
   if (!visible) return null;
 
+  // Seit 22.10.2026: Die App-Sprechblase wächst kurz an und löst sich dann
+  // in die Oberfläche auf — derselbe Nachtblau-Grund wie der native Splash.
   const splashKeyframe = new Keyframe({
     0: {
       transform: [{ scale: 1 }],
       opacity: 1,
     },
-    20: {
+    35: {
+      transform: [{ scale: 1.08 }],
       opacity: 1,
-    },
-    70: {
-      opacity: 0,
-      easing: Easing.elastic(0.7),
+      easing: Easing.out(Easing.cubic),
     },
     100: {
       opacity: 0,
-      transform: [{ scale: 1 }],
-      easing: Easing.elastic(0.7),
+      transform: [{ scale: 1.6 }],
+      easing: Easing.in(Easing.cubic),
     },
   });
 
-  const image = <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />;
+  const image = <Image style={styles.image} source={require('@/assets/images/splash-icon.png')} />;
 
   return animate ? (
     <Animated.View
@@ -60,12 +60,12 @@ export function AnimatedSplashOverlay() {
 
 const styles = StyleSheet.create({
   image: {
-    width: 76,
-    height: 71,
+    width: 200,
+    height: 170,
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#208AEF',
+    backgroundColor: '#07071A',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,

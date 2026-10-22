@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { GradientFill, PressableScale, Reveal } from './fx';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -91,7 +92,7 @@ export function LanguagePicker({
       : (zieleDerSprache[0]?.direction ?? null);
 
   return (
-    <View role="radiogroup" accessibilityLabel={t('picker.chooseA11y')}>
+    <View role="radiogroup" accessibilityLabel={t('picker.chooseA11y')} style={styles.list}>
       {ziele.map((ziel: Lernziel, index: number) => {
         const name = languageName(goalLanguage(ziel));
         const endonym = goalEndonym(ziel);
@@ -99,20 +100,17 @@ export function LanguagePicker({
         const wortschatz = wortschatzFuerZiel(ziel);
         const fällig = fälligJeRichtung.get(ziel.direction);
         const active = ziel.direction === aktiveRichtung;
-        // Haarlinien nur zwischen offenen Zeilen: Die aktive Zeile ist eine
-        // Fläche, und an ihren Kanten wäre die Trennlinie doppelt.
-        const previous = index > 0 ? ziele[index - 1] : null;
-        const previousActive = previous !== null && previous.direction === aktiveRichtung;
-        const showHairline = index > 0 && !active && !previousActive;
-
+        // Seit 22.10.2026 ist jede Zeile eine Glas-Karte; die aktive trägt
+        // eine Kante in Akzentfarbe und leuchtet.
         return (
+          <Reveal key={ziel.direction} index={index}>
           <View
-            key={ziel.direction}
             style={[
               styles.row,
-              active && { backgroundColor: theme.backgroundElement },
-              showHairline && { borderTopWidth: 1, borderColor: theme.decorGrey },
+              { backgroundColor: theme.glass, borderColor: active ? theme.gradientStart : theme.cardBorder },
+              active && { boxShadow: `0 8px 28px ${theme.gradientStart}40` },
             ]}>
+            <Monogramm language={gelehrteSprache} />
             <Pressable
               onPress={() => onSelect(ziel.direction)}
               accessibilityRole="radio"
@@ -188,8 +186,24 @@ export function LanguagePicker({
               {packsNeeded() ? <DownloadPill language={gelehrteSprache} name={name} /> : null}
             </View>
           </View>
+          </Reveal>
         );
       })}
+    </View>
+  );
+}
+
+/** Ein kleines Abzeichen je Sprache — ein typisches Zeichen auf dem Verlauf. */
+const MONOGRAMM: Record<LanguageCode, string> = { th: 'ก', en: 'Aa', es: 'Ñ', de: 'ß' };
+
+function Monogramm({ language }: { language: LanguageCode }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.monogramm} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <GradientFill radius={14} />
+      <ThemedText type="smallBold" style={[styles.monogrammText, { color: theme.gradientText }]}>
+        {MONOGRAMM[language] ?? language.toUpperCase()}
+      </ThemedText>
     </View>
   );
 }
@@ -198,15 +212,15 @@ function StartPill({ name, onStart }: { name: string; onStart: () => void }) {
   const theme = useTheme();
   const { t } = useLocale();
   return (
-    <Pressable
+    <PressableScale
       onPress={onStart}
       accessibilityRole="button"
       accessibilityLabel={`${t('tabs.learn')}: ${name}`}
-      style={({ pressed }) => [styles.startPill, { borderColor: theme.decorGrey }, pressed && styles.pressed]}>
+      style={[styles.startPill, { borderColor: theme.gradientStart, backgroundColor: theme.backgroundSelected }]}>
       <ThemedText type="smallBold" themeColor="text">
         {t('tabs.learn')}
       </ThemedText>
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -237,28 +251,45 @@ function DownloadPill({ language, name }: { language: LanguageCode; name: string
           ? t('pack.downloadSize', { size: megabytes(action.zipBytes) })
           : t('pack.download');
   return (
-    <Pressable
+    <PressableScale
       onPress={() => void downloadPack(language)}
       disabled={laeuft}
       accessibilityRole="button"
       accessibilityLabel={t(action.kind === 'update' ? 'pack.updateA11y' : 'pack.downloadA11y', { language: name })}
       accessibilityState={{ busy: laeuft, disabled: laeuft }}
-      style={({ pressed }) => [styles.startPill, { borderColor: theme.decorGrey }, pressed && styles.pressed]}>
+      style={[styles.startPill, { borderColor: theme.cardBorder, backgroundColor: theme.glass }]}>
       <ThemedText type="smallBold" themeColor="text">
         {label}
       </ThemedText>
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
+  list: {
+    gap: Spacing.two,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.two,
+    gap: Spacing.three,
     minHeight: 44,
     paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  monogramm: {
+    width: 44,
+    height: 44,
     borderRadius: 14,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  monogrammText: {
+    fontSize: 18,
+    fontWeight: '800',
   },
   /** Die Auswahl-Fläche: füllt die Zeile links vom „Lernen"-Knopf. */
   lead: {

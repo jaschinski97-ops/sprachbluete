@@ -9,6 +9,7 @@ import {
 import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { GradientFill } from './fx';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -117,8 +118,9 @@ export default function AppTabs() {
 
 function NavBar(props: { children?: ReactNode }) {
   const { t } = useLocale();
+  const colors = useTheme();
   return (
-    <ThemedView type="backgroundElement" style={styles.bar}>
+    <ThemedView type="backgroundElement" style={[styles.bar, { borderTopWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, backgroundColor: colors.glass }]}>
       <View style={styles.barInner}>
         <ThemedText type="smallBold" style={styles.brand}>
           {t('tabs.brand')}
@@ -135,6 +137,7 @@ function NavBar(props: { children?: ReactNode }) {
 }
 
 function NavButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
+  const colors = useTheme();
   return (
     <Pressable
       {...props}
@@ -144,13 +147,15 @@ function NavButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
       accessibilityRole="tab"
       accessibilityState={{ selected: Boolean(isFocused) }}
       style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.navButton}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
+      {/* Aktiv seit 22.10.2026 als Verlaufspille, inaktiv durchsichtig. */}
+      <View style={[styles.navButton, isFocused && { boxShadow: `0 4px 16px ${colors.gradientStart}55` }]}>
+        {isFocused ? <GradientFill radius={Spacing.three} /> : null}
+        <ThemedText
+          type={isFocused ? 'smallBold' : 'small'}
+          style={{ color: isFocused ? colors.gradientText : colors.textSecondary }}>
           {children}
         </ThemedText>
-      </ThemedView>
+      </View>
     </Pressable>
   );
 }
@@ -159,18 +164,21 @@ function BottomBar(props: { children?: ReactNode }) {
   const { t } = useLocale();
   const colors = useTheme();
   return (
-    <ThemedView
-      type="background"
-      // Haarlinie aus decorGrey: subpixel dünn wirkt sie von selbst gedämpft —
-      // der Token ersetzt eine handgerechnete rgba und wechselt mit dem Modus.
-      style={[styles.bottomBar, { borderTopColor: colors.decorGrey }]}>
+    // Seit 22.10.2026 eine schwebende Glasleiste über der Aurora.
+    <View style={[styles.bottomBarWrap, { backgroundColor: colors.background }]}>
       <View
-        style={styles.bottomBarInner}
-        accessibilityRole="tablist"
-        accessibilityLabel={t('tabs.mainNavA11y')}>
-        {props.children}
+        style={[
+          styles.bottomBar,
+          { backgroundColor: colors.glass, borderColor: colors.cardBorder, boxShadow: '0 10px 30px rgba(0,0,0,0.35)' },
+        ]}>
+        <View
+          style={styles.bottomBarInner}
+          accessibilityRole="tablist"
+          accessibilityLabel={t('tabs.mainNavA11y')}>
+          {props.children}
+        </View>
       </View>
-    </ThemedView>
+    </View>
   );
 }
 
@@ -202,18 +210,20 @@ function BottomTabButton({
           Dunkelmodus automatisch um, Mockup Phone 1). Inaktiv nur das Icon:
           sechs Labels passen auf 390px nicht mehr in Lesegröße, der aktive
           Tab trägt das Label stellvertretend für alle. */}
-      <ThemedView type={isFocused ? 'text' : 'background'} style={styles.bottomTabPill}>
+      <View
+        style={[styles.bottomTabPill, isFocused && { boxShadow: `0 4px 18px ${colors.gradientStart}66` }]}>
+        {isFocused ? <GradientFill radius={Spacing.three} /> : null}
         <Ionicons
           name={icon}
           size={22}
-          color={isFocused ? colors.background : colors.textSecondary}
+          color={isFocused ? colors.gradientText : colors.textSecondary}
         />
         {isFocused ? (
-          <ThemedText type="small" themeColor="background">
+          <ThemedText type="smallBold" numberOfLines={1} style={[styles.bottomLabel, { color: colors.gradientText }]}>
             {label}
           </ThemedText>
         ) : null}
-      </ThemedView>
+      </View>
     </Pressable>
   );
 }
@@ -254,15 +264,23 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.three,
+    overflow: 'hidden',
+  },
+  bottomBarWrap: {
+    width: '100%',
+    paddingHorizontal: Spacing.two,
+    paddingBottom: Spacing.two,
+    paddingTop: Spacing.one,
   },
   bottomBar: {
     width: '100%',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    // 56px-Leiste mit 6px Boden: übliche Bottom-Bar-Anmutung; das Web braucht
-    // kein zusätzliches Safe-Area-Polster wie auf dem Phone.
+    borderWidth: 1,
+    borderRadius: 24,
+    // 56px-Leiste: übliche Bottom-Bar-Anmutung; das Web braucht kein
+    // zusätzliches Safe-Area-Polster wie auf dem Phone.
     minHeight: 56,
-    paddingTop: Spacing.one,
-    paddingBottom: 6,
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.one,
   },
   bottomBarInner: {
     width: '100%',
@@ -278,16 +296,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bottomTabActive: {
-    flexGrow: 1.9,
+    // 2.8 statt 1.9 seit der Verlaufspille (22.10.2026): Auf 375 px lief
+    // „Einstellungen“ sonst rechts aus der Leiste.
+    flexGrow: 2.8,
   },
   bottomTabPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.one,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.two + Spacing.half,
+    paddingVertical: Spacing.two,
     borderRadius: Spacing.three,
-    minHeight: 32,
+    minHeight: 40,
+    overflow: 'hidden',
+  },
+  bottomLabel: {
+    fontSize: 13,
   },
   slot: {
     flex: 1,

@@ -1,12 +1,12 @@
 import { VocabEntry } from '@/data/vocab-types';
 
-import { retrievability } from '../fsrs/fsrs';
-import { FSRSCardState } from '../fsrs/types';
 import { anchorOf, LanguageCode, PairDirection } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
 import { stageOfEntry, type LearningStage } from '../learning-stages';
+import { selectPracticeWords } from '../practice-selection';
 import { ensureCardStates } from '../review-session';
 import { DataStore, getStore } from './../storage';
+import { loadWordPractice } from '../word-practice';
 
 import {
   buildArticleQuestion,
@@ -34,8 +34,8 @@ import {
   canBuildToneRuleQuestion,
   canBuildVerbFormQuestion,
 } from './questions';
-import { Random, seededRandom, shuffled } from './random';
-import { directionForDrill, DrillAnswer, DrillId, DrillQuestion } from './types';
+import { Random, seededRandom } from './random';
+import { directionForDrill, DrillAnswer, DrillId, DrillQuestion, isGrammarSetDrill } from './types';
 import { buildGrammarSession } from './grammar';
 
 /**
@@ -48,17 +48,17 @@ import { buildGrammarSession } from './grammar';
  * die auch `buildReviewQueue` benutzt.
  *
  * Anders als beim Karteikasten wird aber nicht stur der schwächste Kopf
- * genommen: Da eine Übungsantwort den Kartenzustand bewusst nicht verändert,
- * käme sonst bei jedem Start dieselbe Liste heraus. Deshalb wird aus einem
- * **Fenster** der schwächsten Kandidaten zufällig gezogen — der Schwerpunkt
- * bleibt auf dem Wackligen, die Sitzung wiederholt sich aber nicht wörtlich.
+ * genommen: Aus einem **Fenster** der dringendsten Kandidaten wird zufällig
+ * gezogen — der Schwerpunkt bleibt auf dem Wackligen, die Sitzung wiederholt
+ * sich aber nicht wörtlich.
+ *
+ * SEIT 22.10.2026 über `selectPracticeWords`: gelernte, wacklige Wörter
+ * zuerst, nur wenige neue, und die Übungsantworten je Wort
+ * (`word-practice.ts`) verschieben die Auswahl — Karten bleiben unberührt.
  */
 
 /** Aufgaben je Sitzung. */
 export const DRILL_SESSION_SIZE = 10;
-
-/** Aus wie vielen der schwächsten Kandidaten gezogen wird. */
-const CANDIDATE_WINDOW = 3;
 
 export type DrillSessionOptions = {
   drill: DrillId;
@@ -184,12 +184,6 @@ function buildQuestion(
   }
 }
 
-/** Wie gut die Vokabel in dieser Richtung gerade sitzt — kleiner heißt wackliger. */
-function weakness(card: FSRSCardState | undefined, now: number): number {
-  if (!card) return 0;
-  return retrievability(card, now);
-}
-
 export async function buildDrillSession(options: DrillSessionOptions): Promise<DrillSession> {
   const drill = options.drill;
   const direction = options.direction ?? directionForDrill(drill, options.language);
@@ -205,18 +199,14 @@ export async function buildDrillSession(options: DrillSessionOptions): Promise<D
   // aus dem Datensatz gemischt. Vor allem: KEIN `ensureCardStates`, denn
   // das legt als Seiteneffekt Karten an, und eine Partikel-Übung darf
   // keinen Kartenschlüssel erzeugen, den kein Kartenstoff je bewertet.
-  if (
-    drill === 'polite' ||
-    drill === 'serEstar' ||
-    drill === 'zaehlerwort' ||
-    drill === 'konsonantenklasse'
-  ) {
+  if (isGrammarSetDrill(drill)) {
     const { questions, available } = buildGrammarSession(drill, random, size, anchor, ui);
     return { drill, questions, available };
   }
 
   const db = options.store ?? (await getStore());
   const { entries, cards } = await ensureCardStates(direction, db, now);
+  const practice = await loadWordPractice(db);
 
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
   const potential = entries.filter((entry) =>
@@ -228,12 +218,16 @@ export async function buildDrillSession(options: DrillSessionOptions): Promise<D
   const eligibility = options.isEligible ? await Promise.all(potential.map(options.isEligible)) : potential.map(() => true);
   const candidates = potential.filter((_, i) => eligibility[i]);
 
-  const ranked = [...candidates].sort(
-    (a, b) => weakness(cardByVocabId.get(a.id), now) - weakness(cardByVocabId.get(b.id), now)
-  );
-
-  const window = ranked.slice(0, Math.max(size, size * CANDIDATE_WINDOW));
-  const chosen = shuffled(window, random).slice(0, size);
+  const chosen = selectPracticeWords(candidates, {
+    idOf: (entry) => entry.id,
+    cards: cardByVocabId,
+    practice,
+    now,
+    size,
+    random,
+    // Mit fester Wortliste (Heutige Runde, Kapitel) ist Neues der Stoff.
+    limitNew: !options.onlyVocabIds,
+  });
 
   return {
     drill,

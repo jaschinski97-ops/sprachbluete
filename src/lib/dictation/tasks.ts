@@ -6,6 +6,8 @@ import { seededRandom, shuffled } from '@/lib/drills/random';
 
 import { anchorOf, type PairDirection } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
+import { selectPracticeWords } from '@/lib/practice-selection';
+import type { PracticeContext } from '@/lib/word-practice';
 
 /**
  * Diktat-Aufgaben aus den Satz-Daten der Zielsprache — NICHT aus einem
@@ -79,6 +81,10 @@ export const DICTATION_SESSION_SIZE = 10;
 /**
  * Eine Diktat-Runde: gemischt, mit Aussaat reproduzierbar (dieselbe Bauart
  * wie die Sitzungen der Übungen — Tests stellen sie exakt nach).
+ *
+ * Mit Kartenstand und Übungsgedächtnis (22.10.2026) wählt das Diktat wie die
+ * anderen freien Übungen: Sätze zu gelernten, wackligen Wörtern zuerst, nur
+ * wenige zu neuen (`practice-selection.ts`). Ohne sie bleibt es beim Mischen.
  */
 export function buildDictationSession(
   language: SatzSprache,
@@ -86,9 +92,13 @@ export function buildDictationSession(
   seed: number = Date.now(),
   size: number = DICTATION_SESSION_SIZE,
   /** Nur Sätze aus dem Grundwortschatz dieser Stufe (18.10.2026). */
-  stage?: LearningStage
+  stage?: LearningStage,
+  context?: PracticeContext
 ): DictationTask[] {
-  return shuffled(dictationTasksFor(language, direction, { grundwortschatz: true, stage }), seededRandom(seed)).slice(0, size);
+  const tasks = dictationTasksFor(language, direction, { grundwortschatz: true, stage });
+  const random = seededRandom(seed);
+  if (!context) return shuffled(tasks, random).slice(0, size);
+  return selectPracticeWords(tasks, { ...context, idOf: (task) => task.vocabId, size, random });
 }
 
 /** Der ehrliche Fußtext je Sprache — geerbt von den Satzübungen. */

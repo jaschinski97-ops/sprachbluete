@@ -137,7 +137,7 @@ export function SpeakingRunner({ direction, stage, onExit }: {
     setAttempts(0);
     setResult(null);
     capture.cancel();
-    buildSpeakingSession({ stage })
+    buildSpeakingSession({ stage, direction })
       .then((built) => {
         if (!cancelled) setSession(built);
       })
@@ -152,9 +152,9 @@ export function SpeakingRunner({ direction, stage, onExit }: {
       void stopPronunciation();
     };
     // Der Capture-Controller aendert seine Objektidentitaet mit seinem Status;
-    // ein Neustart der Sitzung soll nur von `round` (und der Stufe) abhaengen.
+    // ein Neustart der Sitzung soll nur von `round`, Stufe und Richtung abhaengen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, stage]);
+  }, [round, stage, direction]);
 
   const prompt = session?.prompts[index] ?? null;
 

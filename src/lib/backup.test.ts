@@ -23,6 +23,7 @@ import { loadAllCardStates } from './repository';
 import { loadReviewLog, ReviewDayLog } from './review-log';
 import { DataStore, MemoryDataStore } from './storage';
 import { FSRSCardState } from './fsrs/types';
+import { loadWordPractice, recordWordPractice } from './word-practice';
 
 /**
  * Reine Logik (Aufbauen, Prüfen, Ersetzen) läuft gegen den Memory-Store wie
@@ -366,6 +367,40 @@ describe('applyBackupToStore', () => {
 
     expect(await loadAllCardStates(store)).toEqual([]);
     expect(await loadReviewLog(store)).toEqual([]);
+  });
+
+  it('sichert das Übungsgedächtnis und stellt es wieder her (22.10.2026)', async () => {
+    const quelle = await freshStore();
+    await recordWordPractice('w1', true, 1_760_000_000_000, quelle);
+    await recordWordPractice('w2', false, 1_760_000_000_001, quelle);
+    const doc = await buildBackupDocument(quelle);
+    expect(doc.data.wordPractice).toHaveLength(2);
+
+    const ziel = await freshStore();
+    await recordWordPractice('fremd', true, 1, ziel);
+    const { data } = parseBackupText(JSON.stringify(doc));
+    await applyBackupToStore(data, ziel);
+
+    const practice = await loadWordPractice(ziel);
+    expect([...practice.keys()].sort()).toEqual(['w1', 'w2']);
+    expect(practice.get('w2')).toMatchObject({ lastCorrect: false, streak: 0 });
+  });
+
+  it('leert das Übungsgedächtnis bei älteren Sicherungen ohne Eintrag und übergeht kaputte Einträge', async () => {
+    const store = await freshStore();
+    await recordWordPractice('alt', true, 1, store);
+    await applyBackupToStore(validDocument().data, store);
+    expect((await loadWordPractice(store)).size).toBe(0);
+
+    const raw = validDocument();
+    raw.data.wordPractice = [
+      { vocabId: 'gut', total: 1, correct: 1, streak: 1, lastAt: 5, lastCorrect: true },
+      { vocabId: 'kaputt', total: 'viel' },
+    ];
+    const result = validateBackupDocument(raw);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.wordPractice?.map((entry) => entry.vocabId)).toEqual(['gut']);
   });
 
   it('macht doppelte Schlüssel idempotent — der letzte Eintrag gewinnt', async () => {

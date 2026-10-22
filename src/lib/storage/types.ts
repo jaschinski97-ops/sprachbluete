@@ -32,6 +32,11 @@ export type CollectionName =
   | 'audio'
   /** ReviewDayLog — ein Dokument je Kalendertag mit Wiederholungszahlen (Phase 4). */
   | 'reviewLog'
+  /**
+   * WordPractice — Antworten aus Übungen je Vokabel (22.10.2026), getrennt
+   * von den FSRS-Karten. Steuert nur, welche Wörter freie Übungen wählen.
+   */
+  | 'practice'
   /** Einstellungen, Lernprofil, Zähler. */
   | 'meta';
 
@@ -42,6 +47,7 @@ export const COLLECTIONS: CollectionName[] = [
   'images',
   'audio',
   'reviewLog',
+  'practice',
   'meta',
 ];
 

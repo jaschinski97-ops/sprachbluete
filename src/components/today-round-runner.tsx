@@ -20,7 +20,7 @@ import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
 import { buildDrillSession } from '@/lib/drills/session';
 import { seededRandom, shuffled } from '@/lib/drills/random';
-import { type DrillId, type DrillQuestion } from '@/lib/drills/types';
+import { drillPracticesWords, type DrillId, type DrillQuestion } from '@/lib/drills/types';
 import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale, type UiLanguage } from '@/lib/i18n';
 import { anchorOf, targetLanguageOf, type PairDirection } from '@/lib/languages/types';
@@ -28,6 +28,7 @@ import { hoerDrillFuer } from '@/lib/languages/definitions';
 import { inStage, type LearningStage } from '@/lib/learning-stages';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
+import { recordWordPractice } from '@/lib/word-practice';
 import {
   buildTodayRound,
   type RoundKind,
@@ -515,6 +516,9 @@ function HoerenSegment({
               if (chosen !== null) return;
               setChosen(i);
               void recordDrill(i === frage.correctIndex, Date.now(), undefined, frage.drill, direction).catch(() => {});
+              if (drillPracticesWords(frage.drill)) {
+                void recordWordPractice(frage.vocabId, i === frage.correctIndex).catch(() => {});
+              }
             }}
             disabled={chosen !== null}
             accessibilityRole="button"
@@ -703,6 +707,7 @@ function DiktatSegment({
         const score = scoreDictation(draft, task.text, config);
         setErgebnis(score.passed ? 'passed' : 'failed');
         await recordDrill(score.passed, Date.now(), undefined, 'dictation', direction).catch(() => {});
+        await recordWordPractice(task.vocabId, score.passed).catch(() => {});
         if (score.passed) {
           try {
             const card = await loadOrCreateCardState(task.vocabId, task.direction);

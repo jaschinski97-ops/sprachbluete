@@ -21,7 +21,7 @@ export const DAY_MS = 86_400_000;
 const FACTOR = 19 / 81;
 
 /** Ziel-Retrievability zum Fälligkeitszeitpunkt (90 %). */
-const REQUEST_RETENTION = 0.9;
+export const REQUEST_RETENTION = 0.9;
 
 /** Ab dieser Stabilität (in Tagen) gilt eine Karte als „gemeistert". */
 const MASTERED_STABILITY_DAYS = 21;

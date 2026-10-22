@@ -1,13 +1,14 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
-import { seededRandom, shuffled } from '../drills/random';
-import { retrievability } from '../fsrs/fsrs';
+import { seededRandom } from '../drills/random';
 import { FSRSCardState, Rating } from '../fsrs/types';
 import type { PairDirection } from '../languages/types';
 import { inStage, type LearningStage } from '../learning-stages';
+import { selectPracticeWords } from '../practice-selection';
 import { loadOrCreateCardState, rateCard } from '../repository';
 import { ensureCardStates } from '../review-session';
 import { DataStore, getStore } from '../storage';
+import { loadWordPractice } from '../word-practice';
 
 import { compareWriting, WritingVerdict } from './compare';
 import { buildWritingPrompt, WritingPrompt, writingCandidates } from './prompt';
@@ -41,9 +42,6 @@ import { ratingForVerdict } from './rating';
 
 export const WRITING_SESSION_SIZE = 10;
 
-/** Aus wie vielen der schwächsten Kandidaten gezogen wird (wie bei den Übungen). */
-const CANDIDATE_WINDOW = 3;
-
 export type WritingSession = {
   direction: PairDirection;
   prompts: WritingPrompt[];
@@ -62,10 +60,6 @@ export type WritingSessionOptions = {
   stage?: LearningStage;
 };
 
-function weakness(card: FSRSCardState | undefined, now: number): number {
-  return card ? retrievability(card, now) : 0;
-}
-
 export async function buildWritingSession(
   options: WritingSessionOptions
 ): Promise<WritingSession> {
@@ -76,20 +70,25 @@ export async function buildWritingSession(
 
   const db = options.store ?? (await getStore());
   const { entries, cards } = await ensureCardStates(direction, db, now);
+  const practice = await loadWordPractice(db);
   const pool = options.entries ?? (options.stage ? inStage(entries, options.stage) : entries);
 
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
   const candidates = writingCandidates(direction, pool);
   const synonymPool = pool === entries ? candidates : writingCandidates(direction, entries);
 
-  // Dieselbe Auswahl wie bei den Uebungen aus Phase 6: Schwerpunkt auf dem
-  // Wackligen, aber aus einem Fenster gezogen, damit sich eine Runde nicht
-  // woertlich wiederholt.
-  const ranked = [...candidates].sort(
-    (a, b) => weakness(cardByVocabId.get(a.id), now) - weakness(cardByVocabId.get(b.id), now)
-  );
-  const window = ranked.slice(0, Math.max(size, size * CANDIDATE_WINDOW));
-  const chosen = shuffled(window, random).slice(0, size);
+  // Dieselbe Auswahl wie bei den Auswahlübungen (`practice-selection.ts`):
+  // gelernte, wacklige Wörter zuerst, frei nur wenige neue; mit eigener
+  // Wortliste (Kapitel) ist Neues der Stoff.
+  const chosen = selectPracticeWords(candidates, {
+    idOf: (entry) => entry.id,
+    cards: cardByVocabId,
+    practice,
+    now,
+    size,
+    random,
+    limitNew: !options.entries,
+  });
 
   return {
     direction,

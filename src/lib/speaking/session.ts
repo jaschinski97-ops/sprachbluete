@@ -1,11 +1,12 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
-import { shuffled, seededRandom } from '../drills/random';
-import { retrievability } from '../fsrs/fsrs';
-import { FSRSCardState } from '../fsrs/types';
+import { seededRandom } from '../drills/random';
+import type { PairDirection } from '../languages/types';
 import { inStage, type LearningStage } from '../learning-stages';
+import { selectPracticeWords } from '../practice-selection';
 import { loadCardStatesForDirection, loadVocabulary } from '../repository';
 import { DataStore, getStore } from '../storage';
+import { loadWordPractice } from '../word-practice';
 import { buildSpeakingPrompt, canBuildSpeakingPrompt, SpeakingPrompt } from './domain';
 
 /** Sprechaufgaben je Runde. */
@@ -32,11 +33,13 @@ export type SpeakingSessionOptions = {
   seed?: number;
   /** Nur Wörter dieser Stufe (Stufenschalter im Lern-Reiter, 18.10.2026). */
   stage?: LearningStage;
+  /**
+   * Die Lernrichtung, deren Karten die Auswahl lesen (22.10.2026). Vorher
+   * immer `de_to_th` — auf englischer Oberfläche (`en_to_th`) wurde damit
+   * nach einem fremden Kartenstand gewichtet.
+   */
+  direction?: PairDirection;
 };
-
-function weakness(card: FSRSCardState | undefined, now: number): number {
-  return card ? retrievability(card, now) : 0;
-}
 
 function speakingCandidates(entries: VocabEntry[]): VocabEntry[] {
   return entries.filter(canBuildSpeakingPrompt);
@@ -50,23 +53,24 @@ export async function buildSpeakingSession(
   const random = seededRandom(options.seed ?? now);
   const db = options.store ?? (await getStore());
 
-  const [entries, cards] = await Promise.all([
+  const [entries, cards, practice] = await Promise.all([
     loadVocabulary(db),
-    loadCardStatesForDirection('de_to_th', db),
+    loadCardStatesForDirection(options.direction ?? 'de_to_th', db),
+    loadWordPractice(db),
   ]);
   const candidates = speakingCandidates(inStage(entries, options.stage));
   const cardByVocabId = new Map(cards.map((card) => [card.vocabId, card]));
 
-  const ranked = [...candidates].sort(
-    (a, b) =>
-      weakness(cardByVocabId.get(a.id), now) - weakness(cardByVocabId.get(b.id), now)
-  );
-
-  // Wie bei den Auswahlübungen: aus einem Fenster der schwächsten Wörter
-  // ziehen, damit mehrere Runden nicht wortgleich sind. Bei neuen Wörtern
-  // (kein Kartenzustand) ist weakness = 0.
-  const window = ranked.slice(0, Math.max(size, size * 3));
-  const chosen = shuffled(window, random).slice(0, size);
+  // Wie bei den Auswahlübungen (`practice-selection.ts`): gelernte, wacklige
+  // Wörter zuerst, nur wenige neue, aus einem Fenster gezogen.
+  const chosen = selectPracticeWords(candidates, {
+    idOf: (entry) => entry.id,
+    cards: cardByVocabId,
+    practice,
+    now,
+    size,
+    random,
+  });
 
   return {
     prompts: chosen.map(buildSpeakingPrompt),

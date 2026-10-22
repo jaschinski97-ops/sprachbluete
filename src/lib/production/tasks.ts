@@ -2,14 +2,15 @@ import type { VocabEntry } from '@/data/vocab-types';
 import type { UiLanguage } from '../i18n/types';
 import { SENTENCE_TASKS_BY_LANGUAGE } from '@/data/sentence-tasks';
 
-import { retrievability } from '../fsrs/fsrs';
 import { type FSRSCardState } from '../fsrs/types';
 import { type PairDirection, targetLanguageOf, anchorOf } from '../languages/types';
 import { bridgeText } from '../languages/bridge';
 import { inStage, type LearningStage } from '../learning-stages';
+import { selectPracticeWords } from '../practice-selection';
 import { ensureCardStates } from '../review-session';
-import { seededRandom, shuffled } from '../drills/random';
+import { seededRandom } from '../drills/random';
 import { type DataStore } from '../storage';
+import { loadWordPractice, type WordPractice } from '../word-practice';
 
 /**
  * Aufgaben für „Sag es auf …“ (Schritt 3, Lern-Reiter-Ausbau).
@@ -29,9 +30,6 @@ import { type DataStore } from '../storage';
 /** Aufgaben je Runde. */
 export const PRODUKTION_ANZAHL = 8;
 
-/** Aus wie vielen der schwächsten Kandidaten gezogen wird. */
-const FENSTER = 3;
-
 export type ProduktionsAufgabe = {
   /** Eindeutig innerhalb der Runde. */
   id: string;
@@ -47,16 +45,19 @@ export type ProduktionsAufgabe = {
   roman?: string;
 };
 
+type Auswahl = {
+  cards: ReadonlyMap<string, FSRSCardState>;
+  practice: ReadonlyMap<string, WordPractice>;
+  now: number;
+  random: ReturnType<typeof seededRandom>;
+};
+
 function wortAufgaben(
   entries: VocabEntry[],
-  cards: FSRSCardState[],
   anzahl: number,
-  random: ReturnType<typeof seededRandom>,
+  auswahl: Auswahl,
   source: UiLanguage
 ): ProduktionsAufgabe[] {
-  const byVocabId = new Map(cards.map((card) => [card.vocabId, card]));
-  const schwaeche = (card: FSRSCardState | undefined): number =>
-    card ? retrievability(card, Date.now()) : 0;
   // Die Bedeutung in der ANKERSPRACHE — seit dem Sprach-Umbau für jede
   // Zielsprache derselbe Weg (vorher ein eigener Deutsch-Zweig). Ohne echte
   // Übersetzung (Rückfall auf dieselbe Form) gäbe es keinen ehrlichen Auftrag.
@@ -64,11 +65,8 @@ function wortAufgaben(
     const bedeutung = bridgeText(entry, source).text.trim();
     return bedeutung.length > 0 && bedeutung !== entry.term;
   });
-  const ranked = mitAuftrag.sort(
-    (a, b) => schwaeche(byVocabId.get(a.id)) - schwaeche(byVocabId.get(b.id))
-  );
-  const fenster = ranked.slice(0, Math.max(anzahl, anzahl * FENSTER));
-  return shuffled(fenster, random).slice(0, anzahl).map((entry) => ({
+  // Gelernte, wacklige Wörter zuerst, nur wenige neue (`practice-selection.ts`).
+  return selectPracticeWords(mitAuftrag, { ...auswahl, idOf: (entry) => entry.id, size: anzahl }).map((entry) => ({
     id: `produktion-wort-${entry.id}`,
     vocabId: entry.id,
     art: 'wort' as const,
@@ -87,10 +85,17 @@ export async function produktionsAufgaben(options: {
   stage?: LearningStage;
 }): Promise<ProduktionsAufgabe[]> {
   const anzahl = options.anzahl ?? PRODUKTION_ANZAHL;
-  const random = seededRandom(options.seed ?? Date.now());
+  const now = Date.now();
+  const random = seededRandom(options.seed ?? now);
   const sprache = targetLanguageOf(options.direction);
-  const { entries: alle, cards } = await ensureCardStates(options.direction, options.store, Date.now());
+  const { entries: alle, cards } = await ensureCardStates(options.direction, options.store, now);
   const entries = inStage(alle, options.stage);
+  const auswahl: Auswahl = {
+    cards: new Map(cards.map((card) => [card.vocabId, card])),
+    practice: await loadWordPractice(options.store),
+    now,
+    random,
+  };
 
   // Sätze zuerst — wo geprüfte Sätze liegen, werden sie gebildet. Der
   // Satzbestand trägt seine Bedeutungen NUR auf Deutsch (`exampleGerman`) —
@@ -100,12 +105,9 @@ export async function produktionsAufgaben(options: {
     const saetze = SENTENCE_TASKS_BY_LANGUAGE[sprache] ?? [];
     if (saetze.length >= Math.min(anzahl, 4)) {
       const byVocabId = new Map(saetze.map((task) => [task.vocabId, task]));
-      const started = new Set(cards.filter((card) => card.state !== 'new').map((card) => card.vocabId));
-      const ordered = [...entries.filter((entry) => started.has(entry.id)),
-        ...entries.filter((entry) => !started.has(entry.id))]
-        .flatMap((entry) => byVocabId.has(entry.id) ? [byVocabId.get(entry.id)!] : []);
-      if (ordered.length >= Math.min(anzahl, 4)) return shuffled(ordered.slice(0, Math.max(anzahl, anzahl * FENSTER)), random)
-        .slice(0, anzahl)
+      const mitSatz = entries.flatMap((entry) => byVocabId.has(entry.id) ? [byVocabId.get(entry.id)!] : []);
+      // Dieselbe Auswahl wie bei den Wörtern: gelernte, wacklige zuerst.
+      if (mitSatz.length >= Math.min(anzahl, 4)) return selectPracticeWords(mitSatz, { ...auswahl, idOf: (task) => task.vocabId, size: anzahl })
         .map((task) => ({
           id: `produktion-satz-${task.vocabId}`,
           vocabId: task.vocabId,
@@ -117,6 +119,6 @@ export async function produktionsAufgaben(options: {
     }
   }
 
-  // Wörter: schwächste zuerst, aus einem Fenster gezogen.
-  return wortAufgaben(entries, cards, anzahl, random, anchorOf(options.direction));
+  // Wörter: gelernte, wacklige zuerst, aus einem Fenster gezogen.
+  return wortAufgaben(entries, anzahl, auswahl, anchorOf(options.direction));
 }

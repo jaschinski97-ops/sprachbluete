@@ -1,5 +1,14 @@
 # Changelog
 
+## 22.10.2026
+
+- Freie Übungen wählen nach dem Lernstand (Nutzerentscheidung): gelernte, wacklige Wörter zuerst, je Runde nur wenige neue (20 %, mindestens eins), danach gut Sitzendes, erst dann weitere neue. Vorher zählte ein nie gelerntes Wort als „am wackligsten“; bei 2.000 Wörtern kamen in Hören, Schreiben, Sprechen, Artikel, Tönen und „Sag es“ fast nur nie gelernte Wörter dran, gelernte wacklige praktisch nie (Probe: 0 von 40 Aufgaben). Wer noch nichts gelernt hat, bekommt eine Runde aus den häufigsten neuen Wörtern. Kapitel und Heutige Runde (feste Wortlisten) behalten ihre Auswahl ohne Neu-Grenze. Gemeinsamer Baustein `src/lib/practice-selection.ts`.
+  - Übungsgedächtnis je Wort (`src/lib/word-practice.ts`, neue Sammlung `practice`): Auswahlübungen, Heutige Runde und Diktat speichern jede Antwort je Wort. Was in den letzten 12 Stunden richtig war, pausiert; mehrmals richtig in Folge macht ein Wort einige Tage weniger dringlich, eine falsche Antwort holt es nach vorn (Halbwertszeit 3 Tage). Die Abstände der Karteikarten bleiben unberührt (AE-16). Vorher zogen Auswahlübungen ohne Kartenfortschritt Runde für Runde dieselben rund 30 Wörter.
+  - Das Diktat wählt jetzt ebenso statt rein zufällig; ein nicht bestandenes Diktat holt den Satz bald zurück, ohne die Karte zu bewegen.
+  - Die Thai-Sprechübung gewichtet nach der Lernrichtung der Oberfläche statt immer nach `de_to_th`.
+  - Die Sicherung enthält das Übungsgedächtnis (optional, gleiche Formatversion); ältere Sicherungen setzen es beim Einspielen zurück, kaputte Einzeleinträge werden übergangen.
+  - Grammatik-Kleinstübungen, Lesetexte und Satzübungen wählen weiter zufällig.
+
 ## 18.10.2026
 
 - Übersetzungen je App-Sprache (Schritt 1b aus `docs/katalog-je-lernsprache-konzept.md`): Jede Lernsprache hat eine Basisdatei ohne die Übersetzungen der 20 App-Sprachen und je App-Sprache einen eigenen Teil (`<lang>-<ui>.catalog`). Geladen werden nur App-Sprache und Englisch, auf das die Bedeutungen ohnehin zurückfallen. Hörclips stehen in der Basis als kompakte Tabelle.

@@ -10,12 +10,13 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus } from '@/lib/audio';
 import { buildDrillSession, DrillSession, scoreAnswers } from '@/lib/drills/session';
-import { DRILL_META, DrillAnswer, DrillId, DrillQuestion } from '@/lib/drills/types';
+import { DRILL_META, DrillAnswer, DrillId, DrillQuestion, drillPracticesWords } from '@/lib/drills/types';
 import { useLocale, type TranslationKey, type UiLanguage } from '@/lib/i18n';
 import { PairDirection, LanguageCode, anchorOf } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
 import { DerivationStep } from '@/lib/reading/syllable';
 import { recordDrill } from '@/lib/review-log';
+import { recordWordPractice } from '@/lib/word-practice';
 
 /** Übungs-Namen und -Fragen als Übersetzungsschlüssel statt als deutsche Konstante. */
 const DRILL_LABEL_KEYS: Record<DrillId, TranslationKey> = {
@@ -158,8 +159,13 @@ export function DrillRunner({
       await recordDrill(correct, Date.now(), undefined, drill, direction).catch(() => {
         // Ein fehlgeschlagener Protokolleintrag darf die Uebung nicht stoppen.
       });
+      // Übungsgedächtnis je Wort (22.10.2026): steuert die nächste Auswahl,
+      // nie die Karteikarten.
+      if (drillPracticesWords(drill)) {
+        await recordWordPractice(question.vocabId, correct).catch(() => {});
+      }
     },
-    [question, chosen, drill, heardId]
+    [question, chosen, drill, heardId, direction]
   );
 
   const next = useCallback(() => {

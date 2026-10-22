@@ -1,13 +1,13 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
-import { retrievability } from '../fsrs/fsrs';
-import { type FSRSCardState } from '../fsrs/types';
 import { bridgeText } from '../languages/bridge';
 import { anchorOf, type PairDirection } from '../languages/types';
 import { inStage, type LearningStage } from '../learning-stages';
+import { selectPracticeWords } from '../practice-selection';
 import { ensureCardStates } from '../review-session';
-import { seededRandom, shuffled } from '../drills/random';
+import { seededRandom } from '../drills/random';
 import { type DataStore } from '../storage';
+import { loadWordPractice } from '../word-practice';
 
 /**
  * Wort-Nachsprechen für Englisch und Spanisch (Lern-Reiter-Ausbau 13.09.).
@@ -21,18 +21,15 @@ import { type DataStore } from '../storage';
  * FSRS-Änderung — Aussprache-Übung durch Vergleich, wie beim Shadowing,
  * nur wortweise.
  *
- * WELCHE WÖRTER DRANKOMMEN: dieselbe Sortierung wie in den Auswahl-
- * Übungen — der FSRS-Zustand der RICHTUNG entscheidet, am wackligsten
- * Sitzendes zuerst, gezogen aus einem Fenster, damit die Runde sich nicht
- * wörtlich wiederholt. Die Übung schreibt den Zustand bewusst NICHT fort
+ * WELCHE WÖRTER DRANKOMMEN: dieselbe Auswahl wie in den Auswahlübungen
+ * (`practice-selection.ts`) — gelernte, wacklige Wörter der RICHTUNG
+ * zuerst, nur wenige neue, gezogen aus einem Fenster, damit die Runde sich
+ * nicht wörtlich wiederholt. Die Übung schreibt den Zustand bewusst NICHT fort
  * (dafür sind Karteikarten, Diktat und freies Schreiben da).
  */
 
 /** Aufgaben je Runde. */
 export const WORD_SPEAKING_SIZE = 8;
-
-/** Aus wie vielen der schwächsten Kandidaten gezogen wird. */
-const CANDIDATE_WINDOW = 3;
 
 export type WordSpeakingTask = {
   /** Die Vokabel-ID — eindeutig innerhalb der Runde. */
@@ -76,17 +73,16 @@ export async function buildWordSpeakingSession(options: {
   const { entries: alle, cards } = await ensureCardStates(options.direction, options.store, now);
   const entries = inStage(alle, options.stage);
   const byVocabId = new Map(cards.map((card) => [card.vocabId, card]));
+  const practice = await loadWordPractice(options.store);
 
-  // Wie gut sitzt das Wort gerade? Kleiner heißt wackliger — dieselbe
-  // Sortierung wie in den Auswahlübungen (`drills/session`).
-  const weakness = (card: FSRSCardState | undefined): number =>
-    card ? retrievability(card, now) : 0;
-
-  const ranked = [...entries].sort(
-    (a, b) => weakness(byVocabId.get(a.id)) - weakness(byVocabId.get(b.id))
-  );
-  const window = ranked.slice(0, Math.max(size, size * CANDIDATE_WINDOW));
-  const chosen = shuffled(window, random).slice(0, size);
+  const chosen = selectPracticeWords(entries, {
+    idOf: (entry) => entry.id,
+    cards: byVocabId,
+    practice,
+    now,
+    size,
+    random,
+  });
 
   return { tasks: chosen.map((entry) => taskOf(entry, options.direction)), available: entries.length };
 }

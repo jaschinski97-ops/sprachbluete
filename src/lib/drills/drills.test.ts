@@ -357,6 +357,33 @@ describe('buildDrillSession', () => {
     }
   });
 
+  it('nimmt gelernte, wacklige Wörter vor nie gelernten (22.10.2026)', async () => {
+    // Vorher zählte ein nie gelerntes Wort als „am wackligsten“: Mit den
+    // wackligen Wörtern hinten im Wortschatz kam keins davon je dran.
+    const store = await freshStore();
+    await buildDrillSession({ drill: 'article', language: 'de', store, now: T0, seed: 1 });
+    const nouns = FIXTURE_GERMAN.filter((entry) => entry.germanNoun);
+    const wacklig = new Set(nouns.slice(-6).map((entry) => entry.id));
+    for (const id of wacklig) {
+      const card = createCardState(id, 'th_to_de', T0);
+      await store.put('cards', cardKey(id, 'th_to_de'), {
+        ...card,
+        state: 'review',
+        difficulty: 5,
+        stability: 0.2,
+        lastReview: T0 - 10 * 24 * 3600 * 1000,
+        reps: 3,
+      });
+    }
+
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const session = await buildDrillSession({ drill: 'article', language: 'de', store, now: T0, seed, size: 5 });
+      const ausWacklig = session.questions.filter((question) => wacklig.has(question.vocabId));
+      // Fünf Aufgaben: eine neue, vier wacklige.
+      expect(ausWacklig).toHaveLength(4);
+    }
+  });
+
   it('liefert mit derselben Aussaat dieselbe Runde', async () => {
     const store = await freshStore();
     const a = await buildDrillSession({ drill: 'tone', language: 'th', store, now: T0, seed: 11 });

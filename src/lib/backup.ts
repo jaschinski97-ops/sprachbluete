@@ -13,6 +13,10 @@
  *   und Protokoll (siehe `./writing/session.ts`).
  * - **Lernprofil** (`meta`/`profile`): `loadProfile` aus `./profile` —
  *   Sprache und die gemerkten Stände der Reiter, nachsichtig gelesen.
+ * - **Übungsgedächtnis** (`practice`, seit 22.10.2026, optional):
+ *   `loadAllWordPractice` aus `./word-practice`. Ältere Sicherungen haben es
+ *   nicht; dann startet es leer. Kaputte Einzeleinträge werden übergangen —
+ *   sie steuern nur die Auswahl freier Übungen, nie den Lernstand.
  *
  * BEWUSST NICHT GESICHERT: die Anbieter-Einstellungen aus
  * `./providers/settings` (Geräte-/Setup-Angelegenheit) und der API-Schlüssel
@@ -55,6 +59,7 @@ import { loadAllCardStates } from './repository';
 import { dayKey, loadReviewLog, ReviewDayLog } from './review-log';
 import { DataStore, getStore, transact } from './storage';
 import { cardKey, Direction, FSRSCardState } from './fsrs/types';
+import { isValidWordPractice, loadAllWordPractice, type WordPractice } from './word-practice';
 
 /** Kennung des Formats — alles andere wird beim Import abgelehnt. */
 export const BACKUP_FORMAT = 'thaispeaker-backup';
@@ -82,6 +87,8 @@ export type BackupData = {
   cards: FSRSCardState[];
   reviewLog: ReviewDayLog[];
   profile: LearnerProfile | null;
+  /** Fehlt in Sicherungen vor dem 22.10.2026. */
+  wordPractice?: WordPractice[];
 };
 
 export type BackupDocument = {
@@ -110,16 +117,17 @@ export async function buildBackupDocument(
   store?: DataStore,
   now: number = Date.now()
 ): Promise<BackupDocument> {
-  const [cards, reviewLog, profile] = await Promise.all([
+  const [cards, reviewLog, profile, wordPractice] = await Promise.all([
     loadAllCardStates(store),
     loadReviewLog(store),
     loadProfile(store),
+    loadAllWordPractice(store),
   ]);
   return {
     format: BACKUP_FORMAT,
     version: BACKUP_VERSION,
     exportedAt: new Date(now).toISOString(),
-    data: { cards, reviewLog, profile },
+    data: { cards, reviewLog, profile, wordPractice },
   };
 }
 
@@ -351,6 +359,9 @@ export function validateBackupDocument(raw: unknown): ValidationResult {
       cards: data.cards as FSRSCardState[],
       reviewLog: data.reviewLog as ReviewDayLog[],
       profile: data.profile === undefined ? null : (data.profile as LearnerProfile | null),
+      ...(Array.isArray(data.wordPractice)
+        ? { wordPractice: data.wordPractice.filter(isValidWordPractice) }
+        : {}),
     },
   };
 }
@@ -408,6 +419,13 @@ export async function applyBackupToStore(
     await db.putMany(
       'reviewLog',
       data.reviewLog.map((entry) => ({ id: entry.date, value: entry }))
+    );
+    // Das Übungsgedächtnis gehört zur ersetzten Historie: ohne Eintrag in
+    // der Sicherung (älteres Format) beginnt es leer.
+    await db.clear('practice');
+    await db.putMany(
+      'practice',
+      (data.wordPractice ?? []).map((entry) => ({ id: entry.vocabId, value: entry }))
     );
     return { cards: data.cards.length, logEntries: data.reviewLog.length };
   });

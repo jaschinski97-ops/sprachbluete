@@ -33,6 +33,7 @@ import { anchorOf, type PairDirection } from '@/lib/languages/types';
 import { languageOf } from '@/lib/languages/registry';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
+import { loadPracticeContext, recordWordPractice, type PracticeContext } from '@/lib/word-practice';
 import { resolveClipUri } from '@/lib/clips/lookup';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
 import type { LearningStage } from '@/lib/learning-stages';
@@ -100,7 +101,25 @@ export function DictationRunner({
   // Übungen, damit „Neue Runde" nicht dieselbe Folge zeigt. Die Zusammen-
   // stellung ist reine Datenrechnung (kein Store), deshalb synchron abgeleitet.
   const [seed, setSeed] = useState(() => Date.now());
-  const session = useMemo(() => buildDictationSession(language, direction, seed, undefined, stage), [language, direction, seed, stage]);
+  // Kartenstand und Übungsgedächtnis für die Auswahl (22.10.2026) — je Runde
+  // frisch gelesen, damit die Antworten der letzten Runde schon zählen.
+  const [context, setContext] = useState<PracticeContext | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    setContext(null);
+    loadPracticeContext(direction)
+      .catch(() => ({ cards: new Map(), practice: new Map(), now: Date.now() }) as PracticeContext)
+      .then((loaded) => {
+        if (!cancelled) setContext(loaded);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [direction, seed]);
+  const session = useMemo(
+    () => (context ? buildDictationSession(language, direction, seed, undefined, stage, context) : null),
+    [language, direction, seed, stage, context]
+  );
 
   const [index, setIndex] = useState(0);
   const [draft, setDraft] = useState('');
@@ -131,7 +150,7 @@ export function DictationRunner({
     };
   }, [releaseSlowPlayer, index]);
 
-  const task = session[index] ?? null;
+  const task = session?.[index] ?? null;
   const config = task ? dictationConfigFor(task.language) : null;
   const answered = score !== null;
 
@@ -199,6 +218,9 @@ export function DictationRunner({
       // Die Fehlerquote des Diktats steuert die Gewichtung der Heutigen
       // Runde — protokolliert unabhängig vom Kartenschreiben.
       await recordDrill(next.passed, Date.now(), undefined, 'dictation', direction).catch(() => {});
+      // Auch ein nicht bestandenes Diktat zählt für die Auswahl: Der Satz
+      // kommt dann bald wieder, ohne dass die Karte bewegt wird.
+      await recordWordPractice(task.vocabId, next.passed).catch(() => {});
       if (next.passed) {
         // ratingForScore liefert bei `passed` immer 2 oder 3 — nie null.
         const rating = ratingForScore(next)!;
@@ -222,6 +244,16 @@ export function DictationRunner({
     releaseSlowPlayer();
     setIndex((current) => current + 1);
   }, [releaseSlowPlayer]);
+
+  if (!session) {
+    return (
+      <ThemedView type="backgroundElement" style={styles.card}>
+        <ThemedText type="small" themeColor="textSecondary">
+          {t('drill.assembling')}
+        </ThemedText>
+      </ThemedView>
+    );
+  }
 
   if (session.length === 0) {
     return (

@@ -59,6 +59,20 @@ export const DRILLS = [
 ] as const;
 export type DrillId = (typeof DRILLS)[number];
 
+/**
+ * Die Grammatik-Kleinstübungen (Partikel, ser/estar, Zählwörter,
+ * Konsonantenklassen) ziehen aus eigenen Datensätzen — ihre Aufgaben-IDs sind
+ * keine Vokabel-IDs und gehören weder in Karten noch ins Übungsgedächtnis.
+ */
+export function isGrammarSetDrill(drill: DrillId): drill is 'polite' | 'serEstar' | 'zaehlerwort' | 'konsonantenklasse' {
+  return drill === 'polite' || drill === 'serEstar' || drill === 'zaehlerwort' || drill === 'konsonantenklasse';
+}
+
+/** Fragt die Übung Vokabeln ab (und darf ins Übungsgedächtnis schreiben)? */
+export function drillPracticesWords(drill: DrillId): boolean {
+  return !isGrammarSetDrill(drill);
+}
+
 export type DrillMeta = {
   id: DrillId;
   /**

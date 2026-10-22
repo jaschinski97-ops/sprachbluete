@@ -1,5 +1,13 @@
 # Changelog
 
+## 23.10.2026
+
+- Neue Optik „Kirschblüte“ (Nutzerwahl aus zwei Entwürfen), ersetzt „Nachtflug“. Tag und Nacht folgen der Systemeinstellung: tagsüber Frühlingshimmel mit Sonne, nachts Anime-Nachthimmel mit Mondschein. Karten als Glas, Hauptknöpfe in Jade (翡翠) statt Pink, Sprach-Abzeichen als rosa Mon, Pinselstrich unter den Seitentiteln. Alle Kontrasttests gelten weiter.
+  - Jeder Reiter hat sein eigenes, bewegtes Motiv (`src/components/sakura-scenes.tsx`): Übersicht Blütenzweige, die sich im Wind wiegen; Lernen Trauerkirsche mit wehenden Blütenvorhängen; Gespräch schwingende Papierlaternen; Fortschritt Fluss mit Holzbrücke zwischen Kirschbäumen (nah am Vorbild des Nutzers), Glitzern und treibenden Blättern auf dem Wasser; Einstellungen Fuji am See mit ziehendem Dunst. Überall fallen Blütenblätter mit 3D-Taumeln. Unsichtbare Reiter und „Bewegung reduzieren“ halten alles an.
+  - Fluss und Fuji sind gemalte Hintergründe, lokal mit FLUX.2 klein über ComfyUI erzeugt (Tag und Nacht, zusammen 620 KB WebP unter `assets/images/szenen/`), mit langsamem Zoom.
+- Hell/Dunkel im laufenden Betrieb umschalten mischte die Farben: Ein verdeckter Reiter verpasste den Wechsel und blieb im alten Modus (helle Fläche, helle Schrift). Der Web-Hook `useColorScheme` liest den Modus jetzt bei jedem Rendern (`useSyncExternalStore`) statt ihn je Komponente zu speichern; das Wurzel-Layout nutzt denselben Hook.
+- ComfyUI unter Linux: `scripts/content/setup-local-images.sh` richtet ComfyUI, PyTorch mit CUDA und die drei FLUX-Dateien unter `_Local/comfy/` ein (Prüfsumme des Bildmodells wird geprüft), `start-local-images.sh` startet es auf 127.0.0.1:8188.
+
 ## 22.10.2026
 
 - Neue Optik „Nachtflug“ (Nutzerwunsch: letzte Politur vor der Veröffentlichung):

@@ -24,6 +24,15 @@ node scripts/content/local-image-trial.cjs
 
 Drei kompakte 512×512-WebPs (erzeugt bei 768×768) mit Prompt/Modell/Laufzeit unter `_Local/image-trial/<Zeitstempel>/`. Kein Stage, Publish, Text- oder Audioaufruf. Erst Bildinhalt und Stil beurteilen, danach den größeren Studio-Lauf starten. Die Vorschau ersetzt keine Kontrolle komplexer Motive, Hände, Zahlen oder kultureller Details.
 
+## Einrichtung unter Linux (seit 23.10.2026)
+
+```bash
+bash scripts/content/setup-local-images.sh   # einmalig, ~16 GB, setzt abgebrochene Downloads fort
+bash scripts/content/start-local-images.sh   # ComfyUI auf 127.0.0.1:8188
+```
+
+Das Skript klont ComfyUI von GitHub nach `_Local/comfy/ComfyUI`, legt eine Python-Umgebung an (Linux Mint hat kein `ensurepip`; pip kommt über das offizielle `get-pip.py`), installiert PyTorch mit CUDA 12.8 und lädt dieselben drei Modelldateien wie unter Windows; die Prüfsumme des Bildmodells wird verglichen. Auf diesem Rechner (RTX 3080, ComfyUI 0.42) dauert ein 768×1664-Bild rund 5 s.
+
 ## Einrichtung auf einem neuen Windows-PC
 
 Offizielles [ComfyUI Portable](https://docs.comfy.org/installation/comfyui_portable_windows) nach `_Local/comfy/` entpacken. Hier geprüft: Version 0.38.0, NVIDIA-Paket, eingebettetes Python 3.13.14. Globales Python muss dafür nicht verändert werden. Die Modellgewichte kommen aus den Links der [offiziellen ComfyUI-Anleitung](https://docs.comfy.org/tutorials/flux/flux-2-klein):

@@ -220,7 +220,7 @@ export default function ReviewScreen() {
 
   if (profileError) {
     return (
-      <ScreenScaffold title={t('tabs.learn')} subtitle={t('review.subtitle')} headerAction={<ZurueckZurUebersicht />}>
+      <ScreenScaffold szene="trauerkirsche" title={t('tabs.learn')} subtitle={t('review.subtitle')} headerAction={<ZurueckZurUebersicht />}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('common.loadFailed', { message: profileError })}
         </ThemedText>
@@ -230,7 +230,7 @@ export default function ReviewScreen() {
 
   if (!profile) {
     return (
-      <ScreenScaffold title={t('tabs.learn')} subtitle={t('review.subtitle')} headerAction={<ZurueckZurUebersicht />}>
+      <ScreenScaffold szene="trauerkirsche" title={t('tabs.learn')} subtitle={t('review.subtitle')} headerAction={<ZurueckZurUebersicht />}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('review.loadingProfile')}
         </ThemedText>
@@ -451,7 +451,7 @@ function ReviewBody({
   const chapterGrammar = Boolean(practiceChapter && CHAPTER_GRAMMAR_MODES.includes(mode));
 
   return (
-    <ScreenScaffold
+    <ScreenScaffold szene="trauerkirsche"
       title={t('tabs.learn')}
       scrollRef={scrollRef}
       headerAction={<ZurueckZurUebersicht />}
@@ -896,7 +896,7 @@ function DirectionPicker({
   // (en_to_de/es_to_de), bleibt keine Zeile hervorgehoben.
   const aktuell = profile.review?.direction ?? null;
   return (
-    <ScreenScaffold title={t('tabs.learn')} subtitle={t('review.pickSubtitle')} headerAction={<ZurueckZurUebersicht />}>
+    <ScreenScaffold szene="trauerkirsche" title={t('tabs.learn')} subtitle={t('review.pickSubtitle')} headerAction={<ZurueckZurUebersicht />}>
       <View role="radiogroup" accessibilityLabel={t('picker.chooseA11y')}>
         {zieleFuerBruecke(uiLanguage).map((ziel: Lernziel) => {
           const name = languageName(goalLanguage(ziel));
@@ -972,7 +972,7 @@ function ModeBar({ direction, onPick, expanded, setExpanded }: {
               accessibilityState={{ expanded: open }}
               style={({ pressed }) => [styles.skillHeader, pressed && styles.pressed]}>
               <View style={styles.skillIcon}>
-                <GradientFill radius={12} />
+                <GradientFill radius={20} />
                 <Ionicons name={icons[index] ?? 'sparkles'} size={20} color={colors.gradientText} />
               </View>
               <View style={styles.skillText}>
@@ -1309,7 +1309,7 @@ const styles = StyleSheet.create({
   skillIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

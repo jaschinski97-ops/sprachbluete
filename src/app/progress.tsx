@@ -98,7 +98,7 @@ export default function ProgressScreen() {
 
   if (error) {
     return (
-      <ScreenScaffold title={t('tabs.progress')} subtitle={t('progress.subtitle')}>
+      <ScreenScaffold szene="fluss" title={t('tabs.progress')} subtitle={t('progress.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('common.loadFailed', { message: error })}
         </ThemedText>
@@ -108,7 +108,7 @@ export default function ProgressScreen() {
 
   if (!stats || !direction) {
     return (
-      <ScreenScaffold title={t('tabs.progress')} subtitle={t('progress.subtitle')}>
+      <ScreenScaffold szene="fluss" title={t('tabs.progress')} subtitle={t('progress.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('progress.loading')}
         </ThemedText>
@@ -122,7 +122,7 @@ export default function ProgressScreen() {
   const heuteFaellig = stats.totalDue;
 
   return (
-    <ScreenScaffold
+    <ScreenScaffold szene="fluss"
       title={t('tabs.progress')}
       subtitle={t('progress.subtitle')}>
 

@@ -3,7 +3,6 @@ import { useEffect, useId, useState, type ReactNode } from 'react';
 import {
   Pressable,
   StyleSheet,
-  useWindowDimensions,
   View,
   type GestureResponderEvent,
   type PressableProps,
@@ -25,15 +24,16 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Defs, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/use-theme';
 
 /**
- * Effekt-Bausteine der Oberfläche (22.10.2026, „Nachtflug“): Aurora-Hinter-
- * grund, Verlaufsfläche, federnder Druck, gestaffeltes Einblenden und
- * Glanzlicht. Alles respektiert „Bewegung reduzieren“ des Systems — dann
- * steht die Aurora still und nichts federt.
+ * Effekt-Bausteine der Oberfläche (seit 23.10.2026 „Kirschblüte“, Tag und
+ * Nacht nach Systemeinstellung): Blütenszene, Verlaufsfläche, Pinselstrich,
+ * federnder Druck, gestaffeltes Einblenden und Glanzlicht. Alles respektiert
+ * „Bewegung reduzieren“ des Systems — dann steht die Szene still und nichts
+ * federt.
  *
  * Bewusst EINE Datei: Die Bausteine teilen Feder- und Zeitwerte, und jeder
  * Bildschirm braucht mehrere davon.
@@ -42,79 +42,34 @@ import { useTheme } from '@/hooks/use-theme';
 const FEDER = { damping: 16, stiffness: 260, mass: 0.6 } as const;
 
 /**
- * Ist der Bildschirm gerade sichtbar? Jeder Reiter hat seine eigene Aurora;
+ * Ist der Bildschirm gerade sichtbar? Jeder Reiter hat seine eigene Szene;
  * unsichtbare Reiter pausieren sie (Akku). Ohne Navigations-Kontext (Tests
  * mit teilweise ersetztem Router) gilt „sichtbar“. Die Wahl fällt einmal beim
  * Laden des Moduls, die Hook-Reihenfolge bleibt also stabil.
  */
-const useScreenFocused: () => boolean =
+export const useScreenFocused: () => boolean =
   typeof ExpoRouter.useIsFocused === 'function' ? ExpoRouter.useIsFocused : () => true;
 
 /** SVG-IDs müssen im ganzen Dokument eindeutig sein (Web) — useId ohne Doppelpunkte. */
-function useSvgId(prefix: string): string {
+export function useSvgId(prefix: string): string {
   return `${prefix}${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 }
 
-/* ---------- Aurora ---------- */
-
-function Blob({ color, size, opacity }: { color: string; size: number; opacity: number }) {
-  const id = useSvgId('blob');
-  return (
-    <Svg width={size} height={size}>
-      <Defs>
-        <RadialGradient id={id} cx="50%" cy="50%" r="50%">
-          <Stop offset="0" stopColor={color} stopOpacity={opacity} />
-          <Stop offset="0.55" stopColor={color} stopOpacity={opacity * 0.35} />
-          <Stop offset="1" stopColor={color} stopOpacity={0} />
-        </RadialGradient>
-      </Defs>
-      <Rect x="0" y="0" width={size} height={size} fill={`url(#${id})`} />
-    </Svg>
-  );
-}
-
-/**
- * Langsam wandernde Farbschleier hinter dem Inhalt. Liegt absolut unter der
- * Seite und fängt keine Berührungen. Eine Schleife dauert 22 Sekunden — so
- * ruhig, dass sie beim Lesen nicht stört.
- */
-export function AuroraBackground() {
+/** Pinselstrich unter dem Seitentitel — im Verlauf der Hauptknöpfe. */
+export function BrushStroke({ width = 78 }: { width?: number }) {
   const theme = useTheme();
-  const reduce = useReducedMotion();
-  const zeit = useSharedValue(0);
-  const sichtbar = useScreenFocused();
-  // Auf breiten Fenstern wachsen die Schleier mit, sonst wirken sie wie Spots.
-  const { width } = useWindowDimensions();
-  const k = Math.max(1, Math.min(2, width / 560));
-
-  useEffect(() => {
-    if (reduce || !sichtbar) return;
-    zeit.set(withRepeat(withTiming(1, { duration: 22000, easing: Easing.inOut(Easing.sin) }), -1, true));
-    return () => cancelAnimation(zeit);
-  }, [reduce, sichtbar, zeit]);
-
-  const a = useAnimatedStyle(() => ({
-    transform: [{ translateX: -60 + 110 * zeit.value }, { translateY: 40 * zeit.value }, { scale: 1 + 0.18 * zeit.value }],
-  }));
-  const b = useAnimatedStyle(() => ({
-    transform: [{ translateX: 70 - 120 * zeit.value }, { translateY: -30 + 90 * zeit.value }, { scale: 1.15 - 0.15 * zeit.value }],
-  }));
-  const c = useAnimatedStyle(() => ({
-    transform: [{ translateX: -30 + 60 * zeit.value }, { translateY: 60 - 80 * zeit.value }],
-  }));
-
+  const id = useSvgId('pinsel');
   return (
-    <View pointerEvents="none" style={styles.aurora}>
-      <Animated.View style={[styles.blob, { top: -180 * k, left: -160 * k }, a]}>
-        <Blob color={theme.glowA} size={560 * k} opacity={0.55} />
-      </Animated.View>
-      <Animated.View style={[styles.blob, { top: 120 * k, right: -220 * k }, b]}>
-        <Blob color={theme.glowB} size={520 * k} opacity={0.4} />
-      </Animated.View>
-      <Animated.View style={[styles.blob, { top: 640 * k, left: -120 * k }, c]}>
-        <Blob color={theme.glowC} size={480 * k} opacity={0.28} />
-      </Animated.View>
-    </View>
+    <Svg width={width} height={12} viewBox="0 0 78 12">
+      <Defs>
+        <LinearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0" stopColor={theme.gradientStart} />
+          <Stop offset="1" stopColor={theme.gradientEnd} />
+        </LinearGradient>
+      </Defs>
+      <Path d="M3 8 C 20 2, 44 10, 75 4" stroke={`url(#${id})`} strokeWidth={4.5} strokeLinecap="round" fill="none" />
+      <Path d="M8 9.5 C 26 5.5, 48 11, 68 7" stroke={`url(#${id})`} strokeWidth={1.5} strokeLinecap="round" fill="none" opacity={0.6} />
+    </Svg>
   );
 }
 
@@ -315,13 +270,6 @@ export function usePulse(min = 0.55, max = 1, duration = 1600) {
 }
 
 const styles = StyleSheet.create({
-  aurora: {
-    ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
-  },
-  blob: {
-    position: 'absolute',
-  },
   shine: {
     position: 'absolute',
     top: 0,

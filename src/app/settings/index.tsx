@@ -46,7 +46,7 @@ export default function SettingsScreen() {
     setOffen((aktuell) => (aktuell === was ? null : was));
 
   return (
-    <ScreenScaffold title={t('tabs.settings')}>
+    <ScreenScaffold szene="fuji" title={t('tabs.settings')}>
       <PersistenceWarning />
 
       <ThemedText type="small" themeColor="textSecondary">

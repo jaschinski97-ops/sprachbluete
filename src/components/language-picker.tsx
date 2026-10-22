@@ -193,15 +193,19 @@ export function LanguagePicker({
   );
 }
 
-/** Ein kleines Abzeichen je Sprache — ein typisches Zeichen auf dem Verlauf. */
+/** Ein rundes Abzeichen je Sprache — ein typisches Zeichen auf dem Verlauf. */
 const MONOGRAMM: Record<LanguageCode, string> = { th: 'ก', en: 'Aa', es: 'Ñ', de: 'ß' };
 
 function Monogramm({ language }: { language: LanguageCode }) {
   const theme = useTheme();
   return (
-    <View style={styles.monogramm} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-      <GradientFill radius={14} />
-      <ThemedText type="smallBold" style={[styles.monogrammText, { color: theme.gradientText }]}>
+    <View
+      style={[styles.monogramm, { borderColor: theme.glass, boxShadow: `0 0 16px ${theme.blossomEdge}88` }]}
+      importantForAccessibility="no-hide-descendants"
+      accessibilityElementsHidden>
+      {/* Zartrosa wie die Blüten — die Knöpfe sind Jade (23.10.2026). */}
+      <GradientFill radius={23} from={theme.blossom} to={theme.blossomEdge} />
+      <ThemedText type="smallBold" style={[styles.monogrammText, { color: '#3A0A28' }]}>
         {MONOGRAMM[language] ?? language.toUpperCase()}
       </ThemedText>
     </View>
@@ -279,10 +283,12 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
   },
+  /** Rundes Abzeichen wie ein japanisches Mon (seit 23.10.2026). */
   monogramm: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 2,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

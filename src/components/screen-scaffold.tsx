@@ -2,7 +2,8 @@ import { ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AuroraBackground, GradientFill, Reveal } from './fx';
+import { BrushStroke, Reveal } from './fx';
+import { SakuraBackground, type SzenenArt } from './sakura-scenes';
 import { ThemedText } from './themed-text';
 
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -18,6 +19,8 @@ type Props = {
    */
   headerAction?: ReactNode;
   scrollRef?: RefObject<ScrollView | null>;
+  /** Kirschblüten-Motiv dieses Bildschirms (jeder Reiter hat sein eigenes). */
+  szene?: SzenenArt;
   children?: ReactNode;
 };
 
@@ -30,12 +33,12 @@ type Props = {
  * Web-Build ist sonst die Fläche unter dem Inhalt transparent, und im
  * Dunkelmodus stand die helle Überschrift auf dem weißen Browser-Canvas.
  */
-export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, children }: Props) {
+export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, szene, children }: Props) {
   const theme = useTheme();
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top', 'left', 'right']}>
-      {/* Aurora (22.10.2026) liegt fest hinter dem scrollenden Inhalt. */}
-      <AuroraBackground />
+      {/* Kirschblüten-Szene (23.10.2026) liegt fest hinter dem scrollenden Inhalt. */}
+      <SakuraBackground szene={szene} />
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={styles.scroll}
@@ -43,12 +46,15 @@ export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, child
         <View style={styles.column}>
           <Reveal style={styles.header}>
             {headerAction}
-            <ThemedText type="subtitle">{title}</ThemedText>
+            {/* Schatten in der Grundfarbe: Der Titel bleibt über den Blüten lesbar. */}
+            <ThemedText type="subtitle" style={[styles.lesbar, { textShadowColor: theme.background }]}>
+              {title}
+            </ThemedText>
             <View style={styles.titleBar}>
-              <GradientBar />
+              <BrushStroke />
             </View>
             {subtitle ? (
-              <ThemedText type="small" themeColor="textSecondary">
+              <ThemedText type="small" themeColor="textSecondary" style={[styles.lesbar, { textShadowColor: theme.background }]}>
                 {subtitle}
               </ThemedText>
             ) : null}
@@ -59,16 +65,6 @@ export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, child
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-/** Kurzer Leuchtstrich unter dem Seitentitel — Markenzeichen jeder Seite. */
-function GradientBar() {
-  const theme = useTheme();
-  return (
-    <View style={[styles.gradientBar, { boxShadow: `0 0 14px ${theme.gradientStart}` }]}>
-      <GradientFill radius={2} />
-    </View>
   );
 }
 
@@ -99,10 +95,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.half,
     marginBottom: Spacing.one,
   },
-  gradientBar: {
-    width: 44,
-    height: 4,
-    borderRadius: 2,
-    overflow: 'hidden',
+  lesbar: {
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
 });

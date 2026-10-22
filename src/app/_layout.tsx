@@ -1,11 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
 import { installClipLookup } from '@/lib/clips/lookup';
 import { setCatalogUiLanguage } from '@/lib/content/catalog-languages';

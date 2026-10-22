@@ -181,7 +181,7 @@ export default function ConversationScreen() {
 
   if (error) {
     return (
-      <ScreenScaffold title={t('tabs.conversation')} subtitle={t('conversation.subtitle')}>
+      <ScreenScaffold szene="laternen" title={t('tabs.conversation')} subtitle={t('conversation.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('common.loadFailed', { message: error })}
         </ThemedText>
@@ -191,7 +191,7 @@ export default function ConversationScreen() {
 
   if (!situations && !katalog.error) {
     return (
-      <ScreenScaffold title={t('tabs.conversation')} subtitle={t('conversation.subtitle')}>
+      <ScreenScaffold szene="laternen" title={t('tabs.conversation')} subtitle={t('conversation.subtitle')}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('conversation.loading')}
         </ThemedText>
@@ -207,7 +207,7 @@ export default function ConversationScreen() {
       : t('conversation.subtitleCount', { count: imRichtung.length });
 
   return (
-    <ScreenScaffold title={t('tabs.conversation')} subtitle={subtitle}>
+    <ScreenScaffold szene="laternen" title={t('tabs.conversation')} subtitle={subtitle}>
       {/* Die Sprachliste des Reiters (14.09.): Deutsch als eigene Sprache
           oben — die Richtung steckt im Eintrag, es gibt keine zweite Reihe
           von Sprach-Buttons mehr. */}
@@ -292,7 +292,7 @@ export default function ConversationScreen() {
                 {/* Seit 22.10.2026 eine Glas-Karte mit Themen-Symbol. */}
                 <ThemedView type="backgroundElement" style={[styles.topicHead, offen && { borderColor: theme.gradientStart }]}>
                   <View style={styles.topicIcon}>
-                    <GradientFill radius={12} />
+                    <GradientFill radius={20} />
                     <Ionicons name={TOPIC_ICONS[topic] ?? 'chatbubbles'} size={20} color={theme.gradientText} />
                   </View>
                   <ThemedText type="smallBold" style={styles.topicTitle}>
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   topicIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

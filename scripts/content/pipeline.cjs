@@ -304,11 +304,23 @@ class ContentPipeline {
     }, { root: this.root });
     return zahlen;
   }
-  async stage({ kind, document, base64 }) {
-    const state = await this.state();
-    assertDocument(kind, document, [...this.extraVocabulary, ...state.shipped.entries.filter(e => e.kind === 'vocabulary').map(e => e.document)]);
-    const language = document.language ?? document.direction?.split('_to_')[1] ?? (kind === 'images' ? [...this.extraVocabulary, ...state.shipped.entries.filter(e => e.kind === 'vocabulary').map(e => e.document)].find(word => word.id === document.vocabId)?.language : undefined);
-    const cutoff = Math.max(state.shipped.deleted?.[`${kind}:${document.id}`] ?? -1, state.shipped.clearedBefore?.[kind] ?? -1, state.shipped.clearedBefore?.[`${kind}:${language}`] ?? -1);
+  /**
+   * Prüft einen Eintrag und legt ihn auf die Stage.
+   *
+   * `kontext` (Turbo, 23.10.2026) ist der Weg der automatischen Übernahme:
+   * Katalog und Wortschatz kommen aus dem Speicher des laufenden Laufs,
+   * und die Stage-Datei wird NICHT angefasst — die Übernahme sichert selbst
+   * (Journal in `automatic-delivery.cjs`). Vorher las jeder einzelne Eintrag
+   * Katalog und Stage (zusammen rund 85 MB), leitete den kompletten
+   * Prüfbericht ab und schrieb die 42-MB-Stage neu.
+   */
+  async stage({ kind, document, base64 }, kontext) {
+    const shipped = kontext?.catalog ?? await this.catalog();
+    const stageState = kontext ? null : await readJson(this.stageFile, { version: 2, entries: [] });
+    const katalogWoerter = kontext?.vocabulary ?? shipped.entries.filter(e => e.kind === 'vocabulary').map(e => e.document);
+    assertDocument(kind, document, [...this.extraVocabulary, ...katalogWoerter]);
+    const language = document.language ?? document.direction?.split('_to_')[1] ?? (kind === 'images' ? [...this.extraVocabulary, ...katalogWoerter].find(word => word.id === document.vocabId)?.language : undefined);
+    const cutoff = Math.max(shipped.deleted?.[`${kind}:${document.id}`] ?? -1, shipped.clearedBefore?.[kind] ?? -1, shipped.clearedBefore?.[`${kind}:${language}`] ?? -1);
     if (cutoff >= 0 && (kind !== 'vocabulary' || document.id.startsWith('ki-')) && (document.generatedAt ?? 0) <= cutoff) throw Error('Dieser alte Entwurf wurde gelöscht. Bitte neu erzeugen.');
     let bytes = Buffer.alloc(0);
     let sourceBytes;
@@ -350,13 +362,33 @@ class ContentPipeline {
     // diesen Kontext fände das Tor die erzeugten ki-*-Wörter nicht.
     const toneWortschatz = [
       ...this.extraVocabulary,
-      ...state.shipped.entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document),
-      ...state.stage.entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document)];
+      ...katalogWoerter,
+      ...(stageState ? stageState.entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document) : [])];
     entry.check = this.checkEntry(entry, media ? path.join(this.work, entry.asset) : undefined, toneWortschatz);
-    state.stage.version = 2;
-    state.stage.entries = [...state.stage.entries.filter((item) => keyOf(item) !== keyOf(entry)), entry];
-    await atomicJson(this.stageFile, state.stage);
+    if (stageState) {
+      stageState.version = 2;
+      stageState.entries = [...stageState.entries.filter((item) => keyOf(item) !== keyOf(entry)), entry];
+      await atomicJson(this.stageFile, stageState);
+    }
     return entry;
+  }
+
+  /**
+   * Nur die Wortschatz-Dokumente aus Katalog und Stage — für die
+   * Wortschatz-Karte, die vorher je Paket den kompletten `/state` (73 MB)
+   * holte. Die Stage wird nach Dateistand zwischengespeichert: Sie ändert
+   * sich während eines automatischen Laufs nicht.
+   */
+  async stageVocabulary() {
+    let info;
+    try { info = await fs.stat(this.stageFile); }
+    catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+    const schluessel = `${info.mtimeMs}:${info.size}`;
+    if (this.stageWoerter?.schluessel !== schluessel) {
+      const stageState = await readJson(this.stageFile, { version: 2, entries: [] });
+      this.stageWoerter = { schluessel, woerter: stageState.entries.filter((e) => e.kind === 'vocabulary').map((e) => e.document) };
+    }
+    return this.stageWoerter.woerter;
   }
   checkEntry(entry, file, toneWortschatz) {
     const check = { status: 'passed', label: 'automatisch geprüft', checkedAt: new Date().toISOString(), scope: 'schema-integrity-decode' };

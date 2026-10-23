@@ -31,6 +31,8 @@ export type ImageRunOptions = {
   onProgress?: (progress: BatchProgress) => void;
   shouldCancel?: () => boolean;
   delayMs?: number;
+  /** Wie viele Bilder gleichzeitig entstehen (Turbo, 23.10.2026). */
+  concurrency?: number;
   now?: () => number;
   onProduced?: (document: VocabImage, base64: string) => Promise<void>;
 };
@@ -113,6 +115,7 @@ export async function runImageBatch(options: ImageRunOptions): Promise<BatchProg
     onProgress: options.onProgress,
     shouldCancel: options.shouldCancel,
     delayMs: options.delayMs,
+    concurrency: options.concurrency,
   });
 }
 

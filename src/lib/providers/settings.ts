@@ -1,3 +1,4 @@
+import { MAX_PARALLEL } from '../generation/drossel';
 import { readMeta, writeMeta } from '../repository';
 import { DataStore } from '../storage';
 
@@ -109,6 +110,12 @@ export type GeneratorChoice = {
    * (zwei Runden, „einfach geprüft").
    */
   checkProvider?: ProviderId;
+  /**
+   * Turbo (23.10.2026): höchstens so viele Aufrufe gleichzeitig. Leer = der
+   * Werkswert des Anbieters (`standardParallel`); die Drossel bremst bei 429
+   * ohnehin selbst. Gehört zum Anbieter — ein Wechsel setzt es zurück.
+   */
+  parallel?: number;
 };
 
 export type GeneratorSettings = Record<GeneratorGroupId, GeneratorChoice>;
@@ -180,6 +187,9 @@ export function normalizeChoice(raw: unknown, group: GeneratorGroupId): Generato
   if (isProviderId(value.checkProvider)) {
     choice.checkProvider = value.checkProvider;
   }
+  if (typeof value.parallel === 'number' && Number.isInteger(value.parallel) && value.parallel >= 1 && value.parallel <= MAX_PARALLEL) {
+    choice.parallel = value.parallel;
+  }
   if (info.needs === 'audio') {
     choice.voice =
       typeof value.voice === 'string' && value.voice.trim() !== ''
@@ -232,6 +242,8 @@ export async function setGeneratorProvider(
       provider,
       model: defaultModelFor(provider, GENERATOR_GROUP_INFO[group].needs),
       voice: defaultVoiceFor(provider),
+      // Die Gleichzeitigkeit gehört dem alten Anbieter (ComfyUI 1, DeepSeek 8 …).
+      parallel: undefined,
     },
     store
   );

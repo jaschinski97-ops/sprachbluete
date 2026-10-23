@@ -25,6 +25,8 @@ export type RunOptions = {
   onProgress?: (progress: BatchProgress) => void;
   shouldCancel?: () => boolean;
   delayMs?: number;
+  /** Wie viele Situationen gleichzeitig entstehen (Turbo, 23.10.2026). */
+  concurrency?: number;
   onProduced?: (document: ConversationSituation) => Promise<void>;
 };
 
@@ -57,6 +59,7 @@ export async function runGenerationBatch(options: RunOptions): Promise<BatchProg
     onProgress: options.onProgress,
     shouldCancel: options.shouldCancel,
     delayMs: options.delayMs,
+    concurrency: options.concurrency,
   });
 }
 

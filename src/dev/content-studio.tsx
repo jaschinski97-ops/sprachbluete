@@ -11,6 +11,7 @@ import { findeDuplikat } from '@/lib/content/aehnlichkeit';
 import { useLocale } from '@/lib/i18n';
 import type { ConversationSituation as Situation } from '@/lib/conversation/types';
 import { estimateRunCost } from './run-cost';
+import { Drossel, gedrosselt } from '@/lib/generation/drossel';
 import { clearContentSelection, startAutomaticDelivery, studioRequest, type StudioState } from './content-client';
 import { fahreKette, planChain, type ChainStep } from './chain-run';
 import { planDeliveryAudio } from '@/lib/content/audio-plan';
@@ -395,7 +396,7 @@ export default function ContentStudio() {
   );
 
   const startSituations = useCallback(
-    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, onProgress, shouldCancel, confirmRun }: StartArgs) => {
+    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, parallel, onProgress, shouldCancel, confirmRun }: StartArgs) => {
     await studioRequest('/state');
     const { steps, all } = await planChain(
       chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
@@ -413,13 +414,17 @@ export default function ContentStudio() {
     // die NEUEN Situationen identifizieren und gegen (fast) Duplikate prüfen.
     const bestandVorher: Situation[] = await loadSituations();
     const referenz: Situation[] = [...bestandVorher];
+    const drossel = new Drossel({ max: parallel });
     const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
     try {
         await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
           (missing, onStepProgress) => runGenerationBatch({
             specs: missing,
-            client: createGenerationClient(provider, apiKey, model),
-            onProgress: onStepProgress, shouldCancel: () => shouldCancel?.() || delivery.failed, delayMs: 400,
+            // Turbo (23.10.2026): mehrere Situationen gleichzeitig; die Drossel
+            // bremst bei 429 selbst, statt fest 400 ms zu warten.
+            client: gedrosselt(createGenerationClient(provider, apiKey, model), drossel),
+            concurrency: parallel,
+            onProgress: onStepProgress, shouldCancel: () => shouldCancel?.() || delivery.failed,
             onProduced: async situation => {
               if (findeDuplikat(situation, referenz)) throw Error(t('studio.duplicateSituation'));
               await delivery.deliver('situations', situation);
@@ -437,7 +442,7 @@ export default function ContentStudio() {
   );
 
   const startImages = useCallback(
-    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, onProgress, shouldCancel, confirmRun }: StartArgs) => {
+    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, parallel, onProgress, shouldCancel, confirmRun }: StartArgs) => {
     await studioRequest('/state');
     // Ohne Kette ein Schritt (die gewählte Sprache), mit „Alle Sprachen“
     // einer je Pool — derselbe Bauplan, eine kombinierte Bestätigung.
@@ -451,17 +456,19 @@ export default function ContentStudio() {
       maxNew
     );
     if (!await confirmRun(estimateRunCost('images', provider, model, all.map(() => ({}))))) return;
+    // ComfyUI bleibt bei einem Bild zugleich (eine Grafikkarte); Cloud-Anbieter
+    // laufen parallel und bremsen bei 429 selbst.
+    const drossel = new Drossel({ max: parallel });
     const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
     try {
       await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
         (missing, onStepProgress) => runImageBatch({
           specs: missing,
-          client: createImageGenerationClient(provider, apiKey, model),
+          client: gedrosselt(createImageGenerationClient(provider, apiKey, model), drossel),
+          concurrency: parallel,
           onProgress: onStepProgress,
           shouldCancel: () => shouldCancel?.() || delivery.failed,
           onProduced: (document, base64) => delivery.deliver('images', document, base64),
-          // Local jobs are already sequential; only cloud providers need a rate-limit pause.
-          delayMs: provider === 'comfyui' ? 0 : 800,
         }));
     } finally {
       const count = await delivery.finish();
@@ -474,7 +481,7 @@ export default function ContentStudio() {
   );
 
   const startClips = useCallback(
-    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, voice, onProgress, shouldCancel, confirmRun }: StartArgs) => {
+    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, voice, parallel, onProgress, shouldCancel, confirmRun }: StartArgs) => {
       await studioRequest('/state');
       // Die Umfänge hängen an Bestand (Situationen) und je Schritt an der
       // Sprache — einmal laden, dann je Schritt bauen.
@@ -492,7 +499,11 @@ export default function ContentStudio() {
       // Rotation über alle Stimmen (Phase 2, Schritt 7) griff deshalb nie,
       // und die Thai-Ton-Diagnose vom 18.09. sprach ohnehin dagegen:
       // coral/alloy/nova verfehlten Töne, an denen onyx bestand.
-      const client = createClipGenerationClient(provider, apiKey, model, voice ?? '');
+      // Turbo (23.10.2026): mehrere Clips gleichzeitig. Statt fester Pausen
+      // (Gemini 6,5 s, Helper 0,5 s) bremst die Drossel, sobald der Anbieter
+      // 429 meldet, und wartet so lange, wie er es verlangt.
+      const drossel = new Drossel({ max: parallel });
+      const client = gedrosselt(createClipGenerationClient(provider, apiKey, model, voice ?? ''), drossel);
       const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
       try {
         await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
@@ -508,13 +519,7 @@ export default function ContentStudio() {
               onProgress: onStepProgress,
               shouldCancel: () => shouldCancel?.() || delivery.failed,
               onProduced: (document, base64) => delivery.deliver('audio', document, base64),
-              // 17.09. Nacht FINAL (1400 → 500 ms): OpenAI-TTS ist auf 30 Aufrufe/
-              // Minute gedeckelt — der Helper WARTET bei vollem Fenster jetzt die
-              // genannte Sekundenzahl und stellt dann selbst durch (statt mit 429
-              // abzulehnen; siehe studio.cjs). Der Client darf deshalb flott
-              // fragen: das Fenster glättet den Lauf automatisch auf das Limit,
-              // der Durchsatz liegt damit AM Limit statt darunter.
-              delayMs: provider === 'gemini' ? 6500 : provider === 'chatgpt-helper' ? 500 : 600,
+              concurrency: parallel,
             });
           });
       } finally {
@@ -641,7 +646,7 @@ export default function ContentStudio() {
         group="audio"
         choice={generators.audio}
         onChoiceChange={(change) => changeGenerator('audio', change)}
-        statusLine={`Im Speicher: ${clips === null ? '…' : `${clips.count} Clips, ${formatBytes(clips.bytes)}`} · Ablage ${clipBackend ?? '…'}${generators.audio.provider === 'gemini' ? ' · Pause je Aufruf: 6,5 Sekunden (Gemini-Ratenlimit)' : ''}${generators.audio.provider === 'chatgpt-helper' ? ' · höchstens 30 Aufrufe pro Minute (der Helper wartet bei vollem Fenster selbst) · Schlüssel serverseitig' : ''}`}
+        statusLine={`Im Speicher: ${clips === null ? '…' : `${clips.count} Clips, ${formatBytes(clips.bytes)}`} · Ablage ${clipBackend ?? '…'} · mehrere Clips gleichzeitig, bremst bei „zu vielen Anfragen“ selbst${generators.audio.provider === 'chatgpt-helper' ? ' · Helper höchstens 30 Aufrufe pro Minute · Schlüssel serverseitig' : ''}`}
         counts={sprachZaehler(clipsByLanguage, mediaLanguage)}
         runOptions={clipRunOptions(storedSituations, generators.audio.provider, mediaLanguage).options}
         onStart={startClips}

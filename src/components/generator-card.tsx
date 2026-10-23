@@ -18,6 +18,7 @@ import {
 } from '@/lib/api-key';
 import { lesbareLaufkennung } from '@/lib/conversation/types';
 import { BatchProgress } from '@/lib/generation/batch';
+import { MAX_PARALLEL, parallelFuer, standardParallel } from '@/lib/generation/drossel';
 import {
   GeneratorChoice,
   GeneratorGroupId,
@@ -122,6 +123,8 @@ export type StartArgs = {
   model: string;
   /** Nur bei Sprachausgabe: die Stimme, ebenfalls Freitext. Sonst leer. */
   voice: string;
+  /** Turbo (23.10.2026): höchstens so viele Aufrufe gleichzeitig (Drossel). */
+  parallel: number;
   onProgress: (progress: BatchProgress) => void;
   shouldCancel: () => boolean;
   confirmRun: (estimate: RunEstimate) => Promise<boolean>;
@@ -255,6 +258,9 @@ export function GeneratorCard({
   // (siehe useEingabePuffer) — der Lauf startet mit dem, was im Feld steht.
   const modell = useEingabePuffer(choice.model, (neu) => onChoiceChange({ model: neu }));
   const stimme = useEingabePuffer(choice.voice ?? '', (neu) => onChoiceChange({ voice: neu }));
+  // Leer heißt: Werkswert des Anbieters. Ungültiges verwirft normalizeChoice.
+  const gleichzeitig = useEingabePuffer(choice.parallel ? String(choice.parallel) : '', (neu) =>
+    onChoiceChange({ parallel: neu.trim() ? Number(neu.trim()) : undefined }));
 
   useEffect(() => { onRunningChange?.(running); }, [running, onRunningChange]);
 
@@ -269,6 +275,7 @@ export function GeneratorCard({
   const provider = choice.provider;
   const providerInfo = PROVIDER_INFO[provider];
   const choices = providersForGroup(group);
+  const parallel = parallelFuer({ provider, parallel: Number(gleichzeitig.puffer.trim()) || undefined }, groupInfo.needs);
 
   useEffect(() => {
     (async () => {
@@ -345,6 +352,7 @@ export function GeneratorCard({
           groupInfo.needs === 'audio'
             ? stimme.puffer.trim() || providerInfo.voicePlaceholder
             : '',
+        parallel,
         onProgress: setProgress,
         shouldCancel: () => cancelRef.current,
         // Nutzerwunsch 17.09.: die Kostenbestätigung ist GÄNZLICH raus (wie
@@ -362,7 +370,7 @@ export function GeneratorCard({
       setChainStep(null);
       await onFinished();
     }
-  }, [blocked, managedKeys, key, language, provider, providerInfo, groupInfo, modell.puffer, stimme.puffer, runOption, onStart, onFinished, maxNew, allRun, alleSprachen]);
+  }, [blocked, managedKeys, key, language, provider, providerInfo, groupInfo, modell.puffer, stimme.puffer, parallel, runOption, onStart, onFinished, maxNew, allRun, alleSprachen]);
 
   const stop = useCallback(() => {
     cancelRef.current = true;
@@ -476,7 +484,7 @@ export function GeneratorCard({
       <Pressable accessibilityRole="button" accessibilityState={{ expanded: advanced }}
         onPress={() => setAdvanced(value => !value)} style={styles.tapTarget}>
         <ThemedText type="small" themeColor="link">{advanced ? '▾' : '▸'} Erweitert · Modell{groupInfo.needs === 'audio' ? ' & Stimme' : ''}</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">{modell.puffer || providerInfo.modelPlaceholder[groupInfo.needs]}{groupInfo.needs === 'audio' ? ` · ${stimme.puffer || providerInfo.voicePlaceholder}` : ''}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">{modell.puffer || providerInfo.modelPlaceholder[groupInfo.needs]}{groupInfo.needs === 'audio' ? ` · ${stimme.puffer || providerInfo.voicePlaceholder}` : ''} · {parallel} gleichzeitig</ThemedText>
       </Pressable>
       {advanced ? <>
       <View style={styles.field}>
@@ -500,6 +508,27 @@ export function GeneratorCard({
           {provider === 'gemini'
             ? ' Bei Gemini ist ein Tippfehler im Namen nicht vom falschen Schlüssel zu unterscheiden — die API meldet beides als „API key not valid" (gemessen, AE-26).'
             : ''}
+        </ThemedText>
+      </View>
+
+      <View style={styles.field}>
+        <ThemedText type="small">Gleichzeitige Anfragen</ThemedText>
+        <TextInput
+          value={gleichzeitig.puffer}
+          onChangeText={gleichzeitig.setPuffer}
+          onBlur={gleichzeitig.beiBlur}
+          placeholder={String(standardParallel(provider, groupInfo.needs))}
+          placeholderTextColor={theme.textSecondary}
+          keyboardType="number-pad"
+          editable={!running}
+          accessibilityLabel={`Gleichzeitige Anfragen für ${heading}`}
+          style={[styles.input, { color: theme.text, borderColor: Colors.dark.backgroundSelected }]}
+        />
+        <ThemedText type="small" themeColor="textSecondary">
+          Höchstens so viele Aufrufe laufen gleichzeitig (1–{MAX_PARALLEL}). Meldet der
+          Anbieter „zu viele Anfragen“ (429), halbiert der Lauf die Zahl, wartet und
+          wiederholt — abgelehnte Aufrufe kosten nichts. Leer lassen nimmt{' '}
+          {standardParallel(provider, groupInfo.needs)}.
         </ThemedText>
       </View>
 

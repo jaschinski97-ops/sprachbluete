@@ -95,7 +95,7 @@ test('loop delivers each word automatically, waits for acknowledgement, and stop
     expect(JSON.stringify(tree.toJSON())).toContain('Läuft seit 0:31');
     const word = { ...VOCABULARY_TH[0], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
     await act(async () => { lauf.answer({ text: JSON.stringify({ woerter: [word] }), model: 'test' }); });
-    expect(JSON.stringify(tree.toJSON())).toContain('Prüfpaket 1 / 1');
+    expect(JSON.stringify(tree.toJSON())).toContain('Prüfung läuft (1 Paket gleichzeitig)');
     await act(async () => { lauf.answer(durchgelassen(1)); });
     // Selbstprüfung läuft zweimal, die Anzeige bleibt während beider Antworten aktiv.
     expect(tree.root.findByType(ProgressPanel).props.progress.done).toBe(false);
@@ -146,7 +146,7 @@ test('blacklisted terms skip the paid check and rejected terms land on the black
     const blacklist = { ...VOCABULARY_TH[0], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
     const neu = { ...VOCABULARY_TH[1], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
     await act(async () => { lauf.answer({ text: JSON.stringify({ woerter: [blacklist, neu] }), model: 'test' }); });
-    expect(JSON.stringify(tree.toJSON())).toContain('Prüfpaket 1 / 1');
+    expect(JSON.stringify(tree.toJSON())).toContain('Prüfung läuft (1 Paket gleichzeitig)');
     const abgelehnt = {
       text: JSON.stringify({ urteile: [{ index: 0, urteil: 'mangel', gruende: ['Testgrund'] }] }),
       model: 'test',

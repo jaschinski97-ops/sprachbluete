@@ -24,10 +24,10 @@ import { PROVIDER_INFO, PROVIDERS, type ProviderId, type TextClient } from '@/li
 import {
   pruefeVocabKreuzBatch,
   PRUEF_BATCH_GROESSE,
-  type KreuzResultat,
 } from '@/lib/content/kreuzpruefung';
 import { loadApiKey } from '@/lib/api-key';
 import { clearContentSelection, startAutomaticDelivery, studioRequest } from './content-client';
+import { Drossel, MAX_PARALLEL, parallelFuer, standardParallel } from '@/lib/generation/drossel';
 import { readMeta, writeMeta } from '@/lib/repository';
 import {
   pruefeVocabDoc,
@@ -181,17 +181,14 @@ type StudioBestand = { zahlen: Partial<Record<string, number>>; dokumente: Studi
 
 /** Zustand vom HELPER (Katalog auf der Platte + Stage) — der gebündelte
  * Katalog im Browser bleibt sonst hinter Publishes zurück (Lektion 16.09.:
- * „Thai 16 vorhanden", obwohl längst 68 auf der Platte lagen). */
+ * „Thai 16 vorhanden", obwohl längst 68 auf der Platte lagen).
+ *
+ * Turbo (23.10.2026): über `/vocabulary` statt `/state` — nur Sprache, Wort
+ * und Stufe aller Wörter aus Katalog, laufender Übernahme und Stage, statt
+ * je Paket des ganzen Bestands samt Prüfbericht (rund 73 MB). */
 async function leseStudioBestand(): Promise<StudioBestand> {
-  const zustand = await studioRequest<{
-    shipped?: { entries?: { kind: string; id: string; document: StudioDokument }[] };
-    stage?: { entries?: { kind: string; id: string; document: StudioDokument }[] };
-  }>('/state');
-  const eindeutig = new Map<string, StudioDokument>();
-  for (const eintrag of [...(zustand.shipped?.entries ?? []), ...(zustand.stage?.entries ?? [])]) {
-    if (eintrag.kind === 'vocabulary' && eintrag.document) eindeutig.set(String(eintrag.id), eintrag.document);
-  }
-  const dokumente = [...eindeutig.values()];
+  const antwort = await studioRequest<{ woerter?: (StudioDokument & { id: string })[] }>('/vocabulary');
+  const dokumente: StudioDokument[] = Array.isArray(antwort?.woerter) ? antwort.woerter : [];
   const zahlen: Partial<Record<string, number>> = {};
   for (const { code } of SPRACHEN) zahlen[code] = dokumente.filter((d) => d.language === code).length;
   return { zahlen, dokumente };
@@ -290,7 +287,9 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   const laufeFuer = useCallback(async (
     code: VocabSprache,
     tick: (term: string, ausgang: 'ok' | 'failed' | 'skipped') => void,
-    status: (text: string) => void
+    status: (text: string) => void,
+    /** Eine Drossel je Anbieter, geteilt über alle Sprachen des Laufs (Turbo). */
+    drosselFuer: (anbieter: ProviderId) => Drossel
   ): Promise<LaufErgebnis | null> => {
       const label = SPRACHEN.find(sprache => sprache.code === code)?.label ?? code;
       status(`${label}: Bestand wird geladen …`);
@@ -328,10 +327,12 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       // Echte Tokenzahlen je Aufruf sammeln (Erzeugung UND Prüfung) — daraus
       // schätzt der Loop die Ausgaben und stoppt am Budget.
       const verbrauch = { usd: 0 };
+      // Turbo (23.10.2026): Jeder Aufruf läuft durch die Drossel seines
+      // Anbieters — parallel bis zur eingestellten Zahl, bei 429 gebremst.
       const zaehl = (basis: TextClient): TextClient => ({
         ...basis,
         complete: async (request) => {
-          const antwort = await basis.complete(request);
+          const antwort = await drosselFuer(basis.provider).lauf(() => basis.complete(request));
           if (antwort.usage && !basis.provider.startsWith('local-')) verbrauch.usd += paketUsd(basis.model, antwort.usage.inputTokens, antwort.usage.outputTokens);
           return antwort;
         },
@@ -340,20 +341,11 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       // Bestand + Stage + Blacklist VOR dem Erzeugungsaufruf lesen — die
       // Ausschlussliste im Prompt muss auch Stage-Wörter kennen, sonst
       // schlägt das Modell sie laufend wieder vor (27 Duplikate, 16.09.).
+      // `bestandJetzt` enthält Katalog, laufende Übernahme UND Stage
+      // (`/vocabulary` des Helpers) — ein eigener Stage-Abruf ist unnötig.
       const eigene = bestandJetzt.dokumente.filter((d) => d.language === code);
       const bekannte = eigene.map((d) => d.term).filter((term): term is string => Boolean(term));
       const vorhandenSchluessel = new Set(eigene.map((d) => vocabSchluessel(String(d.term ?? ''), code)));
-      try {
-        const zustand = await studioRequest<{ stage?: { entries?: { kind: string; document: { term?: string; language?: string } }[] } }>('/state');
-        for (const eintrag of zustand.stage?.entries ?? []) {
-          if (eintrag.kind === 'vocabulary' && eintrag.document?.language === code && typeof eintrag.document?.term === 'string') {
-            bekannte.push(eintrag.document.term);
-            vorhandenSchluessel.add(vocabSchluessel(eintrag.document.term, code));
-          }
-        }
-      } catch {
-        // Ohne Helper bleibt der Vergleich beim lokalen Bestand.
-      }
       const blacklistBegriffe = await ladeBlacklist(code);
       const blacklist = new Set(blacklistBegriffe.map((begriff) => vocabSchluessel(begriff, code)));
       // Fehlerprotokoll dieses Pakets — landet als JSON-Zeilen in
@@ -437,12 +429,18 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       }
 
       // Paketweise prüfen; gleicher Anbieter prüft die Bestandenen zweimal.
+      // Turbo (23.10.2026): Alle Prüfpakete eines Wortpakets laufen
+      // gleichzeitig (die Drossel begrenzt), übernommen wird danach in der
+      // ursprünglichen Reihenfolge.
+      const pruefPakete: (typeof kandidaten)[] = [];
       for (let start = 0; start < kandidaten.length; start += PRUEF_BATCH_GROESSE) {
-        const paket = kandidaten.slice(start, start + PRUEF_BATCH_GROESSE);
-        status(`${label}: Prüfpaket ${Math.floor(start / PRUEF_BATCH_GROESSE) + 1} / ${Math.ceil(kandidaten.length / PRUEF_BATCH_GROESSE)} — ${pruefModellFuer(checkProvider)} prüft ${paket.length} Wörter …`);
-        let resultate: KreuzResultat[];
+        pruefPakete.push(kandidaten.slice(start, start + PRUEF_BATCH_GROESSE));
+      }
+      let pruefFertig = 0;
+      status(`${label}: Prüfung läuft (${pruefPakete.length} ${pruefPakete.length === 1 ? 'Paket' : 'Pakete'} gleichzeitig) — ${pruefModellFuer(checkProvider)} prüft ${kandidaten.length} Wörter …`);
+      const pruefErgebnisse = await Promise.all(pruefPakete.map(async (paket, index) => {
         try {
-          resultate = await pruefeVocabKreuzBatch(
+          const resultate = await pruefeVocabKreuzBatch(
             paket.map((kandidat) => kandidat.eintrag),
             t(STAGE_KEYS[stage]),
             provider,
@@ -450,17 +448,23 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
             (anbieter) => zaehl(clientFuer(anbieter)),
             checkProvider
           );
+          pruefFertig += 1;
+          status(`${label}: Prüfpaket ${pruefFertig} / ${pruefPakete.length} fertig …`);
+          return { paket, resultate };
         } catch (error) {
           // Ein kaputtes Paket (z. B. verstümmelte Prüf-Antwort) wirft NICHT
           // den Sprachlauf — bereits geprüfte Pakete zählen und werden
           // veröffentlicht, der Fehler steht in der Meldung.
-          const nummer = Math.floor(start / PRUEF_BATCH_GROESSE) + 1;
-          const meldung = `Prüfpaket ${nummer}: ${error instanceof Error ? error.message : String(error)}`;
+          const meldung = `Prüfpaket ${index + 1}: ${error instanceof Error ? error.message : String(error)}`;
           resultat.fehler.push(meldung);
           protokoll.push({ kind: 'paket', language: code, gruende: [meldung] });
           for (const kandidat of paket) tick(kandidat.eintrag.term, 'failed');
-          continue;
+          return null;
         }
+      }));
+      for (const geprueft of pruefErgebnisse) {
+        if (!geprueft) continue;
+        const { paket, resultate } = geprueft;
         for (const [position, kandidat] of paket.entries()) {
           const kreuz = resultate[position];
           const eintrag = kandidat.eintrag;
@@ -510,6 +514,9 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       return resultat;
   }, [ziele, paket, thema, ladeBestand, stage, wahl.provider, t]);
 
+  /** Gleichzeitige Anfragen des Erzeugers (leer = Werkswert des Anbieters). */
+  const parallelText = wahl.parallel ? String(wahl.parallel) : '';
+
   const erzeugen = async () => {
     if (starting.current || blocked) return;
     starting.current = true;
@@ -544,19 +551,40 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
     try {
       deliveryRef.current = await startAutomaticDelivery();
       const codes = alleSprachen ? [...aktiveSprachen] : [sprache];
+      // Eine Drossel je Anbieter für den ganzen Lauf: Erzeuger und Prüfer
+      // desselben Kontos teilen sich das Ratenlimit.
+      const einstellung = (await loadGeneratorSettings()).vocabulary;
+      const drosseln = new Map<ProviderId, Drossel>();
+      const drosselFuer = (anbieter: ProviderId) => {
+        let drossel = drosseln.get(anbieter);
+        if (!drossel) {
+          drossel = new Drossel({ max: parallelFuer(anbieter === einstellung.provider ? einstellung : { provider: anbieter }, 'text') });
+          drosseln.set(anbieter, drossel);
+        }
+        return drossel;
+      };
+      // Jede Sprache meldet ihren eigenen Stand; angezeigt wird alles zusammen.
+      const stand = new Map<string, string>();
+      const statusFuer = (code: string) => (text: string) => {
+        stand.set(code, text);
+        status([...stand.values()].join(' · '));
+      };
       const gesamt: LaufErgebnis = { erzeugt: 0, kreuzGeprueft: 0, einfachGeprueft: 0, kreuzAbgelehnt: 0, duplikate: 0, aussortiert: 0, schwarzgelistet: 0, gerettet: 0, fehler: [], usd: 0 };
       const fehler: string[] = [];
       const ohneFortschrittIn: string[] = [];
       let pakete = 0;
       let zielErreicht = 0;
-      for (const code of codes) {
+      // Turbo (23.10.2026): alle Sprachen gleichzeitig; jede arbeitet ihre
+      // Pakete weiter nacheinander ab (der Bestand je Paket bleibt stimmig).
+      await Promise.all(codes.map(async (code) => {
+        const status = statusFuer(code);
         const label = SPRACHEN.find((eintrag) => eintrag.code === code)?.label ?? code;
         for (let paketNummer = 1; ; paketNummer++) {
           if (deliveryRef.current?.failed) throw Error(t('studio.deliveryFailed'));
           status(`${label}: Paket ${paketNummer} — bisher ${usdText(gesamt.usd)} geschätzt …`);
           let teil: LaufErgebnis | null;
           try {
-            teil = await laufeFuer(code, tick, status);
+            teil = await laufeFuer(code, tick, status, drosselFuer);
           } catch (error) {
             // Hart gescheitert (Schlüssel, Netz, Verstümmelung) — das nächste
             // Paket DIESER Sprache würde genauso enden: weiter zur nächsten.
@@ -590,7 +618,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
             break;
           }
         }
-      }
+      }));
       await deliveryRef.current?.finish();
       deliveryRef.current = null;
       onFinished();
@@ -834,6 +862,25 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           accessibilityLabel="Modellname für die Wortschatz-Erzeugung"
           style={[styles.input, { color: theme.text, borderColor: Colors.dark.backgroundSelected }]}
         />
+        <ThemedText type="small">Gleichzeitige Anfragen (Erzeuger)</ThemedText>
+        <TextInput
+          value={parallelText}
+          onChangeText={(wert) => {
+            const zahl = Number.parseInt(wert.replace(/[^0-9]/g, ''), 10);
+            void wahlAendern({ parallel: Number.isFinite(zahl) ? zahl : undefined });
+          }}
+          placeholder={String(standardParallel(wahl.provider, 'text'))}
+          placeholderTextColor={theme.textSecondary}
+          keyboardType="number-pad"
+          editable={!running}
+          accessibilityLabel="Gleichzeitige Anfragen für den Wortschatz"
+          style={[styles.input, styles.kurz, { color: theme.text, borderColor: Colors.dark.backgroundSelected }]}
+        />
+        <ThemedText type="small" themeColor="textSecondary">
+          Alle Sprachen und die Prüfpakete laufen gleichzeitig, höchstens so viele
+          Aufrufe je Anbieter (1–{MAX_PARALLEL}). Meldet der Anbieter „zu viele
+          Anfragen“, bremst der Lauf selbst. Leer nimmt {standardParallel(wahl.provider, 'text')}.
+        </ThemedText>
         <ThemedText type="small">KI — Prüfung: Anbieter</ThemedText>
         <View style={styles.zeile}>
           {providersForGroup('vocabulary').map((info) => (

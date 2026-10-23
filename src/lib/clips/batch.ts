@@ -41,6 +41,12 @@ export type ClipRunOptions = {
   onProgress?: (progress: BatchProgress) => void;
   shouldCancel?: () => boolean;
   delayMs?: number;
+  /**
+   * Wie viele Clips gleichzeitig entstehen (Turbo, 23.10.2026). Ohne Angabe
+   * bleibt es bei `CLIP_CONCURRENCY`; das Studio reicht die Zahl seiner
+   * Drossel durch, die bei 429 selbst bremst.
+   */
+  concurrency?: number;
   now?: () => number;
   onProduced?: (document: AudioClip, base64: string) => Promise<void>;
   /**
@@ -166,7 +172,10 @@ function clipTask(
 }
 
 /**
- * Wie viele Clips GLEICHZEITIG erzeugt werden. Am 17.09. nachts gemessen:
+ * Wie viele Clips GLEICHZEITIG erzeugt werden, wenn der Aufrufer nichts
+ * angibt. Seit dem Turbo (23.10.2026) gibt das Studio die Zahl seiner Drossel
+ * mit, die bei 429 selbst bremst — der feste Wert gilt nur noch für Läufe
+ * ohne Drossel. Am 17.09. nachts gemessen:
  * OpenAI begrenzt TTS auf EXAKT 30 Aufrufe/Minute (Helper-Log: „Rate-Limit:
  * maximal 30 Aufrufe pro Minute") — bei 3 parallelen Arbeitern fielen 78 %
  * der Aufrufe durchs Limit. Deshalb wieder seriell (1); die Pause von
@@ -216,7 +225,7 @@ export async function runClipBatch(options: ClipRunOptions): Promise<BatchProgre
     onProgress,
     shouldCancel: () => basisCancel?.() || frueh.notstopp || register.gestoppt,
     delayMs: options.delayMs,
-    concurrency: CLIP_CONCURRENCY,
+    concurrency: options.concurrency ?? CLIP_CONCURRENCY,
   });
   if (frueh.notstopp) {
     result.errors.push({

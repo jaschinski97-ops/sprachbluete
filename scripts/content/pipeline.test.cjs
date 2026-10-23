@@ -425,3 +425,56 @@ test('shippingBytes ignores the diagnostic F0 track: a multi-megabyte track neve
   assert.ok(naive(withTrack) - shippingBytes(withTrack) > 5 * 1024 * 1024, 'der mehr-Megabyte-Track ist tatsächlich ausgeklammert');
   assert.equal(shippingBytes(entry), naive(entry), 'ohne Track bleibt die naive Größe unverändert');
 });
+
+// Turbo (23.10.2026): Journal statt Komplett-Sicherung je Eintrag.
+const situationB = () => ({ ...situation, id: situation.id + '-b', generatedAt: situation.generatedAt + 1 });
+test('automatic delivery appends one journal line per entry and leaves the stage file alone', async t => {
+  const { pipeline } = await setup(t);
+  await pipeline.stage({ kind: 'situations', document: situationB() });
+  const stageVorher = await fs.readFile(pipeline.stageFile, 'utf8');
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  await delivery.accept(token, { kind: 'situations', document: situation });
+  const zeilen = (await fs.readFile(delivery.file, 'utf8')).trim().split('\n');
+  assert.equal(zeilen.length, 2, 'Kopfzeile plus ein Eintrag');
+  assert.ok(JSON.parse(zeilen[0]).baselineDigest);
+  assert.equal(JSON.parse(zeilen[1]).entry.id, situation.id);
+  assert.equal(await fs.readFile(pipeline.stageFile, 'utf8'), stageVorher, 'die Stage bleibt unberührt');
+  assert.deepEqual(await delivery.finish(token), { count: 1 });
+  assert.equal(await delivery.readCheckpoint(), null);
+});
+test('a half-written last journal line is ignored on restart; acknowledged entries are recovered', async t => {
+  const { pipeline } = await setup(t);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  await delivery.accept(token, { kind: 'situations', document: situation });
+  await fs.appendFile(delivery.file, '{"entry":{"kind":"situations","id":"abgeschnit');
+  const restarted = new AutomaticDelivery(pipeline);
+  assert.equal((await restarted.readCheckpoint()).entries.length, 1);
+  await restarted.recover();
+  assert.deepEqual((await pipeline.catalog()).entries.map(e => e.id), [situation.id]);
+  assert.equal(await restarted.readCheckpoint(), null);
+});
+test('a legacy JSON checkpoint from before the journal is still recovered', async t => {
+  const { pipeline } = await setup(t);
+  const delivery = new AutomaticDelivery(pipeline);
+  const { token } = await delivery.begin();
+  const entry = await delivery.accept(token, { kind: 'situations', document: situation });
+  const baselineDigest = JSON.parse((await fs.readFile(delivery.file, 'utf8')).split('\n')[0]).baselineDigest;
+  await fs.rm(delivery.file);
+  await fs.writeFile(delivery.legacyFile, JSON.stringify({ baselineDigest, entries: [entry] }));
+  const restarted = new AutomaticDelivery(pipeline);
+  await restarted.recover();
+  assert.deepEqual((await pipeline.catalog()).entries.map(e => e.id), [situation.id]);
+  assert.equal(await restarted.readCheckpoint(), null);
+});
+test('stageVocabulary lists only staged words and rereads after the stage changes', async t => {
+  const { pipeline } = await setup(t);
+  assert.deepEqual(await pipeline.stageVocabulary(), []);
+  const wort = { id: 'stage-wort', language: 'en', term: 'quick', german: 'schnell', romanization: 'quick',
+    partOfSpeech: 'adjective', register: 'neutral', isConcrete: false, syllables: [], sourceVerified: false,
+    verificationNote: 'KI-Kreuzprüfung bestanden (Test)' };
+  await pipeline.stage({ kind: 'vocabulary', document: wort });
+  await pipeline.stage({ kind: 'situations', document: situation });
+  assert.deepEqual((await pipeline.stageVocabulary()).map(w => w.id), ['stage-wort']);
+});

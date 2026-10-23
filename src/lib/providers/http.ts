@@ -166,6 +166,43 @@ async function postWithRetry(options: JsonPostOptions): Promise<Response> {
   throw describeNetworkFailure(describeTimeoutFailure(networkFailure, host, timeoutMs), host);
 }
 
+/**
+ * Eine HTTP-Fehlerantwort mit Status und Warte-Hinweis des Anbieters.
+ *
+ * Die Meldung bleibt dieselbe wie zuvor (`describeHttpError`); dazu kommen
+ * die Felder, an denen die Drossel (`generation/drossel.ts`, 23.10.2026) ein
+ * Ratenlimit erkennt, ohne den Text zu raten: `status` und — falls der
+ * Anbieter es sagt — `retryAfterMs` aus dem Header `Retry-After` oder aus
+ * Geminis `retryDelay` („17s“) im Fehlerkörper.
+ */
+export class HttpStatusError extends Error {
+  readonly status: number;
+  readonly retryAfterMs?: number;
+  constructor(status: number, body: string, retryAfterHeader?: string | null) {
+    super(describeHttpError(status, body));
+    this.name = 'HttpStatusError';
+    this.status = status;
+    const wartezeit = warteHinweisMs(retryAfterHeader, body);
+    if (wartezeit !== undefined) this.retryAfterMs = wartezeit;
+  }
+}
+
+/** Retry-After (Sekunden oder Datum) bzw. Geminis `"retryDelay": "17s"`. */
+export function warteHinweisMs(header: string | null | undefined, body = ''): number | undefined {
+  const wert = header?.trim();
+  if (wert) {
+    if (/^\d+(\.\d+)?$/.test(wert)) return Math.round(Number(wert) * 1000);
+    const datum = Date.parse(wert);
+    if (Number.isFinite(datum)) return Math.max(0, datum - Date.now());
+  }
+  const gemini = body.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+  return gemini ? Math.round(Number(gemini[1]) * 1000) : undefined;
+}
+
+async function httpFehler(response: Response): Promise<HttpStatusError> {
+  return new HttpStatusError(response.status, await response.text(), response.headers.get('retry-after'));
+}
+
 /** Ein POST mit JSON hin und JSON zurück — mit sprechenden Fehlern. */
 export async function postJson(options: JsonPostOptions): Promise<unknown> {
   const host = hostOf(options.url);
@@ -173,7 +210,7 @@ export async function postJson(options: JsonPostOptions): Promise<unknown> {
   const response = await postWithRetry(options);
 
   if (!response.ok) {
-    throw new Error(describeHttpError(response.status, await response.text()));
+    throw await httpFehler(response);
   }
 
   try {
@@ -193,7 +230,7 @@ export async function postForBytes(
   const response = await postWithRetry(options);
 
   if (!response.ok) {
-    throw new Error(describeHttpError(response.status, await response.text()));
+    throw await httpFehler(response);
   }
 
   return {

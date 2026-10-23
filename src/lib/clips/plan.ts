@@ -124,6 +124,7 @@ export const BYTES_PER_SECOND: Record<ProviderId, number | null> = {
   'chatgpt-helper': 6000,
   'local-qwen': null,
   'local-gemma': null,
+  deepseek: null, // Text-only provider.
   comfyui: null, // Image-only provider.
 };
 

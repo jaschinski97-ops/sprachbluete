@@ -60,7 +60,12 @@ export const OPENAI_CHAT_ENDPOINT = 'https://api.openai.com/v1/chat/completions'
  * hier ohne bezahlten Schlüssel nichts festklopfen. Deshalb steht in der
  * Fehlermeldung, was wirklich kam.
  */
-export function parseOpenAiText(payload: unknown, fallbackModel: string): TextResponse {
+export function parseOpenAiText(
+  payload: unknown,
+  fallbackModel: string,
+  /** Wer geantwortet hat — DeepSeek nutzt dieselbe Antwortform. */
+  provider: ProviderId = 'chatgpt'
+): TextResponse {
   const data = payload as Record<string, unknown> | null;
   const choices = data?.choices;
   if (!Array.isArray(choices) || choices.length === 0) {
@@ -75,7 +80,7 @@ export function parseOpenAiText(payload: unknown, fallbackModel: string): TextRe
   const usage = data?.usage as Record<string, unknown> | undefined;
 
   return {
-    text: textOrThrow(text, 'chatgpt', `finish_reason: ${String(first.finish_reason)}`),
+    text: textOrThrow(text, provider, `finish_reason: ${String(first.finish_reason)}`),
     model: typeof data?.model === 'string' ? data.model : fallbackModel,
     usage: verbrauch({ input: usage?.prompt_tokens, output: usage?.completion_tokens }),
   };
@@ -201,6 +206,61 @@ export function createGeminiTextClient(apiKey: string, model: string): TextClien
 }
 
 // ---------------------------------------------------------------------------
+// DeepSeek (Nutzerwunsch 23.10.2026)
+// ---------------------------------------------------------------------------
+
+export const DEEPSEEK_CHAT_ENDPOINT = 'https://api.deepseek.com/chat/completions';
+
+/**
+ * Die API hält eine wartende Anfrage mit Leerzeilen offen und schließt sie
+ * erst, wenn die Antwort nach 10 Minuten noch nicht begonnen hat. Ein
+ * 50-Wörter-Paket mit Denken braucht mehrere Minuten — 20 Minuten wie bei
+ * Gemini 4, damit kein fertiges Paket am eigenen Zeitlimit stirbt.
+ */
+const DEEPSEEK_TIMEOUT_MS = 20 * 60_000;
+const DEEPSEEK_MIN_OUTPUT_TOKENS_THINKING = 32_768;
+
+/**
+ * Denkt dieses Modell? Laut Doku denkt jedes DeepSeek-Modell standardmäßig
+ * (Stufe „high") — gründlich, aber für Massenerzeugung langsam und teurer.
+ * Deshalb steckt die Wahl im Modellfeld, das je Rolle ohnehin gesetzt wird:
+ * `…flash…` läuft OHNE Denken (schnell, Erzeuger), jedes andere Modell,
+ * etwa `deepseek-v4-pro`, MIT (gründlich, Prüfer).
+ */
+export function deepSeekDenkt(model: string): boolean {
+  return !/flash/i.test(model);
+}
+
+export function createDeepSeekTextClient(apiKey: string, model: string): TextClient {
+  return {
+    provider: 'deepseek',
+    model,
+    async complete(request: TextRequest): Promise<TextResponse> {
+      const denkt = deepSeekDenkt(model);
+      const payload = await postJson({
+        url: DEEPSEEK_CHAT_ENDPOINT,
+        timeoutMs: DEEPSEEK_TIMEOUT_MS,
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: {
+          model,
+          messages: [
+            { role: 'system', content: request.system },
+            { role: 'user', content: request.user },
+          ],
+          // Ob Denk-Tokens in `max_tokens` zählen, sagt die Doku nicht — mit
+          // Denken deshalb wie bei Gemini 4 mindestens 32.768, damit die
+          // Antwort nicht leer bleibt. Bezahlt wird nur, was entsteht.
+          max_tokens: denkt ? Math.max(request.maxTokens, DEEPSEEK_MIN_OUTPUT_TOKENS_THINKING) : request.maxTokens,
+          thinking: { type: denkt ? 'enabled' : 'disabled' },
+        },
+      });
+      // Das Denken steht in `reasoning_content`; gelesen wird nur `content`.
+      return parseOpenAiText(payload, model, 'deepseek');
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
 
 export function createTextClient(provider: ProviderId, apiKey: string, model: string): TextClient {
   switch (provider) {
@@ -215,6 +275,8 @@ export function createTextClient(provider: ProviderId, apiKey: string, model: st
       return createOpenAiTextClient(apiKey, model);
     case 'gemini':
       return createGeminiTextClient(apiKey, model);
+    case 'deepseek':
+      return createDeepSeekTextClient(apiKey, model);
     default:
       throw unsupported(provider, 'text');
   }

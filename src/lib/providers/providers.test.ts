@@ -122,12 +122,14 @@ function fakeImageClient() {
 // ---------------------------------------------------------------------------
 
 describe('Fähigkeiten der Anbieter', () => {
-  it('führt zwei Cloud-Anbieter, Audio-Helper und lokalen Bildanbieter', () => {
+  it('führt drei Cloud-Anbieter, Audio-Helper und lokale Anbieter', () => {
     // NUTZERENTSCHEIDUNG 10.09.: Claude und Stability sind aus der Auswahl
     // gefallen — die zwei verbliebenen decken Text, Bild und Audio ab.
     // `chatgpt-helper` ist kein Cloud-Anbieter, sondern der lokale Durchgang
     // des Inhaltsstudios (Roadmap v2, Phase 2) — nur für Sprachausgabe.
-    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui', 'local-qwen', 'local-gemma']);
+    // DeepSeek (23.10.2026) kam als reiner Textanbieter dazu.
+    expect([...PROVIDERS]).toEqual(['chatgpt', 'chatgpt-helper', 'gemini', 'deepseek', 'comfyui', 'local-qwen', 'local-gemma']);
+    expect(PROVIDER_INFO.deepseek.can).toEqual({ text: true, image: false, audio: false });
   });
 
   it('kennt die entfernten Anbieter nicht mehr', () => {
@@ -353,7 +355,9 @@ describe('Schlüssel je Anbieter (AE-10)', () => {
     expect(mockSecureStoreInhalt.get('openai-api-key')).toBe('schluessel-fuer-chatgpt-000');
 
     await saveApiKey('schluessel-fuer-gemini-0000', 'gemini');
+    await saveApiKey('schluessel-fuer-deepseek-00', 'deepseek');
     expect([...mockSecureStoreInhalt.keys()].sort()).toEqual([
+      'deepseek-api-key',
       'gemini-api-key',
       'openai-api-key',
     ]);

@@ -57,6 +57,7 @@ const KEY_NAMES: Record<Provider, string> = {
   // auch wenn ihn niemand nützen sollte.
   'chatgpt-helper': 'openai-helper-api-key',
   gemini: 'gemini-api-key',
+  deepseek: 'deepseek-api-key',
   comfyui: 'comfyui-unused-key',
   'local-qwen': 'local-qwen-unused-key',
   'local-gemma': 'local-gemma-unused-key',
@@ -67,6 +68,7 @@ const sessionOnlyKeys: Record<Provider, string | null> = {
   chatgpt: null,
   'chatgpt-helper': null,
   gemini: null,
+  deepseek: null,
   comfyui: null,
   'local-qwen': null,
   'local-gemma': null,

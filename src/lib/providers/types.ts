@@ -47,7 +47,7 @@ import { SpeechLanguage } from '../audio';
  * (providers/settings.ts) fällt dann nachsichtig auf den Gruppen-Default
  * zurück (AE-25-Muster) — ein alter Speicherstand darf nicht crashen.
  */
-export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui', 'local-qwen', 'local-gemma'] as const;
+export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'deepseek', 'comfyui', 'local-qwen', 'local-gemma'] as const;
 export type ProviderId = (typeof PROVIDERS)[number];
 
 export function isProviderId(value: unknown): value is ProviderId {
@@ -164,6 +164,25 @@ export const PROVIDER_INFO: Record<ProviderId, ProviderInfo> = {
       audio: 'gemini-3.8-flash-tts',
     },
     voicePlaceholder: 'Kore',
+    webWarning: null,
+  },
+  deepseek: {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    vendor: 'DeepSeek',
+    // Nur Text (Nutzerwunsch 23.10.2026: Wortschatz und Dialoge). Die API
+    // spricht das OpenAI-Format; Bilder und Sprachausgabe gibt es dort nicht.
+    can: { text: true, image: false, audio: false },
+    keyPlaceholder: 'sk-…',
+    keySource: 'platform.deepseek.com',
+    // `deepseek-flash` (V4.1 Flash) läuft im Client ohne Denken — schnell für
+    // die Massenerzeugung; `deepseek-v4-pro` denkt und passt als Prüfer.
+    modelPlaceholder: { text: 'deepseek-flash', image: '', audio: '' },
+    voicePlaceholder: '',
+    // Gemessen 23.10.2026: Der CORS-Preflight von http://localhost:8081 an
+    // api.deepseek.com/chat/completions antwortet 200 mit
+    // access-control-allow-origin: http://localhost:8081, erlaubt POST und
+    // authorization/content-type. Der Browser darf also direkt rufen.
     webWarning: null,
   },
   'chatgpt-helper': {

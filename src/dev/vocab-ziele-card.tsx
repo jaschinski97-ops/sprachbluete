@@ -20,7 +20,7 @@ import {
   setGeneratorProvider,
   type GeneratorChoice,
 } from '@/lib/providers/settings';
-import { PROVIDER_INFO, type ProviderId, type TextClient } from '@/lib/providers/types';
+import { PROVIDER_INFO, PROVIDERS, type ProviderId, type TextClient } from '@/lib/providers/types';
 import {
   pruefeVocabKreuzBatch,
   PRUEF_BATCH_GROESSE,
@@ -103,6 +103,11 @@ async function speichereBlacklist(code: VocabSprache, liste: string[]): Promise<
  * zu spät stoppt.
  */
 const TOKEN_PREISE: { muster: RegExp; input: number; output: number }[] = [
+  // DeepSeek (23.10.2026): Die offizielle Preisseite ließ sich nicht maschinell
+  // lesen, Drittquellen nennen verschiedene Werte (Tageszeit-Tarife). Hier
+  // steht jeweils das obere Ende — das Budget stoppt eher zu früh.
+  { muster: /deepseek.*flash/, input: 0.44, output: 1.32 },
+  { muster: /deepseek/, input: 1.74, output: 3.96 },
   { muster: /gpt-4o-mini/, input: 0.15, output: 0.6 },
   { muster: /gpt-4\.1-mini/, input: 0.4, output: 1.6 },
   { muster: /gpt-5-mini/, input: 0.25, output: 2 },
@@ -302,14 +307,13 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       const apiKey = (await loadApiKey(provider)) ?? '';
       if (!apiKey && PROVIDER_INFO[provider].needsKey !== false) throw Error('Bitte unter Anbieter & Schlüssel den Erzeuger-Schlüssel hinterlegen.');
       const client = createTextClient(provider, apiKey, model);
-      // Der ausgewählte Prüfer und sein Modell gelten verbindlich.
-      const schluessel: Partial<Record<string, string | null>> = {
-        gemini: await loadApiKey('gemini'),
-        chatgpt: await loadApiKey('chatgpt'),
-        'chatgpt-helper': 'serverseitig',
-        'local-qwen': 'lokal',
-        'local-gemma': 'lokal',
-      };
+      // Der ausgewählte Prüfer und sein Modell gelten verbindlich. Die Liste
+      // kommt aus PROVIDERS, damit ein neuer Anbieter (DeepSeek, 23.10.2026)
+      // nicht an einer vergessenen Aufzählung scheitert.
+      const schluessel: Partial<Record<string, string | null>> = Object.fromEntries(
+        await Promise.all(PROVIDERS.map(async (id) =>
+          [id, PROVIDER_INFO[id].needsKey === false ? 'ohne' : await loadApiKey(id)] as const))
+      );
       if (!schluessel[checkProvider]) throw Error('Bitte unter Anbieter & Schlüssel den Prüfer-Schlüssel hinterlegen.');
       const hatSchluessel = (anbieter: string): boolean => Boolean(schluessel[anbieter]);
       const pruefModellFuer = (anbieter: ProviderId) =>

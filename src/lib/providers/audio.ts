@@ -210,33 +210,6 @@ export function createOpenAiHelperAudioClient(model: string, voice: string): Aud
   };
 }
 
-/**
- * Ist der Helper überhaupt da?
- *
- * Der Health-Check greift auf `GET /state` zurück — denselben billigen,
- * schlüssellosen Endpunkt, den auch jeder Studio-Start aufruft. Kurzes
- * Zeitlimit: Ein Helper, der in 1,5 s nicht antwortet, läuft nicht, und die
- * Voreinstellung soll dann eben der Direktpfad bleiben.
- */
-export async function helperAudioAvailable(timeoutMs = 1500): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      const response = await fetch(`${HELPER_BASE}/state`, {
-        method: 'GET',
-        credentials: 'omit',
-        signal: controller.signal,
-      });
-      return response.ok;
-    } finally {
-      clearTimeout(timer);
-    }
-  } catch {
-    return false;
-  }
-}
-
 // ---------------------------------------------------------------------------
 
 export function createAudioClient(

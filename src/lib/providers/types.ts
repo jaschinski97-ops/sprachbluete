@@ -50,9 +50,6 @@ import { SpeechLanguage } from '../audio';
 export const PROVIDERS = ['chatgpt', 'chatgpt-helper', 'gemini', 'comfyui', 'local-qwen', 'local-gemma'] as const;
 export type ProviderId = (typeof PROVIDERS)[number];
 
-/** Der Hörclip-Anbieter für den lokalen Helper des Studios. */
-export const HELPER_AUDIO_PROVIDER: ProviderId = 'chatgpt-helper';
-
 export function isProviderId(value: unknown): value is ProviderId {
   return typeof value === 'string' && (PROVIDERS as readonly string[]).includes(value);
 }

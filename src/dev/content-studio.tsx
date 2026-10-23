@@ -26,7 +26,6 @@ import { runClipBatch, missingClipSpecs } from '@/lib/clips/batch';
 import { getActiveAudioBlobBackend, getAudioBlobStore } from '@/lib/clips/blob-store';
 import { createClipGenerationClient } from '@/lib/clips/generator';
 import { estimateClipBytes, formatBytes, planClips, planClipTestRun } from '@/lib/clips/plan';
-import { voicesFor } from '@/data/tts-voices';
 import { AudioClipSpec } from '@/lib/clips/types';
 import { runGenerationBatch, missingSpecs } from '@/lib/conversation/batch';
 import { ConversationSituation } from '@/lib/conversation/types';
@@ -41,10 +40,9 @@ import { VocabEntry } from '@/data/vocab-types';
 import { LANGUAGE_ORDER, LANGUAGE_LABELS } from '@/lib/languages/registry';
 import { Lang, type LanguageCode } from '@/lib/languages/types';
 import { loadProfile } from '@/lib/profile';
-import { HELPER_AUDIO_PROVIDER, ProviderId } from '@/lib/providers/types';
+import { ProviderId } from '@/lib/providers/types';
 import {
   defaultSettings,
-  GENERATOR_GROUP_INFO,
   GeneratorChoice,
   GeneratorGroupId,
   GeneratorSettings,
@@ -52,7 +50,6 @@ import {
   setGeneratorChoice,
   setGeneratorProvider,
 } from '@/lib/providers/settings';
-import { helperAudioAvailable } from '@/lib/providers/audio';
 import {
   loadVocabulary,
   countAudioClips,
@@ -363,25 +360,19 @@ export default function ContentStudio() {
     // tatsaechlich laeuft (Datei, IndexedDB oder Arbeitsspeicher).
     getImageBlobStore().then(() => setBlobBackend(getActiveBlobBackend()));
     loadProfile().then((profile) => setMediaLanguage(profile.language));
-    // Studio-Vorgabe (Roadmap v2, Phase 2): Hörclips laufen über den lokalen
-    // Helper, wenn er erreichbar ist — sein Schlüssel bleibt serverseitig.
-    // Aber nur solange die Gruppe noch ihre Werksvorgabe trägt: Eine bewusst
-    // gespeicherte Wahl (etwa Gemini direkt) wird nicht still umgebogen, und
-    // ohne Helper gilt der Direktpfad wie bisher.
-    (async () => {
-      const stored = await loadGeneratorSettings();
-      if (
-        stored.audio.provider === GENERATOR_GROUP_INFO.audio.defaultProvider &&
-        (await helperAudioAvailable())
-      ) {
-        const next = await setGeneratorProvider('audio', HELPER_AUDIO_PROVIDER);
-        if (!cancelled) setGenerators(next);
-        return;
-      }
-      if (!cancelled) setGenerators(stored);
-    })().catch(() => {
-      // Ohne Speicherstand bleibt die Werksvorgabe der Gruppe stehen.
-    });
+    // Die Anbieterwahl gilt so, wie sie gespeichert ist. Bis 23.10.2026
+    // stellte das Studio Hörclips beim Öffnen still auf den ChatGPT-Helper
+    // um, sobald der Helper antwortete und Audio auf der Werksvorgabe Gemini
+    // stand — eine bewusst gewählte Gemini-Stimme sah genauso aus und wurde
+    // überschrieben. Unbemerkt blieb das nur, weil `/state` beim großen
+    // Katalog länger als das 1,5-s-Zeitlimit brauchte.
+    loadGeneratorSettings()
+      .then((stored) => {
+        if (!cancelled) setGenerators(stored);
+      })
+      .catch(() => {
+        // Ohne Speicherstand bleibt die Werksvorgabe der Gruppe stehen.
+      });
     return () => {
       cancelled = true;
     };
@@ -496,26 +487,19 @@ export default function ContentStudio() {
       );
       if (!await confirmRun({ ...estimateRunCost('audio', provider, model, all),
         delivery: previewAudioDelivery(all, poolFuer('th')) })) return;
-      // Phase 2, Schritt 7: mehrere Stimmen pro Sprache ABWECHSELND — die
-      // Clips werden rundum auf die Stimmen des Anbieters verteilt (die
-      // gewählte Stimme startet die Rotation). Fällt eine Stimme aus, hören
-      // Lernende nicht denselben Klang für den ganzen Bestand.
-      // 18.09. Abend, Thai-Ton-Diagnose: Eine EXPLIZIT eingetragene Stimme
-      // rotiert nicht mehr — die Rotation verteilte bei Thai nach der ersten
-      // Stimme weiter zu Stimmen, die die Töne nachweislich verfehlen
-      // (coral/alloy/nova scheiterten an ลูกสาว, onyx bestand). Wer eine
-      // Stimme einträgt, will genau diese; ohne Eintrag gilt weiter die
-      // volle Rotation.
-      const stimmen = voicesFor(provider).map((stimme) => stimme.name);
-      const reihenfolge = (voice?.trim() ? [voice.trim()] : stimmen);
+      // EINE Stimme je Lauf: die eingetragene, sonst der Vorschlag des
+      // Anbieters (die Karte füllt ein leeres Feld damit auf). Die frühere
+      // Rotation über alle Stimmen (Phase 2, Schritt 7) griff deshalb nie,
+      // und die Thai-Ton-Diagnose vom 18.09. sprach ohnehin dagegen:
+      // coral/alloy/nova verfehlten Töne, an denen onyx bestand.
+      const client = createClipGenerationClient(provider, apiKey, model, voice ?? '');
       const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
       try {
         await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
           async (missing, onStepProgress) => {
-            let voiceIndex = 0;
             await runClipBatch({
               specs: missing,
-              client: { generate: (spec) => createClipGenerationClient(provider, apiKey, model, reihenfolge[voiceIndex++ % reihenfolge.length] ?? voice ?? '').generate(spec) },
+              client,
               // 18.09.: Das Tontor liest die Solltöne je Silbe aus dem AKTIVEN
               // Thai-Bestand (Wörter über syllables, Sätze über die Roman-Umschrift)
               // — derselbe Stand, aus dem auch der Plan gebaut wurde. Andere
@@ -651,13 +635,13 @@ export default function ContentStudio() {
       <GeneratorCard
         blocked={running} managedKeys onManageKeys={() => setSection('keys')} onRunningChange={setRunning}
         heading="Generator: Hörclips"
-        description="Erst Wörter und Kernsätze vertonen — Dialog-Turns laufen standardmäßig über die Laufzeit-Stimme. Stimmen wechseln im Lauf abwechselnd durch; Thai-Töne werden automatisch geprüft (ungeprüft/aussortiert sieht du im Prüfbericht)."
+        description="Erst Wörter und Kernsätze vertonen — Dialog-Turns laufen standardmäßig über die Laufzeit-Stimme. Alle Clips eines Laufs sprechen mit der eingestellten Stimme (leer = Vorschlag des Anbieters); Thai-Töne werden automatisch geprüft (ungeprüft/aussortiert sieht du im Prüfbericht)."
         language={mediaLanguage}
         onLanguageChange={setMediaLanguage}
         group="audio"
         choice={generators.audio}
         onChoiceChange={(change) => changeGenerator('audio', change)}
-        statusLine={`Im Speicher: ${clips === null ? '…' : `${clips.count} Clips, ${formatBytes(clips.bytes)}`} · Ablage ${clipBackend ?? '…'}${generators.audio.provider === 'gemini' ? ' · Pause je Aufruf: 6,5 Sekunden (Gemini-Ratenlimit)' : ''}${generators.audio.provider === 'chatgpt-helper' ? ' · Pause je Aufruf: 2,2 Sekunden (Helper-Ratenlimit, 30/min) · Schlüssel serverseitig' : ''}`}
+        statusLine={`Im Speicher: ${clips === null ? '…' : `${clips.count} Clips, ${formatBytes(clips.bytes)}`} · Ablage ${clipBackend ?? '…'}${generators.audio.provider === 'gemini' ? ' · Pause je Aufruf: 6,5 Sekunden (Gemini-Ratenlimit)' : ''}${generators.audio.provider === 'chatgpt-helper' ? ' · höchstens 30 Aufrufe pro Minute (der Helper wartet bei vollem Fenster selbst) · Schlüssel serverseitig' : ''}`}
         counts={sprachZaehler(clipsByLanguage, mediaLanguage)}
         runOptions={clipRunOptions(storedSituations, generators.audio.provider, mediaLanguage).options}
         onStart={startClips}

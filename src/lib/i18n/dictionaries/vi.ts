@@ -704,6 +704,11 @@ const vi = {
   "foundations.toneNoClip": "Chưa có đoạn âm thanh đã kiểm tra thanh điệu cho thanh này: từ chỉ được hiển thị bằng chữ.",
   "catalog.loading": "Đang tải nội dung …",
   "catalog.loadFailed": "Không thể tải nội dung học cho ngôn ngữ này. Hãy thử lại; nếu vẫn không được, hãy cài đặt lại ứng dụng.",
+  "appearance.title": "Ngày và đêm",
+  "appearance.body": "Theo thiết bị, hoặc luôn hiển thị ngày hoặc đêm.",
+  "appearance.system": "Theo thiết bị",
+  "appearance.light": "Ngày",
+  "appearance.dark": "Đêm",
 } as const;
 
 export default vi;

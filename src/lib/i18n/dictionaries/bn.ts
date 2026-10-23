@@ -704,6 +704,11 @@ const bn = {
   "foundations.toneNoClip": "এই সুরের জন্য এখনও সুর-যাচাই করা কোনো ক্লিপ নেই: শব্দটি শুধু লেখা আকারে দেখানো হয়েছে।",
   "catalog.loading": "বিষয়বস্তু লোড হচ্ছে …",
   "catalog.loadFailed": "এই ভাষার শেখার বিষয়বস্তু লোড করা যায়নি। আবার চেষ্টা করুন; তাতেও না হলে অ্যাপটি আবার ইনস্টল করুন।",
+  "appearance.title": "দিন ও রাত",
+  "appearance.body": "ডিভাইস অনুসরণ করুন, অথবা সবসময় দিন বা রাত দেখান।",
+  "appearance.system": "ডিভাইসের মতো",
+  "appearance.light": "দিন",
+  "appearance.dark": "রাত",
 } as const;
 
 export default bn;

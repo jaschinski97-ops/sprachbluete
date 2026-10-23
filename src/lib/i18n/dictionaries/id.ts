@@ -704,6 +704,11 @@ const id = {
   "foundations.toneNoClip": "Belum ada klip yang nadanya sudah diperiksa untuk nada ini: kata ini hanya ditampilkan sebagai tulisan.",
   "catalog.loading": "Memuat konten …",
   "catalog.loadFailed": "Konten belajar untuk bahasa ini tidak dapat dimuat. Coba lagi; jika tidak berhasil, instal ulang aplikasi.",
+  "appearance.title": "Siang & malam",
+  "appearance.body": "Ikuti perangkat, atau selalu tampilkan siang atau malam.",
+  "appearance.system": "Seperti perangkat",
+  "appearance.light": "Siang",
+  "appearance.dark": "Malam",
 } as const;
 
 export default id;

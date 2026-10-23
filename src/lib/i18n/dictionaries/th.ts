@@ -779,6 +779,11 @@ const th: Partial<Record<TranslationKey, string>> = {
   "foundations.toneNoClip": "ยังไม่มีคลิปที่ตรวจวรรณยุกต์แล้วสำหรับเสียงนี้ คำนี้จึงแสดงเป็นตัวอักษรเท่านั้น",
   "catalog.loading": "กำลังโหลดเนื้อหา …",
   "catalog.loadFailed": "โหลดเนื้อหาการเรียนของภาษานี้ไม่ได้ โปรดลองอีกครั้ง หากยังไม่ได้ ให้ติดตั้งแอปใหม่",
+  "appearance.title": "กลางวันและกลางคืน",
+  "appearance.body": "ใช้ตามอุปกรณ์ หรือแสดงแบบกลางวันหรือกลางคืนตลอด",
+  "appearance.system": "ตามอุปกรณ์",
+  "appearance.light": "กลางวัน",
+  "appearance.dark": "กลางคืน",
 };
 
 export default th;

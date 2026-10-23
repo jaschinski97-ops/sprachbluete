@@ -704,6 +704,11 @@ const ru = {
   "foundations.toneNoClip": "Для этого тона пока нет записи с проверенным тоном — слово показано только текстом.",
   "catalog.loading": "Загрузка материалов …",
   "catalog.loadFailed": "Не удалось загрузить учебные материалы для этого языка. Попробуйте ещё раз; если не поможет, переустановите приложение.",
+  "appearance.title": "День и ночь",
+  "appearance.body": "Как на устройстве или всегда день или ночь.",
+  "appearance.system": "Как на устройстве",
+  "appearance.light": "День",
+  "appearance.dark": "Ночь",
 } as const;
 
 export default ru;

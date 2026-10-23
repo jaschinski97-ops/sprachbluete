@@ -28,3 +28,17 @@ body {
     background-color: #0b1628;
   }
 }
+
+/* Eigene Wahl in den Einstellungen (Tag/Nacht, `lib/appearance`) schlägt die
+   Gerätevorgabe — das Attribut setzt die App selbst. */
+html[data-erscheinung='light'],
+html[data-erscheinung='light'] body {
+  background-color: #fff6f9;
+  color-scheme: light;
+}
+
+html[data-erscheinung='dark'],
+html[data-erscheinung='dark'] body {
+  background-color: #0b1628;
+  color-scheme: dark;
+}

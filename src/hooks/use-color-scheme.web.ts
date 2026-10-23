@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
+import { getErscheinung, subscribeErscheinung } from '@/lib/appearance';
+
 /**
  * Hell/Dunkel im Web — direkt aus der Media-Query, bei jedem Rendern frisch.
  *
@@ -13,6 +15,9 @@ import { useSyncExternalStore } from 'react';
  *
  * Statisches Rendern: Der Server-Schnappschuss ist „light“; beim Hydrieren
  * gleicht React auf den echten Wert ab (vorher eigener `hasHydrated`-Zustand).
+ *
+ * Seit 23.10.2026 zählt zuerst die Wahl aus den Einstellungen (Tag, Nacht
+ * oder wie das Gerät, `lib/appearance`).
  */
 
 const query =
@@ -20,13 +25,20 @@ const query =
     ? window.matchMedia('(prefers-color-scheme: dark)')
     : null;
 
+/** Gerätewechsel UND die eigene Wahl in den Einstellungen (`lib/appearance`). */
 function subscribe(onChange: () => void): () => void {
-  if (!query) return () => {};
+  const abmelden = subscribeErscheinung(onChange);
+  if (!query) return abmelden;
   query.addEventListener('change', onChange);
-  return () => query.removeEventListener('change', onChange);
+  return () => {
+    abmelden();
+    query.removeEventListener('change', onChange);
+  };
 }
 
 function getSnapshot(): 'light' | 'dark' {
+  const wahl = getErscheinung();
+  if (wahl !== 'system') return wahl;
   return query?.matches ? 'dark' : 'light';
 }
 

@@ -815,6 +815,11 @@ const de = {
   "foundations.toneNoClip": "Noch kein tongeprüfter Clip für diesen Ton – das Wort steht nur geschrieben da.",
   "catalog.loading": "Inhalte werden geladen …",
   "catalog.loadFailed": "Die Lerninhalte dieser Sprache ließen sich nicht laden. Bitte erneut versuchen; hilft das nicht, die App neu installieren.",
+  "appearance.title": "Tag & Nacht",
+  "appearance.body": "Folgt dem Gerät oder zeigt immer Tag oder Nacht.",
+  "appearance.system": "Wie das Gerät",
+  "appearance.light": "Tag",
+  "appearance.dark": "Nacht",
 } as const;
 
 export default de;

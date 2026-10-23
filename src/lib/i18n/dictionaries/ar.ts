@@ -704,6 +704,11 @@ const ar = {
   "foundations.toneNoClip": "لا يوجد بعد مقطع صوتي فُحصت نغمته لهذه النغمة، لذلك تظهر الكلمة مكتوبة فقط.",
   "catalog.loading": "جارٍ تحميل المحتوى …",
   "catalog.loadFailed": "تعذّر تحميل محتوى التعلّم لهذه اللغة. حاول مرة أخرى؛ وإن لم ينجح ذلك، فأعد تثبيت التطبيق.",
+  "appearance.title": "النهار والليل",
+  "appearance.body": "اتبع إعداد الجهاز أو اعرض النهار أو الليل دائمًا.",
+  "appearance.system": "مثل الجهاز",
+  "appearance.light": "نهار",
+  "appearance.dark": "ليل",
 } as const;
 
 export default ar;

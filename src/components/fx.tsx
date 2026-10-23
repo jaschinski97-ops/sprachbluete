@@ -7,6 +7,7 @@ import {
   type GestureResponderEvent,
   type PressableProps,
   type StyleProp,
+  type TextStyle,
   type ViewStyle,
 } from 'react-native';
 import Animated, {
@@ -49,6 +50,17 @@ const FEDER = { damping: 16, stiffness: 260, mass: 0.6 } as const;
  */
 export const useScreenFocused: () => boolean =
   typeof ExpoRouter.useIsFocused === 'function' ? ExpoRouter.useIsFocused : () => true;
+
+/**
+ * Weicher Schein um Text. Farbe, Versatz und Radius stehen absichtlich in
+ * EINEM Objekt: react-native-web baut den CSS-Schatten je Stilobjekt, und
+ * auf zwei Objekte verteilt (Radius im StyleSheet, Farbe inline) entstand
+ * im Web gar kein Schatten (23.10.2026). Nativ wirkte es, weil RN den
+ * Stil vorher zusammenführt.
+ */
+export function textGlow(color: string, radius: number): TextStyle {
+  return { textShadowColor: color, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: radius };
+}
 
 /** SVG-IDs müssen im ganzen Dokument eindeutig sein (Web) — useId ohne Doppelpunkte. */
 export function useSvgId(prefix: string): string {

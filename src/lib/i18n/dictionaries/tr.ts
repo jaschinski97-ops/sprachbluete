@@ -704,6 +704,11 @@ const tr = {
   "foundations.toneNoClip": "Bu ton için henüz tonu kontrol edilmiş bir kayıt yok: kelime yalnızca yazılı gösterilir.",
   "catalog.loading": "İçerik yükleniyor …",
   "catalog.loadFailed": "Bu dilin öğrenme içeriği yüklenemedi. Tekrar deneyin; işe yaramazsa uygulamayı yeniden yükleyin.",
+  "appearance.title": "Gündüz ve gece",
+  "appearance.body": "Cihazı izle ya da her zaman gündüz veya gece göster.",
+  "appearance.system": "Cihaz gibi",
+  "appearance.light": "Gündüz",
+  "appearance.dark": "Gece",
 } as const;
 
 export default tr;

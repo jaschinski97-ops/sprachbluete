@@ -6,6 +6,7 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { loadErscheinung } from '@/lib/appearance';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
 import { installClipLookup } from '@/lib/clips/lookup';
 import { setCatalogUiLanguage } from '@/lib/content/catalog-languages';
@@ -19,6 +20,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // Hoerclips (Phase 11): der Aufloeser aus Phase 3 wird hier einmal
 // eingehaengt. Die Screens rufen weiter nur playPronunciation().
 installClipLookup();
+
+// Tag/Nacht-Wahl aus den Einstellungen so früh wie möglich übernehmen —
+// der native Splash deckt die ersten Bilder ab (23.10.2026).
+void loadErscheinung().catch(() => {});
 
 // iOS: Wiedergabe auch bei Stumm-Schalter (Sprachlern-App — sonst wirkt
 // jeder Anhören-Knopf kaputt). Siehe lib/audio-mode.ts.

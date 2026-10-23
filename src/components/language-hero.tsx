@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Reveal } from './fx';
+import { Reveal, textGlow } from './fx';
 import { ThemedText, displayLineHeight } from './themed-text';
 import { STRESS_RULE_KEYS } from './feature-legend';
 
@@ -66,8 +66,8 @@ function ThaiHero() {
                 {
                   color: toneColor(segment.tone),
                   lineHeight: displayLineHeight(64, 1.4),
-                  textShadowColor: toneColor(segment.tone),
                 },
+                textGlow(toneColor(segment.tone), 22),
               ]}>
               {segment.text}
             </ThemedText>
@@ -141,7 +141,7 @@ function GrussHero({ language }: { language: LanguageCode }) {
       <Reveal index={1}>
       <ThemedText
         maxFontSizeMultiplier={1.4}
-        style={[styles.latin, styles.latinGlow, { lineHeight: displayLineHeight(56, 1.4), textShadowColor: theme.gradientStart }]}>
+        style={[styles.latin, { lineHeight: displayLineHeight(56, 1.4) }, textGlow(theme.gradientStart, 26)]}>
         {gruss.silben
           ? gruss.silben.map((silbe, index) => (
               <ThemedText
@@ -179,12 +179,6 @@ const styles = StyleSheet.create({
   thai: {
     fontSize: 64,
     fontWeight: '600',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 22,
-  },
-  latinGlow: {
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 26,
   },
   /** Lateinische Grußwörter etwas kleiner als die Thai-Schrift. */
   latin: {

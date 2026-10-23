@@ -704,6 +704,11 @@ const zh = {
   "foundations.toneNoClip": "这个声调还没有经过声调检查的音频，单词只以文字显示。",
   "catalog.loading": "正在加载内容 …",
   "catalog.loadFailed": "无法加载这门语言的学习内容。请重试；如果仍然不行，请重新安装应用。",
+  "appearance.title": "白天与夜晚",
+  "appearance.body": "跟随设备，或始终显示白天或夜晚。",
+  "appearance.system": "跟随设备",
+  "appearance.light": "白天",
+  "appearance.dark": "夜晚",
 } as const;
 
 export default zh;

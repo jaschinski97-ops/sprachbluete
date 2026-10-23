@@ -704,6 +704,11 @@ const mr = {
   "foundations.toneNoClip": "या टोनसाठी अजून टोन-तपासलेली क्लिप नाही: शब्द फक्त लिखित स्वरूपात दाखवला आहे.",
   "catalog.loading": "सामग्री लोड होत आहे …",
   "catalog.loadFailed": "या भाषेची शिकण्याची सामग्री लोड होऊ शकली नाही. पुन्हा प्रयत्न करा; तरीही न झाल्यास अ‍ॅप पुन्हा इंस्टॉल करा.",
+  "appearance.title": "दिवस आणि रात्र",
+  "appearance.body": "उपकरणानुसार ठेवा किंवा नेहमी दिवस किंवा रात्र दाखवा.",
+  "appearance.system": "उपकरणानुसार",
+  "appearance.light": "दिवस",
+  "appearance.dark": "रात्र",
 } as const;
 
 export default mr;

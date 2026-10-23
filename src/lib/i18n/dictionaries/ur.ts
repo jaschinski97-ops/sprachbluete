@@ -704,6 +704,11 @@ const ur = {
   "foundations.toneNoClip": "اس لہجے کے لیے ابھی کوئی جانچا ہوا کلپ نہیں: لفظ صرف لکھا ہوا دکھایا گیا ہے۔",
   "catalog.loading": "مواد لوڈ ہو رہا ہے …",
   "catalog.loadFailed": "اس زبان کا تعلیمی مواد لوڈ نہیں ہو سکا۔ دوبارہ کوشش کریں؛ اگر اس سے فائدہ نہ ہو تو ایپ دوبارہ انسٹال کریں۔",
+  "appearance.title": "دن اور رات",
+  "appearance.body": "آلے کے مطابق رکھیں یا ہمیشہ دن یا رات دکھائیں۔",
+  "appearance.system": "آلے کے مطابق",
+  "appearance.light": "دن",
+  "appearance.dark": "رات",
 } as const;
 
 export default ur;

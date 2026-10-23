@@ -2,7 +2,7 @@ import { ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BrushStroke, Reveal } from './fx';
+import { BrushStroke, Reveal, textGlow } from './fx';
 import { SakuraBackground, type SzenenArt } from './sakura-scenes';
 import { ThemedText } from './themed-text';
 
@@ -47,14 +47,14 @@ export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, szene
           <Reveal style={styles.header}>
             {headerAction}
             {/* Schatten in der Grundfarbe: Der Titel bleibt über den Blüten lesbar. */}
-            <ThemedText type="subtitle" style={[styles.lesbar, { textShadowColor: theme.background }]}>
+            <ThemedText type="subtitle" style={textGlow(theme.background, 10)}>
               {title}
             </ThemedText>
             <View style={styles.titleBar}>
               <BrushStroke />
             </View>
             {subtitle ? (
-              <ThemedText type="small" themeColor="textSecondary" style={[styles.lesbar, { textShadowColor: theme.background }]}>
+              <ThemedText type="small" themeColor="textSecondary" style={textGlow(theme.background, 10)}>
                 {subtitle}
               </ThemedText>
             ) : null}
@@ -94,9 +94,5 @@ const styles = StyleSheet.create({
   titleBar: {
     marginTop: Spacing.half,
     marginBottom: Spacing.one,
-  },
-  lesbar: {
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
 });

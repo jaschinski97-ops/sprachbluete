@@ -704,6 +704,11 @@ const fr = {
   "foundations.toneNoClip": "Pas encore de clip au ton vérifié pour ce ton : le mot n'apparaît qu'à l'écrit.",
   "catalog.loading": "Chargement du contenu …",
   "catalog.loadFailed": "Le contenu d’apprentissage de cette langue n’a pas pu être chargé. Réessayez ; si cela ne suffit pas, réinstallez l’app.",
+  "appearance.title": "Jour et nuit",
+  "appearance.body": "Suivre l’appareil ou toujours afficher le jour ou la nuit.",
+  "appearance.system": "Comme l’appareil",
+  "appearance.light": "Jour",
+  "appearance.dark": "Nuit",
 } as const;
 
 export default fr;

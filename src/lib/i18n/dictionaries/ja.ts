@@ -704,6 +704,11 @@ const ja = {
   "foundations.toneNoClip": "この声調には声調チェック済みの音声がまだありません。単語は文字だけで表示されます。",
   "catalog.loading": "コンテンツを読み込み中 …",
   "catalog.loadFailed": "この言語の学習コンテンツを読み込めませんでした。もう一度お試しください。解決しない場合はアプリを再インストールしてください。",
+  "appearance.title": "昼と夜",
+  "appearance.body": "端末の設定に合わせるか、常に昼または夜を表示します。",
+  "appearance.system": "端末に合わせる",
+  "appearance.light": "昼",
+  "appearance.dark": "夜",
 } as const;
 
 export default ja;

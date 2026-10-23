@@ -797,6 +797,11 @@ const es: Partial<Record<TranslationKey, string>> = {
   "foundations.toneNoClip": "Aún no hay un clip con el tono comprobado: la palabra solo aparece por escrito.",
   "catalog.loading": "Cargando contenido …",
   "catalog.loadFailed": "No se pudo cargar el contenido de este idioma. Inténtalo de nuevo; si no funciona, reinstala la app.",
+  "appearance.title": "Día y noche",
+  "appearance.body": "Sigue al dispositivo o muestra siempre el día o la noche.",
+  "appearance.system": "Como el dispositivo",
+  "appearance.light": "Día",
+  "appearance.dark": "Noche",
 };
 
 export default es;

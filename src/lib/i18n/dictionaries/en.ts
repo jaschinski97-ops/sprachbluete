@@ -791,6 +791,11 @@ const en: Partial<Record<TranslationKey, string>> = {
   "foundations.toneNoClip": "No tone-checked clip for this tone yet – the word is shown in writing only.",
   "catalog.loading": "Loading content …",
   "catalog.loadFailed": "The learning content for this language could not be loaded. Please try again; if that does not help, reinstall the app.",
+  "appearance.title": "Day & night",
+  "appearance.body": "Follow the device, or always show day or night.",
+  "appearance.system": "Like the device",
+  "appearance.light": "Day",
+  "appearance.dark": "Night",
 };
 
 export default en;

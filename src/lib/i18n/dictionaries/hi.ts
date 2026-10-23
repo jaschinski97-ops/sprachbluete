@@ -704,6 +704,11 @@ const hi = {
   "foundations.toneNoClip": "इस टोन के लिए अभी कोई टोन-जाँचा हुआ क्लिप नहीं है: शब्द केवल लिखा हुआ दिखाया गया है।",
   "catalog.loading": "सामग्री लोड हो रही है …",
   "catalog.loadFailed": "इस भाषा की सीखने की सामग्री लोड नहीं हो सकी। फिर से कोशिश करें; अगर इससे मदद न मिले, तो ऐप दोबारा इंस्टॉल करें।",
+  "appearance.title": "दिन और रात",
+  "appearance.body": "डिवाइस के अनुसार चलें या हमेशा दिन या रात दिखाएँ।",
+  "appearance.system": "डिवाइस के अनुसार",
+  "appearance.light": "दिन",
+  "appearance.dark": "रात",
 } as const;
 
 export default hi;

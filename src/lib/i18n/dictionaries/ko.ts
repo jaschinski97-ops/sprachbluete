@@ -704,6 +704,11 @@ const ko = {
   "foundations.toneNoClip": "이 성조에는 아직 성조 검사를 통과한 음성이 없습니다. 단어는 글로만 표시됩니다.",
   "catalog.loading": "콘텐츠를 불러오는 중 …",
   "catalog.loadFailed": "이 언어의 학습 콘텐츠를 불러오지 못했습니다. 다시 시도해 주세요. 그래도 안 되면 앱을 다시 설치해 주세요.",
+  "appearance.title": "낮과 밤",
+  "appearance.body": "기기 설정을 따르거나 항상 낮 또는 밤으로 표시합니다.",
+  "appearance.system": "기기 설정과 같게",
+  "appearance.light": "낮",
+  "appearance.dark": "밤",
 } as const;
 
 export default ko;

@@ -22,6 +22,7 @@ import {
 } from '@/lib/backup';
 import { isStorageDegraded } from '@/lib/storage';
 import { useTheme } from '@/hooks/use-theme';
+import { saveErscheinung, useErscheinung, type Erscheinung } from '@/lib/appearance';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemedButton } from '@/components/themed-button';
 
@@ -167,6 +168,54 @@ export function AppLanguageSection() {
   );
 }
 
+/** Die drei Wahlmöglichkeiten für Tag und Nacht, mit Symbol (23.10.2026). */
+export const ERSCHEINUNG_OPTIONEN: { value: Erscheinung; label: TranslationKey; icon: 'phone-portrait-outline' | 'sunny-outline' | 'moon-outline' }[] = [
+  { value: 'system', label: 'appearance.system', icon: 'phone-portrait-outline' },
+  { value: 'light', label: 'appearance.light', icon: 'sunny-outline' },
+  { value: 'dark', label: 'appearance.dark', icon: 'moon-outline' },
+];
+
+/**
+ * Tag oder Nacht wählen (Nutzerwunsch 23.10.2026). „Wie das Gerät“ folgt
+ * der Systemeinstellung; Tag und Nacht gelten fest, bis man sie ändert.
+ * Die Wahl wirkt sofort in der ganzen App (`lib/appearance`).
+ */
+export function AppearanceSection() {
+  const { t } = useLocale();
+  const theme = useTheme();
+  const wahl = useErscheinung();
+
+  return (
+    <ThemedView type="backgroundElement" style={styles.card}>
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('appearance.body')}
+      </ThemedText>
+      <View accessibilityRole="radiogroup" accessibilityLabel={t('appearance.title')} style={styles.erscheinungRow}>
+        {ERSCHEINUNG_OPTIONEN.map((option) => {
+          const active = wahl === option.value;
+          return (
+            <Pressable
+              key={option.value}
+              onPress={() => void saveErscheinung(option.value).catch(() => {})}
+              accessibilityRole="radio"
+              accessibilityLabel={t(option.label)}
+              aria-checked={active}
+              accessibilityState={{ selected: active }}
+              style={({ pressed }) => [styles.erscheinungZelle, pressed && styles.pressed]}>
+              <ThemedView
+                type={active ? 'backgroundSelected' : 'backgroundElement'}
+                style={[styles.erscheinungKnopf, active && { borderColor: theme.accent }]}>
+                <Ionicons name={option.icon} size={24} color={active ? theme.accent : theme.textSecondary} accessible={false} />
+                <ThemedText type={active ? 'smallBold' : 'small'}>{t(option.label)}</ThemedText>
+              </ThemedView>
+            </Pressable>
+          );
+        })}
+      </View>
+    </ThemedView>
+  );
+}
+
 export function BackupSection() {
   const { t, uiLanguage } = useLocale();
   const [busy, setBusy] = useState<null | 'export' | 'import'>(null);
@@ -252,6 +301,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  erscheinungRow: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  erscheinungZelle: {
+    flex: 1,
+  },
+  erscheinungKnopf: {
+    minHeight: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.one,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.one,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   pressed: {
     opacity: 0.7,

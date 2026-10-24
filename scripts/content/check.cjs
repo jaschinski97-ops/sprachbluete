@@ -3,7 +3,7 @@ const path = require('node:path');
 const { digestOf, assertDocument, BUDGET, keyOf } = require('./pipeline.cjs');
 const domain = require('./domain.cjs');
 const { planDeliveryAudio } = domain.load('src/lib/content/audio-plan');
-const { planSituations, FULL_RUN } = domain.load('src/lib/conversation/plan');
+const { pruefeZielwoerter } = domain.load('src/lib/conversation/dialog-words');
 const { checkThaiTone } = domain.load('src/lib/content/tone-gate');
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 const { decodeAudio, decodeImage } = require('./media.cjs');
@@ -85,14 +85,25 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
   // Bilder je Begriff (24.10.2026): Ein Wort hat ein Bild, wenn sein Begriff
   // (oder, alter Bestand, das Wort selbst) eines hat — aus welcher Sprache auch immer.
   const missingImages = words.filter((entry) => entry.isConcrete && !imageCandidateIds(entry).some((id) => seen.has(`images:${id}`)));
-  const missingSituations = ['th', 'en', 'es', 'de'].flatMap(targetLanguage => planSituations({ ...FULL_RUN, targetLanguage })).filter((spec) => !seen.has(`situations:${spec.id}`));
+  // Dialoge aus dem Wortschatz (24.10.2026): Statt gegen ein festes Raster
+  // zu zählen, muss jedes gespeicherte Zielwort existieren, zur Dialogsprache
+  // gehören und im Dialog vorkommen — sonst übt das Kapitel etwas, das der
+  // Dialog gar nicht zeigt.
+  const wortNachId = new Map([...extraVocabulary, ...words].map((word) => [word.id, word]));
+  for (const situation of situations) {
+    if (!situation.vocabIds) continue;
+    const sprache = situation.direction.split('_to_')[1];
+    const unbekannt = situation.vocabIds.filter((id) => String(wortNachId.get(id)?.language) !== sprache);
+    if (unbekannt.length) { errors.push(`situations:${situation.id}: Zielwörter ohne Wortschatzeintrag dieser Sprache: ${unbekannt.join(', ')}`); continue; }
+    const { fehlend } = pruefeZielwoerter(situation, situation.vocabIds.map((id) => wortNachId.get(id)));
+    if (fehlend.length) errors.push(`situations:${situation.id}: Zielwörter nicht im Dialog: ${fehlend.map((word) => word.term).join(', ')}`);
+  }
   if (!integrityOnly) {
     if (missingAudio.length) errors.push(`${missingAudio.length}/${neededAudio.length} benötigte Hörclips fehlen (auch Deutsch). System-TTS ist kein garantierter Offline-Ersatz.`);
     if (missingImages.length) errors.push(`${missingImages.length} konkrete Vokabeln ohne automatisch geprüftes Bild.`);
-    if (missingSituations.length) errors.push(`${missingSituations.length} Situationen des vollständigen Plans für Thai, Englisch, Spanisch und Deutsch fehlen. Keine Teilmenge als Vollmenge ausgeben.`);
   }
   return { checkedAt: new Date().toISOString(), integrityOnly, entries: catalog.entries.length, contentBytes,
-    audioSourceBytes, audioCompressedBytes, uncheckedThaiDelivered, missing: { audio: missingAudio.map((spec) => spec.id), images: missingImages.map((entry) => entry.id), situations: missingSituations.map((spec) => spec.id) }, errors };
+    audioSourceBytes, audioCompressedBytes, uncheckedThaiDelivered, missing: { audio: missingAudio.map((spec) => spec.id), images: missingImages.map((entry) => entry.id) }, errors };
 }
 if (require.main === module) {
   const result = checkContent(path.resolve(__dirname, '../..'), { integrityOnly: process.argv.includes('--integrity-only') });

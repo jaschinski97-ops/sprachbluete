@@ -184,7 +184,7 @@ describe('Pluralblöcke in allen Wörterbüchern', () => {
       for (const [key, template] of Object.entries(dictionaries[language])) {
         if (!template?.includes(', plural,')) continue;
         for (const count of [0, 1, 2, 5, 21]) {
-          const text = interpolate(template, { count, cards: count, days: count, total: count, known: count, languages: 'x' }, language);
+          const text = interpolate(template, { count, cards: count, days: count, total: count, known: count, covered: count, rest: count, languages: 'x', list: 'x' }, language);
           expect({ language, key, text }).toEqual({ language, key, text: expect.not.stringMatching(/plural,|[{}]/) });
         }
       }

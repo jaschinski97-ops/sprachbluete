@@ -203,6 +203,13 @@ const de = {
   'topic.services': 'Behörden & Bank',
   'topic.opinion': 'Meinung & Diskussion',
   'topic.society': 'Nachrichten & Gesellschaft',
+  "studio.dialogCountTitle": "Dialoge je Stufe",
+  "studio.dialogCountHint": "Dialoge sind der rote Faden jeder Stufe. Jeder neue Dialog wird um {{words}} Wörter gebaut, die noch in keinem Dialog vorkommen (häufigste zuerst). Eine höhere Anzahl nimmt beim nächsten Lauf die nächsten Wörter.",
+  "studio.dialogCoverage": "{{count, plural, one {# Dialog deckt} other {# Dialoge decken}}} die häufigsten {{covered}} von {{total}} Wörtern dieser Stufe ab, die übrigen {{rest}} kommen über Karten und Sätze.",
+  "studio.dialogStock": "Vorhanden: {{dialogs}} aus dem Wortschatz, {{older}} ältere ohne Zielwörter · nächster Lauf: {{next}} neu",
+  "studio.dialogMissingWords": "{{count, plural, one {# Dialog enthält} other {# Dialoge enthalten}}} nicht alle Zielwörter: {{list}}. Diese Wörter bleiben offen und kommen beim nächsten Lauf wieder dran.",
+  "studio.dialogRunLabel": "Gewählte Anzahl",
+  "studio.dialogRunHint": "Erzeugt je Stufe die fehlenden Dialoge bis zur Anzahl oben. „Alle Sprachen“ nimmt je Sprache deren eigene Anzahl.",
 
   /* ---------- Fortschritt (progress.tsx) ---------- */
   'progress.subtitle': 'Lernverlauf',

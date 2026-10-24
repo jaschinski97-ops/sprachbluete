@@ -3,6 +3,9 @@ import { LEARNING_LANGUAGES, passtZurSchrift } from '../languages/definitions';
 import { createTextClient } from '../providers/text';
 import { PROVIDER_INFO, ProviderId, TextClient } from '../providers/types';
 
+import type { VocabEntry } from '@/data/vocab-types';
+
+import { pruefeZielwoerter } from './dialog-words';
 import {
   isValidSituation,
   SITUATION_SPRACHEN,
@@ -64,9 +67,11 @@ export function userPrompt(spec: SituationSpec): string {
   if (!language) throw Error('Unbekannte Gesprächssprache.');
   const name = LEARNING_LANGUAGES[language].label;
   const focus = TOPICS.find((topic) => topic.id === spec.topic)?.focus;
+  const ziel = spec.targetWords ?? [];
   return `Erstelle eine natürliche Dialogsituation zum Üben von ${name}.
 Thema: ${TOPIC_LABELS[spec.topic]}${focus ? ` (zum Beispiel ${focus})` : ''}. Niveau: ${spec.level}. Variante: ${spec.variant}.
-6 bis 10 abwechselnde Gesprächszüge (speaker: learner oder partner), mindestens eine learner-Zeile.
+${ziel.length ? `${wortAuftrag(ziel, spec.reviewWords ?? [], name)}
+8 bis 14 abwechselnde Gesprächszüge` : '6 bis 10 abwechselnde Gesprächszüge'} (speaker: learner oder partner), mindestens eine learner-Zeile.
 ${spec.level.startsWith('A') ? 'Benutze häufigen Alltagswortschatz und kurze vollständige Sätze.' : spec.level.startsWith('B') ? 'Selbstständige Alltagsgespräche, Meinungen und Begründungen mit abwechslungsreicher Grammatik.' : 'Differenzierte Diskussion, präzise idiomatische Formulierungen und komplexe Satzstrukturen.'}
 Alle targetText-Zeilen sind ausschließlich auf ${name}, unabhängig vom Sprecher.
 ${LEARNING_LANGUAGES[language].dialogRules}
@@ -81,6 +86,21 @@ JSON ohne Markdown:
 "corrections":[{"issue":"typischer Fehler","explanation":"Erklärung auf Deutsch"}],
 "translations":{"de":{"title":"Titel","setting":"Beschreibung","turns":["übersetzter Satz"],"corrections":[{"issue":"Fehler","explanation":"Erklärung"}]}, "en": {"title":"...","setting":"...","turns":["..."],"corrections":[{"issue":"...","explanation":"..."}]}}}
 translations muss ALLE ${UI_LANGUAGES.length} Sprachcodes enthalten, nicht nur die beiden Beispiele.`;
+}
+
+const wortZeile = (word: VocabEntry) => `${word.term} (${word.german})`;
+
+/**
+ * Der Wortteil des Auftrags (24.10.2026): erst die Wörter, dann der Dialog.
+ * Die Zielwörter MÜSSEN vorkommen; geprüft wird nach der Erzeugung.
+ */
+function wortAuftrag(ziel: readonly VocabEntry[], wiederholung: readonly VocabEntry[], name: string): string {
+  return [
+    `Zielwörter — JEDES davon muss mindestens einmal in den targetText-Zeilen auf ${name} vorkommen, gern gebeugt, verteilt auf beide Sprecher:`,
+    ziel.map(wortZeile).join('; '),
+    ...(wiederholung.length ? ['Schon bekannte Wörter zum Wiederholen (gern einbauen, nicht Pflicht):', wiederholung.map(wortZeile).join('; ')] : []),
+    'Baue die Szene innerhalb des Themas so, dass alle Zielwörter natürlich passen. Bleib beim Niveau; wenig weitere neue Wörter.',
+  ].join('\n');
 }
 
 function asString(value: unknown, field: string): string {
@@ -194,6 +214,16 @@ function pruefeSituation(situation: ConversationSituation, spec: SituationSpec):
 }
 
 /**
+ * Speichert nur die Zielwörter, die wirklich im Dialog stehen. Fehlende
+ * verwerfen den Dialog nicht (er ist bezahlt); sie bleiben offen, das Studio
+ * meldet sie, und der nächste Lauf plant sie neu ein.
+ */
+export function mitZielwoertern(situation: ConversationSituation, spec: SituationSpec): ConversationSituation {
+  if (!spec.targetWords) return situation;
+  return { ...situation, vocabIds: pruefeZielwoerter(situation, spec.targetWords).gefunden };
+}
+
+/**
  * Verbindet den Prompt dieser Datei mit einem beliebigen Textanbieter.
  *
  * Das ist die ganze Anbieter-Anbindung: eine Anfrage, eine Antwort, der
@@ -216,7 +246,7 @@ export function createSituationClient(text: TextClient): GenerationClient {
           maxTokens: GENERATOR_MAX_TOKENS,
         });
         try {
-          return pruefeSituation(parseSituation(response.text, spec, response.model), spec);
+          return mitZielwoertern(pruefeSituation(parseSituation(response.text, spec, response.model), spec), spec);
         } catch (fehler) {
           letzterFehler = fehler;
         }

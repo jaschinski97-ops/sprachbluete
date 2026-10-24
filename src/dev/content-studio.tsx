@@ -1,4 +1,4 @@
-import { stageForLevel } from '@/lib/learning-stages';
+import { LEARNING_STAGES } from '@/lib/learning-stages';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ApiKeysCard } from '@/components/api-keys-card';
@@ -6,6 +6,7 @@ import { SettingsRow } from '@/components/settings-row';
 import { ThemedButton } from '@/components/themed-button';
 import { ContentReport } from './content-report';
 import { VocabZieleCard } from './vocab-ziele-card';
+import { DialogAnzahlCard, ladeDialogAnzahl } from './dialog-anzahl-card';
 import { durchschnittsAnteil } from '@/lib/content/wortschatz-anteil';
 import { findeDuplikat } from '@/lib/content/aehnlichkeit';
 import { useLocale } from '@/lib/i18n';
@@ -32,7 +33,7 @@ import { AudioClipSpec } from '@/lib/clips/types';
 import { runGenerationBatch, missingSpecs } from '@/lib/conversation/batch';
 import { ConversationSituation } from '@/lib/conversation/types';
 import { createGenerationClient } from '@/lib/conversation/generator';
-import { FULL_RUN, planSituations, TEST_RUN } from '@/lib/conversation/plan';
+import { planeWortDialoge } from '@/lib/conversation/dialog-words';
 import { getActiveBlobBackend, getImageBlobStore } from '@/lib/images/blob-store';
 import { runImageBatch, missingImageSpecs } from '@/lib/images/batch';
 import { createImageGenerationClient } from '@/lib/images/generator';
@@ -81,25 +82,6 @@ import {
  * in der Auswahl), denn die Trennung kostet nichts und wer für Bilder und
  * Text verschieden einstellen will, soll das weiter können.
  */
-
-// Die Zahlen kommen aus dem Plan selbst: Themen gelten nur auf ihren Stufen,
-// eine feste Zahl wäre nach der nächsten Themenänderung wieder falsch.
-const testRunSpecs = planSituations(TEST_RUN);
-const stageCount = (stage: ReturnType<typeof stageForLevel>) =>
-  testRunSpecs.filter((spec) => stageForLevel(spec.level) === stage).length;
-
-const SITUATION_RUNS: RunOption[] = [
-  {
-    id: 'test',
-    label: 'Probelauf',
-    hint: `${testRunSpecs.length} Situationen je Sprache — jedes passende Thema einmal für Einstieg und Aufbau jeder Stufe (Anfänger ${stageCount('beginner')}, Fortgeschritten ${stageCount('experienced')}, Profi ${stageCount('pro')})`,
-  },
-  {
-    id: 'full',
-    label: 'Vollständiger Lauf',
-    hint: `${planSituations(FULL_RUN).length} Situationen je Sprache (${FULL_RUN.variantsPerCombo} Varianten je Thema, Stufe und Teil), alle drei Stufen — vorhandene werden übersprungen`,
-  },
-];
 
 // SEIT PHASE 16 AUSDRUECKLICH THAI. Die Planer sind sprachparametrisiert
 // (Pflicht 4), aber diese Seite bietet die Wahl noch nicht an - und eine Zahl
@@ -266,6 +248,8 @@ export default function ContentStudio() {
   const [storedSituations, setStoredSituations] = useState<ConversationSituation[]>([]);
   const [situationsByDirection, setSituationsByDirection] = useState<SituationDirectionCounts | null>(null);
   const [wortschatzAnteil, setWortschatzAnteil] = useState<number | null>(null);
+  /** Der ganze Wortschatz — Grundlage der Dialog-Abdeckung je Stufe. */
+  const [wortschatz, setWortschatz] = useState<VocabEntry[]>([]);
   const [clips, setClips] = useState<{ count: number; bytes: number } | null>(null);
   const [clipsByLanguage, setClipsByLanguage] = useState<ClipLanguageCounts | null>(null);
   const [clipBackend, setClipBackend] = useState<string | null>(null);
@@ -297,6 +281,7 @@ export default function ContentStudio() {
     // Phase 2, Schritt 4: der bekannte Wortschatz-Anteil der Dialoge
     // (deutsche Seite) — die Anzeige für die ~95-%-Regel.
     const vocab = await loadVocabulary();
+    setWortschatz(vocab);
     setWortschatzAnteil(durchschnittsAnteil(dialoge, vocab));
   }, []);
 
@@ -378,6 +363,7 @@ export default function ContentStudio() {
         // ersten Laden — nicht erst nach „Aktualisieren“.
         const [dialoge, vocab] = await Promise.all([loadSituations(), loadVocabulary()]);
         if (!cancelled) {
+          setWortschatz(vocab);
           setWortschatzAnteil(durchschnittsAnteil(dialoge, vocab));
           setWordsByLanguage(Object.fromEntries(GENERIER_SPRACHEN.map(code => [code, vocab.filter(word => String(word.language) === code).length])) as ClipLanguageCounts);
         }
@@ -422,24 +408,29 @@ export default function ContentStudio() {
   );
 
   const startSituations = useCallback(
-    async ({ optionId, language, maxNew, chain, onChainStep, apiKey, provider, model, parallel, onProgress, shouldCancel, confirmRun }: StartArgs) => {
+    async ({ language, maxNew, chain, onChainStep, apiKey, provider, model, parallel, onProgress, shouldCancel, confirmRun }: StartArgs) => {
     await studioRequest('/state');
+    // Dialoge aus dem Wortschatz (24.10.2026): je Sprache und Stufe bis zur
+    // gewählten Anzahl, jeder Dialog mit den nächsten offenen Wörtern.
+    const [vocabulary, bestandVorher] = await Promise.all([loadVocabulary(), loadSituations()]);
     const { steps, all } = await planChain(
       chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
-      (key) => planSituations({
-        // Ein Textlauf bedient alle drei Stufen (Nutzerwunsch 04.10.2026);
-        // jedes Thema nur auf seinen Stufen, der volle Lauf mit 4 Varianten.
-        ...(optionId === 'full' ? FULL_RUN : TEST_RUN),
-        targetLanguage: key as LanguageCode,
-      }),
+      async (key) => {
+        const sprache = key as LanguageCode;
+        const anzahl = await ladeDialogAnzahl(sprache);
+        return LEARNING_STAGES.flatMap((stage) =>
+          planeWortDialoge({ language: sprache, stage, anzahl: anzahl[stage], vocabulary, situations: bestandVorher }));
+      },
       (specs) => missingSpecs(specs),
       maxNew
     );
     if (!await confirmRun(estimateRunCost('situations', provider, model, all.map(() => ({}))))) return;
     // Phase 2, Schritt 6: Bestands-Snapshot vor dem Lauf — danach lassen sich
     // die NEUEN Situationen identifizieren und gegen (fast) Duplikate prüfen.
-    const bestandVorher: Situation[] = await loadSituations();
     const referenz: Situation[] = [...bestandVorher];
+    const specNachId = new Map(all.map((spec) => [spec.id, spec]));
+    /** Dialoge, in denen Zielwörter fehlen — gemeldet, nicht verworfen. */
+    const ohneAlleWoerter: string[] = [];
     const drossel = new Drossel({ max: parallel });
     const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
     try {
@@ -455,11 +446,17 @@ export default function ContentStudio() {
               if (findeDuplikat(situation, referenz)) throw Error(t('studio.duplicateSituation'));
               await delivery.deliver('situations', situation);
               referenz.push(situation);
+              const fehlend = (specNachId.get(situation.id)?.targetWords ?? [])
+                .filter((word) => !situation.vocabIds?.includes(word.id));
+              if (fehlend.length) ohneAlleWoerter.push(`${situation.title}: ${fehlend.map((word) => word.term).join(', ')}`);
             },
           }));
     } finally {
       const count = await delivery.finish();
-      setExportMessage(t('studio.autoDelivered', { count }));
+      setExportMessage([
+        t('studio.autoDelivered', { count }),
+        ...(ohneAlleWoerter.length ? [t('studio.dialogMissingWords', { count: ohneAlleWoerter.length, list: ohneAlleWoerter.join(' · ') })] : []),
+      ].join('\n'));
       await studioRequest('/state');
     }
     setReportRevision(value => value + 1);
@@ -614,6 +611,7 @@ export default function ContentStudio() {
       {section === 'text' ? (
       <>
         <VocabZieleCard blocked={running} onRunningChange={setRunning} onFinished={() => { setReportRevision((v) => v + 1); void refreshStock(); }} />
+        <DialogAnzahlCard language={situationLanguage} vocabulary={wortschatz} situations={storedSituations} blocked={running} />
       <GeneratorCard
         blocked={running} managedKeys onRunningChange={setRunning}
         language={situationLanguage} onLanguageChange={setSituationLanguage}
@@ -624,7 +622,7 @@ export default function ContentStudio() {
         onChoiceChange={(change) => changeGenerator('situations', change)}
         statusLine={`Im Speicher: ${situations === null ? '…' : `${situations} Situationen`}${wortschatzAnteil !== null ? ` · bekannter Wortschatz-Anteil (deutsch): ${(wortschatzAnteil * 100).toFixed(0)} %` : ''}`}
         counts={richtungsZaehler(situationsByDirection)}
-        runOptions={SITUATION_RUNS}
+        runOptions={[{ id: 'words', label: t('studio.dialogRunLabel'), hint: t('studio.dialogRunHint') }]}
         onStart={startSituations}
         // Nach dem Löschen sofort nachzählen — ein stehengebliebener Zähler
         // sieht aus, als hätte das Löschen nicht geklappt (Nutzerwunsch 12.09.).

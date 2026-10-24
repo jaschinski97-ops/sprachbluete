@@ -233,6 +233,24 @@ test('automatic publication, schema, re-export and metadata tampering with no re
   assert.ok(checkContent(root, { extraVocabulary: VOCABULARY }).errors.some(error => error.includes('Hörclips')));
   await assert.rejects(pipeline.stage({ kind: 'situations', document: { ...situation, apiKey: 'never-export' } }), /Metadaten/);
 });
+test('situations with target words: contract keeps vocabIds, integrity checks existence and occurrence', async (t) => {
+  const { root, pipeline } = await setup(t);
+  const word = { id: 'fixture-sawatdii', language: 'th', term: 'สวัสดี', german: 'Hallo', romanization: 'sà-wàt-dii',
+    partOfSpeech: 'interjection', register: 'neutral', isConcrete: false, syllables: [], sourceVerified: false };
+  const other = { ...word, id: 'fixture-kafae', term: 'กาแฟ', german: 'Kaffee' };
+  const english = { ...word, id: 'fixture-hello', language: 'en', term: 'hello' };
+  await pipeline.stage({ kind: 'situations', document: { ...situation, vocabIds: [word.id] } });
+  await pipeline.publish();
+  assert.deepEqual((await pipeline.catalog()).entries[0].document.vocabIds, [word.id]);
+  assert.deepEqual(checkContent(root, { integrityOnly: true, extraVocabulary: [word] }).errors, []);
+  await pipeline.stage({ kind: 'situations', document: { ...situation, vocabIds: [word.id, other.id] } });
+  await pipeline.publish();
+  assert.ok(checkContent(root, { integrityOnly: true, extraVocabulary: [word, other] }).errors.some(error => /nicht im Dialog: กาแฟ/.test(error)));
+  await pipeline.stage({ kind: 'situations', document: { ...situation, vocabIds: [english.id] } });
+  await pipeline.publish();
+  assert.ok(checkContent(root, { integrityOnly: true, extraVocabulary: [english] }).errors.some(error => /ohne Wortschatzeintrag dieser Sprache: fixture-hello/.test(error)));
+  await assert.rejects(pipeline.stage({ kind: 'situations', document: { ...situation, vocabIds: [word.id, word.id] } }), /Vertrag/);
+});
 test('failed tones stay out; unchecked clips ship with their original status and are counted', async (t) => {
   const { root, pipeline } = await setup(t);
   const word = VOCABULARY.find(word => word.id === 'kha');

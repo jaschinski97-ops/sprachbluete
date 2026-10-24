@@ -47,16 +47,18 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
   // und Übungsgedächtnis je Runde frisch lesen, wie beim Diktat.
   const freierPool = !situation && !words;
   const richtung = direction ?? `${anchor}_to_${language}` as PairDirection;
-  const [context, setContext] = useState<PracticeContext | null>(null);
+  // Der geladene Lernstand gilt nur für die Runde (Richtung + Aussaat), für die er geladen wurde.
+  const rundenKey = `${richtung}:${seed}`;
+  const [geladen, setGeladen] = useState<{ key: string; context: PracticeContext } | null>(null);
+  const context = geladen?.key === rundenKey ? geladen.context : null;
   useEffect(() => {
     if (!freierPool) return;
     let cancelled = false;
-    setContext(null);
     loadPracticeContext(richtung)
       .catch((): PracticeContext => ({ cards: new Map(), practice: new Map(), now: Date.now() }))
-      .then((loaded) => { if (!cancelled) setContext(loaded); });
+      .then((loaded) => { if (!cancelled) setGeladen({ key: rundenKey, context: loaded }); });
     return () => { cancelled = true; };
-  }, [freierPool, richtung, seed]);
+  }, [freierPool, richtung, rundenKey]);
   const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor)
     : words ? sentenceSession(language, seed, anchor, words)
     : context ? sentenceSession(language, seed, anchor, undefined, learningStage, context) : null,

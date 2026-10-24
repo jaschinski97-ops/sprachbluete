@@ -83,3 +83,39 @@ test('older KI words and fixed entries keep their old form', () => {
   expect(brauchtNeuesWortformat(fest)).toBe(false);
   expect(isValidVocabEntry(fest)).toBe(true);
 });
+
+/** Ein Thai-Wort im Altformat (ohne Satzübersetzungen) für die Ton-Prüfung. */
+const thaiWort = (extra: Partial<VocabEntry> = {}): VocabEntry => ({
+  id: 'th-sabaai', language: 'th', term: 'สบาย', romanization: 'sà-baai', german: 'bequem',
+  partOfSpeech: 'adjective', register: 'neutral', isConcrete: false,
+  syllables: [{ roman: 'sà', tone: 'low' }, { roman: 'baai', tone: 'mid' }],
+  exampleTerm: 'สบายดีไหม', exampleRoman: 'sà-baai dii mái', exampleGerman: 'Geht es dir gut?',
+  sourceVerified: false, verificationNote: 'Test', ...extra,
+});
+
+test('Thai tones: script and romanization must agree (Ton-Engine)', () => {
+  expect(pruefeVocabDoc(thaiWort())).toEqual({ ok: true, fehler: [] });
+
+  const falsch = pruefeVocabDoc(thaiWort({ romanization: 'sá-baai', syllables: [{ roman: 'sá', tone: 'high' }, { roman: 'baai', tone: 'mid' }] }));
+  expect(falsch.ok).toBe(false);
+  expect(falsch.fehler.join(' ')).toContain('Schrift ergibt tief, Umschrift hoch');
+
+  const feld = pruefeVocabDoc(thaiWort({ syllables: [{ roman: 'sà', tone: 'high' }, { roman: 'baai', tone: 'mid' }] }));
+  expect(feld.fehler.join(' ')).toContain('Ton-Feld hoch, die Umschrift aber tief');
+
+  const satz = pruefeVocabDoc(thaiWort({ exampleRoman: 'sà-baai dìi mái' }));
+  expect(satz.fehler.join(' ')).toContain('Beispielsatz');
+});
+
+test('Thai tones: uncertain readings are hints, not errors', () => {
+  const lehnwort = pruefeVocabDoc(thaiWort({
+    term: 'กีตาร์', romanization: 'gii-dtâa', exampleTerm: undefined, exampleRoman: undefined, exampleGerman: undefined,
+    syllables: [{ roman: 'gii', tone: 'mid' }, { roman: 'dtâa', tone: 'falling' }],
+  }));
+  expect(lehnwort.ok).toBe(true);
+  expect(lehnwort.hinweise?.join(' ')).toContain('Lehnwort');
+  // ไหม als Stichwort im Satz: Projektregel „mái“, „mǎi“ nur als Hinweis.
+  const mai = pruefeVocabDoc(thaiWort({ exampleRoman: 'sà-baai dii mǎi' }));
+  expect(mai.ok).toBe(true);
+  expect(mai.hinweise?.join(' ')).toContain('ไหม');
+});

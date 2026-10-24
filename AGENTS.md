@@ -23,7 +23,7 @@ Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nu
 
 ## Inhaltsbestand (Katalog `src/content/catalog.json`)
 
-Vokabeln th/en je 2.000, de 2.001, es 1.503. Hörclips th 3.974, en 4.047, es 3.063, de 4.035. Dazu 3.825 Bildzuordnungen und 28 Situationen; neun geprüfte Fehlmotive werden im Lernbereich ausgeblendet. Der erzeugte Wortschatz IST der Grundstock (`vocabularySource: 'generated'`); redaktionelle Ergänzungen nutzen denselben Katalog. Alte feste Vokabeln gibt es nur noch als Test-Fixtures (`src/test-fixtures/`). Jest läuft gegen den festen Testkatalog `fixture-catalog.ts`.
+LEER seit 24.10.2026 (Nutzerentscheidung: frischer Neuaufbau). Der alte Bestand (7.504 Wörter, 15.112 Clips, 3.825 Bilder, 28 Dialoge) liegt zur Wiederverwertung unter `_Local/reuse/` (Katalog + Quell-Commit für die Medien in Git), die Thai-Clips mit Soll-Tönen als Messkorpus unter `_Local/tone-corpus/`. Plan: gemeinsame Begriffsliste 1.200 Anfänger / 600 Fortgeschritten / 200 Profi nach Häufigkeit, Dialoge 25/15/10 je Sprache. Tests, die den echten Katalog vergleichen, laufen bei leerem Katalog als übersprungen. Der erzeugte Wortschatz IST der Grundstock (`vocabularySource: 'generated'`); redaktionelle Ergänzungen nutzen denselben Katalog. Alte feste Vokabeln gibt es nur noch als Test-Fixtures (`src/test-fixtures/`). Jest läuft gegen den festen Testkatalog `fixture-catalog.ts`.
 
 ## Befehle
 

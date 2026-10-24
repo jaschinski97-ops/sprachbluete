@@ -2,6 +2,7 @@
 
 ## 24.10.2026
 
+- Alten Inhalt gelöscht (Nutzerentscheidung, frischer Neuaufbau): alle Wörter, Hörclips, Bilder und Dialoge aller vier Lernsprachen, über die Lösch-Route des Studios (Katalog, Entwürfe und Mediendateien gemeinsam). Wiederverwertbar bleibt alles: der alte Katalog unter `_Local/reuse/` mit dem Quell-Commit für die Medien, die 3.967 Thai-Clips mit Soll-Tönen als Messkorpus für das Ton-Gate unter `_Local/tone-corpus/`. Sechs Tests, die den echten Katalog vergleichen, werden bei leerem Katalog übersprungen.
 - Keine Motiv-Vorschau mehr für den Admin (Nutzerentscheidung): Studio, Doku und Kurzstand verlangten, dass jedes Bild in einer Vorschau auf Motivpassung geprüft wird. Bilder gehen nach der technischen Prüfung (dekodierbar, ohne Text im Bild gebaut) wie bisher automatisch in den Katalog, bei jedem Anbieter; die Texte sagen das jetzt so.
 - Umbau vor dem frischen Inhaltslauf (Nutzerwunsch: alle Wörter überall nutzen, nichts doppelt erzeugen):
   - Reiter „Gespräch“ entfernt. Jeder Dialog ist ein Kapitel unter „Lernen“; Rollenspiel und Lesetexte gibt es dort weiter.

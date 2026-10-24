@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useErscheinung } from '@/lib/appearance';
+import { openIntro } from '@/lib/intro';
 import { SYSTEM_LANGUAGE_SETTING, useLocale } from '@/lib/i18n';
 import { settingsLanguageName } from '@/lib/i18n/settings-language-names';
 import { packsNeeded } from '@/lib/packs/state';
@@ -93,6 +94,12 @@ export default function SettingsScreen() {
           icon="save-outline"
           expanded={offen === 'sicherung'}
           onPress={() => umschalten('sicherung')}
+        />
+        <SettingsRow
+          title={t('intro.settingsTitle')}
+          detail={t('intro.settingsSummary')}
+          icon="help-circle-outline"
+          onPress={openIntro}
         />
         <SettingsRow
           title={t('settings.about')}

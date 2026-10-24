@@ -1,5 +1,16 @@
 # Changelog
 
+## 24.10.2026
+
+- Neue Übung „Wortliste“ unter Lernen → Wortschatz (Nutzerwunsch): 20 Wörter links, Bedeutungen rechts. „Start“ verdeckt eine Seite, man trägt alles ein, „Alle prüfen“ wertet aus, dann kommen die nächsten 20. Zwei Richtungen: „Bedeutung eintragen“ (Vorgabe) und „Wort eintragen“ (gleiche Prüfung wie die Schreibübung, mit Zeichenpalette für Thai, Deutsch, Spanisch).
+  - Auswahl: erst wacklige Wörter (fällig oder zuletzt falsch), dann neue in Häufigkeitsreihenfolge, zuletzt sichere zum Auffüllen. Keine Neu-Grenze, die Liste ist zum Lernen neuer Wörter da.
+  - Jede Antwort schreibt dieselbe Karte fort wie Karteikarte und Schreibübung und zählt als Wiederholung; dazu das Übungsgedächtnis, damit Falsches in der nächsten Liste vorn steht. „Wort eintragen“ bewertet wie die Schreibübung (Gut/Schwer/Nochmal). „Bedeutung eintragen“ gibt höchstens „Schwer“, weil die Karte das Bilden des Worts abfragt und Wiedererkennen deren Abstand sonst zu weit streckt.
+  - Bedeutungen werden großzügig geprüft (Groß/klein, Artikel, Klammern, fehlende Akzente, kleiner Vertipper bei längeren Wörtern). Für Synonyme, die der Katalog nicht kennt, gibt es „Zählt doch“ (zählt als „Schwer“). Gespeichert wird beim Weitergehen oder Verlassen.
+  - Logik in `src/lib/word-list.ts` (mit Tests), Oberfläche `src/components/word-list-runner.tsx`.
+- Einführung beim ersten Start (Nutzerwunsch): vier kurze Seiten zu Lernsprache, Kapitelweg, kurzer Runde und den fünf Bereichen. Danach jederzeit unter Einstellungen → „Einführung“ (`src/lib/intro.ts`, `src/components/intro-guide.tsx`, Merker `meta/intro-seen`).
+- Texte in allen 20 App-Sprachen; die Bereichsbeschreibung „Wortschatz“ nennt jetzt Karteikarten und Wortliste.
+- Telugu: Der Reiter „Lernen“ hieß „కలవరం“ (Unruhe), jetzt „నేర్చుకోండి“.
+
 ## 23.10.2026
 
 - Neue Optik „Kirschblüte“ (Nutzerwahl aus zwei Entwürfen), ersetzt „Nachtflug“. Tag und Nacht folgen der Systemeinstellung: tagsüber Frühlingshimmel mit Sonne, nachts Anime-Nachthimmel mit Mondschein. Karten als Glas, Hauptknöpfe in Jade (翡翠) statt Pink, Sprach-Abzeichen als rosa Mon, Pinselstrich unter den Seitentiteln. Alle Kontrasttests gelten weiter.

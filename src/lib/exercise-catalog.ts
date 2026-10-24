@@ -28,6 +28,8 @@ export type Mode =
   | 'path'
   | 'advanced'
   | 'cards'
+  /** Wortliste: 20 Wörter, eine Seite verdeckt selbst eintragen (24.10.2026). */
+  | 'wortliste'
   | DrillId
   | 'speaking'
   | 'sagen'
@@ -84,6 +86,7 @@ export function modesForDirection(direction: PairDirection): Mode[] {
   const language = targetLanguageOf(direction);
   return [
     'cards',
+    'wortliste',
     'advanced',
     ...drillsForDirection(direction),
     // Wortübung laut Definition: Tonkontur-Messung (Thai) oder Nachsprechen.
@@ -104,6 +107,7 @@ export function modeKey(mode: Mode): TranslationKey {
   if (mode === 'path') return 'tabs.learn';
   if (mode === 'advanced') return 'advanced.title';
   if (mode === 'cards') return 'mode.cards';
+  if (mode === 'wortliste') return 'mode.wortliste';
   if (mode === 'heute') return 'mode.heute';
   if (mode === 'speaking') return 'mode.speaking';
   if (mode === 'sagen') return 'mode.sagen';
@@ -158,7 +162,7 @@ export function groupsForDirection(direction: PairDirection): Group[] {
   const grammatik = bySkill('grammatik');
 
   return [
-    { label: 'skill.wortschatz', modes: ['cards'] },
+    { label: 'skill.wortschatz', modes: ['cards', 'wortliste'] },
     { label: 'skill.hoeren', modes: hoeren },
     { label: 'skill.lesenSchreiben', modes: lesenSchreiben },
     { label: 'skill.sprechen', modes: sprechen },

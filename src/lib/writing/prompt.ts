@@ -93,7 +93,7 @@ function zielFormen(entry: VocabEntry): string[] {
   return entry.term.split(',').map((part) => typeableGerman(part)).filter(Boolean);
 }
 
-function ankerwortFuer(entry: VocabEntry, direction: PairDirection): string {
+export function ankerwortFuer(entry: VocabEntry, direction: PairDirection): string {
   const anchor = anchorOf(direction);
   if (String(entry.language) === anchor) return entry.term;
   const uebersetzt = (entry.translations?.[anchor] ?? '').trim();

@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
+import { IntroGuide } from '@/components/intro-guide';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { loadErscheinung } from '@/lib/appearance';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
@@ -47,6 +48,8 @@ export default function TabLayout() {
         <CatalogGate>
           <AnimatedSplashOverlay />
           <AppTabs />
+          {/* Einführung beim ersten Start (24.10.2026), wieder über die Einstellungen. */}
+          <IntroGuide />
         </CatalogGate>
       </I18nProvider>
     </ThemeProvider>

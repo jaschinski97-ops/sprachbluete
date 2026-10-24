@@ -70,7 +70,7 @@ describe('Kategorien-Gleichstand der vier Lernziele (Brücke Deutsch)', () => {
 
       it('fragt Karteikarten als Wortschatz ab', () => {
         const gruppe = groups.find((group) => group.label === 'skill.wortschatz')!;
-        expect(gruppe.modes).toEqual(['cards']);
+        expect(gruppe.modes).toEqual(['cards', 'wortliste']);
       });
 
       it('hat immer Hören (Satz verstehen, Diktat)', () => {

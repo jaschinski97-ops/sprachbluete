@@ -17,6 +17,7 @@ import { SentenceRunner } from '@/components/sentence-runner';
 import { ThemedButton } from '@/components/themed-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { WordListRunner } from '@/components/word-list-runner';
 import { WritingRunner } from '@/components/writing-runner';
 import { Spacing, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -557,6 +558,8 @@ function ReviewBody({
           onReveal={() => scrollRef.current?.scrollToEnd({ animated: true })}
           key={direction}
         />
+      ) : mode === 'wortliste' ? (
+        <WordListRunner key={`${direction}:wortliste`} direction={direction} stage={freeStage} onExit={onExit} />
       ) : mode === 'writing' ? (
         <WritingRunner
           key={`${direction}:writing`}
@@ -989,7 +992,10 @@ function ModeBar({ direction, onPick, expanded, setExpanded }: {
               </View>
             ) : null}
             {index === 0 && !open ? (
-              <ThemedButton label={t('mode.cards')} onPress={() => onPick('cards')} />
+              <View style={styles.skillModes}>
+                <ThemedButton label={t('mode.cards')} onPress={() => onPick('cards')} />
+                <ThemedButton label={t('mode.wortliste')} onPress={() => onPick('wortliste')} />
+              </View>
             ) : null}
           </ThemedView>
           </Reveal>

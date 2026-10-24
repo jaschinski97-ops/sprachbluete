@@ -12,7 +12,7 @@ node scripts/content/studio.cjs
 npx expo start --web --port 8081 --max-workers 2
 ```
 
-Im Studio → Bilder → Anbieter **ComfyUI (lokal)**, Modell **flux-2-klein-4b-fp8**. Kein API-Schlüssel. Bestehende Bildanbieter-Einstellungen bleiben erhalten; die neue Vorgabe bei leerer Einstellung ist ComfyUI. Die Text- und Audioauswahl wird dabei nicht verändert. Keine Cloud-Ausweichlogik. Jedes neue Bild wird nach technischer Prüfung und Budgetkontrolle automatisch übernommen. Die Speicherung und Live-Übernahme können mit der nächsten Bildgenerierung überlappen. Alte, unabhängige Stage-Entwürfe bleiben erhalten. Die Medien werden direkt beim Helper gespeichert, ohne die Browser-Metadatenquote zu belasten. Der statische Build-Index wird automatisch am Laufende aktualisiert, damit HMR die Generierung nicht abbricht. Bei Browser-Abbruch sichert der Helper den Index nach zwei Minuten ohne Heartbeat; bei Helper-Neustart stellt er die gesicherten Übernahmen wieder her. Die fachliche Motivpassung bleibt eine Vorschau-Prüfung.
+Im Studio → Bilder → Anbieter **ComfyUI (lokal)**, Modell **flux-2-klein-4b-fp8**. Kein API-Schlüssel. Bestehende Bildanbieter-Einstellungen bleiben erhalten; die neue Vorgabe bei leerer Einstellung ist ComfyUI. Die Text- und Audioauswahl wird dabei nicht verändert. Keine Cloud-Ausweichlogik. Jedes neue Bild wird nach technischer Prüfung und Budgetkontrolle automatisch übernommen. Die Speicherung und Live-Übernahme können mit der nächsten Bildgenerierung überlappen. Alte, unabhängige Stage-Entwürfe bleiben erhalten. Die Medien werden direkt beim Helper gespeichert, ohne die Browser-Metadatenquote zu belasten. Der statische Build-Index wird automatisch am Laufende aktualisiert, damit HMR die Generierung nicht abbricht. Bei Browser-Abbruch sichert der Helper den Index nach zwei Minuten ohne Heartbeat; bei Helper-Neustart stellt er die gesicherten Übernahmen wieder her. Eine Motiv-Vorschau durch den Admin gibt es nicht (Nutzerentscheidung 24.10.2026).
 
 Der Helper auf 8082 akzeptiert Bildaufträge nur von den beiden lokalen App-Origins auf Port 8081. Er ruft fest `127.0.0.1:8188` auf, erzeugt ein Bild pro Auftrag und holt nur die zugehörige Ausgabe. Zeitlimit zehn Minuten; ein überfälliger Auftrag kann in ComfyUI weiterlaufen. Deshalb vor einer Wiederholung dessen Warteschlange prüfen. Ein Timeout unterbricht keine fremden Aufträge.
 
@@ -22,7 +22,7 @@ Der Helper auf 8082 akzeptiert Bildaufträge nur von den beiden lokalen App-Orig
 node scripts/content/local-image-trial.cjs
 ```
 
-Drei kompakte 512×512-WebPs (erzeugt bei 768×768) mit Prompt/Modell/Laufzeit unter `_Local/image-trial/<Zeitstempel>/`. Kein Stage, Publish, Text- oder Audioaufruf. Erst Bildinhalt und Stil beurteilen, danach den größeren Studio-Lauf starten. Die Vorschau ersetzt keine Kontrolle komplexer Motive, Hände, Zahlen oder kultureller Details.
+Drei kompakte 512×512-WebPs (erzeugt bei 768×768) mit Prompt/Modell/Laufzeit unter `_Local/image-trial/<Zeitstempel>/`. Kein Stage, Publish, Text- oder Audioaufruf. Freiwilliger technischer Test der lokalen Einrichtung; für den Studio-Lauf nicht nötig.
 
 ## Einrichtung unter Linux (seit 23.10.2026)
 

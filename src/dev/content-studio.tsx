@@ -646,7 +646,7 @@ export default function ContentStudio() {
       <GeneratorCard
         blocked={running} managedKeys onManageKeys={() => setSection('keys')} onRunningChange={setRunning}
         heading="Generator: Bilder"
-        description="Ein Bild je Begriff — alle Lernsprachen nutzen es gemeinsam; Begriffe mit Bild (auch aus anderen Sprachen) werden übersprungen. Prüfung: dekodierbar und prompt-konform (ohne Text im Bild gebaut); ob das Bild zum Wort passt, prüfst du in der Vorschau."
+        description="Ein Bild je Begriff — alle Lernsprachen nutzen es gemeinsam; Begriffe mit Bild (auch aus anderen Sprachen) werden übersprungen. Prüfung: dekodierbar und prompt-konform (ohne Text im Bild gebaut). Neue Bilder werden automatisch übernommen, eine Motiv-Vorschau gibt es nicht."
         group="images"
         choice={generators.images}
         onChoiceChange={(change) => changeGenerator('images', change)}

@@ -2,6 +2,7 @@
 
 ## 24.10.2026
 
+- Keine Motiv-Vorschau mehr für den Admin (Nutzerentscheidung): Studio, Doku und Kurzstand verlangten, dass jedes Bild in einer Vorschau auf Motivpassung geprüft wird. Bilder gehen nach der technischen Prüfung (dekodierbar, ohne Text im Bild gebaut) wie bisher automatisch in den Katalog, bei jedem Anbieter; die Texte sagen das jetzt so.
 - Umbau vor dem frischen Inhaltslauf (Nutzerwunsch: alle Wörter überall nutzen, nichts doppelt erzeugen):
   - Reiter „Gespräch“ entfernt. Jeder Dialog ist ein Kapitel unter „Lernen“; Rollenspiel und Lesetexte gibt es dort weiter.
   - Wortschatz-Erzeugung im Studio: Jedes neue Wort bekommt eine sprachübergreifende Begriffskennung (`concept: 'c:apple'`, bei Mehrdeutigkeit `c:bank_money`) und seinen Beispielsatz in allen 20 App-Sprachen (`exampleTranslations`). Wort und Satz passen zur gewählten Stufe (Anfänger z. B. höchstens 8 Wörter, ein Hauptsatz). Der KI-Auftrag kennt die vorhandenen Begriffe aller Lernsprachen, die Kreuzprüfung prüft Begriff und Satzübersetzungen mit. Neue Wörter ohne Begriff oder Übersetzungen verwirft der Helper; ältere bleiben gültig. Wortpaket jetzt standardmäßig 20 statt 50 Wörter, weil die Antworten länger werden.

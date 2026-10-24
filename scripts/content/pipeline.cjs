@@ -432,8 +432,8 @@ class ContentPipeline {
       decodeImage(file);
       // Phase 2, Schritt 7: Regelpruefung „kein Text im Bild" — der
       // GENERIERTE Prompt muss die Negativ-Regel tragen (buildImagePrompt
-      // haengt sie an). Das ist die maschinenpruefbare Teilmenge; ob das
-      // Bild zum Wort passt, bleibt der Vorschau-Blick der lernenden Person.
+      // haengt sie an). Das ist die maschinenpruefbare Teilmenge. Eine Motiv-Vorschau durch den Admin
+      // gibt es bewusst nicht (Nutzerentscheidung 24.10.2026).
       const prompt = String(entry.document.prompt ?? '');
       if (!prompt.includes('no text')) {
         check.status = 'unchecked';

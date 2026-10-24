@@ -78,7 +78,7 @@ test('Schritt 1b: Basis ohne Übersetzungen der App-Sprachen, Teile je App-Sprac
   const slim = slimEntry(CATALOG.entries[0]);
   assert.deepEqual(parts.th.entries[0], { ...slim, document: { ...slim.document, translations: {} } });
   assert.deepEqual(Object.keys(translations.th), ['de', 'en']);
-  assert.deepEqual(translations.th.en, { format: files.FORMAT, language: 'th', ui: 'en', sourceCatalogSha256: 'abc', vocabulary: { 'ki-th-1': 'ki-th-1', 'ki-th-2': 'ki-th-2', 'ki-th-kaputt': 'ki-th-kaputt' }, situations: {} });
+  assert.deepEqual(translations.th.en, { format: files.FORMAT, language: 'th', ui: 'en', sourceCatalogSha256: 'abc', vocabulary: { 'ki-th-1': 'ki-th-1', 'ki-th-2': 'ki-th-2', 'ki-th-kaputt': 'ki-th-kaputt' }, situations: {}, exampleTranslations: {} });
   assert.deepEqual(translations.th.de.vocabulary, {});
   assert.deepEqual(parts.th.audio[0], ['th-a', 'th', 'th-a.mp3', 'passed', 'not-applicable']);
 });

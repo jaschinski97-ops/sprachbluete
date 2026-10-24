@@ -22,7 +22,7 @@ import {
  * App-Sprache.
  *
  * SPRACH-UMBAU 23.09.2026: Ein Ziel ist jetzt schlicht JEDE Lernsprache
- * außer der App-Sprache selbst — für alle 20 App-Sprachen nach derselben
+ * außer der App-Sprache selbst — für alle App-Sprachen nach derselben
  * Regel. Deutsch ist eine Lernsprache wie jede andere (vorher Sonderfall
  * `_to_de` mit eigenem Pool und eigener Zählung). Eine neue Lernsprache in
  * `LANGUAGE_CODES` erscheint damit automatisch in jeder Oberfläche.

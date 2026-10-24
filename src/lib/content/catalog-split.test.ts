@@ -98,7 +98,7 @@ test('der Index zählt den auslieferbaren Wortschatz wie der volle Katalog', () 
 test('was eine Lernsprache mit einer App-Sprache lädt, ist ein Bruchteil der App-Fassung', () => {
   const slim = JSON.stringify(slimCatalog(full)).length;
   for (const code of LANGUAGE_CODES) {
-    const geladen = [files[code], translations[code].ja, translations[code].en].map((file) => JSON.stringify(file).length);
+    const geladen = [files[code], translations[code].zh, translations[code].en].map((file) => JSON.stringify(file).length);
     expect(geladen.reduce((sum, chars) => sum + chars, 0)).toBeLessThan(slim / 4);
   }
 });
@@ -106,7 +106,7 @@ test('was eine Lernsprache mit einer App-Sprache lädt, ist ein Bruchteil der Ap
 testMitInhalt('Satzübersetzungen (exampleTranslations) wandern je App-Sprache in die Teile', () => {
   const wort = full.entries.find((entry) => entry.kind === 'vocabulary' && isDeliverableEntry(entry))!;
   const code = (wort.document as { language: LanguageCode }).language;
-  const saetze = { de: 'Satz de', en: 'Satz en', ja: 'Satz ja' };
+  const saetze = { de: 'Satz de', en: 'Satz en', zh: 'Satz zh' };
   const klein: ContentCatalog = {
     ...full,
     entries: [{ ...wort, document: { ...wort.document, exampleTranslations: saetze } as ContentEntry['document'] }],
@@ -114,7 +114,7 @@ testMitInhalt('Satzübersetzungen (exampleTranslations) wandern je App-Sprache i
   const geteilt = splitCatalog(klein, { languages: LANGUAGE_CODES, uiLanguages: UI_LANGUAGES, isDeliverableEntry, planDeliveryAudio }, 'sha');
   const basis = geteilt.files[code].entries.find((entry) => entry.id === wort.id)!.document as { exampleTranslations?: unknown };
   expect(basis.exampleTranslations).toEqual({});
-  expect(geteilt.translations[code].ja.exampleTranslations).toEqual({ [wort.id]: 'Satz ja' });
+  expect(geteilt.translations[code].zh.exampleTranslations).toEqual({ [wort.id]: 'Satz zh' });
   expect(geteilt.translations[code].de.exampleTranslations).toEqual({ [wort.id]: 'Satz de' });
   expect(geteilt.translations[code].fr.exampleTranslations).toEqual({});
 });

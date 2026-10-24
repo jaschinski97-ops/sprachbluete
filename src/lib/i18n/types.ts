@@ -10,7 +10,12 @@
  * dieser Liste unberührt; sie ist die Frage „in welcher Sprache liest man
  * die App“, nicht „was lernt man“.
  *
- * Bewusst EIN flacher Sprachkanon für UI und Brücke: dieselben zwanzig Codes.
+ * Bewusst EIN flacher Sprachkanon für UI und Brücke.
+ *
+ * SEIT 24.10.2026 ZEHN SPRACHEN (Nutzerentscheidung): Deutsch und Thai plus die
+ * meistgesprochenen Sprachen der Welt. ru, ur, id, ja, mr, te, tr, ta, vi und
+ * ko sind entfernt (Wörterbücher in der Git-Historie); deren Systemsprache
+ * fällt auf Englisch zurück.
  */
 export const UI_LANGUAGES = [
   'de',
@@ -23,16 +28,6 @@ export const UI_LANGUAGES = [
   'fr',
   'bn',
   'pt',
-  'ru',
-  'ur',
-  'id',
-  'ja',
-  'mr',
-  'te',
-  'tr',
-  'ta',
-  'vi',
-  'ko',
 ] as const;
 
 export type UiLanguage = (typeof UI_LANGUAGES)[number];

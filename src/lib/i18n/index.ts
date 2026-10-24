@@ -18,18 +18,8 @@ import en from './dictionaries/en';
 import es from './dictionaries/es';
 import fr from './dictionaries/fr';
 import hi from './dictionaries/hi';
-import id from './dictionaries/id';
-import ja from './dictionaries/ja';
-import ko from './dictionaries/ko';
-import mr from './dictionaries/mr';
 import pt from './dictionaries/pt';
-import ru from './dictionaries/ru';
-import ta from './dictionaries/ta';
-import te from './dictionaries/te';
 import th from './dictionaries/th';
-import tr from './dictionaries/tr';
-import ur from './dictionaries/ur';
-import vi from './dictionaries/vi';
 import zh from './dictionaries/zh';
 import type { TranslationKey } from './keys';
 import { detectSystemLocale } from './detect';
@@ -75,18 +65,8 @@ export const dictionaries: Record<UiLanguage, Partial<Record<TranslationKey, str
   es,
   fr,
   hi,
-  id,
-  ja,
-  ko,
-  mr,
   pt,
-  ru,
-  ta,
-  te,
   th,
-  tr,
-  ur,
-  vi,
   zh,
 };
 
@@ -204,37 +184,37 @@ export const LANGUAGE_DISPLAY_NAMES: Partial<Record<UiLanguage, Partial<Record<U
   ar: { ar: 'العربية', de: 'Arabisch', en: 'Arabic', es: 'árabe', th: 'ภาษาอาหรับ' },
   de: {
     ar: 'الألمانية', bn: 'জার্মান', de: 'Deutsch', en: 'German', es: 'alemán',
-    fr: 'allemand', hi: 'जर्मन', id: 'Jerman', ja: 'ドイツ語', ko: '독일어',
-    mr: 'जर्मन', pt: 'alemão', ru: 'немецкий', ta: 'ஜெர்மன்', te: 'జర్మన్',
-    th: 'ภาษาเยอรมัน', tr: 'Almanca', ur: 'جرمن', vi: 'tiếng Đức', zh: '德语',
+    fr: 'allemand', hi: 'जर्मन',
+    pt: 'alemão',
+    th: 'ภาษาเยอรมัน', zh: '德语',
   },
   en: {
     ar: 'الإنجليزية', bn: 'ইংরেজি', de: 'Englisch', en: 'English', es: 'inglés',
-    fr: 'anglais', hi: 'अंग्रेज़ी', id: 'Inggris', ja: '英語', ko: '영어',
-    mr: 'इंग्रजी', pt: 'inglês', ru: 'английский', ta: 'ஆங்கிலம்', te: 'ఇంగ్లీష్',
-    th: 'ภาษาอังกฤษ', tr: 'İngilizce', ur: 'انگریزی', vi: 'tiếng Anh', zh: '英语',
+    fr: 'anglais', hi: 'अंग्रेज़ी',
+    pt: 'inglês',
+    th: 'ภาษาอังกฤษ', zh: '英语',
   },
   es: {
     ar: 'الإسبانية', bn: 'স্প্যানিশ', de: 'Spanisch', en: 'Spanish', es: 'español',
-    fr: 'espagnol', hi: 'स्पेनिश', id: 'Spanyol', ja: 'スペイン語', ko: '스페인어',
-    mr: 'स्पॅनिश', pt: 'espanhol', ru: 'испанский', ta: 'ஸ்பானிஷ்', te: 'స్పానిష్',
-    th: 'ภาษาสเปน', tr: 'İspanyolca', ur: 'ہسپانوی', vi: 'tiếng Tây Ban Nha', zh: '西班牙语',
+    fr: 'espagnol', hi: 'स्पेनिश',
+    pt: 'espanhol',
+    th: 'ภาษาสเปน', zh: '西班牙语',
   },
   fr: {
     ar: 'الفرنسية', bn: 'ফরাসি', de: 'Französisch', en: 'French', es: 'francés',
-    fr: 'français', hi: 'फ़्रेंच', id: 'Prancis', ja: 'フランス語', ko: '프랑스어',
-    mr: 'फ्रेंच', pt: 'francês', ru: 'французский', ta: 'பிரெஞ்சு', te: 'ఫ్రెంచ్',
-    th: 'ภาษาฝรั่งเศส', tr: 'Fransızca', ur: 'فرانسیسی', vi: 'tiếng Pháp', zh: '法语',
+    fr: 'français', hi: 'फ़्रेंच',
+    pt: 'francês',
+    th: 'ภาษาฝรั่งเศส', zh: '法语',
   },
   th: {
     ar: 'التايلاندية', bn: 'থাই', de: 'Thai', en: 'Thai', es: 'tailandés',
-    fr: 'thaï', hi: 'थाई', id: 'Thai', ja: 'タイ語', ko: '태국어',
-    mr: 'थाई', pt: 'tailandês', ru: 'тайский', ta: 'தாய்', te: 'థాయ్',
-    th: 'ภาษาไทย', tr: 'Tayca', ur: 'تھائی', vi: 'tiếng Thái', zh: '泰语',
+    fr: 'thaï', hi: 'थाई',
+    pt: 'tailandês',
+    th: 'ภาษาไทย', zh: '泰语',
   },
 };
 
-/** Endonyme der zwanzig App-Sprachen — die Fallback- und Auswahl-Form. */
+/** Endonyme der App-Sprachen — die Fallback- und Auswahl-Form. */
 export const LANGUAGE_ENDONYME: Record<UiLanguage, string> = {
   ar: 'العربية',
   bn: 'বাংলা',
@@ -243,18 +223,8 @@ export const LANGUAGE_ENDONYME: Record<UiLanguage, string> = {
   es: 'español',
   fr: 'français',
   hi: 'हिन्दी',
-  id: 'Bahasa Indonesia',
-  ja: '日本語',
-  ko: '한국어',
-  mr: 'मराठी',
   pt: 'português',
-  ru: 'русский',
-  ta: 'தமிழ்',
-  te: 'తెలుగు',
   th: 'ภาษาไทย',
-  tr: 'Türkçe',
-  ur: 'اردو',
-  vi: 'Tiếng Việt',
   zh: '中文',
 };
 
@@ -284,30 +254,10 @@ export function localeTagFor(language: UiLanguage): string {
       return 'fr-FR';
     case 'hi':
       return 'hi-IN';
-    case 'id':
-      return 'id-ID';
-    case 'ja':
-      return 'ja-JP';
-    case 'ko':
-      return 'ko-KR';
-    case 'mr':
-      return 'mr-IN';
     case 'pt':
       return 'pt-BR';
-    case 'ru':
-      return 'ru-RU';
-    case 'ta':
-      return 'ta-IN';
-    case 'te':
-      return 'te-IN';
     case 'th':
       return 'th-TH';
-    case 'tr':
-      return 'tr-TR';
-    case 'ur':
-      return 'ur-PK';
-    case 'vi':
-      return 'vi-VN';
     case 'zh':
       return 'zh-CN';
   }
@@ -431,8 +381,7 @@ export function I18nProvider({
   // ausstehend) — nativ bleibt die Laufrichtung LTR.
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-    // Urdu steht in arabischer Schrift und läuft ebenfalls von rechts nach links.
-    document.documentElement.dir = value.uiLanguage === 'ar' || value.uiLanguage === 'ur' ? 'rtl' : 'ltr';
+    document.documentElement.dir = value.uiLanguage === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = value.uiLanguage;
   }, [value.uiLanguage]);
 

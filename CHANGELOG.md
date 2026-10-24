@@ -2,6 +2,7 @@
 
 ## 24.10.2026
 
+- Nur noch 10 App-Sprachen (Nutzerentscheidung, damit der frische Inhalt schneller entsteht): Deutsch und Thai plus die meistgesprochenen Sprachen, also de, en, es, th, ar, zh, hi, fr, bn, pt. Russisch, Urdu, Indonesisch, Japanisch, Marathi, Telugu, Türkisch, Tamil, Vietnamesisch und Koreanisch sind entfernt (Wörterbücher, Sprachwahl, Datumsformat, UI-Generator); ihre Systemsprache fällt auf Englisch zurück. Die Wörterbücher bleiben in der Git-Historie. Wortbedeutungen, Beispielsätze und Dialoge werden nur noch in diesen 10 Sprachen erzeugt.
 - Dialog-Vorgabe im Studio jetzt 25 Anfänger, 15 Fortgeschritten, 10 Profi (Nutzerentscheidung; passend zu 1.200/600/200 Wörtern).
 - Alten Inhalt gelöscht (Nutzerentscheidung, frischer Neuaufbau): alle Wörter, Hörclips, Bilder und Dialoge aller vier Lernsprachen, über die Lösch-Route des Studios (Katalog, Entwürfe und Mediendateien gemeinsam). Wiederverwertbar bleibt alles: der alte Katalog unter `_Local/reuse/` mit dem Quell-Commit für die Medien, die 3.967 Thai-Clips mit Soll-Tönen als Messkorpus für das Ton-Gate unter `_Local/tone-corpus/`. Sechs Tests, die den echten Katalog vergleichen, werden bei leerem Katalog übersprungen.
 - Keine Motiv-Vorschau mehr für den Admin (Nutzerentscheidung): Studio, Doku und Kurzstand verlangten, dass jedes Bild in einer Vorschau auf Motivpassung geprüft wird. Bilder gehen nach der technischen Prüfung (dekodierbar, ohne Text im Bild gebaut) wie bisher automatisch in den Katalog, bei jedem Anbieter; die Texte sagen das jetzt so.

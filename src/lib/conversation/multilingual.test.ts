@@ -29,7 +29,7 @@ test.each(['th','en','es','de'] as const)('erzeugt und vertont %s, Bedeutungen f
   expect(situation.scriptTurns[0].german).toBe('Guten Tag');
   const clips = planClips({ includeWords: false, includeExamples: false, situations: [situation] });
   expect(clips[0]).toMatchObject({ language: targetLanguage, text });
-  expect(userPrompt(specs[0])).toContain('20 Sprachcodes');
+  expect(userPrompt(specs[0])).toContain('10 Sprachcodes');
 });
 
 test('fehlende oder verschobene Übersetzungen werden vor dem Speichern abgelehnt', async () => {

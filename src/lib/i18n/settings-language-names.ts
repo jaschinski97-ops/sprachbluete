@@ -4,9 +4,7 @@ import type { UiLanguage } from './types';
 /** English names appear beside the native names only in the app-language picker. */
 const ENGLISH_NAMES: Record<UiLanguage, string> = {
   ar: 'Arabic', bn: 'Bengali', de: 'German', en: 'English', es: 'Spanish',
-  fr: 'French', hi: 'Hindi', id: 'Indonesian', ja: 'Japanese', ko: 'Korean',
-  mr: 'Marathi', pt: 'Portuguese', ru: 'Russian', ta: 'Tamil', te: 'Telugu',
-  th: 'Thai', tr: 'Turkish', ur: 'Urdu', vi: 'Vietnamese', zh: 'Chinese',
+  fr: 'French', hi: 'Hindi', pt: 'Portuguese', th: 'Thai', zh: 'Chinese',
 };
 
 export function settingsLanguageName(language: UiLanguage): string {

@@ -191,8 +191,8 @@ describe('buildReviewQueue für jede App-Sprache', () => {
     const [ar] = await buildReviewQueue('ar_to_es', store, T0);
     expect(ar.bridgeEntry).toEqual({ id: 'ki-es-hola:ar', concept: VOCABULARY_ES[0].concept ?? 'ki-es-hola', term: 'مرحبا' });
 
-    const [tr] = await buildReviewQueue('tr_to_es', store, T0);
-    expect(tr.bridgeEntry).toBeNull();
+    const [bn] = await buildReviewQueue('bn_to_es', store, T0);
+    expect(bn.bridgeEntry).toBeNull();
   });
 
   it('Deutsch als Ziel: deutsche Wörter, Vorderseite in der Ankersprache', async () => {

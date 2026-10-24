@@ -47,15 +47,15 @@ test('a new KI word without a shared concept is rejected', () => {
   }
 });
 
-test('an example sentence needs all 20 app languages, the learning language verbatim', () => {
-  const { ko: _ko, ...ohneKo } = satz;
-  const fehlend = neuesWort({ exampleTranslations: ohneKo });
-  expect(fehlendeSatzuebersetzungen(fehlend)).toEqual(['ko']);
+test('an example sentence needs all app languages, the learning language verbatim', () => {
+  const { pt: _pt, ...ohnePt } = satz;
+  const fehlend = neuesWort({ exampleTranslations: ohnePt });
+  expect(fehlendeSatzuebersetzungen(fehlend)).toEqual(['pt']);
   expect(isValidVocabEntry(fehlend)).toBe(false);
-  expect(pruefeVocabDoc(fehlend).fehler.join(' ')).toContain('ko');
+  expect(pruefeVocabDoc(fehlend).fehler.join(' ')).toContain('pt');
 
   expect(isValidVocabEntry(neuesWort({ exampleTranslations: undefined }))).toBe(false);
-  expect(fehlendeSatzuebersetzungen({})).toHaveLength(20);
+  expect(fehlendeSatzuebersetzungen({})).toHaveLength(UI_LANGUAGES.length);
 
   const abweichend = neuesWort({ exampleTranslations: { ...satz, en: 'Something else.' } });
   expect(isValidVocabEntry(abweichend)).toBe(false);

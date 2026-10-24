@@ -509,8 +509,8 @@ test('neue KI-Wörter brauchen Begriff und Satzübersetzungen; /vocabulary liefe
   };
   // Ohne gemeinsamen Begriff oder mit fehlender Satzübersetzung: Vertrag verletzt.
   await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, concept: 'ki-en-begriff' } }), /vocabulary-Vertrag/);
-  const { ko: _ko, ...ohneKo } = satz;
-  await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, exampleTranslations: ohneKo } }), /vocabulary-Vertrag/);
+  const { pt: _pt, ...ohnePt } = satz;
+  await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, exampleTranslations: ohnePt } }), /vocabulary-Vertrag/);
   await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, exampleTranslations: { ...satz, en: 'Other.' } } }), /vocabulary-Vertrag/);
   // Altbestand (vor dem Stichtag) bleibt gültig, sonst scheitert jeder Publish.
   const alt = { ...wort, id: 'ki-en-altwort', term: 'old', generatedAt: NEUES_WORTFORMAT_AB - 1000, concept: 'ki-en-altwort' };

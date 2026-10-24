@@ -33,7 +33,7 @@ const PARTS: readonly string[] = [
 
 /**
  * Ab hier (24.10.2026, 00:00 UTC) tragen neu erzeugte KI-Wörter eine
- * gemeinsame Begriffskennung (`c:…`) und den Beispielsatz in allen 20
+ * gemeinsame Begriffskennung (`c:…`) und den Beispielsatz in allen
  * App-Sprachen. Ältere `ki-`-Wörter im Katalog (bis 04.10.) bleiben gültig,
  * sonst schlüge jede Veröffentlichung am Altbestand fehl.
  */

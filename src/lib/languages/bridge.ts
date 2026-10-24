@@ -33,7 +33,7 @@ export type BridgeTextSource = {
   german: string;
   /** Die fremdsprachige Form — letzte Rückfallebene. */
   term?: string;
-  /** Brückentexte — seit dem 21.09.2026 in allen 20 App-Sprachen lesbar. */
+  /** Brückentexte — seit dem 21.09.2026 in allen App-Sprachen lesbar. */
   translations?: Partial<Record<Lang | ForeignBridge, string>>;
 };
 

@@ -68,7 +68,10 @@ describe('detectSystemLocale — Normierung der Systemsprache', () => {
     // Seit dem 20-Sprachen-Ausbau (13.09.2026) im Kanon:
     expect(detectFrom('fr')).toBe('fr');
     expect(detectFrom('zh')).toBe('zh');
-    expect(detectFrom('ko')).toBe('ko');
+    expect(detectFrom('pt')).toBe('pt');
+    // Seit 24.10.2026 entfernte App-Sprachen fallen auf Englisch zurück.
+    expect(detectFrom('ko')).toBe('en');
+    expect(detectFrom('ja')).toBe('en');
   });
 
   it('normiert Region-Codes auf die Sprache (th-TH bleibt th, ar-EG wird ar)', () => {
@@ -157,17 +160,11 @@ describe('Interpolation', () => {
     expect(interpolate(wort, { count: 1, was: 'heute' }, 'de')).toBe('1 Wort für heute');
     expect(interpolate(wort, { count: 2000, was: 'heute' }, 'de')).toBe('2000 Wörter für heute');
     expect(interpolate('{{n, plural, =0 {nichts} other {# Stück}}}', { n: 0 }, 'de')).toBe('nichts');
-    // Russisch: drei Formen für ganze Zahlen.
-    expect(translate('ru', 'chapter.words', { count: 1 })).toBe('1 слово для этой главы');
-    expect(translate('ru', 'chapter.words', { count: 3 })).toBe('3 слова для этой главы');
-    expect(translate('ru', 'chapter.words', { count: 5 })).toBe('5 слов для этой главы');
-    expect(translate('ru', 'chapter.words', { count: 21 })).toBe('21 слово для этой главы');
     expect(translate('de', 'backup.partsLog', { days: 1 })).toBe('1 Tag Lernprotokoll');
     // Arabisch: Einzahl, Dual, 3–10, 11–99 (CLDR one/two/few/many).
     expect(translate('ar', 'chapter.words', { count: 2 })).toBe('كلمتان لهذا الفصل');
     expect(translate('ar', 'chapter.words', { count: 5 })).toBe('5 كلمات لهذا الفصل');
     expect(translate('ar', 'chapter.words', { count: 20 })).toBe('20 كلمة لهذا الفصل');
-    expect(translate('te', 'home.vocabCount', { count: 1 })).toBe('1 పదం');
     expect(translate('en', 'stress.detailNuclei', { count: 1 })).toMatch(/^1 vowel nucleus\./);
   });
 
@@ -267,7 +264,7 @@ describe('Sprachnamen und Monate', () => {
   it('fällt bei ungeprüften Zellen auf das Endonym zurück (Selbstbezeichnung geht immer)', () => {
     // Chinesisch als Anzeige hat keine geprüfte Zeile — das Endonym muss kommen.
     expect(languageDisplayName('zh', 'de')).toBe('中文');
-    expect(languageDisplayName('ko', 'zh')).toBe('한국어');
+    expect(languageDisplayName('hi', 'zh')).toBe('हिन्दी');
   });
 });
 
@@ -349,7 +346,7 @@ describe('React-Anbindung', () => {
     let freigeben: () => void = () => {};
     const prepare = jest.fn((ui: UiLanguage) => {
       vorbereitet.push(ui);
-      return ui === 'ja' ? new Promise<void>((resolve) => { freigeben = resolve; }) : Promise.resolve();
+      return ui === 'zh' ? new Promise<void>((resolve) => { freigeben = resolve; }) : Promise.resolve();
     });
     await act(async () => {
       tree = create(createElement(I18nProvider, { prepare, children: createElement(Probe) }));
@@ -358,15 +355,15 @@ describe('React-Anbindung', () => {
     expect(captured?.uiLanguage).toBe('th');
 
     await act(async () => {
-      captured?.setSetting('ja');
+      captured?.setSetting('zh');
     });
     // Noch nicht vorbereitet: Die Oberfläche bleibt bei Thai.
     expect(captured?.uiLanguage).toBe('th');
     await act(async () => {
       freigeben();
     });
-    expect(captured?.uiLanguage).toBe('ja');
-    expect(vorbereitet).toEqual(['th', 'ja']);
+    expect(captured?.uiLanguage).toBe('zh');
+    expect(vorbereitet).toEqual(['th', 'zh']);
   });
 
   it('ein Fehler beim Vorbereiten hält die Umstellung nicht auf', async () => {

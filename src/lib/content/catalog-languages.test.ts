@@ -35,9 +35,9 @@ const clip = (language: LanguageCode, text: string): ContentEntry => ({
 });
 const MEANING_CLIP = clip('de', firstThai.german);
 // Ein Wort mit Übersetzungen in mehreren App-Sprachen, damit die Teile etwas tragen.
-const UEBERSETZT = { de: 'Hallo', en: 'hello', ja: 'こんにちは', th: 'สวัสดี', fr: 'bonjour' };
+const UEBERSETZT = { de: 'Hallo', en: 'hello', zh: '你好', th: 'สวัสดี', fr: 'bonjour' };
 // Der Beispielsatz desselben Worts in mehreren App-Sprachen (24.10.2026).
-const SATZ_UEBERSETZT = { de: 'Hallo, wie geht es?', en: 'Hello, how are you?', ja: 'こんにちは、お元気ですか。', fr: 'Bonjour, ça va ?' };
+const SATZ_UEBERSETZT = { de: 'Hallo, wie geht es?', en: 'Hello, how are you?', zh: '你好，你好吗？', fr: 'Bonjour, ça va ?' };
 const CATALOG: ContentCatalog = {
   ...FIXTURE_CATALOG,
   entries: [
@@ -204,14 +204,14 @@ test('Sprache ohne Datei im Build', async () => {
 test('Schritt 1b: nur App-Sprache und Englisch, beim Wechsel nachgeladen und an Ort und Stelle ergänzt', async () => {
   const read = jest.fn(readFixture);
   const app = appBuild(read);
-  await app.languages.setCatalogUiLanguage('ja');
+  await app.languages.setCatalogUiLanguage('zh');
   await app.languages.ensureLanguages(['th']);
   expect(read.mock.calls.map(([id]) => id).sort((a, b) => a - b)).toEqual(
-    [MODULES.th.base, MODULES.th.translations.en, MODULES.th.translations.ja].sort((a, b) => a - b));
+    [MODULES.th.base, MODULES.th.translations.en, MODULES.th.translations.zh].sort((a, b) => a - b));
 
   const word = app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
   const vorlage = activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
-  expect(word.translations).toEqual({ en: 'hello', ja: 'こんにちは' });
+  expect(word.translations).toEqual({ en: 'hello', zh: '你好' });
   expect(vorlage.translations).toEqual(UEBERSETZT);
 
   const revision = app.state.catalogRevision();
@@ -219,24 +219,24 @@ test('Schritt 1b: nur App-Sprache und Englisch, beim Wechsel nachgeladen und an 
   expect(app.state.catalogRevision()).toBeGreaterThan(revision);
   expect(read).toHaveBeenCalledWith(MODULES.th.translations.th);
   const danach = app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
-  expect(danach.translations).toEqual({ en: 'hello', ja: 'こんにちは', th: 'สวัสดี' });
+  expect(danach.translations).toEqual({ en: 'hello', zh: '你好', th: 'สวัสดี' });
   // Englisch wird nicht ein zweites Mal gelesen.
   expect(read.mock.calls.filter(([id]) => id === MODULES.th.translations.en)).toHaveLength(1);
 });
 
 test('Satzübersetzungen kommen wie die Wortübersetzungen je App-Sprache', async () => {
   // Die Basis trägt keine Satzübersetzung einer App-Sprache.
-  expect(fileText('th')).not.toContain(SATZ_UEBERSETZT.ja);
-  expect(JSON.stringify(translations.th.ja)).toContain(SATZ_UEBERSETZT.ja);
-  expect(JSON.stringify(translations.th.fr)).not.toContain(SATZ_UEBERSETZT.ja);
+  expect(fileText('th')).not.toContain(SATZ_UEBERSETZT.zh);
+  expect(JSON.stringify(translations.th.zh)).toContain(SATZ_UEBERSETZT.zh);
+  expect(JSON.stringify(translations.th.fr)).not.toContain(SATZ_UEBERSETZT.zh);
 
   const app = appBuild();
-  await app.languages.setCatalogUiLanguage('ja');
+  await app.languages.setCatalogUiLanguage('zh');
   await app.languages.ensureLanguages(['th']);
   const word = () => app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
-  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, ja: SATZ_UEBERSETZT.ja });
+  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, zh: SATZ_UEBERSETZT.zh });
   await app.languages.setCatalogUiLanguage('fr');
-  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, ja: SATZ_UEBERSETZT.ja, fr: SATZ_UEBERSETZT.fr });
+  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, zh: SATZ_UEBERSETZT.zh, fr: SATZ_UEBERSETZT.fr });
   // Der volle Katalog (Entwicklung) trägt alle.
   expect(activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!.exampleTranslations).toEqual(SATZ_UEBERSETZT);
 });

@@ -167,7 +167,7 @@ describe('Satzwortschatz für Satzübungen ohne Kapitel', () => {
 describe('Satzbedeutung je App-Sprache (exampleTranslations, 24.10.2026)', () => {
   const mitUebersetzung = (id: string) => vokabel({
     id, term: id, exampleTerm: `Satz ${id}.`, language: 'th',
-    exampleTranslations: { en: `Sentence ${id}.`, ja: `文 ${id}。` },
+    exampleTranslations: { en: `Sentence ${id}.`, zh: `文 ${id}。` },
   });
 
   it('fragt auf Englisch die gelieferte englische Satzbedeutung ab', () => {
@@ -194,7 +194,7 @@ describe('Satzbedeutung je App-Sprache (exampleTranslations, 24.10.2026)', () =>
 
   it('Ablenker kommen aus dem Pool, auch wenn nur ein Wort gewählt ist', () => {
     const pool = ['a', 'b', 'c', 'd'].map(mitUebersetzung);
-    const [task] = buildSentenceTasks([pool[2]], 'ja', pool);
+    const [task] = buildSentenceTasks([pool[2]], 'zh', pool);
     expect(task.answers).toEqual(['文 c。', '文 d。', '文 a。']);
   });
 });

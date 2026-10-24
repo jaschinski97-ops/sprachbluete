@@ -192,14 +192,15 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
         json(200, state); return;
       }
       // Turbo (23.10.2026): Die Wortschatz-Karte brauchte je Paket den ganzen
-      // `/state` (rund 73 MB samt Prüfbericht). Sie liest nur Sprache, Wort
-      // und Stufe — aus Katalog bzw. laufender Übernahme und Stage.
+      // `/state` (rund 73 MB samt Prüfbericht). Sie liest nur Sprache, Wort,
+      // Stufe und (seit 24.10.) Begriff samt deutscher Bedeutung — aus
+      // Katalog bzw. laufender Übernahme und Stage.
       if (req.method === 'GET' && req.url === '/vocabulary') {
         const katalog = delivery.vocabulary() ?? (await pipeline.catalog()).entries
           .filter((entry) => entry.kind === 'vocabulary').map((entry) => entry.document);
         const kurz = new Map();
         for (const wort of [...katalog, ...await pipeline.stageVocabulary()]) {
-          kurz.set(wort.id, { id: wort.id, language: wort.language, term: wort.term, learningStage: wort.learningStage });
+          kurz.set(wort.id, { id: wort.id, language: wort.language, term: wort.term, german: wort.german, concept: wort.concept, learningStage: wort.learningStage });
         }
         json(200, { woerter: [...kurz.values()] }); return;
       }

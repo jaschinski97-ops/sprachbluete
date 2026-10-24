@@ -34,23 +34,41 @@ export function gegenStueck(
  */
 export const PRUEF_BATCH_GROESSE = 10;
 
-/** Prüfprompt für ein GANZES Paket — ein Aufruf, ein Urteil je Eintrag. */
-export function baueVocabBatchPruefPrompt(eintraege: VocabEntry[], stufe?: string): string {
+/**
+ * Prüfprompt für ein GANZES Paket — ein Aufruf, ein Urteil je Eintrag.
+ * `belege`: je schon vorhandener Begriffskennung bis zu drei Wörter anderer
+ * Einträge („en: bank = Bank“), damit der Prüfer falsch geteilte Kennungen sieht.
+ */
+export function baueVocabBatchPruefPrompt(
+  eintraege: VocabEntry[],
+  stufe?: string,
+  belege: Record<string, string[]> = {}
+): string {
   const punkte = [
-    'Prüfe diese Lern-Vokabeleinträge kritisch — JEDEN in denselben fünf Punkten:',
+    'Prüfe diese Lern-Vokabeleinträge kritisch — JEDEN in denselben sechs Punkten:',
     '1. Übersetzung: stimmt die deutsche Bedeutung zum Begriff (und umgekehrt)? Es genügt EINE korrekte Hauptbedeutung — nicht alle Bedeutungsnuancen.',
     `2. Grammatik/Rechtschreibung in der Zielsprache und im Deutschen.`,
     `3. Umschrift/Ton/Betonung: ${pruefPunktDrei(String(eintraege[0]?.language ?? ''))}`,
     '4. Natürlichkeit: klingt der Beispielsatz wie ein echter Satz der Zielsprache?',
     stufe
-      ? `5. Stufe ${stufe}: ist das Wort für diese Stufe typisch und häufig genug?`
+      ? `5. Stufe ${stufe}: ist das Wort für diese Stufe typisch und häufig genug, und passt der Beispielsatz (Länge, Satzbau, übrige Wörter) zu dieser Stufe?`
       : '5. Passung: ist das Wort ein grundlegender, hochfrequenter Alltagsbegriff (ohne feste Niveaustufe)? Mehrdeutigkeit schließt hohe Frequenz nicht aus.',
+    '6. Begriff und Satzübersetzungen: Benennt "concept" (englische Kennung c:…) genau die Bedeutung des Worts? Steht die Kennung unten bei den Belegen, muss sie dort dieselbe Bedeutung haben. Gibt "exampleTranslations" den Beispielsatz in jeder Sprache sinngemäß und in der richtigen Sprache/Schrift wieder? Nur klare Fehler zählen als Mangel (falsche Bedeutung, falsche Sprache, fehlender oder anderer Satz) — Stilfragen in Sprachen, die du nicht sicher beherrschst, nicht.',
   ];
+  const genutzt = Object.fromEntries(
+    [...new Set(eintraege.map((eintrag) => eintrag.concept).filter((begriff): begriff is string => Boolean(begriff && belege[begriff]?.length)))]
+      .map((begriff) => [begriff, belege[begriff]])
+  );
   return [
     ...punkte,
     '',
     'Die Einträge (nummeriert):',
     JSON.stringify(eintraege.map((eintrag, index) => ({ index, eintrag })), null, 2),
+    ...(Object.keys(genutzt).length > 0 ? [
+      '',
+      'Belege — diese Kennungen gibt es schon, mit diesen Wörtern:',
+      JSON.stringify(genutzt, null, 2),
+    ] : []),
     '',
     'Antworte NUR mit JSON — GENAU EIN Urteil je index, in derselben Reihenfolge:',
     '{ "urteile": [ { "index": 0, "urteil": "bestehen" | "mangel", "gruende": ["…"] }, … ] }',
@@ -193,11 +211,13 @@ export async function pruefeVocabKreuzBatch(
   erzeuger: ProviderId,
   hatSchluessel: (anbieter: ProviderId) => boolean,
   clientFuer: (anbieter: ProviderId) => TextClient,
-  prueferWahl?: ProviderId
+  prueferWahl?: ProviderId,
+  /** Je vorhandener Begriffskennung einige Wörter (siehe Prüfpunkt 6). */
+  belege: Record<string, string[]> = {}
 ): Promise<KreuzResultat[]> {
   if (eintraege.length === 0) return [];
   const { anbieter, selbstpruefung } = gegenStueck(erzeuger, hatSchluessel, prueferWahl);
-  const prompt = baueVocabBatchPruefPrompt(eintraege, stufe);
+  const prompt = baueVocabBatchPruefPrompt(eintraege, stufe, belege);
   const erst = await einmalPaketMitWiederholung(clientFuer(anbieter), prompt, eintraege.length);
 
   const resultate: KreuzResultat[] = eintraege.map((_, index) => {
@@ -215,7 +235,7 @@ export async function pruefeVocabKreuzBatch(
   if (selbstpruefung && durchgelassen.length > 0) {
     const wiederholung = await einmalPaketMitWiederholung(
       clientFuer(anbieter),
-      baueVocabBatchPruefPrompt(durchgelassen.map(({ index }) => eintraege[index]), stufe),
+      baueVocabBatchPruefPrompt(durchgelassen.map(({ index }) => eintraege[index]), stufe, belege),
       durchgelassen.length
     );
     for (const [position, { resultat }] of durchgelassen.entries()) {

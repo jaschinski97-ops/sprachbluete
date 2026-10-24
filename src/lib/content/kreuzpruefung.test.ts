@@ -74,6 +74,26 @@ describe('baueVocabBatchPruefPrompt — Stufe optional', () => {
   });
 });
 
+describe('Prüfprompt — Begriff und Satzübersetzungen (24.10.2026)', () => {
+  const mitBegriff = { ...vocab, concept: 'c:floating_market', exampleTranslations: { de: 'Ich gehe zum Schwimmenden Markt.', en: 'I go to the floating market.' } } as VocabEntry;
+
+  it('prüft Begriff, Satzübersetzungen und den stufengerechten Beispielsatz', () => {
+    const prompt = baueVocabBatchPruefPrompt([mitBegriff], 'Anfänger');
+    expect(prompt).toContain('sechs Punkten');
+    expect(prompt).toContain('6. Begriff und Satzübersetzungen');
+    expect(prompt).toContain('passt der Beispielsatz');
+    expect(prompt).toContain('I go to the floating market.');
+  });
+
+  it('zeigt Belege nur für Kennungen des Pakets', () => {
+    const belege = { 'c:floating_market': ['en: floating market = Schwimmender Markt'], 'c:other': ['en: other = anders'] };
+    const prompt = baueVocabBatchPruefPrompt([mitBegriff], 'Anfänger', belege);
+    expect(prompt).toContain('en: floating market = Schwimmender Markt');
+    expect(prompt).not.toContain('c:other');
+    expect(baueVocabBatchPruefPrompt([mitBegriff], 'Anfänger')).not.toContain('Belege —');
+  });
+});
+
 describe('Prüfprompt — Spanisch-Betonung über das stressed-Feld (17.09.)', () => {
   // Lauf 2 lehnte >1100 es-Wörter ab, weil der Prüfer einen Betonungs-
   // Apostroph IN der Umschrift verlangte ('be-nir' → 'be-''nir') — die

@@ -478,3 +478,34 @@ test('stageVocabulary lists only staged words and rereads after the stage change
   await pipeline.stage({ kind: 'situations', document: situation });
   assert.deepEqual((await pipeline.stageVocabulary()).map(w => w.id), ['stage-wort']);
 });
+test('neue KI-Wörter brauchen Begriff und Satzübersetzungen; /vocabulary liefert den Begriff (24.10.2026)', async (t) => {
+  const { root, pipeline } = await setup(t);
+  const { UI_LANGUAGES } = domain.load('src/lib/i18n/types');
+  const { NEUES_WORTFORMAT_AB } = domain.load('src/lib/content/vocab-schema');
+  const satz = Object.fromEntries(UI_LANGUAGES.map((code) => [code, code === 'en' ? 'The lamp is on.' : `Satz ${code}`]));
+  const wort = {
+    id: 'ki-en-begriff', generatedAt: NEUES_WORTFORMAT_AB + 1000, language: 'en', concept: 'c:lamp',
+    term: 'lamp', german: 'Lampe', romanization: 'lamp', partOfSpeech: 'noun', register: 'neutral', isConcrete: true,
+    exampleTerm: 'The lamp is on.', exampleRoman: 'the lamp iz on', exampleGerman: 'Satz de', exampleTranslations: satz,
+    syllables: [], sourceVerified: false, verificationNote: 'KI-Kreuzprüfung bestanden (Test)',
+  };
+  // Ohne gemeinsamen Begriff oder mit fehlender Satzübersetzung: Vertrag verletzt.
+  await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, concept: 'ki-en-begriff' } }), /vocabulary-Vertrag/);
+  const { ko: _ko, ...ohneKo } = satz;
+  await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, exampleTranslations: ohneKo } }), /vocabulary-Vertrag/);
+  await assert.rejects(pipeline.stage({ kind: 'vocabulary', document: { ...wort, exampleTranslations: { ...satz, en: 'Other.' } } }), /vocabulary-Vertrag/);
+  // Altbestand (vor dem Stichtag) bleibt gültig, sonst scheitert jeder Publish.
+  const alt = { ...wort, id: 'ki-en-altwort', term: 'old', generatedAt: NEUES_WORTFORMAT_AB - 1000, concept: 'ki-en-altwort' };
+  delete alt.exampleTranslations;
+  await pipeline.stage({ kind: 'vocabulary', document: alt });
+  await pipeline.stage({ kind: 'vocabulary', document: wort });
+  await pipeline.publish();
+  const katalog = await pipeline.catalog();
+  assert.deepEqual(katalog.entries.find((e) => e.id === wort.id).document.exampleTranslations, satz);
+
+  const server = createStudio(root);
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const { woerter } = await (await fetch(`http://127.0.0.1:${server.address().port}/vocabulary`)).json();
+  assert.deepEqual(woerter.find((w) => w.id === wort.id), { id: wort.id, language: 'en', term: 'lamp', german: 'Lampe', concept: 'c:lamp' });
+});

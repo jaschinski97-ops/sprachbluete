@@ -1,5 +1,5 @@
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
-import { VocabZieleCard, zielSchluessel } from './vocab-ziele-card';
+import { baueWortschatzPrompt, begriffeAusBestand, VocabZieleCard, zielSchluessel } from './vocab-ziele-card';
 import { LearningStagePicker } from '@/components/learning-stage-picker';
 import { Button, ProgressPanel } from '@/components/generator-card';
 import { createTextClient } from '@/lib/providers/text';
@@ -21,6 +21,14 @@ jest.mock('@/lib/repository', () => ({
   readMeta: jest.fn(async (key: string) => (key === 'vocabBlacklist-th' ? [] : null)),
   writeMeta: jest.fn(async () => {}),
 }));
+
+/** Ein KI-Wort im Format seit 24.10.2026: Bedeutungen, Begriff, Satz in allen App-Sprachen. */
+const kiWort = (basis: (typeof VOCABULARY_TH)[number], concept = 'c:test_word') => ({
+  ...basis,
+  concept,
+  translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])),
+  exampleTranslations: Object.fromEntries(UI_LANGUAGES.map(language => [language, `Satz ${language}`])),
+});
 
 /** Der KI-Aufruf Nr. 4 wäre das Erzeugungs-Paket des ZWEITEN Loop-Durchgangs. */
 function completeMitLoopStopp() {
@@ -93,7 +101,7 @@ test('loop delivers each word automatically, waits for acknowledgement, and stop
     expect(tree.root.findByType(ProgressPanel).props.progress).toMatchObject({ processed: 0, done: false });
     await act(async () => { jest.advanceTimersByTime(31_000); });
     expect(JSON.stringify(tree.toJSON())).toContain('Läuft seit 0:31');
-    const word = { ...VOCABULARY_TH[0], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
+    const word = kiWort(VOCABULARY_TH[0], 'Rice (food)');
     await act(async () => { lauf.answer({ text: JSON.stringify({ woerter: [word] }), model: 'test' }); });
     expect(JSON.stringify(tree.toJSON())).toContain('Prüfung läuft (1 Paket gleichzeitig)');
     await act(async () => { lauf.answer(durchgelassen(1)); });
@@ -105,6 +113,12 @@ test('loop delivers each word automatically, waits for acknowledgement, and stop
     // Das gestagede Wort läuft bewusst als „ungeprüft“ — sourceVerified
     // bedeutet „quellengeprüft“ und lehnt den Publish sonst ab (16.09.).
     expect(mockDeliver).toHaveBeenCalledWith('vocabulary', expect.objectContaining({ sourceVerified: false, learningStage: 'beginner' }));
+    // Begriff normalisiert, Satz in allen App-Sprachen, Thai wortgleich, Deutsch aus derselben Liste.
+    const geliefert = (mockDeliver.mock.calls[0] as unknown as [string, Record<string, unknown>])[1];
+    expect(geliefert.concept).toBe('c:rice_food');
+    expect(Object.keys(geliefert.exampleTranslations as object).sort()).toEqual([...UI_LANGUAGES].sort());
+    expect((geliefert.exampleTranslations as Record<string, string>).th).toBe(VOCABULARY_TH[0].exampleTerm);
+    expect(geliefert.exampleGerman).toBe('Satz de');
     expect(jest.mocked(studioRequest).mock.calls.some(([path]) => path === '/publish')).toBe(false);
     // Das zweite Paket scheitert hart (Mock) → der Loop stoppt, statt
     // weiter Geld zu verbrennen; das erste Paket bleibt veröffentlicht.
@@ -143,8 +157,8 @@ test('blacklisted terms skip the paid check and rejected terms land on the black
     // Paket 1: das blackgelistete Wort wird in Phase A aussortiert (ohne
     // bezahlten Prüfaufruf), das neue Wort wird abgelehnt und landet selbst
     // auf der Blacklist — danach stoppt der Loop ohne Fortschritt.
-    const blacklist = { ...VOCABULARY_TH[0], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
-    const neu = { ...VOCABULARY_TH[1], translations: Object.fromEntries(UI_LANGUAGES.map(language => [language, 'test'])) };
+    const blacklist = kiWort(VOCABULARY_TH[0]);
+    const neu = kiWort(VOCABULARY_TH[1]);
     await act(async () => { lauf.answer({ text: JSON.stringify({ woerter: [blacklist, neu] }), model: 'test' }); });
     expect(JSON.stringify(tree.toJSON())).toContain('Prüfung läuft (1 Paket gleichzeitig)');
     const abgelehnt = {
@@ -191,3 +205,68 @@ test('the word goal is stored per language and stage; beginners keep the old key
   await act(async () => { tree.unmount(); });
 });
 
+
+test('the prompt asks for 20 sentence translations, a concept and stage-fitting sentences', () => {
+  const prompt = baueWortschatzPrompt({
+    sprache: 'es', anzahl: 10, thema: '', stufe: 'beginner', bekannte: ['casa'], abgelehnt: [],
+    begriffe: ['c:bank_money', 'c:house'], offeneBegriffe: ['c:bank_money'],
+  });
+  const satzZeile = prompt.split('\n').find(zeile => zeile.startsWith('exampleTranslations enthält'))!;
+  for (const code of UI_LANGUAGES) expect(satzZeile).toContain(code);
+  expect(satzZeile).toContain('Für es steht dort exampleTerm wortgleich');
+  expect(prompt).toContain('"concept": "c:englisch_snake_case"');
+  expect(prompt).toContain('c:bank_money | c:house');
+  expect(prompt).toContain('in es noch nicht');
+  expect(prompt).toContain('höchstens 8 Wörter');
+  expect(prompt).not.toContain('"exampleGerman"');
+  // Profi bekommt keinen Anfänger-Auftrag.
+  const profi = baueWortschatzPrompt({ sprache: 'es', anzahl: 10, thema: '', stufe: 'pro', bekannte: [], abgelehnt: [], begriffe: [], offeneBegriffe: [] });
+  expect(profi).toContain('Profi');
+  expect(profi).not.toContain('höchstens 8 Wörter');
+  expect(profi).toContain('(noch keine)');
+  expect(profi).not.toContain('in es noch nicht');
+});
+
+test('shared concepts come from all learning languages; open ones only from the same stage', () => {
+  const { begriffe, offene, belege } = begriffeAusBestand([
+    { language: 'th', term: 'บ้าน', german: 'Haus', concept: 'c:house' },
+    { language: 'en', term: 'house', german: 'Haus', concept: 'c:house' },
+    { language: 'en', term: 'bank', german: 'Bank', concept: 'c:bank_money' },
+    { language: 'de', term: 'Anspruch', german: 'Anspruch', concept: 'c:claim', learningStage: 'pro' },
+    { language: 'en', term: 'old', concept: 'ki-en-0000' },
+  ], 'th', 'beginner');
+  expect(begriffe).toEqual(['c:bank_money', 'c:claim', 'c:house']);
+  expect(offene).toEqual(['c:bank_money']);
+  expect(belege['c:house']).toEqual(['th: บ้าน = Haus', 'en: house = Haus']);
+});
+
+test('a word without a usable concept is sorted out before the paid check', async () => {
+  jest.useFakeTimers();
+  mockDeliver.mockClear();
+  const lauf = completeMitLoopStopp();
+  jest.mocked(createTextClient).mockReturnValue({ provider: 'gemini', model: 'test', complete: lauf.complete } as never);
+  jest.mocked(studioRequest).mockImplementation(async (path: string) => (path === '/vocabulary'
+    ? { woerter: [{ id: 'ki-en-1', language: 'en', term: 'house', german: 'Haus', concept: 'c:house' }] }
+    : {}) as never);
+  jest.mocked(readMeta).mockImplementation(async () => null);
+  let tree!: ReactTestRenderer;
+  let run!: Promise<void>;
+  try {
+    await act(async () => { tree = create(<VocabZieleCard onFinished={() => {}} />); });
+    await act(async () => {
+      run = tree.root.findAllByType(Button).find(node => node.props.label === 'Fehlende Wörter erzeugen …')!.props.onPress();
+    });
+    // Der Auftrag kennt die Begriffe der anderen Lernsprachen.
+    const auftrag = (lauf.complete.mock.calls[0] as unknown as [{ user: string }])[0].user;
+    expect(auftrag).toContain('c:house');
+    const ohneBegriff = { ...kiWort(VOCABULARY_TH[0]), concept: '***' };
+    await act(async () => { lauf.answer({ text: JSON.stringify({ woerter: [ohneBegriff] }), model: 'test' }); });
+    await act(async () => { await run; });
+    expect(JSON.stringify(tree.toJSON())).toContain('1 aussortiert');
+    expect(mockDeliver).not.toHaveBeenCalled();
+    expect(lauf.complete).toHaveBeenCalledTimes(1);
+    await act(async () => { tree.unmount(); });
+  } finally {
+    jest.useRealTimers();
+  }
+});

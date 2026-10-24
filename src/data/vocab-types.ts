@@ -55,6 +55,14 @@ export type VocabEntry = {
    * Feld nachprüfbar, woher die deutsche Seite stammt: aus dem in Phase 2
    * geprüften Eintrag mit dieser ID.
    */
+  /**
+   * SEIT 24.10.2026 SPRACHÜBERGREIFEND: Neu erzeugte Wörter tragen eine
+   * gemeinsame Begriffskennung im Format `c:<englisch_snake_case>`, bei
+   * mehrdeutigen Wörtern mit Bedeutung (`c:apple`, `c:bank_money`,
+   * `c:bank_seat`). Dieselbe Bedeutung in th/en/es/de hat dieselbe Kennung;
+   * Bilder hängen an ihr statt am einzelnen Wort. Helfer: `lib/concepts.ts`.
+   * Ältere Einträge tragen hier noch eine Wort-ID.
+   */
   concept?: string;
   /**
    * Die fremdsprachige Form. Hieß bis Phase 15 `thai` — der Name war eine
@@ -153,6 +161,12 @@ export type VocabEntry = {
   exampleTerm?: string;
   exampleRoman?: string;
   exampleGerman?: string;
+  /**
+   * Der Beispielsatz in jeder App-Sprache (24.10.2026). Ohne ihn hatten
+   * Satzübungen auf nicht-deutschen Oberflächen keine Beispielsätze. Für die
+   * Lernsprache selbst steht hier `exampleTerm`.
+   */
+  exampleTranslations?: Partial<Record<UiLanguage, string>>;
   audioAssetId?: string;
   imageAssetId?: string;
   /** true nur, wenn die Quelle Aussprache, Form UND Bedeutung deckt. */

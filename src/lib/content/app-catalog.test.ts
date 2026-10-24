@@ -14,6 +14,9 @@ jest.unmock('../../content/catalog.json');
 // (frischer Neuaufbau ab 24.10.2026), werden sie übersprungen.
 const mitInhalt = (catalog as { entries: unknown[] }).entries.length > 0;
 const testMitInhalt = mitInhalt ? test : test.skip;
+const hat = (kind: string) => (catalog as { entries: { kind: string }[] }).entries.some((entry) => entry.kind === kind);
+// Größenvergleich und Clip-Index brauchen Hörclips (die meisten Studio-Felder hängen an ihnen).
+const testMitClips = hat('audio') ? test : test.skip;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { slimCatalog } = require('../../../scripts/metro-app-catalog.cjs') as { slimCatalog: (value: ContentCatalog) => ContentCatalog };
 
@@ -40,7 +43,7 @@ function appView(value: ContentCatalog) {
 const original = currentCatalog();
 afterAll(() => setLiveCatalog(original));
 
-testMitInhalt('the slim app catalog keeps every app-facing answer of the full catalog', () => {
+testMitClips('the slim app catalog keeps every app-facing answer of the full catalog', () => {
   const slim = slimCatalog(full);
   expect(appView(slim)).toEqual(appView(full));
   expect(slim.deleted).toEqual(full.deleted);
@@ -57,7 +60,7 @@ test('deleted drafts stay hidden with the slim catalog', () => {
   }
 });
 
-testMitInhalt('the index follows catalog changes and survives callers that sort their copy', () => {
+testMitClips('the index follows catalog changes and survives callers that sort their copy', () => {
   const slim = slimCatalog(full);
   setLiveCatalog(slim);
   const words = bundledDocuments('vocabulary');

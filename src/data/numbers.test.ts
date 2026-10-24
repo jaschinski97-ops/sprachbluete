@@ -11,6 +11,8 @@ jest.unmock('../content/catalog.json');
 // (frischer Neuaufbau ab 24.10.2026), werden sie übersprungen.
 const mitInhalt = (catalog as { entries: unknown[] }).entries.length > 0;
 const itMitInhalt = mitInhalt ? it : it.skip;
+const hat = (kind: string) => (catalog as { entries: { kind: string }[] }).entries.some((entry) => entry.kind === kind);
+const itMitDialogen = hat('situations') ? it : it.skip;
 
 const ALL = [...Array.from({ length: 101 }, (_, value) => value), 1000];
 const nfc = (text: string) => text.normalize('NFC');
@@ -52,7 +54,7 @@ describe('Kapitel 0: Zahlen aus geprüften Quellen', () => {
     for (const word of compared) expect(word.roman).toBe(vocabulary.get(word.text));
   });
 
-  itMitInhalt('Preise lauten wie in den A1-Marktdialogen', () => {
+  itMitDialogen('Preise lauten wie in den A1-Marktdialogen', () => {
     const turns = (catalog as ContentCatalog).entries
       .filter((entry) => entry.kind === 'situations')
       .flatMap((entry) => (entry.document as unknown as { scriptTurns: { targetText?: string; thai: string; roman?: string }[] }).scriptTurns)

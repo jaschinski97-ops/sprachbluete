@@ -15,6 +15,8 @@ jest.unmock('../../content/catalog.json');
 // (frischer Neuaufbau ab 24.10.2026), werden sie übersprungen.
 const mitInhalt = (catalog as { entries: unknown[] }).entries.length > 0;
 const testMitInhalt = mitInhalt ? test : test.skip;
+const hat = (kind: string) => (catalog as { entries: { kind: string }[] }).entries.some((entry) => entry.kind === kind);
+const testMitClips = hat('audio') ? test : test.skip;
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { splitCatalog } = require('../../../scripts/app-catalog-files.cjs') as {
   splitCatalog: (value: ContentCatalog, rules: unknown, sha: string) => {
@@ -68,7 +70,7 @@ test('die Sprachdateien zusammen sind genau die schlanke App-Fassung', () => {
   expect(index.entries).toEqual([]);
 });
 
-testMitInhalt('jede Datei trägt alle Clips, die ihre Lernsprache abspielen kann', () => {
+testMitClips('jede Datei trägt alle Clips, die ihre Lernsprache abspielen kann', () => {
   for (const code of LANGUAGE_CODES) {
     const own = new Set(assembled(code).map(key));
     const words = full.entries

@@ -69,6 +69,7 @@ export const TON_AUSNAHMEN: TonAusnahme[] = [
   { thai: 'พลาสติก', lesarten: [{ roman: 'phláat-sà-dtìk' }, { roman: 'phláat-dtìk' }], grund: 'englisches Lehnwort (plastic): พลาส hoch statt fallend.' },
   { thai: 'วิสกี้', lesarten: [{ roman: 'wít-sà-gîi' }, { roman: 'wít-gîi' }], grund: 'englisches Lehnwort (whisky); Wiktionary schreibt wís-gîi.' },
   { thai: 'แซลมอน', lesarten: [{ roman: 'sɛɛn-mɔ̂n' }, { roman: 'sɛo-mɔ̂n' }], grund: 'englisches Lehnwort (salmon): มอน fallend; Wiktionary schreibt sɛɛl-mɔ̂n.' },
+  { thai: 'เทคโนโลยี', lesarten: [{ roman: 'thék-noo-loo-yii' }], grund: 'englisches Lehnwort (technology): เทค mit kurzem Vokal gesprochen, daher hoch statt fallend.' },
   { thai: 'อีเมล', lesarten: [{ roman: 'ii-meeo' }, { roman: 'ii-meen' }], grund: 'englisches Lehnwort (e-mail): ล als o oder n; Wiktionary schreibt ii-meel.' },
   { thai: 'โทร', lesarten: [{ roman: 'thoo' }], grund: 'Kurzform von โทรศัพท์ (anrufen): ร stumm ohne ์.' },
 ];

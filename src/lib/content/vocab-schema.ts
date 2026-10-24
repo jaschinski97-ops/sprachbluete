@@ -1,5 +1,7 @@
 import { learningLanguage, passtZurSchrift } from '../languages/definitions';
 import { isLanguageCode, LANGUAGE_CODES } from '../languages/types';
+import { isSharedConcept } from '../concepts';
+import { UI_LANGUAGES } from '../i18n/types';
 import type { VocabEntry } from '@/data/vocab-types';
 
 /**
@@ -28,6 +30,28 @@ const PARTS: readonly string[] = [
   'noun', 'verb', 'adjective', 'adverb', 'pronoun', 'numeral',
   'particle', 'interjection', 'preposition', 'conjunction',
 ];
+
+/**
+ * Ab hier (24.10.2026, 00:00 UTC) tragen neu erzeugte KI-Wörter eine
+ * gemeinsame Begriffskennung (`c:…`) und den Beispielsatz in allen 20
+ * App-Sprachen. Ältere `ki-`-Wörter im Katalog (bis 04.10.) bleiben gültig,
+ * sonst schlüge jede Veröffentlichung am Altbestand fehl.
+ */
+export const NEUES_WORTFORMAT_AB = Date.UTC(2026, 9, 24);
+
+/** Muss dieser Eintrag Begriff und Satzübersetzungen tragen? */
+export function brauchtNeuesWortformat(doc: { id?: unknown; generatedAt?: unknown }): boolean {
+  return typeof doc.id === 'string' && doc.id.startsWith('ki-')
+    && typeof doc.generatedAt === 'number' && doc.generatedAt >= NEUES_WORTFORMAT_AB;
+}
+
+/** Welche App-Sprachen der Satzübersetzung fehlen oder leer sind. */
+export function fehlendeSatzuebersetzungen(doc: { exampleTranslations?: unknown }): string[] {
+  const texte = doc.exampleTranslations;
+  if (!texte || typeof texte !== 'object' || Array.isArray(texte)) return [...UI_LANGUAGES];
+  const map = texte as Record<string, unknown>;
+  return UI_LANGUAGES.filter((code) => typeof map[code] !== 'string' || !(map[code] as string).trim());
+}
 
 export function istThaiSchrift(text: string): boolean {
   return /[\u0E01-\u0E5B]/.test(text);
@@ -85,6 +109,22 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
   // Beispiel: ganz oder gar nicht.
   const beispiel = [d.exampleTerm, d.exampleRoman, d.exampleGerman].filter((f) => f !== undefined);
   if (beispiel.length > 0 && beispiel.some((f) => typeof f !== 'string' || !f.trim())) return false;
+  if (d.exampleTranslations !== undefined) {
+    const texte = d.exampleTranslations;
+    if (!texte || typeof texte !== 'object' || Array.isArray(texte)) return false;
+    const uiSprachen: readonly string[] = UI_LANGUAGES;
+    if (Object.entries(texte).some(([code, text]) => !uiSprachen.includes(code) || typeof text !== 'string' || !text.trim())) return false;
+  }
+  // Neue KI-Wörter (24.10.2026): gemeinsamer Begriff Pflicht; ein Beispiel
+  // nur mit dem Satz in allen App-Sprachen, die Lernsprache wortgleich.
+  if (brauchtNeuesWortformat(d)) {
+    if (!isSharedConcept(d.concept as string | undefined)) return false;
+    if (d.exampleTerm !== undefined) {
+      if (fehlendeSatzuebersetzungen(d).length > 0) return false;
+      const eigene = (d.exampleTranslations as Record<string, string>)[String(d.language)];
+      if (eigene !== undefined && eigene !== d.exampleTerm) return false;
+    }
+  }
   // Sprach-Extras, wenn vorhanden, müssen die richtigen Formen haben.
   const sprache = String(d.language);
   if (sprache === 'de' && d.germanNoun !== undefined) {
@@ -127,6 +167,21 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
   if (doc.term.length > 80) fehler.push('Begriff ungewöhnlich lang (> 80 Zeichen).');
   if (doc.german.length > 120) fehler.push('Deutsche Bedeutung ungewöhnlich lang (> 120 Zeichen).');
   if (doc.exampleTerm && doc.exampleTerm.length > 200) fehler.push('Beispielsatz ungewöhnlich lang.');
+
+  // Begriff und Satzübersetzungen (neue KI-Wörter seit 24.10.2026).
+  if (brauchtNeuesWortformat(doc)) {
+    if (!isSharedConcept(doc.concept)) {
+      fehler.push('Begriffskennung fehlt oder ist ungültig (Format c:englisch_snake_case).');
+    }
+    if (doc.exampleTerm) {
+      const fehlend = fehlendeSatzuebersetzungen(doc);
+      if (fehlend.length > 0) fehler.push(`Satzübersetzungen fehlen für: ${fehlend.join(', ')}.`);
+      const eigene = doc.exampleTranslations?.[language as keyof NonNullable<VocabEntry['exampleTranslations']>];
+      if (eigene !== undefined && eigene !== doc.exampleTerm) {
+        fehler.push('Satzübersetzung der Lernsprache weicht vom Beispielsatz ab.');
+      }
+    }
+  }
 
   // Sprachliche Pflicht-Merkmale je Stufe der App-Übungen:
   if (language === 'th') {

@@ -40,7 +40,8 @@ import { activeVocabulary } from '@/data/active-vocabulary';
 import type { VocabEntry } from '@/data/vocab-types';
 import { LEARNING_LANGUAGES } from '@/lib/languages/definitions';
 import { isLanguageCode, LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
-import { UI_LANGUAGES } from '@/lib/i18n/types';
+import { UI_LANGUAGES, type UiLanguage } from '@/lib/i18n/types';
+import { isSharedConcept, normalizeConcept } from '@/lib/concepts';
 
 /** Die Vokabel-Sprachen = alle Lernsprachen (`LANGUAGE_CODES`). */
 type VocabSprache = LanguageCode;
@@ -132,24 +133,55 @@ function kurzHash(text: string): string {
   return h1.toString(16).padStart(8, '0').slice(0, 8);
 }
 
+/**
+ * Was jede Stufe für Wort UND Beispielsatz verlangt (24.10.2026). Die GER-
+ * Angabe steht nur im KI-Auftrag; sichtbar heißen die Stufen
+ * Anfänger/Fortgeschritten/Profi.
+ */
+const STUFEN_AUFTRAG: Record<LearningStage, { name: string; thema: string; regeln: string }> = {
+  beginner: {
+    name: 'Anfänger (GER A1–A2)',
+    thema: 'grundlegende, hochfrequente Wörter und feste Wendungen des Alltags — häufige Wörter zuerst',
+    regeln: 'Nur häufige Grundwörter des Alltags (etwa die 1.500 häufigsten der Sprache), keine Fach- oder Bildungswörter. Beispielsatz kurz (höchstens 8 Wörter), ein Hauptsatz, Gegenwart, alle übrigen Wörter des Satzes ebenfalls Grundwortschatz; keine Nebensätze, keine Redewendungen.',
+  },
+  experienced: {
+    name: 'Fortgeschritten (GER B1–B2)',
+    thema: 'Wortschatz für selbstständige Gespräche über Alltag, Arbeit, Reisen, Meinungen und Gefühle',
+    regeln: 'Wörter für selbstständige Gespräche, Meinungen, Arbeit und Erlebnisse — keine reinen Grundwörter, die Anfänger schon kennen. Beispielsatz natürlich, 6–15 Wörter, gern mit Nebensatz, Vergangenheit oder Modalverb; die übrigen Wörter des Satzes einfacher als das Lernwort.',
+  },
+  pro: {
+    name: 'Profi (GER C1–C2)',
+    thema: 'differenzierter, idiomatischer Wortschatz für abstrakte Themen, Medien und Beruf',
+    regeln: 'Differenzierter, idiomatischer Wortschatz und abstrakte Themen; keine seltenen Wörter nur um Schwierigkeit zu erzeugen. Beispielsatz komplex und natürlich, wie in Zeitung oder gehobenem Gespräch.',
+  },
+};
+
 /** Der Erzeugungs-Prompt: Vertrags-JSON mit sprachspezifischen Pflichten. */
-function baueWortschatzPrompt(options: {
+export function baueWortschatzPrompt(options: {
   sprache: VocabSprache;
   anzahl: number;
   thema: string;
+  stufe: LearningStage;
   bekannte: string[];
   abgelehnt: string[];
+  /** Alle gemeinsamen Begriffskennungen der Lernsprachen (`c:…`). */
+  begriffe: string[];
+  /** Begriffe anderer Lernsprachen dieser Stufe, die hier noch fehlen. */
+  offeneBegriffe: string[];
 }): string {
-  const { sprache, anzahl, thema, bekannte, abgelehnt } = options;
+  const { sprache, anzahl, thema, stufe, bekannte, abgelehnt, begriffe, offeneBegriffe } = options;
+  const stufenAuftrag = STUFEN_AUFTRAG[stufe];
   return [
-    `Erzeuge genau ${anzahl} Einträge eines grundlegenden Alltags-Wortschatzes für Lernende, die ${sprache.toUpperCase()} lernen.`,
-    thema ? `Thema: „${thema}".` : 'Thema: grundlegende, hochfrequente Wörter und feste Wendungen des Alltags — häufige Wörter zuerst.',
+    `Erzeuge genau ${anzahl} Einträge eines Lernwortschatzes der Stufe ${stufenAuftrag.name} für Lernende, die ${sprache.toUpperCase()} lernen.`,
+    thema ? `Thema: „${thema}".` : `Thema: ${stufenAuftrag.thema}.`,
+    `Stufe ${stufenAuftrag.name}: ${stufenAuftrag.regeln} Wort UND Beispielsatz müssen zu dieser Stufe passen.`,
     'Keine Eigennamen, keine Markennamen, keine vulgären Ausdrücke, keine Duplikate innerhalb der Liste.',
     '',
     'Antworte NUR mit JSON:',
     '{ "woerter": [',
     '  {',
     '    "term": "Wort in der Zielsprache",',
+    '    "concept": "c:englisch_snake_case",',
     '    "romanization": "Lesehilfe",',
     '    "german": "deutsche Bedeutung",',
     '    "translations": { "th": "Bedeutung auf Thai", "en": "English meaning", "es": "significado en español", "de": "deutsche Bedeutung", "…": "weitere App-Sprachen" },',
@@ -158,7 +190,7 @@ function baueWortschatzPrompt(options: {
     '    "isConcrete": true|false,',
     '    "exampleTerm": "Beispielsatz in der Zielsprache",',
     '    "exampleRoman": "Umschrift des Beispielsatzes",',
-    '    "exampleGerman": "deutsche Übersetzung des Beispielsatzes",',
+    '    "exampleTranslations": { "de": "Beispielsatz auf Deutsch", "en": "example sentence in English", "…": "weitere App-Sprachen" },',
     '    "syllables": [ … ],',
     '    … sprachspezifische Felder siehe unten …',
     '  }',
@@ -167,6 +199,16 @@ function baueWortschatzPrompt(options: {
     `Sprachregeln für ${sprache}:`,
     isLanguageCode(sprache) ? LEARNING_LANGUAGES[sprache].generatorRules : '',
     `translations enthält für JEDEN dieser Sprachcodes eine kurze passende Bedeutung: ${UI_LANGUAGES.join(', ')}. Für ${sprache} ist die Übersetzung identisch mit term.`,
+    `exampleTranslations enthält den Beispielsatz sinngemäß und natürlich übersetzt für JEDEN dieser Sprachcodes: ${UI_LANGUAGES.join(', ')} — jeweils in der Schrift der Sprache. Für ${sprache} steht dort exampleTerm wortgleich.`,
+    '',
+    'concept ist die sprachübergreifende Kennung der BEDEUTUNG: "c:" plus englischer Begriff in Kleinbuchstaben mit Unterstrichen (c:house, c:eat, c:train_station). Bei mehrdeutigen Wörtern steht die gemeinte Bedeutung dabei (c:bank_money statt c:bank, wenn die Geldbank gemeint ist). Dieselbe Bedeutung bekommt in jeder Sprache dieselbe Kennung.',
+    'Vorhandene Kennungen aller Lernsprachen — hat dein Wort GENAU diese Bedeutung, übernimm die Kennung buchstabengetreu; sonst bilde eine neue:',
+    begriffe.length > 0 ? begriffe.join(' | ') : '(noch keine)',
+    ...(offeneBegriffe.length > 0 ? [
+      '',
+      `Diese Bedeutungen gibt es in anderen Lernsprachen dieser Stufe schon, in ${sprache} noch nicht — bevorzugt diese abdecken (mit genau dieser Kennung), soweit sie zu Thema und Stufe passen:`,
+      offeneBegriffe.join(' | '),
+    ] : []),
     '',
     `Ausschlussliste — diese Begriffe existieren bereits und dürfen NICHT vorkommen:`,
     bekannte.slice(0, 3000).join(' | '),
@@ -176,7 +218,52 @@ function baueWortschatzPrompt(options: {
   ].join('\n');
 }
 
-type StudioDokument = { language?: string; term?: string; learningStage?: LearningStage };
+/**
+ * Gemeinsame Begriffe aus dem Helper-Bestand: alle Kennungen, die hier noch
+ * offenen (andere Sprache, gleiche Stufe) und je Kennung ein Beleg für die
+ * Kreuzprüfung („en: bank = Bank“).
+ */
+export function begriffeAusBestand(
+  dokumente: StudioDokument[],
+  sprache: VocabSprache,
+  stufe: LearningStage
+): { begriffe: string[]; offene: string[]; belege: Record<string, string[]> } {
+  const alle = new Set<string>();
+  const hier = new Set<string>();
+  const anderswo = new Set<string>();
+  const belege: Record<string, string[]> = {};
+  for (const dokument of dokumente) {
+    if (!isSharedConcept(dokument.concept)) continue;
+    const begriff = dokument.concept;
+    alle.add(begriff);
+    if (dokument.language === sprache) hier.add(begriff);
+    else if ((dokument.learningStage ?? 'beginner') === stufe) anderswo.add(begriff);
+    const liste = (belege[begriff] ??= []);
+    if (liste.length < 3 && dokument.term) {
+      liste.push(`${dokument.language}: ${dokument.term}${dokument.german ? ` = ${dokument.german}` : ''}`);
+    }
+  }
+  return {
+    begriffe: [...alle].sort(),
+    offene: [...anderswo].filter((begriff) => !hier.has(begriff)).sort(),
+    belege,
+  };
+}
+
+/** Satzübersetzungen der KI säubern: nur App-Sprachen, die Lernsprache wortgleich. */
+function satzUebersetzungen(roh: unknown, sprache: VocabSprache, exampleTerm: string): VocabEntry['exampleTranslations'] {
+  const ergebnis: NonNullable<VocabEntry['exampleTranslations']> = {};
+  if (roh && typeof roh === 'object' && !Array.isArray(roh)) {
+    for (const code of UI_LANGUAGES) {
+      const text = (roh as Record<string, unknown>)[code];
+      if (typeof text === 'string' && text.trim()) ergebnis[code] = text.trim();
+    }
+  }
+  if ((UI_LANGUAGES as readonly string[]).includes(sprache)) ergebnis[sprache as UiLanguage] = exampleTerm;
+  return ergebnis;
+}
+
+export type StudioDokument = { language?: string; term?: string; german?: string; concept?: string; learningStage?: LearningStage };
 type StudioBestand = { zahlen: Partial<Record<string, number>>; dokumente: StudioDokument[] };
 
 /** Zustand vom HELPER (Katalog auf der Platte + Stage) — der gebündelte
@@ -347,6 +434,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       const bekannte = eigene.map((d) => d.term).filter((term): term is string => Boolean(term));
       const vorhandenSchluessel = new Set(eigene.map((d) => vocabSchluessel(String(d.term ?? ''), code)));
       const blacklistBegriffe = await ladeBlacklist(code);
+      // Gemeinsame Begriffe aller Lernsprachen: gleiche Bedeutung, gleiche Kennung.
+      const gemeinsam = begriffeAusBestand(bestandJetzt.dokumente, code, stage);
       const blacklist = new Set(blacklistBegriffe.map((begriff) => vocabSchluessel(begriff, code)));
       // Fehlerprotokoll dieses Pakets — landet als JSON-Zeilen in
       // pipeline/logs/studio-failures.ndjson (Nutzerwunsch: Datei statt
@@ -358,7 +447,17 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
       const antwort = await zaehl(client).complete({
         system:
           'Du erzeugst Lernwortschatz als JSON und hältst dich EXAKT an das geforderte Schema. Keine Duplikate, keine Eigennamen, häufige Wörter zuerst.',
-        user: baueWortschatzPrompt({ sprache: code, anzahl, thema, bekannte:local ? bekannte.slice(-500) : bekannte, abgelehnt: blacklistBegriffe.slice(-200) }) + '\nSchwierigkeitsgruppe: ' + stage + '. ' + (stage === 'beginner' ? 'Häufige grundlegende Wörter und kurze einfache Beispielsätze.' : stage === 'experienced' ? 'Wortschatz für selbstständige Alltagsgespräche, Meinungen, Arbeit; abwechslungsreiche Satzstrukturen.' : 'Differenzierter idiomatischer Wortschatz, abstrakte Themen und komplexe natürliche Beispielsätze. Keine seltenen Wörter nur um Schwierigkeit zu erzeugen.'),
+        user: baueWortschatzPrompt({
+          sprache: code,
+          anzahl,
+          thema,
+          stufe: stage,
+          bekannte: local ? bekannte.slice(-500) : bekannte,
+          abgelehnt: blacklistBegriffe.slice(-200),
+          // Lokale Modelle haben wenig Kontext: nur ein Ausschnitt.
+          begriffe: local ? gemeinsam.begriffe.slice(-300) : gemeinsam.begriffe.slice(0, 5000),
+          offeneBegriffe: local ? gemeinsam.offene.slice(0, 50) : gemeinsam.offene.slice(0, 500),
+        }),
         maxTokens: 32768,
       });
 
@@ -394,14 +493,30 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
           tick(term, 'skipped');
           continue;
         }
+        // Beispielsatz (24.10.2026): in allen App-Sprachen; die deutsche Seite
+        // kommt aus derselben Liste, damit es nur eine Wahrheit gibt.
+        const exampleTerm = typeof kandidat.exampleTerm === 'string' && kandidat.exampleTerm.trim()
+          ? kandidat.exampleTerm.trim() : undefined;
+        const exampleTranslations = exampleTerm ? satzUebersetzungen(kandidat.exampleTranslations, code, exampleTerm) : undefined;
+        // Diese drei Felder setzt die Karte selbst (gesäubert) — nicht roh übernehmen.
+        const rest: Record<string, unknown> = { ...kandidat };
+        delete rest.exampleTranslations;
+        delete rest.exampleGerman;
+        delete rest.concept;
         const eintrag: VocabEntry = {
-          ...(kandidat as unknown as VocabEntry),
+          ...(rest as unknown as VocabEntry),
           id: `ki-${code}-${kurzHash(schluessel)}`,
           generatedAt: Date.now(),
           // 'de' trägt die Laufzeit längst (de-Pool; vocab-schema liest die
           // Sprache als string) — nur der Typ kennt es noch nicht: Cast.
           language: code as VocabEntry['language'],
-          concept: `ki-${code}-${kurzHash(schluessel)}`,
+          // Die KI nennt den Begriff; fehlt er, verwirft pruefeVocabDoc den Eintrag.
+          concept: normalizeConcept(typeof kandidat.concept === 'string' ? kandidat.concept : undefined) ?? undefined,
+          ...(exampleTerm ? {
+            exampleTerm,
+            exampleTranslations,
+            exampleGerman: exampleTranslations?.de ?? (typeof kandidat.exampleGerman === 'string' ? kandidat.exampleGerman : undefined),
+          } : {}),
           register: (kandidat.register as VocabEntry['register']) ?? 'neutral',
           isConcrete: Boolean(kandidat.isConcrete),
           // NIE true: das Feld bedeutet „quellengeprüft" und verlangt eine
@@ -446,7 +561,8 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
             provider,
             hatSchluessel,
             (anbieter) => zaehl(clientFuer(anbieter)),
-            checkProvider
+            checkProvider,
+            gemeinsam.belege
           );
           pruefFertig += 1;
           status(`${label}: Prüfpaket ${pruefFertig} / ${pruefPakete.length} fertig …`);

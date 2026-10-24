@@ -73,7 +73,7 @@ function assertDocument(kind, doc, vocabulary = []) {
     situations: 'id level topic direction title setting scriptTurns corrections generatedAt modelUsed translations',
     images: 'id vocabId format byteSize blobKey prompt model generatedAt',
     audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice instructionsId generatedAt synthetic',
-    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman sourceVerified source verificationNote note',
+    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman exampleTranslations sourceVerified source verificationNote note',
   }[kind].split(' ');
   if (Object.keys(doc).some((key) => !fields.includes(key))) throw Error('Unbekannte Metadatenfelder; Export verweigert.');
 }

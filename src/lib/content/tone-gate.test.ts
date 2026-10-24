@@ -4,6 +4,7 @@ import {
   beurteileRegisterProbe,
   checkThaiTone,
   leereRegisterProbe,
+  pruefeThaiTonMessung,
   sammleRegisterProbe,
   sollToneFuerClip,
   type ToneCheck,
@@ -24,14 +25,17 @@ const clip = (id: string, extra: Partial<AudioClip> = {}) => ({
 }) as AudioClip;
 
 test('only verified exact single-syllable text can pass; metadata cannot invent a target', () => {
-  const falling = sweep(240, 120);
+  const falling = silbenfolge([fallend(1000)]);
   expect(checkThaiTone(clip('kha'), falling, 8000)).toMatchObject({ status: 'passed', targetTone: 'falling', sourceId: 'kha' });
+  // Ein lineares Absinken spricht die Stimme auch bei mittel und tief — als
+  // fallender Ton nicht bewiesen, aber auch kein Widerspruch.
+  expect(checkThaiTone(clip('kha'), sweep(240, 120), 8000).status).toBe('unchecked');
   expect(checkThaiTone(clip('kha'), sweep(120, 240), 8000).status).toBe('failed');
   for (const candidate of [clip('sawatdii'), clip('raan'), clip('kha', { text: 'ม้า' }), clip('kha', { kind: 'example' })]) {
     expect(checkThaiTone(candidate, falling, 8000).status).toBe('unchecked');
   }
   expect(checkThaiTone(clip('khrap'), sweep(200, 200), 8000).status).toBe('unchecked');
-  expect(checkThaiTone(clip('khrap'), falling, 8000).status).toBe('failed');
+  expect(checkThaiTone(clip('khrap'), sweep(240, 120), 8000).status).toBe('failed');
 });
 
 test('silence and seeded random noise cannot turn weak correlations into a passing tone', () => {
@@ -50,8 +54,33 @@ test('silence and seeded random noise cannot turn weak correlations into a passi
 // kontext, sourceVerified nie gesetzt, Mehrsilber prinzipiell ausgeschlossen.
 // ---------------------------------------------------------------------------
 
+/** Abschnitt einer Silbenkontur: [vonHz, bisHz, Anteil der Silbendauer]. */
+type Abschnitt = [number, number, number];
+type Teil = { von: number; bis: number; ms?: number; kontur?: Abschnitt[] };
+
+/** Frequenz einer Silbe an der Stelle x ∈ [0, 1): linear oder stückweise nach `kontur`. */
+function frequenz(teil: Teil, x: number): number {
+  if (!teil.kontur) return teil.von + (teil.bis - teil.von) * x;
+  let anfang = 0;
+  for (const [von, bis, anteil] of teil.kontur) {
+    if (x < anfang + anteil) return von + (bis - von) * ((x - anfang) / anteil);
+    anfang += anteil;
+  }
+  const letzter = teil.kontur[teil.kontur.length - 1];
+  return letzter[1];
+}
+
+/**
+ * Realistische Tonformen (seit f0-syllables-6 verlangt das Gate sie): der
+ * fallende Ton bleibt erst eben und stürzt spät, der steigende sinkt erst
+ * unter den Ansatz und steigt dann. Lineare Rampen sind keine Beweise mehr —
+ * so spricht die Stimme auch mittel (linear absinkend) und hoch (ansteigend).
+ */
+const fallend = (ms = 300): Teil => ({ von: 0, bis: 0, ms, kontur: [[220, 240, 0.5], [240, 125, 0.5]] });
+const steigend = (ms = 300): Teil => ({ von: 0, bis: 0, ms, kontur: [[170, 140, 0.4], [140, 260, 0.6]] });
+
 /** Eine Silbenfolge als PCM: Sweeps mit wählbarer Stillpause dazwischen. */
-function silbenfolge(teile: ({ von: number; bis: number; ms?: number } | { pause: number })[], sampleRate = 8000): Float32Array {
+function silbenfolge(teile: (Teil | { pause: number })[], sampleRate = 8000): Float32Array {
   const stuecke: Float32Array[] = [];
   for (const teil of teile) {
     if ('pause' in teil) {
@@ -61,7 +90,7 @@ function silbenfolge(teile: ({ von: number; bis: number; ms?: number } | { pause
     const n = Math.round((sampleRate * (teil.ms ?? 300)) / 1000);
     let phase = 0;
     stuecke.push(Float32Array.from({ length: n }, (_, i) => {
-      phase += (2 * Math.PI * (teil.von + (teil.bis - teil.von) * (i / n))) / sampleRate;
+      phase += (2 * Math.PI * frequenz(teil, i / n)) / sampleRate;
       return Math.sin(phase);
     }));
   }
@@ -73,7 +102,7 @@ function silbenfolge(teile: ({ von: number; bis: number; ms?: number } | { pause
  * Grenze — der Normalfall verbundener Thai-Silben (20.09.).
  */
 function verbundeneSilben(
-  teile: { von: number; bis: number; ms?: number }[],
+  teile: Teil[],
   talAnteil = 0.2,
   sampleRate = 8000
 ): Float32Array {
@@ -82,7 +111,7 @@ function verbundeneSilben(
   teile.forEach((teil, nr) => {
     const n = Math.round((sampleRate * (teil.ms ?? 300)) / 1000);
     for (let i = 0; i < n; i++) {
-      phase += (2 * Math.PI * (teil.von + (teil.bis - teil.von) * (i / n))) / sampleRate;
+      phase += (2 * Math.PI * frequenz(teil, i / n)) / sampleRate;
       // Am Anfang jeder Silbe (außer der ersten) eine kurze Senke: die
       // Periodizität bleibt, die Energie sackt ab.
       const naheGrenze = nr > 0 && i < Math.round(sampleRate * 0.05);
@@ -106,7 +135,7 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
     const wort = kiWort(['falling', 'rising']);
     const passt = checkThaiTone(
       { language: 'th', kind: 'vocab', sourceId: wort.id, text: wort.term },
-      silbenfolge([{ von: 240, bis: 120 }, { pause: 150 }, { von: 120, bis: 260 }]),
+      silbenfolge([fallend(), { pause: 150 }, steigend()]),
       8000,
       { woerter: [wort] }
     );
@@ -153,17 +182,19 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
       8000,
       { woerter: [wort] }
     );
-    expect(eingerissen.status).toBe('passed');
-    // Echte Pausen (beide Lücken über der Merge-Grenze) bleiben getrennt:
-    // drei Züge für zwei Silben sind keine eindeutige Zuordnung.
+    expect(eingerissen.status).not.toBe('failed');
+    expect(eingerissen.silben).toHaveLength(2);
+    // Zwei gleich lange Pausen: welche die Silbengrenze ist, bleibt offen
+    // (geratene Grenze) — auch gegen einen VERTAUSCHTEN Soll wird dann nicht
+    // verworfen.
+    const vertauscht = kiWort(['rising', 'falling']);
     const zerrissen = checkThaiTone(
-      basis,
+      { ...basis, sourceId: vertauscht.id, text: vertauscht.term },
       silbenfolge([{ von: 240, bis: 170 }, { pause: 320 }, { von: 165, bis: 110 }, { pause: 320 }, { von: 120, bis: 260 }]),
       8000,
-      { woerter: [wort] }
+      { woerter: [vertauscht] }
     );
     expect(zerrissen.status).toBe('unchecked');
-    expect(zerrissen.reason).toContain('nicht eindeutig');
   });
 
   it('liest die Solltonfolge eines BEISPIELSATZES aus der Roman-Umschrift', () => {
@@ -269,7 +300,7 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
     const wort = kiWort(['high', 'rising']);
     const ergebnis = checkThaiTone(
       { language: 'th' as const, kind: 'vocab' as const, sourceId: wort.id, text: wort.term },
-      silbenfolge([{ von: 250, bis: 130 }, { pause: 150 }, { von: 150, bis: 270 }]),
+      silbenfolge([{ von: 250, bis: 130 }, { pause: 150 }, steigend()]),
       8000,
       { woerter: [wort] }
     );
@@ -285,13 +316,23 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
     // gesprochenen Clip und ließ ihn beim nächsten Lauf erneut bezahlen.
     const wort = kiWort(['falling']);
     const basis = { language: 'th' as const, kind: 'vocab' as const, sourceId: wort.id, text: wort.term };
+    // Seit f0-syllables-6 ist ein Einsilber nur mit spätem Sturz ≥ 5
+    // Halbtönen BEWIESEN fallend (sonst gleicht er dem mittleren Ton der
+    // Stimme) — verworfen wird der flachere Fall aber nicht.
     const steigDannFall = checkThaiTone(
       basis,
       silbenfolge([{ von: 190, bis: 240, ms: 120 }, { von: 240, bis: 170, ms: 220 }]),
       8000,
       { woerter: [wort] }
     );
-    expect(steigDannFall.status).toBe('passed');
+    expect(steigDannFall.status).toBe('unchecked');
+    const steigDannSturz = checkThaiTone(
+      basis,
+      silbenfolge([{ von: 0, bis: 0, ms: 340, kontur: [[190, 240, 0.35], [240, 235, 0.2], [235, 130, 0.45]] }]),
+      8000,
+      { woerter: [wort] }
+    );
+    expect(steigDannSturz.status).toBe('passed');
     // Ohne Bewegung bleibt es trotzdem ein Widerspruch: eben ist nicht fallend.
     expect(checkThaiTone(basis, silbenfolge([{ von: 200, bis: 200 }]), 8000, { woerter: [wort] }).status).toBe('failed');
   });
@@ -302,10 +343,12 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
     // Fünfsilbern) — für Sätze mit im Schnitt sieben Silben entscheidend.
     const wort = kiWort(['falling', 'rising']);
     const basis = { language: 'th' as const, kind: 'vocab' as const, sourceId: wort.id, text: wort.term };
-    const verbunden = checkThaiTone(basis, verbundeneSilben([{ von: 240, bis: 120 }, { von: 120, bis: 260 }]), 8000, { woerter: [wort] });
+    // Die steigende Silbe setzt dort an, wo die fallende endet (verbunden).
+    const anschluss: Teil = { von: 0, bis: 0, kontur: [[145, 105, 0.4], [105, 260, 0.6]] };
+    const verbunden = checkThaiTone(basis, verbundeneSilben([fallend(), anschluss]), 8000, { woerter: [wort] });
     expect(verbunden.status).toBe('passed');
     expect(verbunden.silben?.map((silbe) => silbe.form)).toEqual(['geprueft', 'geprueft']);
-    expect(verbunden.reason).toContain('Silbengrenze(n) aus dem Lautstärkeverlauf');
+    expect(verbunden.reason).toContain('Silbengrenze(n) geraten');
     // Ohne Einbruch trägt seit 23.09.2026 der Vorlagenabgleich über die ganze Kurve.
     const ohneTal = checkThaiTone(basis, verbundeneSilben([{ von: 240, bis: 120 }, { von: 120, bis: 260 }], 1), 8000, { woerter: [wort] });
     expect(ohneTal.status).toBe('passed');
@@ -398,5 +441,70 @@ describe('silbenweise Prüfung gegen den übergebenen Bestand', () => {
     const signal = silbenfolge([{ von: 240, bis: 120 }]);
     expect(checkThaiTone(basis, signal, 8000, { woerter: [wort] }).track).toBeUndefined();
     expect(checkThaiTone(basis, signal, 8000, { woerter: [wort] }, { track: true }).track?.length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// f0-syllables-6 (24.10.2026): Soll-Töne vom Aufrufer, vollständige
+// Konturprüfung, Ordnung allein erst ab 3 Halbtönen.
+// ---------------------------------------------------------------------------
+
+describe('f0-syllables-6', () => {
+  const zug = { language: 'th', kind: 'turn', sourceId: 'dialog-1#2', text: 'ทดสอบ' } as const;
+
+  it('nimmt Soll-Töne direkt vom Aufrufer an — auch für Dialogzüge', () => {
+    const signal = silbenfolge([fallend(), { pause: 150 }, steigend()]);
+    expect(checkThaiTone(zug, signal, 8000).status).toBe('unchecked');
+    const mitSoll = checkThaiTone(zug, signal, 8000, undefined, { sollToene: ['falling', 'rising'], sollRoman: ['khâo', 'sǎao'] });
+    expect(mitSoll).toMatchObject({ status: 'passed', quelle: 'aufrufer', targetTones: ['falling', 'rising'], sourceId: 'dialog-1#2' });
+    // Der Aufrufer-Soll geht dem Wortschatz vor; ungültige Töne prüfen nichts.
+    const wort = kiWort(['rising', 'falling']);
+    const vocab = { language: 'th', kind: 'vocab', sourceId: wort.id, text: wort.term } as const;
+    expect(checkThaiTone(vocab, signal, 8000, { woerter: [wort] }, { sollToene: ['falling', 'rising'] }).status).toBe('passed');
+    expect(checkThaiTone(zug, signal, 8000, undefined, { sollToene: ['fallend' as Tone] })).toMatchObject({
+      status: 'unchecked', reason: expect.stringContaining('ungültig'),
+    });
+  });
+
+  it('urteilt über eine fertige Messung genauso wie über PCM', () => {
+    const signal = silbenfolge([fallend(), { pause: 150 }, steigend()]);
+    const optionen = { sollToene: ['falling', 'rising'] as Tone[] };
+    expect(pruefeThaiTonMessung(zug, analyzeToneContour(signal, 8000), undefined, optionen))
+      .toEqual(checkThaiTone(zug, signal, 8000, undefined, optionen));
+  });
+
+  it('gibt nur frei, wenn JEDE Kontur-Silbe klar erkennbar ist', () => {
+    // Steigend ohne Senke ist die Form, mit der die Stimme auch hoch spricht.
+    const ohneSenke = checkThaiTone(zug, silbenfolge([fallend(), { pause: 150 }, { von: 150, bis: 270 }]), 8000, undefined,
+      { sollToene: ['falling', 'rising'] });
+    expect(ohneSenke.status).toBe('unchecked');
+    expect(ohneSenke.silben?.map((silbe) => silbe.form)).toEqual(['geprueft', 'knapp']);
+    expect(ohneSenke.reason).toMatch(/Silbe 2 von 2/);
+  });
+
+  it('hält eine mittlere Silbe mit klarer Steigform auf, ohne zu verwerfen', () => {
+    const ergebnis = checkThaiTone(zug, silbenfolge([steigend(), { pause: 150 }, fallend()]), 8000, undefined,
+      { sollToene: ['mid', 'falling'] });
+    expect(ergebnis.status).toBe('unchecked');
+    expect(ergebnis.silben?.[0].form).toBe('gegen');
+  });
+
+  it('lässt die Register-Ordnung allein erst ab 3 Halbtönen freigeben', () => {
+    // Ganzzahlige Perioden bei 8 kHz: 200 Hz (40), 222,2 Hz (36), 250 Hz (32).
+    const knapp = checkThaiTone(zug, silbenfolge([{ von: 200, bis: 200 }, { pause: 150 }, { von: 8000 / 36, bis: 8000 / 36 }]), 8000,
+      undefined, { sollToene: ['mid', 'high'] });
+    expect(knapp.ordnung?.erfuellt).toBe(1);
+    expect(knapp.status).toBe('unchecked');
+    const deutlich = checkThaiTone(zug, silbenfolge([{ von: 200, bis: 200 }, { pause: 150 }, { von: 250, bis: 250 }]), 8000,
+      undefined, { sollToene: ['mid', 'high'] });
+    expect(deutlich.status).toBe('passed');
+  });
+
+  it('liefert die Kontur je Silbe nur auf Wunsch', () => {
+    const signal = silbenfolge([fallend(), { pause: 150 }, steigend()]);
+    expect(checkThaiTone(zug, signal, 8000, undefined, { sollToene: ['falling', 'rising'] }).diagnose).toBeUndefined();
+    const mit = checkThaiTone(zug, signal, 8000, undefined, { sollToene: ['falling', 'rising'], diagnose: true });
+    expect(mit.diagnose).toHaveLength(2);
+    expect(mit.diagnose?.[0].pts).toHaveLength(6);
   });
 });

@@ -74,6 +74,7 @@
     "content:tone-report": "node scripts/content/tone-report.cjs",
     "content:thai-tones": "node scripts/content/thai-tones.cjs",
     "content:tone-calibration": "node scripts/content/tone-calibration.cjs",
+    "content:tone-eval": "node scripts/content/tone-eval.cjs",
     "pipeline:release": "node scripts/release-pipeline.cjs",
     "content:tone-tool": "node scripts/build-tone-tool.cjs --check",
     "audit:structure": "node scripts/audit-structure.cjs",

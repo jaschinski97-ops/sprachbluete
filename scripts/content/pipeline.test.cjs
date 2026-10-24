@@ -199,7 +199,9 @@ test('missing background heartbeat never finalizes during a model request; idle 
     assert.equal((await pipeline.catalog()).entries[0].id, situation.id);
   } finally { Date.now = realNow; release(); await audioResponse; }
 });
-function wav(start = 200, end = start) {
+// `mitte`: Tonhöhe zur Hälfte (stückweise linear) — seit f0-syllables-6
+// verlangt das Gate für fallend einen späten Sturz nach ebenem Ansatz.
+function wav(start = 200, end = start, mitte) {
   const data = Buffer.alloc(44 + 24000 * 2);
   data.write('RIFF'); data.writeUInt32LE(data.length - 8, 4); data.write('WAVEfmt ', 8);
   data.writeUInt32LE(16, 16); data.writeUInt16LE(1, 20); data.writeUInt16LE(1, 22);
@@ -207,7 +209,10 @@ function wav(start = 200, end = start) {
   data.write('data', 36); data.writeUInt32LE(data.length - 44, 40);
   let phase = 0;
   for (let i = 0; i < 24000; i++) {
-    phase += 2 * Math.PI * (start + (end - start) * i / 24000) / 24000;
+    const x = i / 24000;
+    const hz = mitte === undefined ? start + (end - start) * x
+      : x < 0.5 ? start + (mitte - start) * (x / 0.5) : mitte + (end - mitte) * ((x - 0.5) / 0.5);
+    phase += 2 * Math.PI * hz / 24000;
     data.writeInt16LE(Math.round(8000 * Math.sin(phase)), 44 + i * 2);
   }
   return data;
@@ -256,7 +261,7 @@ test('failed tones stay out; unchecked clips ship with their original status and
   const word = VOCABULARY.find(word => word.id === 'kha');
   const wrong = await pipeline.stage(audio(wav(120, 240), word));
   assert.equal(wrong.check.tone.status, 'failed'); assert.equal((await pipeline.publish()).entries, 0);
-  const right = await pipeline.stage(audio(wav(240, 120), word));
+  const right = await pipeline.stage(audio(wav(220, 125, 240), word));
   assert.equal(right.check.tone.status, 'passed'); assert.equal((await pipeline.publish()).entries, 1);
   const multi = VOCABULARY.find(word => word.id === 'sawatdii');
   assert.equal((await pipeline.stage(audio(wav(), multi))).check.status, 'unchecked');
@@ -422,7 +427,12 @@ test('AE-31 reproduction: every previously measurable Microsoft contour remains 
     assert.deepEqual(after, before, item.file);
     const word = VOCABULARY.find(word => word.language === 'th' && word.term === item.word);
     const result = checkThaiTone(audio(wav(), word).document, pcm, 24000, { woerter: VOCABULARY });
-    assert.equal(result.status, ['falling', 'rising'].includes(item.tone) ? 'passed' : 'unchecked', item.file);
+    // Seit f0-syllables-6 braucht steigend eine Senke vor dem Anstieg (coral
+    // spricht hoch mit Anstieg zum Ende). Niwats หมา steigt ohne Senke: nicht
+    // bewiesen, aber auch nicht verworfen.
+    const erwartet = item.file === 'edge_Niwat_maa_rising.mp3' ? 'unchecked'
+      : ['falling', 'rising'].includes(item.tone) ? 'passed' : 'unchecked';
+    assert.equal(result.status, erwartet, item.file);
   }
 });
 

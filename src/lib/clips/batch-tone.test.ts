@@ -32,6 +32,29 @@ function sineWavBase64(fromHz: number, toHz: number, ms = 400, sampleRate = 2400
   return bytesToBase64(pcmToWav(pcm, { sampleRate, channels: 1, bitsPerSample: 16 }));
 }
 
+/**
+ * Tonkurve aus Abschnitten [vonHz, bisHz, Anteil] mit stetiger Phase —
+ * realistische Tonformen: steigend mit Senke vor dem Anstieg, fallend eben
+ * und dann spät und steil (seit f0-syllables-6 verlangt das Gate genau das).
+ */
+function konturWavBase64(abschnitte: [number, number, number][], ms = 400, sampleRate = 24000): string {
+  const samples = Math.round((sampleRate * ms) / 1000);
+  const pcm = new Uint8Array(samples * 2);
+  const view = new DataView(pcm.buffer);
+  let phase = 0;
+  let i = 0;
+  for (const [von, bis, anteil] of abschnitte) {
+    const n = Math.round(samples * anteil);
+    for (let k = 0; k < n && i < samples; k++, i++) {
+      phase += (2 * Math.PI * (von + (bis - von) * (k / n))) / sampleRate;
+      view.setInt16(i * 2, Math.round(0.5 * 32767 * Math.sin(phase)), true);
+    }
+  }
+  return bytesToBase64(pcmToWav(pcm, { sampleRate, channels: 1, bitsPerSample: 16 }));
+}
+const STEIGEND: [number, number, number][] = [[200, 160, 0.4], [160, 280, 0.6]];
+const FALLEND: [number, number, number][] = [[220, 240, 0.5], [240, 130, 0.5]];
+
 async function freshStore(): Promise<DataStore> {
   const store = new MemoryDataStore();
   await store.init();
@@ -157,12 +180,12 @@ describe('Automatische Tonprüfung im Clip-Lauf', () => {
   it('nimmt einen Clip mit passender Kontur an und zählt ihn', async () => {
     const store = await freshStore();
     const blobs = freshBlobs();
-    // หมา ist verifiziert steigend; eine klare Aufwärtsbewegung passt.
+    // หมา ist verifiziert steigend; Senke und klarer Anstieg passen.
     const spec = specOf('หมา', 'test-rising');
 
     const result = await runClipBatch({
       specs: [spec],
-      client: staticClient(sineWavBase64(150, 270)),
+      client: staticClient(konturWavBase64(STEIGEND)),
       store,
       blobStore: blobs,
       now: () => T0,
@@ -289,8 +312,8 @@ describe('Automatische Tonprüfung im Clip-Lauf', () => {
           const wort = woerter.find((eintrag) => eintrag.id === spec.sourceId);
           if (!wort) throw new Error('unbekannte Spec: ' + spec.id);
           const sweep = wort.syllables[0].tone === 'falling'
-            ? sineWavBase64(240, 120) // fallend korrekt
-            : sineWavBase64(150, 270); // steigend korrekt
+            ? konturWavBase64(FALLEND) // fallend korrekt
+            : konturWavBase64(STEIGEND); // steigend korrekt
           return { base64: sweep, format: 'wav', model: 'test-tts', voice: 'Testa', provider: 'gemini', durationMs: 400 };
         },
       },

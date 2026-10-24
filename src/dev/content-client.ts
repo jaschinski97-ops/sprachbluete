@@ -7,6 +7,7 @@ import { isDeletedDraft, setLiveCatalog } from '@/lib/content/bundled';
 import { invalidateClipIndex } from '@/lib/clips/lookup';
 import { loadVocabulary } from '@/lib/repository';
 import { currentCatalog } from '@/lib/content/catalog-state';
+import { imageInLanguageSelection } from '@/lib/images/concept-images';
 
 export async function clearContentSelection(kind: 'vocabulary' | 'situations' | 'images' | 'audio', languages: string[]) {
   const result = await studioRequest<{ katalog: number; stage: number }>('/catalog/clear-selection', { kind, languages });
@@ -15,10 +16,15 @@ export async function clearContentSelection(kind: 'vocabulary' | 'situations' | 
   const db = await getStore();
   const words = await loadVocabulary();
   const collection = kind === 'vocabulary' ? 'vocab' : kind;
-  const docs = await db.getAll<{ id: string; language?: string; direction?: string; vocabId?: string; blobKey?: string }>(collection);
+  const docs = await db.getAll<{ id: string; language?: string; direction?: string; vocabId?: string; concept?: string; blobKey?: string }>(collection);
   for (const doc of docs) {
-    const language = kind === 'situations' ? doc.direction?.split('_to_')[1] : kind === 'images' ? words.find(w => w.id === doc.vocabId)?.language : doc.language;
-    if (!languages.includes(language ?? '') || (kind === 'vocabulary' && !doc.id.startsWith('ki-'))) continue;
+    // Ein gemeinsames Begriffsbild geht nur, wenn alle Sprachen gewählt sind, die es zeigen.
+    if (kind === 'images') {
+      if (!imageInLanguageSelection(doc, words, languages)) continue;
+    } else {
+      const language = kind === 'situations' ? doc.direction?.split('_to_')[1] : doc.language;
+      if (!languages.includes(language ?? '') || (kind === 'vocabulary' && !doc.id.startsWith('ki-'))) continue;
+    }
     await db.remove(collection, doc.id);
     if (doc.blobKey && (kind === 'audio' || kind === 'images')) {
       const blobs = kind === 'audio' ? await getAudioBlobStore() : await getImageBlobStore();

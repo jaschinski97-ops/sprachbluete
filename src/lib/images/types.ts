@@ -36,9 +36,17 @@ export const MIME_BY_FORMAT: Record<ImageFormat, string> = {
  * keine Typen mehr) — siehe Pflicht 4 / AE-15.
  */
 export type ImageSpec = {
-  /** Gleich der Vokabel-ID: je Vokabel genau ein Bild. */
+  /**
+   * Bild-ID: bei gemeinsamem Begriff `concept-<begriff>` (`imageIdFor`), sonst
+   * die Vokabel-ID. Ein Begriff bekommt so in jeder Sprache dieselbe ID.
+   */
   id: string;
+  /** Das Wort, an dem der Auftrag geplant wurde (Anker; Prüfung, Anzeige). */
   vocabId: string;
+  /** Gemeinsamer Begriff `c:…` — fehlt bei alten Bildern je Wort. */
+  concept?: string;
+  /** Sprach-Ausnahme: eigenes Bild nur für diese Lernsprache. */
+  language?: string;
   thai: string;
   romanization: string;
   german: string;
@@ -50,9 +58,14 @@ export type ImageSpec = {
 
 /** Metadaten-Dokument in der Sammlung `images`. */
 export type VocabImage = {
-  /** Gleich der Vokabel-ID. */
+  /** `concept-<begriff>` (ggf. `-<sprache>`), bei altem Bestand die Vokabel-ID. */
   id: string;
+  /** Anker-Wort; bei altem Bestand das Wort, zu dem das Bild gehört. */
   vocabId: string;
+  /** Gemeinsamer Begriff `c:…`: jedes Wort dieses Begriffs zeigt das Bild. */
+  concept?: string;
+  /** Sprach-Ausnahme: gilt nur für diese Lernsprache, vor dem gemeinsamen Bild. */
+  language?: string;
   format: ImageFormat;
   /** Größe der Bilddaten in Byte (dekodiert, nicht Base64). */
   byteSize: number;
@@ -73,8 +86,8 @@ export type GeneratedImage = {
   prompt: string;
 };
 
-export function blobKeyFor(vocabId: string, format: ImageFormat): string {
-  return `${vocabId}.${format}`;
+export function blobKeyFor(imageId: string, format: ImageFormat): string {
+  return `${imageId}.${format}`;
 }
 
 export function formatOfKey(key: string): ImageFormat {

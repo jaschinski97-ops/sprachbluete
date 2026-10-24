@@ -19,6 +19,7 @@ import { getAudioBlobStore } from './clips/blob-store';
 import { invalidateClipIndex } from './clips/lookup';
 import { AudioBlobStore, AudioClip, isValidAudioClip } from './clips/types';
 import { getImageBlobStore } from './images/blob-store';
+import { imageCandidateIds, type ImageWord } from './images/concept-images';
 import { ImageBlobStore, VocabImage } from './images/types';
 
 import { createCardState, reviewCard } from './fsrs/fsrs';
@@ -227,15 +228,16 @@ export async function countSituationsByDirection(
  * und fragen hier nach einer fertigen `uri`.
  */
 
+/** Bild-Dokument nach Bild-ID (`concept-…` oder, alter Bestand, Vokabel-ID). */
 export async function loadVocabImage(
-  vocabId: string,
+  imageId: string,
   store?: DataStore
 ): Promise<VocabImage | null> {
-  const shipped = bundledDocuments('images').find((image) => image.id === vocabId);
+  const shipped = bundledEntry('images', imageId)?.document as VocabImage | undefined;
   if (shipped) return shipped;
   if (!__DEV__ || (!store && !isContentDeveloper())) return null;
   const db = store ?? (await getStore());
-  const doc = await db.get<VocabImage>('images', vocabId);
+  const doc = await db.get<VocabImage>('images', imageId);
   return doc && !isDeletedDraft('images', doc) ? doc : null;
 }
 
@@ -254,30 +256,25 @@ export async function countVocabImages(store?: DataStore): Promise<number> {
 export type ImageLanguageCounts = Record<Lang, number>;
 
 /**
- * Bilder je Zielsprache — über den Vokabel-Eintrag, zu dem das Bild gehört.
+ * Wie viele Wörter je Lernsprache ein Bild zeigen (seit 24.10.2026).
  *
- * Die Bild-ID IST die Vokabel-ID („Gleich der Vokabel-ID", `images/types.ts`);
- * die Sprache steht also nicht im Bilddokument, sondern am zugehörigen
- * Eintrag des Grundstocks. Einträge außerhalb des Grundstocks werden
- * ausgelassen statt erraten — ein Bild ohne Vokabel wäre ohnehin nicht
- * auffindbar.
- *
- * SEIT „Füge noch Deutsch zum Generieren hinzu" (10.09.) zählt die Zeile
- * Deutsch mit, und zwar ehrlich für ihre Frage: Ein Bildmotiv gehört zum
- * BEGRIFF, nicht zur Sprache (AE-46) — deutsche Karten zeigen das
- * Konzeptbild ihres Ankers. Die Zeile sagt also, wie viele der de-Pool-
- * Begriffe ein Bild haben; dasselbe Bild kann dadurch auch in der Zeile
- * seines Ankers stehen. Die th/en/es-Zeilen zählen unverändert über die
- * Sprache ihres Grundstock-Eintrags.
+ * Ein Bild gehört nicht mehr einer Sprache: Das Bild zu `c:apple` zeigen
+ * Apfel, apple, manzana und แอปเปิ้ล gleichermaßen. Gezählt wird deshalb je
+ * Sprache, wie viele ihrer Wörter über ihren Begriff (oder ihr altes eigenes
+ * Bild) eines finden. Abgelehnte Motive zählen nicht.
  */
 export async function countImagesByLanguage(
   store?: DataStore
 ): Promise<ImageLanguageCounts> {
   const zaehler = Object.fromEntries(LANGUAGE_CODES.map((code) => [code, 0])) as ImageLanguageCounts;
-  const nachId = new Map(bundledDocuments('vocabulary').map((word) => [word.id, word]));
-  for (const image of await loadVocabImages(store)) {
-    const eintrag = nachId.get(image.vocabId || image.id);
-    if (eintrag && isLanguageCode(eintrag.language)) zaehler[eintrag.language] += 1;
+  const vorhanden = new Set(
+    (await loadVocabImages(store))
+      .filter((image) => !isRejectedImageAsset(bundledEntry('images', image.id)?.asset ?? image.blobKey))
+      .map((image) => image.id)
+  );
+  for (const word of bundledDocuments('vocabulary')) {
+    if (!isLanguageCode(word.language)) continue;
+    if (imageCandidateIds(word).some((id) => vorhanden.has(id))) zaehler[word.language] += 1;
   }
   return zaehler;
 }
@@ -296,20 +293,37 @@ export async function countImagesByLanguage(
  * reservieren — und der nächste Generierungslauf holt das Bild nach.
  */
 export async function loadVocabImageUri(
-  vocabId: string,
+  word: string | ImageWord,
+  store?: DataStore,
+  blobStore?: ImageBlobStore,
+  language?: PackLanguage
+): Promise<string | null> {
+  // Seit 24.10.2026 je Begriff: erst die Sprach-Ausnahme, dann das gemeinsame
+  // Bild des Begriffs (gleich, für welche Sprache es erzeugt wurde), zuletzt
+  // das alte Bild des Worts. Ein abgelehntes Motiv fällt zum nächsten durch.
+  const ids = imageCandidateIds(typeof word === 'string' ? { id: word } : word);
+  for (const id of ids) {
+    const uri = await imageUriById(id, store, blobStore, language);
+    if (uri) return uri;
+  }
+  return null;
+}
+
+async function imageUriById(
+  imageId: string,
   store?: DataStore,
   blobStore?: ImageBlobStore,
   language?: PackLanguage
 ): Promise<string | null> {
   if (language) {
-    const gepackt = await packImageUri(language, vocabId).catch(() => null);
+    const gepackt = await packImageUri(language, imageId).catch(() => null);
     if (gepackt && !isRejectedImageAsset(gepackt)) return gepackt;
   }
-  if (isRejectedImageAsset(bundledEntry('images', vocabId)?.asset)) return null;
-  const shipped = await bundledAssetUri('images', vocabId);
+  if (isRejectedImageAsset(bundledEntry('images', imageId)?.asset)) return null;
+  const shipped = await bundledAssetUri('images', imageId);
   if (shipped) return shipped;
   if (!__DEV__ || (!store && !isContentDeveloper())) return null;
-  const doc = await loadVocabImage(vocabId, store);
+  const doc = await loadVocabImage(imageId, store);
   if (!doc) return null;
   if (isRejectedImageAsset(doc.blobKey)) return null;
   const blobs = blobStore ?? (await getImageBlobStore());

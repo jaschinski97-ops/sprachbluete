@@ -143,22 +143,37 @@ function splitCatalog(catalog, rules, sourceCatalogSha256) {
   const { languages, uiLanguages, isDeliverableEntry, planDeliveryAudio } = rules;
   const known = new Set(languages);
   const vocabularyLanguage = new Map();
+  // Bilder je Begriff (24.10.2026): welche Sprachen Wörter mit diesem Begriff haben.
+  const conceptLanguages = new Map();
   for (const entry of catalog.entries) {
-    if (entry.kind === 'vocabulary' && !vocabularyLanguage.has(entry.id)) vocabularyLanguage.set(entry.id, entry.document?.language);
+    if (entry.kind !== 'vocabulary') continue;
+    if (!vocabularyLanguage.has(entry.id)) vocabularyLanguage.set(entry.id, entry.document?.language);
+    const concept = entry.document?.concept;
+    if (typeof concept === 'string' && concept.startsWith('c:')) {
+      if (!conceptLanguages.has(concept)) conceptLanguages.set(concept, new Set());
+      conceptLanguages.get(concept).add(entry.document.language);
+    }
   }
-  const languageOf = (entry) => {
-    if (entry.kind === 'vocabulary') return entry.document?.language;
-    if (entry.kind === 'situations') return targetOf(entry.document?.direction);
-    if (entry.kind === 'audio') return entry.document?.language;
-    if (entry.kind === 'images') return vocabularyLanguage.get(entry.document?.vocabId);
-    return undefined;
+  /** Ein oder mehrere Lernsprachen; ein gemeinsames Begriffsbild gehört jeder, die es zeigt. */
+  const languagesOf = (entry) => {
+    if (entry.kind === 'vocabulary') return [entry.document?.language];
+    if (entry.kind === 'situations') return [targetOf(entry.document?.direction)];
+    if (entry.kind === 'audio') return [entry.document?.language];
+    if (entry.kind === 'images') {
+      const doc = entry.document ?? {};
+      if (typeof doc.concept === 'string' && doc.concept.startsWith('c:')) {
+        return doc.language ? [doc.language] : [...(conceptLanguages.get(doc.concept) ?? [])];
+      }
+      return [vocabularyLanguage.get(doc.vocabId)];
+    }
+    return [];
   };
 
   const own = new Map(languages.map((language) => [language, []]));
   const everywhere = [];
   for (const entry of catalog.entries) {
-    const language = languageOf(entry);
-    if (known.has(language)) own.get(language).push(entry);
+    const targets = languagesOf(entry).filter((language) => known.has(language));
+    if (targets.length) for (const language of targets) own.get(language).push(entry);
     else everywhere.push(entry);
   }
 

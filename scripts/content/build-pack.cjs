@@ -37,28 +37,59 @@ function sha256(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
 }
 
-/** Sprache eines Katalog-Eintrags; Bilder laufen ueber die Vokabel-Sprache. */
+/**
+ * Sprache eines Katalog-Eintrags; alte Bilder laufen ueber die Vokabel-Sprache.
+ * Ein gemeinsames Begriffsbild hat keine einzelne Sprache (null) — welche
+ * Pakete es brauchen, entscheidet `imageLanguages`.
+ */
 function entryLanguage(entry, vocabLanguageById) {
   if (entry.kind === 'audio' && entry.document && typeof entry.document.language === 'string') {
     return entry.document.language;
   }
-  if (entry.kind === 'images' && entry.document && typeof entry.document.vocabId === 'string') {
-    return vocabLanguageById.get(entry.document.vocabId) ?? null;
+  if (entry.kind === 'images' && entry.document) {
+    if (isConceptDoc(entry.document)) return entry.document.language ?? null;
+    if (typeof entry.document.vocabId === 'string') return vocabLanguageById.get(entry.document.vocabId) ?? null;
   }
   return null;
+}
+
+function isConceptDoc(doc) {
+  return typeof doc?.concept === 'string' && doc.concept.startsWith('c:');
+}
+
+/** Begriff -> Lernsprachen mit einem Wort dieses Begriffs (aus dem Katalog-Wortschatz). */
+function conceptLanguagesOf(catalog) {
+  const map = new Map();
+  for (const entry of catalog.entries) {
+    if (entry.kind !== 'vocabulary' || !isConceptDoc(entry.document)) continue;
+    if (!map.has(entry.document.concept)) map.set(entry.document.concept, new Set());
+    map.get(entry.document.concept).add(entry.document.language);
+  }
+  return map;
 }
 
 /**
  * Waehlt die Paket-Eintrage einer Sprache aus dem Katalog.
  * Reihenfolge: Katalog-Reihenfolge, innerhalb davon deterministisch sortiert.
+ *
+ * Bilder je Begriff (24.10.2026): Ein gemeinsames Bild liegt in JEDEM Paket,
+ * dessen Sprache ein Wort mit diesem Begriff hat — ein Bild kann also in
+ * mehreren Paketen stecken. Hat die Sprache eine eigene Ausnahme fuer den
+ * Begriff, bleibt das gemeinsame Bild draussen (die App zeigt es dort nie).
  */
-function selectPackEntries(catalog, language, vocabLanguageById, isDeliverable) {
+function selectPackEntries(catalog, language, vocabLanguageById, isDeliverable, conceptLanguages = conceptLanguagesOf(catalog)) {
   const audio = [];
   const images = [];
-  for (const entry of catalog.entries) {
+  const deliverable = catalog.entries.filter((entry) => !isDeliverable || isDeliverable(entry));
+  const ownExceptions = new Set(deliverable
+    .filter((entry) => entry.kind === 'images' && isConceptDoc(entry.document) && entry.document.language === language)
+    .map((entry) => entry.document.concept));
+  for (const entry of deliverable) {
     if (entry.kind !== 'audio' && entry.kind !== 'images') continue;
-    if (entryLanguage(entry, vocabLanguageById) !== language) continue;
-    if (isDeliverable && !isDeliverable(entry)) continue;
+    const doc = entry.document;
+    if (entry.kind === 'images' && isConceptDoc(doc) && !doc.language) {
+      if (!conceptLanguages.get(doc.concept)?.has(language) || ownExceptions.has(doc.concept)) continue;
+    } else if (entryLanguage(entry, vocabLanguageById) !== language) continue;
     if (entry.kind === 'audio') audio.push(entry);
     else images.push(entry);
   }
@@ -361,6 +392,7 @@ module.exports = {
   IMAGE_MAX_EDGE,
   selectPackEntries,
   entryLanguage,
+  conceptLanguagesOf,
   buildPack,
   writeZip,
   readZipNames,

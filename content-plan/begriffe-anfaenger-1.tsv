@@ -1,0 +1,270 @@
+# Anfänger 1/4 — Kernwörter. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:yes	yes	interjection	0
+c:no	no	interjection	0
+c:hello	hello	interjection	0
+c:goodbye	goodbye	interjection	0
+c:thank_you	thank you	interjection	0
+c:sorry	sorry, excuse me	interjection	0
+c:please	please	adverb	0
+c:ok	okay	interjection	0
+c:i	I	pronoun	0
+c:you	you	pronoun	0
+c:he	he	pronoun	0
+c:she	she	pronoun	0
+c:it	it	pronoun	0
+c:we	we	pronoun	0
+c:they	they	pronoun	0
+c:this	this	pronoun	0
+c:that	that	pronoun	0
+c:here	here	adverb	0
+c:there	there	adverb	0
+c:who	who	pronoun	0
+c:what	what	pronoun	0
+c:where	where	adverb	0
+c:when	when	adverb	0
+c:why	why	adverb	0
+c:how	how	adverb	0
+c:how_much	how much	adverb	0
+c:how_many	how many	adverb	0
+c:which	which	pronoun	0
+c:not	not	adverb	0
+c:and	and	conjunction	0
+c:or	or	conjunction	0
+c:but	but	conjunction	0
+c:because	because	conjunction	0
+c:if	if	conjunction	0
+c:so_therefore	so, therefore	conjunction	0
+c:with	with	preposition	0
+c:without	without	preposition	0
+c:in	in	preposition	0
+c:on	on	preposition	0
+c:under	under	preposition	0
+c:near	near	adjective	0
+c:far	far	adjective	0
+c:from	from	preposition	0
+c:to_direction	to (towards)	preposition	0
+c:for	for	preposition	0
+c:before	before	preposition	0
+c:after	after	preposition	0
+c:between	between	preposition	0
+c:next_to	next to	preposition	0
+c:in_front_of	in front of	preposition	0
+c:behind	behind	preposition	0
+c:inside	inside	adverb	0
+c:outside	outside	adverb	0
+c:up	up	adverb	0
+c:down	down	adverb	0
+c:left_direction	left	noun	0
+c:right_direction	right	noun	0
+c:straight_ahead	straight ahead	adverb	0
+c:very	very	adverb	0
+c:also	also	adverb	0
+c:only	only	adverb	0
+c:again	again	adverb	0
+c:already	already	adverb	0
+c:still	still	adverb	0
+c:yet	yet	adverb	0
+c:now	now	adverb	0
+c:later	later	adverb	0
+c:soon	soon	adverb	0
+c:always	always	adverb	0
+c:often	often	adverb	0
+c:sometimes	sometimes	adverb	0
+c:never	never	adverb	0
+c:usually	usually	adverb	0
+c:together	together	adverb	0
+c:alone	alone	adverb	0
+c:a_little	a little	adverb	0
+c:a_lot	a lot, much	adverb	0
+c:more	more	adverb	0
+c:less	less	adverb	0
+c:too_excessive	too (much)	adverb	0
+c:enough	enough	adverb	0
+c:all	all	pronoun	0
+c:some	some	pronoun	0
+c:every	every	pronoun	0
+c:other	other	adjective	0
+c:same	same	adjective	0
+c:maybe	maybe	adverb	0
+c:really	really	adverb	0
+c:fast_quickly	quickly	adverb	0
+c:slowly	slowly	adverb	0
+c:well_adverb	well	adverb	0
+c:everything	everything	pronoun	0
+c:something	something	pronoun	0
+c:nothing	nothing	pronoun	0
+c:someone	someone	pronoun	0
+c:everyone	everyone	pronoun	0
+c:be	to be	verb	0
+c:have	to have	verb	0
+c:do	to do	verb	0
+c:go	to go	verb	0
+c:come	to come	verb	0
+c:want	to want	verb	0
+c:can	can, to be able to	verb	0
+c:must	must, to have to	verb	0
+c:need	to need	verb	0
+c:like	to like	verb	0
+c:love	to love	verb	0
+c:know_fact	to know (a fact)	verb	0
+c:know_person	to know (a person)	verb	0
+c:understand	to understand	verb	0
+c:think	to think	verb	0
+c:say	to say	verb	0
+c:speak	to speak	verb	0
+c:tell	to tell	verb	0
+c:ask	to ask	verb	0
+c:answer	to answer	verb	0
+c:see	to see	verb	0
+c:look	to look	verb	0
+c:watch	to watch	verb	0
+c:hear	to hear	verb	0
+c:listen	to listen	verb	0
+c:eat	to eat	verb	0
+c:drink	to drink	verb	0
+c:sleep	to sleep	verb	0
+c:wake_up	to wake up	verb	0
+c:get_up	to get up	verb	0
+c:sit	to sit	verb	0
+c:stand	to stand	verb	0
+c:walk	to walk	verb	0
+c:run	to run	verb	0
+c:give	to give	verb	0
+c:take	to take	verb	0
+c:bring	to bring	verb	0
+c:buy	to buy	verb	0
+c:sell	to sell	verb	0
+c:pay	to pay	verb	0
+c:cost	to cost	verb	0
+c:open	to open	verb	0
+c:close	to close	verb	0
+c:wait	to wait	verb	0
+c:help	to help	verb	0
+c:work	to work	verb	0
+c:learn	to learn	verb	0
+c:study	to study	verb	0
+c:teach	to teach	verb	0
+c:read	to read	verb	0
+c:write	to write	verb	0
+c:play	to play	verb	0
+c:live	to live	verb	0
+c:stay	to stay	verb	0
+c:start	to start, to begin	verb	0
+c:finish	to finish	verb	0
+c:stop	to stop	verb	0
+c:put	to put	verb	0
+c:find	to find	verb	0
+c:look_for	to look for	verb	0
+c:lose	to lose	verb	0
+c:use	to use	verb	0
+c:make	to make	verb	0
+c:cook	to cook	verb	0
+c:wash	to wash	verb	0
+c:clean	to clean	verb	0
+c:call_phone	to call (phone)	verb	0
+c:meet	to meet	verb	0
+c:visit	to visit	verb	0
+c:travel	to travel	verb	0
+c:drive	to drive	verb	0
+c:ride	to ride	verb	0
+c:fly	to fly	verb	0
+c:arrive	to arrive	verb	0
+c:leave_depart	to leave, to depart	verb	0
+c:return	to return, to come back	verb	0
+c:enter	to enter, to go in	verb	0
+c:exit	to go out	verb	0
+c:turn	to turn	verb	0
+c:stop_vehicle	to stop (a vehicle)	verb	0
+c:send	to send	verb	0
+c:receive	to receive	verb	0
+c:show	to show	verb	0
+c:try	to try	verb	0
+c:feel	to feel	verb	0
+c:laugh	to laugh	verb	0
+c:cry	to cry	verb	0
+c:smile	to smile	verb	0
+c:remember	to remember	verb	0
+c:forget	to forget	verb	0
+c:believe	to believe	verb	0
+c:hope	to hope	verb	0
+c:choose	to choose	verb	0
+c:change	to change	verb	0
+c:carry	to carry	verb	0
+c:hold	to hold	verb	0
+c:wear	to wear	verb	0
+c:sing	to sing	verb	0
+c:dance	to dance	verb	0
+c:swim	to swim	verb	0
+c:shower	to take a shower	verb	0
+c:rest	to rest	verb	0
+c:repeat	to repeat	verb	0
+c:order_food	to order (food)	verb	0
+c:rent	to rent	verb	0
+c:book_reserve	to book, to reserve	verb	0
+c:become	to become	verb	0
+c:happen	to happen	verb	0
+c:die	to die	verb	0
+c:be_born	to be born	verb	0
+c:marry	to marry	verb	0
+c:invite	to invite	verb	0
+c:thank	to thank	verb	0
+c:agree	to agree	verb	0
+c:allow	to allow	verb	0
+c:fall	to fall	verb	0
+c:break	to break	verb	0
+c:fix_repair	to repair	verb	0
+c:cut	to cut	verb	0
+c:draw	to draw	verb	0
+c:count	to count	verb	0
+c:explain	to explain	verb	0
+c:translate	to translate	verb	0
+c:spell	to spell	verb	0
+c:practice	to practise	verb	0
+c:move_house	to move (house)	verb	0
+c:zero	zero	numeral	0
+c:one	one	numeral	0
+c:two	two	numeral	0
+c:three	three	numeral	0
+c:four	four	numeral	0
+c:five	five	numeral	0
+c:six	six	numeral	0
+c:seven	seven	numeral	0
+c:eight	eight	numeral	0
+c:nine	nine	numeral	0
+c:ten	ten	numeral	0
+c:twenty	twenty	numeral	0
+c:hundred	hundred	numeral	0
+c:thousand	thousand	numeral	0
+c:half	half	noun	0
+c:first	first	adjective	0
+c:last	last	adjective	0
+c:next	next	adjective	0
+c:number	number	noun	0
+c:time	time	noun	0
+c:hour	hour	noun	0
+c:minute	minute	noun	0
+c:o_clock	o'clock	noun	0
+c:day	day	noun	0
+c:week	week	noun	0
+c:month	month	noun	0
+c:year	year	noun	0
+c:today	today	adverb	0
+c:tomorrow	tomorrow	adverb	0
+c:yesterday	yesterday	adverb	0
+c:morning	morning	noun	0
+c:noon	noon, midday	noun	0
+c:afternoon	afternoon	noun	0
+c:evening	evening	noun	0
+c:night	night	noun	0
+c:weekend	weekend	noun	0
+c:monday	Monday	noun	0
+c:tuesday	Tuesday	noun	0
+c:wednesday	Wednesday	noun	0
+c:thursday	Thursday	noun	0
+c:friday	Friday	noun	0
+c:saturday	Saturday	noun	0
+c:sunday	Sunday	noun	0
+c:birthday	birthday	noun	0
+c:holiday	holiday	noun	0
+c:clock	clock	noun	1
+c:watch_clock	watch	noun	1

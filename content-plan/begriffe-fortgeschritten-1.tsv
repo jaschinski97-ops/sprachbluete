@@ -1,0 +1,282 @@
+# Fortgeschritten 1/2. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:although	although	conjunction	0
+c:however	however	adverb	0
+c:therefore	therefore	adverb	0
+c:unless	unless	conjunction	0
+c:while_during	while	conjunction	0
+c:as_soon_as	as soon as	conjunction	0
+c:so_that	so that	conjunction	0
+c:instead	instead	adverb	0
+c:instead_of	instead of	preposition	0
+c:besides	besides	adverb	0
+c:anyway	anyway	adverb	0
+c:actually	actually	adverb	0
+c:especially	especially	adverb	0
+c:finally	finally	adverb	0
+c:suddenly	suddenly	adverb	0
+c:recently	recently	adverb	0
+c:nowadays	nowadays	adverb	0
+c:at_least	at least	adverb	0
+c:at_first	at first	adverb	0
+c:on_time	on time	adverb	0
+c:in_advance	in advance	adverb	0
+c:on_purpose	on purpose	adverb	0
+c:by_chance	by chance	adverb	0
+c:completely	completely	adverb	0
+c:hardly	hardly	adverb	0
+c:quite	quite	adverb	0
+c:rather	rather	adverb	0
+c:mostly	mostly	adverb	0
+c:directly	directly	adverb	0
+c:clearly	clearly	adverb	0
+c:according_to	according to	preposition	0
+c:during	during	preposition	0
+c:against	against	preposition	0
+c:across	across	preposition	0
+c:through	through	preposition	0
+c:towards	towards	preposition	0
+c:despite	despite	preposition	0
+c:except	except	preposition	0
+c:including	including	preposition	0
+c:opinion	opinion	noun	0
+c:advice	advice	noun	0
+c:suggestion	suggestion	noun	0
+c:decision	decision	noun	0
+c:solution	solution	noun	0
+c:result	result	noun	0
+c:effect	effect	noun	0
+c:cause	cause	noun	0
+c:goal	goal	noun	0
+c:success	success	noun	0
+c:failure	failure	noun	0
+c:situation	situation	noun	0
+c:condition	condition	noun	0
+c:possibility	possibility	noun	0
+c:difference	difference	noun	0
+c:advantage	advantage	noun	0
+c:disadvantage	disadvantage	noun	0
+c:information	information	noun	0
+c:knowledge	knowledge	noun	0
+c:skill	skill	noun	0
+c:ability	ability	noun	0
+c:responsibility	responsibility	noun	0
+c:duty	duty	noun	0
+c:right_entitlement	right (entitlement)	noun	0
+c:freedom	freedom	noun	0
+c:culture	culture	noun	0
+c:tradition	tradition	noun	0
+c:religion	religion	noun	0
+c:society	society	noun	0
+c:environment	environment	noun	1
+c:pollution	pollution	noun	1
+c:climate	climate	noun	0
+c:energy	energy	noun	0
+c:electricity	electricity	noun	1
+c:technology	technology	noun	0
+c:science_research	research	noun	0
+c:education	education	noun	0
+c:government	government	noun	0
+c:politics	politics	noun	0
+c:law	law	noun	0
+c:economy	economy	noun	0
+c:business	business	noun	0
+c:market_economy	market (economy)	noun	0
+c:industry	industry	noun	0
+c:product	product	noun	1
+c:service	service	noun	0
+c:quality	quality	noun	0
+c:amount	amount	noun	0
+c:percent	percent	noun	0
+c:average	average	noun	0
+c:population	population	noun	0
+c:generation	generation	noun	0
+c:relationship	relationship	noun	0
+c:marriage	marriage	noun	0
+c:divorce	divorce	noun	0
+c:pregnant	pregnant	adjective	0
+c:childhood	childhood	noun	0
+c:adult	adult	noun	1
+c:teenager	teenager	noun	1
+c:elderly	elderly person	noun	1
+c:stranger	stranger	noun	1
+c:partner	partner	noun	1
+c:relative	relative	noun	1
+c:interview	interview	noun	1
+c:application	application	noun	1
+c:career	career	noun	0
+c:experience_work	work experience	noun	0
+c:contract	contract	noun	1
+c:employee	employee	noun	1
+c:employer	employer	noun	1
+c:manager	manager	noun	1
+c:owner	owner	noun	1
+c:lawyer	lawyer	noun	1
+c:accountant	accountant	noun	1
+c:journalist	journalist	noun	1
+c:mechanic	mechanic	noun	1
+c:pilot	pilot	noun	1
+c:scientist	scientist	noun	1
+c:artist	artist	noun	1
+c:salesperson	salesperson	noun	1
+c:secretary	secretary	noun	1
+c:unemployed	unemployed	adjective	0
+c:retired	retired	adjective	0
+c:overtime	overtime	noun	0
+c:project	project	noun	0
+c:deadline	deadline	noun	0
+c:report	report	noun	1
+c:presentation	presentation	noun	1
+c:conference	conference	noun	1
+c:customer_service	customer service	noun	0
+c:complaint	complaint	noun	0
+c:account_bank	bank account	noun	0
+c:transfer_money	bank transfer	noun	0
+c:loan	loan	noun	0
+c:debt	debt	noun	0
+c:tax	tax	noun	0
+c:insurance	insurance	noun	0
+c:fee	fee	noun	0
+c:rent_noun	rent	noun	0
+c:deposit	deposit	noun	0
+c:budget	budget	noun	0
+c:savings	savings	noun	0
+c:interest_money	interest (money)	noun	0
+c:id_card	ID card	noun	1
+c:driving_license	driving licence	noun	1
+c:permit	permit	noun	1
+c:embassy	embassy	noun	1
+c:immigration	immigration office	noun	1
+c:office_government	government office	noun	1
+c:signature	signature	noun	1
+c:copy_document	copy	noun	1
+c:stamp_official	stamp	noun	1
+c:fine_penalty	fine (penalty)	noun	0
+c:customs	customs	noun	1
+c:border	border	noun	1
+c:luggage	luggage	noun	1
+c:departure	departure	noun	0
+c:arrival	arrival	noun	0
+c:delay	delay	noun	0
+c:flight	flight	noun	1
+c:platform	platform	noun	1
+c:seat_window	window seat	noun	1
+c:round_trip	return ticket	noun	0
+c:one_way	one-way ticket	noun	0
+c:schedule	timetable	noun	1
+c:destination	destination	noun	0
+c:accommodation	accommodation	noun	1
+c:reservation	reservation	noun	0
+c:reception	reception	noun	1
+c:guide_person	tour guide	noun	1
+c:sightseeing	sightseeing	noun	0
+c:landscape	landscape	noun	1
+c:countryside	countryside	noun	1
+c:capital_city	capital city	noun	1
+c:province	province	noun	0
+c:neighborhood	neighbourhood	noun	1
+c:crossroads	crossroads	noun	1
+c:highway	motorway	noun	1
+c:parking	car park	noun	1
+c:tunnel	tunnel	noun	1
+c:port	harbour, port	noun	1
+c:symptom	symptom	noun	0
+c:disease	disease	noun	0
+c:infection	infection	noun	0
+c:injury	injury	noun	1
+c:operation_surgery	operation (surgery)	noun	1
+c:treatment	treatment	noun	0
+c:prescription	prescription	noun	1
+c:vaccine	vaccine	noun	1
+c:blood_pressure	blood pressure	noun	0
+c:diet	diet	noun	0
+c:stress	stress	noun	0
+c:depression	depression	noun	0
+c:patient	patient	noun	1
+c:emergency_room	emergency room	noun	1
+c:health_insurance	health insurance	noun	0
+c:muscle	muscle	noun	1
+c:brain	brain	noun	1
+c:lung	lung	noun	1
+c:liver	liver	noun	1
+c:kidney	kidney	noun	1
+c:wrist	wrist	noun	1
+c:ankle	ankle	noun	1
+c:elbow	elbow	noun	1
+c:hip	hip	noun	1
+c:breathe	to breathe	verb	0
+c:sweat	to sweat	verb	0
+c:recover_heal	to heal	verb	0
+c:prevent	to prevent	verb	0
+c:examine	to examine	verb	0
+c:suffer	to suffer	verb	0
+c:discuss	to discuss	verb	0
+c:describe	to describe	verb	0
+c:compare	to compare	verb	0
+c:suggest	to suggest	verb	0
+c:recommend	to recommend	verb	0
+c:advise	to advise	verb	0
+c:complain	to complain	verb	0
+c:refuse	to refuse	verb	0
+c:accept	to accept	verb	0
+c:deny	to deny	verb	0
+c:admit	to admit	verb	0
+c:expect	to expect	verb	0
+c:imagine	to imagine	verb	0
+c:realize	to realise	verb	0
+c:notice	to notice	verb	0
+c:recognize	to recognise	verb	0
+c:consider	to consider	verb	0
+c:doubt	to doubt	verb	0
+c:trust	to trust	verb	0
+c:respect	to respect	verb	0
+c:support	to support	verb	0
+c:protect	to protect	verb	0
+c:avoid	to avoid	verb	0
+c:solve	to solve	verb	0
+c:improve	to improve	verb	0
+c:increase	to increase	verb	0
+c:decrease	to decrease	verb	0
+c:develop	to develop	verb	0
+c:create	to create	verb	0
+c:produce	to produce	verb	0
+c:organize	to organise	verb	0
+c:manage	to manage	verb	0
+c:control	to control	verb	0
+c:lead	to lead	verb	0
+c:follow	to follow	verb	0
+c:depend	to depend	verb	0
+c:belong	to belong	verb	0
+c:contain	to contain	verb	0
+c:include	to include	verb	0
+c:require	to require	verb	0
+c:provide	to provide	verb	0
+c:offer	to offer	verb	0
+c:deliver	to deliver	verb	0
+c:order_goods	to order (goods)	verb	0
+c:cancel	to cancel	verb	0
+c:confirm	to confirm	verb	0
+c:postpone	to postpone	verb	0
+c:fill_in	to fill in (a form)	verb	0
+c:apply	to apply	verb	0
+c:hire	to hire	verb	0
+c:fire_dismiss	to fire (dismiss)	verb	0
+c:earn	to earn	verb	0
+c:save_money	to save (money)	verb	0
+c:spend	to spend	verb	0
+c:waste	to waste	verb	0
+c:owe	to owe	verb	0
+c:invest	to invest	verb	0
+c:afford	to afford	verb	0
+c:compete	to compete	verb	0
+c:succeed	to succeed	verb	0
+c:fail	to fail	verb	0
+c:achieve	to achieve	verb	0
+c:attend	to attend	verb	0
+c:graduate	to graduate	verb	0
+c:register	to register	verb	0
+c:log_in	to log in	verb	0
+c:upload	to upload	verb	0
+c:print	to print	verb	0
+c:install	to install	verb	0
+c:search_online	to search (online)	verb	0
+c:post_online	to post (online)	verb	0

@@ -1,0 +1,179 @@
+# Anfänger 3/4 — Stadt, Unterwegs, Natur, Gesundheit, Schule/Arbeit. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:city	city	noun	1
+c:village	village	noun	1
+c:country	country	noun	0
+c:street	street	noun	1
+c:road	road	noun	1
+c:place	place	noun	0
+c:way_route	way, route	noun	0
+c:corner	corner	noun	1
+c:shop	shop	noun	1
+c:market	market	noun	1
+c:supermarket	supermarket	noun	1
+c:mall	shopping mall	noun	1
+c:bank	bank	noun	1
+c:atm	ATM	noun	1
+c:post_office	post office	noun	1
+c:hospital	hospital	noun	1
+c:pharmacy	pharmacy	noun	1
+c:clinic	clinic	noun	1
+c:school	school	noun	1
+c:university	university	noun	1
+c:office	office	noun	1
+c:hotel	hotel	noun	1
+c:temple	temple	noun	1
+c:church	church	noun	1
+c:museum	museum	noun	1
+c:park	park	noun	1
+c:beach	beach	noun	1
+c:police_station	police station	noun	1
+c:library	library	noun	1
+c:cinema	cinema	noun	1
+c:bar	bar	noun	1
+c:gas_station	petrol station	noun	1
+c:airport	airport	noun	1
+c:station	station	noun	1
+c:bus_stop	bus stop	noun	1
+c:bridge	bridge	noun	1
+c:car	car	noun	1
+c:bus	bus	noun	1
+c:train	train	noun	1
+c:taxi	taxi	noun	1
+c:motorbike	motorbike	noun	1
+c:bicycle	bicycle	noun	1
+c:boat	boat	noun	1
+c:airplane	airplane	noun	1
+c:subway	subway, metro	noun	1
+c:ticket	ticket	noun	1
+c:passport	passport	noun	1
+c:suitcase	suitcase	noun	1
+c:map	map	noun	1
+c:trip	trip	noun	0
+c:tourist	tourist	noun	1
+c:traffic	traffic	noun	1
+c:traffic_light	traffic light	noun	1
+c:entrance	entrance	noun	1
+c:exit_door	exit	noun	1
+c:price	price	noun	0
+c:cheap	cheap	adjective	0
+c:expensive	expensive	adjective	0
+c:discount	discount	noun	0
+c:change_money	change (money back)	noun	0
+c:size	size	noun	0
+c:baht	baht	noun	1
+c:euro	euro	noun	1
+c:dollar	dollar	noun	1
+c:open_adj	open	adjective	0
+c:closed_adj	closed	adjective	0
+c:weather	weather	noun	0
+c:sun	sun	noun	1
+c:rain	rain	noun	1
+c:wind	wind	noun	1
+c:cloud	cloud	noun	1
+c:snow	snow	noun	1
+c:sky	sky	noun	1
+c:hot_weather	hot	adjective	0
+c:cold	cold	adjective	0
+c:warm	warm	adjective	0
+c:cool	cool	adjective	0
+c:wet	wet	adjective	0
+c:dry	dry	adjective	0
+c:season	season	noun	0
+c:summer	summer	noun	1
+c:winter	winter	noun	1
+c:rainy_season	rainy season	noun	1
+c:nature	nature	noun	1
+c:sea	sea	noun	1
+c:river	river	noun	1
+c:mountain	mountain	noun	1
+c:island	island	noun	1
+c:lake	lake	noun	1
+c:forest	forest	noun	1
+c:tree	tree	noun	1
+c:flower	flower	noun	1
+c:grass	grass	noun	1
+c:stone	stone	noun	1
+c:fire	fire	noun	1
+c:earth_ground	ground, earth	noun	1
+c:air	air	noun	0
+c:moon	moon	noun	1
+c:star	star	noun	1
+c:animal	animal	noun	1
+c:dog	dog	noun	1
+c:cat	cat	noun	1
+c:bird	bird	noun	1
+c:fish_animal	fish (animal)	noun	1
+c:chicken_animal	chicken (animal)	noun	1
+c:cow	cow	noun	1
+c:pig	pig	noun	1
+c:horse	horse	noun	1
+c:elephant	elephant	noun	1
+c:monkey	monkey	noun	1
+c:snake	snake	noun	1
+c:mosquito	mosquito	noun	1
+c:ant	ant	noun	1
+c:duck	duck	noun	1
+c:buffalo	water buffalo	noun	1
+c:health	health	noun	0
+c:sick	sick	adjective	0
+c:healthy	healthy	adjective	0
+c:pain	pain	noun	0
+c:hurt	to hurt	verb	0
+c:headache	headache	noun	1
+c:fever	fever	noun	1
+c:cough	cough	noun	1
+c:cold_illness	cold (illness)	noun	1
+c:medicine	medicine	noun	1
+c:tired	tired	adjective	0
+c:sleepy	sleepy	adjective	0
+c:injured	injured	adjective	0
+c:allergy	allergy	noun	0
+c:class_lesson	class, lesson	noun	0
+c:homework	homework	noun	1
+c:exam	exam	noun	1
+c:question	question	noun	0
+c:answer_noun	answer	noun	0
+c:word	word	noun	0
+c:sentence	sentence	noun	0
+c:language	language	noun	0
+c:letter_alphabet	letter (of alphabet)	noun	0
+c:meaning	meaning	noun	0
+c:example	example	noun	0
+c:thai_language	Thai (language)	noun	0
+c:english_language	English (language)	noun	0
+c:work_noun	work	noun	0
+c:company	company	noun	1
+c:meeting	meeting	noun	1
+c:email	email	noun	1
+c:internet	internet	noun	0
+c:password	password	noun	0
+c:message	message	noun	0
+c:problem	problem	noun	0
+c:idea	idea	noun	0
+c:thing	thing	noun	0
+c:way_method	way, method	noun	0
+c:reason	reason	noun	0
+c:news	news	noun	0
+c:story	story	noun	0
+c:music	music	noun	1
+c:song	song	noun	1
+c:movie	movie	noun	1
+c:game	game	noun	1
+c:sport	sport	noun	1
+c:football	football	noun	1
+c:ball	ball	noun	1
+c:hobby	hobby	noun	0
+c:party	party	noun	1
+c:gift	gift	noun	1
+c:color	colour	noun	0
+c:red	red	adjective	1
+c:blue	blue	adjective	1
+c:green	green	adjective	1
+c:yellow	yellow	adjective	1
+c:black	black	adjective	1
+c:white	white	adjective	1
+c:brown	brown	adjective	1
+c:pink	pink	adjective	1
+c:orange_color	orange (colour)	adjective	1
+c:purple	purple	adjective	1
+c:gray	grey	adjective	1

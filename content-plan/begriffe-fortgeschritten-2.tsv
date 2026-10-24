@@ -1,0 +1,320 @@
+# Fortgeschritten 2/2. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:afraid_of	to be afraid of	verb	0
+c:argue_debate	to debate	verb	0
+c:convince	to convince	verb	0
+c:persuade	to persuade	verb	0
+c:warn	to warn	verb	0
+c:threaten	to threaten	verb	0
+c:forgive	to forgive	verb	0
+c:blame	to blame	verb	0
+c:praise	to praise	verb	0
+c:criticize	to criticise	verb	0
+c:encourage	to encourage	verb	0
+c:disappoint	to disappoint	verb	0
+c:surprise_verb	to surprise	verb	0
+c:annoy	to annoy	verb	0
+c:bother	to bother	verb	0
+c:interrupt	to interrupt	verb	0
+c:pretend	to pretend	verb	0
+c:guess	to guess	verb	0
+c:assume	to assume	verb	0
+c:prove	to prove	verb	0
+c:mention	to mention	verb	0
+c:report_verb	to report	verb	0
+c:announce	to announce	verb	0
+c:inform	to inform	verb	0
+c:express	to express	verb	0
+c:communicate	to communicate	verb	0
+c:negotiate	to negotiate	verb	0
+c:vote	to vote	verb	0
+c:elect	to elect	verb	0
+c:protest	to protest	verb	0
+c:steal	to steal	verb	0
+c:rob	to rob	verb	0
+c:arrest	to arrest	verb	0
+c:escape	to escape	verb	0
+c:rescue	to rescue	verb	0
+c:destroy	to destroy	verb	0
+c:damage	to damage	verb	0
+c:recycle	to recycle	verb	0
+c:pollute	to pollute	verb	0
+c:reduce	to reduce	verb	0
+c:replace	to replace	verb	0
+c:remove	to remove	verb	0
+c:add	to add	verb	0
+c:divide	to divide	verb	0
+c:collect	to collect	verb	0
+c:gather	to gather	verb	0
+c:separate	to separate	verb	0
+c:connect	to connect	verb	0
+c:attach	to attach	verb	0
+c:measure	to measure	verb	0
+c:weigh	to weigh	verb	0
+c:fold	to fold	verb	0
+c:wrap	to wrap	verb	0
+c:tie	to tie	verb	0
+c:lock	to lock	verb	0
+c:unlock	to unlock	verb	0
+c:knock_over	to knock over	verb	0
+c:spill	to spill	verb	0
+c:burn	to burn	verb	0
+c:melt	to melt	verb	0
+c:freeze	to freeze	verb	0
+c:shine	to shine	verb	0
+c:float	to float	verb	0
+c:sink	to sink	verb	0
+c:shake	to shake	verb	0
+c:hang	to hang	verb	0
+c:lean	to lean	verb	0
+c:bend	to bend	verb	0
+c:stretch	to stretch	verb	0
+c:kneel	to kneel	verb	0
+c:crawl	to crawl	verb	0
+c:slip	to slip	verb	0
+c:trip_stumble	to trip	verb	0
+c:hit	to hit	verb	0
+c:kick	to kick	verb	0
+c:shoot	to shoot	verb	0
+c:cheat	to cheat	verb	0
+c:gossip	to gossip	verb	0
+c:flirt	to flirt	verb	0
+c:date_romantic	to go on a date	verb	0
+c:fall_in_love	to fall in love	verb	0
+c:break_up	to break up	verb	0
+c:raise_child	to raise (a child)	verb	0
+c:take_care_of	to look after	verb	0
+c:volunteer	to volunteer	verb	0
+c:donate	to donate	verb	0
+c:pray	to pray	verb	0
+c:meditate	to meditate	verb	0
+c:respect_elders	to pay respect (wai)	verb	0	th
+c:make_merit	to make merit	verb	0	th
+c:afford_time	to have time for	verb	0
+c:get_used_to	to get used to	verb	0
+c:look_forward	to look forward to	verb	0
+c:give_up	to give up	verb	0
+c:put_off	to put off	verb	0
+c:find_out	to find out	verb	0
+c:figure_out	to work out	verb	0
+c:run_out	to run out	verb	0
+c:calm_down	to calm down	verb	0
+c:grow_up	to grow up	verb	0
+c:deal_with	to deal with	verb	0
+c:ambitious	ambitious	adjective	0
+c:anxious	anxious	adjective	0
+c:confident	confident	adjective	0
+c:curious	curious	adjective	0
+c:generous	generous	adjective	0
+c:selfish	selfish	adjective	0
+c:patient_adj	patient	adjective	0
+c:impatient	impatient	adjective	0
+c:reliable	reliable	adjective	0
+c:responsible	responsible	adjective	0
+c:rude	rude	adjective	0
+c:serious	serious	adjective	0
+c:sensitive	sensitive	adjective	0
+c:stubborn	stubborn	adjective	0
+c:brave	brave	adjective	0
+c:calm	calm	adjective	0
+c:cheerful	cheerful	adjective	0
+c:grateful	grateful	adjective	0
+c:guilty	guilty	adjective	0
+c:upset	upset	adjective	0
+c:disappointed	disappointed	adjective	0
+c:satisfied	satisfied	adjective	0
+c:frustrated	frustrated	adjective	0
+c:confused	confused	adjective	0
+c:exhausted	exhausted	adjective	0
+c:available	available	adjective	0
+c:necessary	necessary	adjective	0
+c:useful	useful	adjective	0
+c:useless	useless	adjective	0
+c:convenient	convenient	adjective	0
+c:inconvenient	inconvenient	adjective	0
+c:popular	popular	adjective	0
+c:common	common	adjective	0
+c:rare	rare	adjective	0
+c:strange	strange	adjective	0
+c:obvious	obvious	adjective	0
+c:complicated	complicated	adjective	0
+c:clear	clear	adjective	0
+c:exact	exact	adjective	0
+c:huge	huge	adjective	0
+c:tiny	tiny	adjective	0
+c:entire	entire	adjective	0
+c:main	main	adjective	0
+c:basic	basic	adjective	0
+c:general	general	adjective	0
+c:specific	specific	adjective	0
+c:personal	personal	adjective	0
+c:official	official	adjective	0
+c:legal	legal	adjective	0
+c:illegal	illegal	adjective	0
+c:fair	fair	adjective	0
+c:unfair	unfair	adjective	0
+c:equal	equal	adjective	0
+c:independent	independent	adjective	0
+c:healthy_food	healthy (food)	adjective	0
+c:raw	raw	adjective	0
+c:cooked	cooked	adjective	0
+c:frozen	frozen	adjective	0
+c:spoiled	spoiled, gone off	adjective	0
+c:organic	organic	adjective	0
+c:environmental	environmentally friendly	adjective	0
+c:digital	digital	adjective	0
+c:online	online	adjective	0
+c:electric	electric	adjective	0
+c:automatic	automatic	adjective	0
+c:international	international	adjective	0
+c:national	national	adjective	0
+c:political	political	adjective	0
+c:social	social	adjective	0
+c:economic	economic	adjective	0
+c:cultural	cultural	adjective	0
+c:religious	religious	adjective	0
+c:historical	historical	adjective	0
+c:natural	natural	adjective	0
+c:artificial	artificial	adjective	0
+c:temporary	temporary	adjective	0
+c:permanent	permanent	adjective	0
+c:recent	recent	adjective	0
+c:current	current	adjective	0
+c:previous	previous	adjective	0
+c:following	following	adjective	0
+c:final	final	adjective	0
+c:daily	daily	adjective	0
+c:weekly	weekly	adjective	0
+c:monthly	monthly	adjective	0
+c:yearly	yearly	adjective	0
+c:crime	crime	noun	0
+c:thief	thief	noun	1
+c:victim	victim	noun	0
+c:witness	witness	noun	0
+c:court	court	noun	1
+c:prison	prison	noun	1
+c:judge	judge	noun	1
+c:election	election	noun	1
+c:president	president	noun	1
+c:prime_minister	prime minister	noun	1
+c:king	king	noun	1
+c:queen	queen	noun	1
+c:citizen	citizen	noun	0
+c:nation	nation	noun	0
+c:war	war	noun	0
+c:peace	peace	noun	0
+c:army	army	noun	1
+c:protest_noun	protest	noun	1
+c:crisis	crisis	noun	0
+c:poverty	poverty	noun	0
+c:unemployment	unemployment	noun	0
+c:inflation	inflation	noun	0
+c:trade	trade	noun	0
+c:export	export	noun	0
+c:import_trade	import	noun	0
+c:advertisement	advertisement	noun	1
+c:brand	brand	noun	0
+c:media	media	noun	0
+c:article	article	noun	1
+c:magazine	magazine	noun	1
+c:channel	channel	noun	0
+c:program_tv	programme	noun	0
+c:social_media	social media	noun	0
+c:comment	comment	noun	0
+c:topic	topic	noun	0
+c:fact	fact	noun	0
+c:example_case	case	noun	0
+c:detail	detail	noun	0
+c:method	method	noun	0
+c:system	system	noun	0
+c:process	process	noun	0
+c:step	step	noun	0
+c:level	level	noun	0
+c:degree_university	degree	noun	1
+c:certificate	certificate	noun	1
+c:scholarship	scholarship	noun	0
+c:lecture	lecture	noun	1
+c:semester	semester	noun	0
+c:course	course	noun	0
+c:professor	professor	noun	1
+c:literature	literature	noun	0
+c:grammar	grammar	noun	0
+c:vocabulary	vocabulary	noun	0
+c:pronunciation	pronunciation	noun	0
+c:accent	accent	noun	0
+c:conversation	conversation	noun	0
+c:discussion	discussion	noun	0
+c:argument_quarrel	argument	noun	0
+c:agreement	agreement	noun	0
+c:promise_noun	promise	noun	0
+c:excuse_noun	excuse	noun	0
+c:invitation	invitation	noun	1
+c:celebration	celebration	noun	1
+c:ceremony	ceremony	noun	1
+c:funeral	funeral	noun	1
+c:anniversary	anniversary	noun	0
+c:custom_habit	custom	noun	0
+c:habit	habit	noun	0
+c:behavior	behaviour	noun	0
+c:attitude	attitude	noun	0
+c:personality	personality	noun	0
+c:character_person	character	noun	0
+c:emotion	emotion	noun	0
+c:fear	fear	noun	0
+c:anger	anger	noun	0
+c:happiness	happiness	noun	0
+c:sadness	sadness	noun	0
+c:hope_noun	hope	noun	0
+c:trust_noun	trust	noun	0
+c:respect_noun	respect	noun	0
+c:patience	patience	noun	0
+c:courage	courage	noun	0
+c:effort	effort	noun	0
+c:energy_person	energy (person)	noun	0
+c:mood	mood	noun	0
+c:taste_preference	taste (preference)	noun	0
+c:recipe	recipe	noun	1
+c:ingredient	ingredient	noun	1
+c:dish	dish	noun	1
+c:nutrition	nutrition	noun	0
+c:vitamin	vitamin	noun	1
+c:protein	protein	noun	0
+c:calorie	calorie	noun	0
+c:portion_food	serving	noun	0
+c:seasoning	seasoning	noun	1
+c:herb	herb	noun	1
+c:spice	spice	noun	1
+c:steam	to steam	verb	0
+c:bake	to bake	verb	0
+c:stir	to stir	verb	0
+c:slice	to slice	verb	0
+c:season_food	to season	verb	0
+c:wildlife	wildlife	noun	1
+c:species	species	noun	0
+c:plant_noun	plant	noun	1
+c:soil	soil	noun	1
+c:desert	desert	noun	1
+c:jungle	jungle	noun	1
+c:coast	coast	noun	1
+c:volcano	volcano	noun	1
+c:earthquake	earthquake	noun	1
+c:drought	drought	noun	1
+c:heat_wave	heat wave	noun	0
+c:global_warming	global warming	noun	0
+c:waste_garbage	waste	noun	1
+c:resource	resource	noun	0
+c:solar_energy	solar energy	noun	1
+c:fuel	fuel	noun	1
+c:factory	factory	noun	1
+c:machine	machine	noun	1
+c:tool	tool	noun	1
+c:device	device	noun	1
+c:screen	screen	noun	1
+c:keyboard	keyboard	noun	1
+c:software	software	noun	0
+c:data	data	noun	0
+c:network	network	noun	0
+c:account_online	account (online)	noun	0
+c:privacy	privacy	noun	0
+c:security	security	noun	0
+c:robot	robot	noun	1
+c:artificial_intelligence	artificial intelligence	noun	0

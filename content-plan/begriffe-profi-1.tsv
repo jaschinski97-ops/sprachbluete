@@ -1,0 +1,201 @@
+# Profi 1/1 — gebräuchlich, aber anspruchsvoll. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:nevertheless	nevertheless	adverb	0
+c:furthermore	furthermore	adverb	0
+c:consequently	consequently	adverb	0
+c:whereas	whereas	conjunction	0
+c:provided_that	provided that	conjunction	0
+c:in_terms_of	in terms of	preposition	0
+c:regarding	regarding	preposition	0
+c:on_behalf_of	on behalf of	preposition	0
+c:notwithstanding	in spite of this	adverb	0
+c:to_some_extent	to some extent	adverb	0
+c:inevitably	inevitably	adverb	0
+c:presumably	presumably	adverb	0
+c:arguably	arguably	adverb	0
+c:essentially	essentially	adverb	0
+c:simultaneously	simultaneously	adverb	0
+c:gradually	gradually	adverb	0
+c:deliberately	deliberately	adverb	0
+c:thoroughly	thoroughly	adverb	0
+c:roughly	roughly	adverb	0
+c:hence	hence	adverb	0
+c:perspective	perspective	noun	0
+c:approach	approach	noun	0
+c:aspect	aspect	noun	0
+c:context	context	noun	0
+c:concept	concept	noun	0
+c:principle	principle	noun	0
+c:theory	theory	noun	0
+c:hypothesis	hypothesis	noun	0
+c:evidence	evidence	noun	0
+c:argument_reason	argument (reasoning)	noun	0
+c:assumption	assumption	noun	0
+c:conclusion	conclusion	noun	0
+c:consequence	consequence	noun	0
+c:implication	implication	noun	0
+c:tendency	tendency	noun	0
+c:trend	trend	noun	0
+c:phenomenon	phenomenon	noun	0
+c:circumstance	circumstance	noun	0
+c:framework	framework	noun	0
+c:strategy	strategy	noun	0
+c:policy	policy	noun	0
+c:reform	reform	noun	0
+c:regulation	regulation	noun	0
+c:authority	authority	noun	0
+c:institution	institution	noun	0
+c:democracy	democracy	noun	0
+c:corruption	corruption	noun	0
+c:inequality	inequality	noun	0
+c:discrimination	discrimination	noun	0
+c:diversity	diversity	noun	0
+c:identity	identity	noun	0
+c:integration	integration	noun	0
+c:migration	migration	noun	0
+c:sustainability	sustainability	noun	0
+c:welfare	welfare	noun	0
+c:infrastructure	infrastructure	noun	0
+c:investment	investment	noun	0
+c:revenue	revenue	noun	0
+c:profit	profit	noun	0
+c:loss_money	loss	noun	0
+c:competition	competition	noun	0
+c:negotiation	negotiation	noun	0
+c:compromise	compromise	noun	0
+c:consensus	consensus	noun	0
+c:conflict	conflict	noun	0
+c:tension	tension	noun	0
+c:pressure	pressure	noun	0
+c:burden	burden	noun	0
+c:obligation	obligation	noun	0
+c:commitment	commitment	noun	0
+c:priority	priority	noun	0
+c:challenge	challenge	noun	0
+c:opportunity	opportunity	noun	0
+c:threat	threat	noun	0
+c:risk	risk	noun	0
+c:awareness	awareness	noun	0
+c:attention	attention	noun	0
+c:intention	intention	noun	0
+c:motivation	motivation	noun	0
+c:ambition	ambition	noun	0
+c:achievement	achievement	noun	0
+c:reputation	reputation	noun	0
+c:status	status	noun	0
+c:privilege	privilege	noun	0
+c:wisdom	wisdom	noun	0
+c:conscience	conscience	noun	0
+c:dignity	dignity	noun	0
+c:empathy	empathy	noun	0
+c:gratitude	gratitude	noun	0
+c:resentment	resentment	noun	0
+c:nostalgia	nostalgia	noun	0
+c:prejudice	prejudice	noun	0
+c:stereotype	stereotype	noun	0
+c:misunderstanding	misunderstanding	noun	0
+c:nuance	nuance	noun	0
+c:irony	irony	noun	0
+c:metaphor	metaphor	noun	0
+c:idiom	idiom	noun	0
+c:dialect	dialect	noun	0
+c:etiquette	etiquette	noun	0
+c:hierarchy	hierarchy	noun	0
+c:seniority	seniority	noun	0
+c:face_reputation	face (social standing)	noun	0
+c:consideration_kreng_jai	consideration for others (kreng jai)	noun	0	th
+c:merit_buddhism	merit (Buddhism)	noun	0	th
+c:karma	karma	noun	0
+c:enlightenment	enlightenment	noun	0
+c:analyze	to analyse	verb	0
+c:evaluate	to evaluate	verb	0
+c:interpret	to interpret	verb	0
+c:emphasize	to emphasise	verb	0
+c:justify	to justify	verb	0
+c:clarify	to clarify	verb	0
+c:summarize	to summarise	verb	0
+c:acknowledge	to acknowledge	verb	0
+c:anticipate	to anticipate	verb	0
+c:undermine	to undermine	verb	0
+c:enhance	to enhance	verb	0
+c:facilitate	to facilitate	verb	0
+c:implement	to implement	verb	0
+c:establish	to establish	verb	0
+c:maintain	to maintain	verb	0
+c:sustain	to sustain	verb	0
+c:restrict	to restrict	verb	0
+c:enforce	to enforce	verb	0
+c:comply	to comply	verb	0
+c:violate	to violate	verb	0
+c:exploit	to exploit	verb	0
+c:overcome	to overcome	verb	0
+c:cope	to cope	verb	0
+c:adapt	to adapt	verb	0
+c:contribute	to contribute	verb	0
+c:distribute	to distribute	verb	0
+c:allocate	to allocate	verb	0
+c:assess	to assess	verb	0
+c:estimate	to estimate	verb	0
+c:predict	to predict	verb	0
+c:reflect	to reflect	verb	0
+c:hesitate	to hesitate	verb	0
+c:tolerate	to tolerate	verb	0
+c:appreciate	to appreciate	verb	0
+c:resent	to resent	verb	0
+c:confront	to confront	verb	0
+c:reconcile	to reconcile	verb	0
+c:mediate	to mediate	verb	0
+c:advocate	to advocate	verb	0
+c:oppose	to oppose	verb	0
+c:emerge	to emerge	verb	0
+c:decline	to decline	verb	0
+c:fluctuate	to fluctuate	verb	0
+c:accumulate	to accumulate	verb	0
+c:deteriorate	to deteriorate	verb	0
+c:thrive	to thrive	verb	0
+c:inherit	to inherit	verb	0
+c:abolish	to abolish	verb	0
+c:subtle	subtle	adjective	0
+c:profound	profound	adjective	0
+c:significant	significant	adjective	0
+c:relevant	relevant	adjective	0
+c:adequate	adequate	adjective	0
+c:sufficient	sufficient	adjective	0
+c:crucial	crucial	adjective	0
+c:fundamental	fundamental	adjective	0
+c:comprehensive	comprehensive	adjective	0
+c:controversial	controversial	adjective	0
+c:ambiguous	ambiguous	adjective	0
+c:abstract	abstract	adjective	0
+c:concrete_specific	concrete	adjective	0
+c:objective	objective	adjective	0
+c:subjective	subjective	adjective	0
+c:rational	rational	adjective	0
+c:reasonable	reasonable	adjective	0
+c:plausible	plausible	adjective	0
+c:consistent	consistent	adjective	0
+c:flexible	flexible	adjective	0
+c:sophisticated	sophisticated	adjective	0
+c:efficient	efficient	adjective	0
+c:effective	effective	adjective	0
+c:vulnerable	vulnerable	adjective	0
+c:reluctant	reluctant	adjective	0
+c:eager	eager	adjective	0
+c:humble	humble	adjective	0
+c:arrogant	arrogant	adjective	0
+c:sincere	sincere	adjective	0
+c:hypocritical	hypocritical	adjective	0
+c:diplomatic	diplomatic	adjective	0
+c:spontaneous	spontaneous	adjective	0
+c:inevitable	inevitable	adjective	0
+c:unprecedented	unprecedented	adjective	0
+c:widespread	widespread	adjective	0
+c:sustainable	sustainable	adjective	0
+c:urban	urban	adjective	0
+c:rural	rural	adjective	0
+c:elaborate	elaborate	adjective	0
+c:formal	formal	adjective	0
+c:informal	informal	adjective	0
+c:polite_formal_register	polite register	noun	0
+c:royal_vocabulary	royal vocabulary	noun	0	th
+c:transparency	transparency	noun	0
+c:accountability	accountability	noun	0

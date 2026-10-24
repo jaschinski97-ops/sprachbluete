@@ -1,0 +1,262 @@
+# Anfänger 5/5 — Ergänzung: Monate, Alltag, Gerichte, häufige Verben. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:january	January	noun	0
+c:february	February	noun	0
+c:march_month	March	noun	0
+c:april	April	noun	0
+c:may_month	May	noun	0
+c:june	June	noun	0
+c:july	July	noun	0
+c:august	August	noun	0
+c:september	September	noun	0
+c:october	October	noun	0
+c:november	November	noun	0
+c:december	December	noun	0
+c:date_calendar	date (calendar)	noun	0
+c:calendar	calendar	noun	1
+c:second_time	second (time)	noun	0
+c:moment	moment	noun	0
+c:future	future	noun	0
+c:past	past	noun	0
+c:fried_rice	fried rice	noun	1
+c:curry	curry	noun	1
+c:papaya_salad	papaya salad	noun	1
+c:sticky_rice	sticky rice	noun	1
+c:grilled_chicken	grilled chicken	noun	1
+c:noodle_soup	noodle soup	noun	1
+c:sandwich	sandwich	noun	1
+c:pizza	pizza	noun	1
+c:hamburger	hamburger	noun	1
+c:french_fries	French fries	noun	1
+c:chocolate	chocolate	noun	1
+c:candy	sweets, candy	noun	1
+c:cookie	biscuit, cookie	noun	1
+c:honey	honey	noun	1
+c:flour	flour	noun	1
+c:fish_sauce	fish sauce	noun	1
+c:soy_sauce	soy sauce	noun	1
+c:lemon_lime	lime, lemon	noun	1
+c:grape	grape	noun	1
+c:strawberry	strawberry	noun	1
+c:carrot	carrot	noun	1
+c:cucumber	cucumber	noun	1
+c:cabbage	cabbage	noun	1
+c:corn	corn	noun	1
+c:mushroom	mushroom	noun	1
+c:bean	bean	noun	1
+c:tofu	tofu	noun	1
+c:crab	crab	noun	1
+c:squid	squid	noun	1
+c:sausage	sausage	noun	1
+c:soda	soft drink, soda	noun	1
+c:drinking_water	drinking water	noun	1
+c:pot	pot	noun	1
+c:pan	pan	noun	1
+c:straw	drinking straw	noun	1
+c:tissue	tissue	noun	1
+c:trash	rubbish	noun	1
+c:trash_can	rubbish bin	noun	1
+c:table_cloth	tablecloth	noun	1
+c:portion	portion	noun	0
+c:takeaway	takeaway	noun	0
+c:tip_money	tip (money)	noun	0
+c:shampoo	shampoo	noun	1
+c:toothpaste	toothpaste	noun	1
+c:toilet_paper	toilet paper	noun	1
+c:washing_machine	washing machine	noun	1
+c:iron_appliance	iron (for clothes)	noun	1
+c:broom	broom	noun	1
+c:bucket	bucket	noun	1
+c:curtain	curtain	noun	1
+c:carpet	carpet	noun	1
+c:desk	desk	noun	1
+c:drawer	drawer	noun	1
+c:mattress	mattress	noun	1
+c:balcony	balcony	noun	1
+c:elevator	lift, elevator	noun	1
+c:building	building	noun	1
+c:floor_level	floor (storey)	noun	0
+c:gate	gate	noun	1
+c:fence	fence	noun	1
+c:yard	yard	noun	1
+c:pool	swimming pool	noun	1
+c:gym	gym	noun	1
+c:hairdresser	hairdresser	noun	1
+c:laundry_shop	laundry	noun	1
+c:market_night	night market	noun	1
+c:street_food	street food	noun	1
+c:shopping	shopping	noun	0
+c:clothes_shop	clothes shop	noun	1
+c:souvenir	souvenir	noun	1
+c:plastic	plastic	noun	0
+c:gold	gold	noun	1
+c:silver	silver	noun	1
+c:wood	wood	noun	1
+c:glass_material	glass (material)	noun	0
+c:cotton	cotton	noun	0
+c:schoolbag	school bag	noun	1
+c:eraser	eraser	noun	1
+c:ruler	ruler	noun	1
+c:scissors	scissors	noun	1
+c:dictionary	dictionary	noun	1
+c:blackboard	blackboard	noun	1
+c:classroom	classroom	noun	1
+c:subject_school	school subject	noun	0
+c:mathematics	mathematics	noun	0
+c:history	history	noun	0
+c:art	art	noun	0
+c:science	science	noun	0
+c:grade_mark	grade, mark	noun	0
+c:test_quiz	test	noun	0
+c:vacation	vacation	noun	0
+c:office_worker	office worker	noun	1
+c:engineer	engineer	noun	1
+c:farmer	farmer	noun	1
+c:soldier	soldier	noun	1
+c:monk	monk	noun	1
+c:salary	salary	noun	0
+c:shift_work	shift	noun	0
+c:task	task	noun	0
+c:document	document	noun	1
+c:form_document	form	noun	1
+c:printer	printer	noun	1
+c:mobile_phone	mobile phone	noun	1
+c:tablet_device	tablet	noun	1
+c:headphones	headphones	noun	1
+c:app	app	noun	0
+c:website	website	noun	0
+c:video	video	noun	0
+c:radio	radio	noun	1
+c:toy	toy	noun	1
+c:doll	doll	noun	1
+c:guitar	guitar	noun	1
+c:piano	piano	noun	1
+c:drum	drum	noun	1
+c:painting	painting	noun	1
+c:concert	concert	noun	1
+c:festival	festival	noun	1
+c:new_year	New Year	noun	0
+c:wedding	wedding	noun	1
+c:dancing	dancing	noun	1
+c:swimming	swimming	noun	1
+c:running_sport	running	noun	1
+c:yoga	yoga	noun	1
+c:massage	massage	noun	1
+c:view	view	noun	0
+c:waterfall	waterfall	noun	1
+c:cave	cave	noun	1
+c:hill	hill	noun	1
+c:field	field	noun	1
+c:rice_field	rice field	noun	1
+c:sand	sand	noun	1
+c:wave	wave	noun	1
+c:leaf	leaf	noun	1
+c:fruit_tree	fruit tree	noun	1
+c:rose	rose	noun	1
+c:storm	storm	noun	1
+c:thunder	thunder	noun	0
+c:lightning	lightning	noun	1
+c:flood	flood	noun	1
+c:fog	fog	noun	1
+c:rainbow	rainbow	noun	1
+c:butterfly	butterfly	noun	1
+c:frog	frog	noun	1
+c:lizard	lizard	noun	1
+c:rabbit	rabbit	noun	1
+c:tiger	tiger	noun	1
+c:bear	bear	noun	1
+c:mouse	mouse	noun	1
+c:goat	goat	noun	1
+c:sheep	sheep	noun	1
+c:turtle	turtle	noun	1
+c:shark	shark	noun	1
+c:insect	insect	noun	1
+c:cockroach	cockroach	noun	1
+c:bee	bee	noun	1
+c:fly_insect	fly (insect)	noun	1
+c:spider	spider	noun	1
+c:lip	lip	noun	1
+c:eyebrow	eyebrow	noun	1
+c:chin	chin	noun	1
+c:cheek	cheek	noun	1
+c:chest	chest	noun	1
+c:toe	toe	noun	1
+c:nail_finger	fingernail	noun	1
+c:bone	bone	noun	1
+c:throat	throat	noun	1
+c:toothache	toothache	noun	1
+c:stomachache	stomach ache	noun	1
+c:diarrhea	diarrhoea	noun	0
+c:wound	wound	noun	1
+c:plaster_bandage	plaster, bandage	noun	1
+c:pill	pill	noun	1
+c:dentist	dentist	noun	1
+c:ambulance	ambulance	noun	1
+c:dizzy	dizzy	adjective	0
+c:itchy	itchy	adjective	0
+c:swollen	swollen	adjective	0
+c:better	better	adjective	0
+c:worse	worse	adjective	0
+c:best	best	adjective	0
+c:favorite	favourite	adjective	0
+c:special	special	adjective	0
+c:normal	normal	adjective	0
+c:simple	simple	adjective	0
+c:modern	modern	adjective	0
+c:traditional	traditional	adjective	0
+c:local	local	adjective	0
+c:foreign	foreign	adjective	0
+c:public	public	adjective	0
+c:private	private	adjective	0
+c:crowded	crowded	adjective	0
+c:lucky	lucky	adjective	0
+c:sure_certain	sure	adjective	0
+c:careful	careful	adjective	0
+c:friendly	friendly	adjective	0
+c:honest	honest	adjective	0
+c:strict	strict	adjective	0
+c:nervous	nervous	adjective	0
+c:proud	proud	adjective	0
+c:jealous	jealous	adjective	0
+c:embarrassed	embarrassed	adjective	0
+c:sleep_noun	sleep	noun	0
+c:dream_noun	dream	noun	0
+c:smile_noun	smile	noun	0
+c:joke	joke	noun	0
+c:secret	secret	noun	0
+c:luck	luck	noun	0
+c:chance	chance	noun	0
+c:choice	choice	noun	0
+c:mistake	mistake	noun	0
+c:truth	truth	noun	0
+c:experience	experience	noun	0
+c:memory	memory	noun	0
+c:prepare_food	to prepare (food)	verb	0
+c:peel	to peel	verb	0
+c:mix	to mix	verb	0
+c:pour	to pour	verb	0
+c:chew	to chew	verb	0
+c:swallow	to swallow	verb	0
+c:bite	to bite	verb	0
+c:smell_verb	to smell	verb	0
+c:touch	to touch	verb	0
+c:point	to point	verb	0
+c:wave_hand	to wave	verb	0
+c:nod	to nod	verb	0
+c:shout	to shout	verb	0
+c:whisper	to whisper	verb	0
+c:sneeze	to sneeze	verb	0
+c:cough_verb	to cough	verb	0
+c:vomit	to vomit	verb	0
+c:bleed	to bleed	verb	0
+c:recover	to get better	verb	0
+c:see_doctor	to see a doctor	verb	0
+c:helmet	helmet	noun	1
+c:sunglasses	sunglasses	noun	1
+c:sunscreen	sunscreen	noun	1
+c:face_mask	face mask	noun	1
+c:cigarette	cigarette	noun	1
+c:alcohol	alcohol	noun	0
+c:backpack	backpack	noun	1
+c:visa	visa	noun	1
+c:seat	seat	noun	1
+c:shower_noun	shower	noun	1

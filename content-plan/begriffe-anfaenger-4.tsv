@@ -1,0 +1,283 @@
+# Anfänger 4/4 — Eigenschaften, Gefühle, Alltag. Spalten: kennung	englisch	wortart	bildfähig(1/0)	[nur Sprachen]
+c:good	good	adjective	0
+c:bad	bad	adjective	0
+c:big	big	adjective	0
+c:small	small	adjective	0
+c:long	long	adjective	0
+c:short_length	short	adjective	0
+c:tall	tall	adjective	0
+c:high	high	adjective	0
+c:low	low	adjective	0
+c:new	new	adjective	0
+c:old_thing	old (thing)	adjective	0
+c:old_person	old (person)	adjective	0
+c:young	young	adjective	0
+c:beautiful	beautiful	adjective	0
+c:pretty_cute	cute	adjective	0
+c:handsome	handsome	adjective	0
+c:ugly	ugly	adjective	0
+c:fast	fast	adjective	0
+c:slow	slow	adjective	0
+c:easy	easy	adjective	0
+c:difficult	difficult	adjective	0
+c:hot_temperature	hot (to touch)	adjective	0
+c:full_container	full	adjective	0
+c:empty	empty	adjective	0
+c:heavy	heavy	adjective	0
+c:light_weight	light (not heavy)	adjective	0
+c:thick	thick	adjective	0
+c:thin	thin	adjective	0
+c:fat	fat	adjective	0
+c:strong	strong	adjective	0
+c:weak	weak	adjective	0
+c:clean_adj	clean	adjective	0
+c:dirty	dirty	adjective	0
+c:quiet	quiet	adjective	0
+c:loud	loud	adjective	0
+c:busy	busy	adjective	0
+c:free_time	free (not busy)	adjective	0
+c:free_cost	free (no cost)	adjective	0
+c:right_correct	right, correct	adjective	0
+c:wrong	wrong	adjective	0
+c:true	true	adjective	0
+c:important	important	adjective	0
+c:interesting	interesting	adjective	0
+c:boring	boring	adjective	0
+c:fun	fun	adjective	0
+c:funny	funny	adjective	0
+c:famous	famous	adjective	0
+c:rich	rich	adjective	0
+c:poor	poor	adjective	0
+c:safe	safe	adjective	0
+c:dangerous	dangerous	adjective	0
+c:ready	ready	adjective	0
+c:possible	possible	adjective	0
+c:different	different	adjective	0
+c:similar	similar	adjective	0
+c:many	many	adjective	0
+c:few	few	adjective	0
+c:whole	whole	adjective	0
+c:early	early	adjective	0
+c:late	late	adjective	0
+c:bright	bright	adjective	0
+c:dark	dark	adjective	0
+c:soft	soft	adjective	0
+c:hard_solid	hard	adjective	0
+c:fresh	fresh	adjective	0
+c:ripe	ripe	adjective	0
+c:wide	wide	adjective	0
+c:narrow	narrow	adjective	0
+c:deep	deep	adjective	0
+c:round	round	adjective	0
+c:kind_nice	kind, nice	adjective	0
+c:polite	polite	adjective	0
+c:clever	clever	adjective	0
+c:lazy	lazy	adjective	0
+c:diligent	hard-working	adjective	0
+c:shy	shy	adjective	0
+c:happy	happy	adjective	0
+c:sad	sad	adjective	0
+c:angry	angry	adjective	0
+c:afraid	afraid	adjective	0
+c:worried	worried	adjective	0
+c:excited	excited	adjective	0
+c:bored	bored	adjective	0
+c:surprised	surprised	adjective	0
+c:glad	glad	adjective	0
+c:comfortable	comfortable	adjective	0
+c:relaxed	relaxed	adjective	0
+c:lonely	lonely	adjective	0
+c:feeling	feeling	noun	0
+c:love_noun	love	noun	0
+c:life	life	noun	0
+c:world	world	noun	1
+c:part	part	noun	0
+c:side	side	noun	0
+c:end	end	noun	0
+c:beginning	beginning	noun	0
+c:middle	middle	noun	0
+c:top	top	noun	0
+c:bottom	bottom	noun	0
+c:front	front	noun	0
+c:back_rear	back (rear)	noun	0
+c:north	north	noun	0
+c:south	south	noun	0
+c:east	east	noun	0
+c:west	west	noun	0
+c:kilometer	kilometre	noun	0
+c:meter	metre	noun	0
+c:kilogram	kilogram	noun	0
+c:piece	piece	noun	1
+c:pair	pair	noun	0
+c:bag_plastic	plastic bag	noun	1
+c:sign	sign	noun	1
+c:noise	noise	noun	0
+c:voice	voice	noun	0
+c:smell	smell	noun	0
+c:taste	taste	noun	0
+c:shape	shape	noun	0
+c:weight	weight	noun	0
+c:temperature	temperature	noun	0
+c:address	address	noun	0
+c:phone_number	phone number	noun	0
+c:card	card	noun	1
+c:credit_card	credit card	noun	1
+c:cash	cash	noun	1
+c:coin	coin	noun	1
+c:receipt	receipt	noun	1
+c:queue	queue, line	noun	1
+c:appointment	appointment	noun	0
+c:plan	plan	noun	0
+c:rule	rule	noun	0
+c:help_noun	help	noun	0
+c:danger	danger	noun	0
+c:accident	accident	noun	1
+c:emergency	emergency	noun	0
+c:police	police	noun	1
+c:wifi	Wi-Fi	noun	0
+c:charger	charger	noun	1
+c:battery	battery	noun	1
+c:photo_take	to take a photo	verb	0
+c:smoke	to smoke	verb	0
+c:kiss	to kiss	verb	0
+c:hug	to hug	verb	0
+c:push	to push	verb	0
+c:pull	to pull	verb	0
+c:throw	to throw	verb	0
+c:catch	to catch	verb	0
+c:jump	to jump	verb	0
+c:climb	to climb	verb	0
+c:fall_asleep	to fall asleep	verb	0
+c:dream	to dream	verb	0
+c:boil	to boil	verb	0
+c:fry	to fry	verb	0
+c:grill	to grill	verb	0
+c:taste_try	to taste	verb	0
+c:share	to share	verb	0
+c:borrow	to borrow	verb	0
+c:lend	to lend	verb	0
+c:keep	to keep	verb	0
+c:throw_away	to throw away	verb	0
+c:fill	to fill	verb	0
+c:turn_on	to turn on	verb	0
+c:turn_off	to turn off	verb	0
+c:plug_in_charge	to charge (a battery)	verb	0
+c:download	to download	verb	0
+c:sign_signature	to sign	verb	0
+c:check	to check	verb	0
+c:decide	to decide	verb	0
+c:prepare	to prepare	verb	0
+c:plan_verb	to plan	verb	0
+c:join	to join	verb	0
+c:win	to win	verb	0
+c:lose_game	to lose (a game)	verb	0
+c:grow	to grow	verb	0
+c:plant	to plant	verb	0
+c:build	to build	verb	0
+c:hide	to hide	verb	0
+c:worry	to worry	verb	0
+c:miss_someone	to miss (someone)	verb	0
+c:wish	to wish	verb	0
+c:like_prefer	to prefer	verb	0
+c:hate	to hate	verb	0
+c:seem	to seem	verb	0
+c:look_like	to look like	verb	0
+c:mean	to mean	verb	0
+c:introduce	to introduce	verb	0
+c:greet	to greet	verb	0
+c:celebrate	to celebrate	verb	0
+c:fight	to fight	verb	0
+c:argue	to argue	verb	0
+c:apologize	to apologise	verb	0
+c:promise	to promise	verb	0
+c:lie_untruth	to lie (tell an untruth)	verb	0
+c:lie_down	to lie down	verb	0
+c:hurry	to hurry	verb	0
+c:be_late	to be late	verb	0
+c:get_lost	to get lost	verb	0
+c:take_care	to take care	verb	0
+c:exercise	to exercise	verb	0
+c:relax	to relax	verb	0
+c:shop_verb	to go shopping	verb	0
+c:bargain	to bargain	verb	0
+c:exchange_money	to exchange (money)	verb	0
+c:park_car	to park	verb	0
+c:cross_street	to cross (the street)	verb	0
+c:pick_up	to pick up	verb	0
+c:drop_off	to drop off	verb	0
+c:wear_put_on	to put on (clothes)	verb	0
+c:take_off_clothes	to take off (clothes)	verb	0
+c:brush_teeth	to brush (teeth)	verb	0
+c:comb	to comb	verb	0
+c:wait_for	to wait for	verb	0
+c:knock	to knock	verb	0
+c:ring_bell	to ring	verb	0
+c:feed	to feed	verb	0
+c:walk_dog	to walk (a dog)	verb	0
+c:happy_birthday	happy birthday	interjection	0
+c:congratulations	congratulations	interjection	0
+c:good_luck	good luck	interjection	0
+c:welcome	welcome	interjection	0
+c:no_problem	no problem	interjection	0
+c:excuse_me_attention	excuse me (to get attention)	interjection	0
+c:help_shout	help!	interjection	0
+c:wow	wow	interjection	0
+c:polite_particle_male	polite particle (male speaker)	particle	0	th
+c:polite_particle_female	polite particle (female speaker)	particle	0	th
+c:question_particle	question particle	particle	0	th
+c:softening_particle	softening particle	particle	0	th
+c:classifier_general	general classifier	particle	0	th
+c:classifier_person	classifier for people	particle	0	th
+c:classifier_animal	classifier for animals and clothes	particle	0	th
+c:did_past_marker	past marker (already)	particle	0	th
+c:will_future	will (future)	particle	0	th,en
+c:currently	currently, in the process of	adverb	0
+c:ever_experience	ever (experience)	adverb	0
+c:should	should	verb	0
+c:may_might	might, may	verb	0
+c:let_allow	to let	verb	0
+c:there_is	there is, there are	verb	0
+c:of_possessive	of (possession)	preposition	0
+c:about_topic	about	preposition	0
+c:until	until	preposition	0
+c:since	since	preposition	0
+c:by_means	by (means of)	preposition	0
+c:per_each	each, per	pronoun	0
+c:than	than	conjunction	0
+c:that_conjunction	that (conjunction)	conjunction	0
+c:then_next	then, after that	adverb	0
+c:even	even	adverb	0
+c:almost	almost	adverb	0
+c:about_approximately	about, approximately	adverb	0
+c:exactly	exactly	adverb	0
+c:probably	probably	adverb	0
+c:of_course	of course	adverb	0
+c:at_all	at all	adverb	0
+c:just_now	just now	adverb	0
+c:immediately	immediately	adverb	0
+c:every_day	every day	adverb	0
+c:tonight	tonight	adverb	0
+c:this_morning	this morning	adverb	0
+c:last_week	last week	adverb	0
+c:next_week	next week	adverb	0
+c:ago	ago	adverb	0
+c:long_time	a long time	adverb	0
+c:mine	mine, my	pronoun	0
+c:yours	yours, your	pronoun	0
+c:myself	myself	pronoun	0
+c:each_other	each other	pronoun	0
+c:anything	anything	pronoun	0
+c:anyone	anyone	pronoun	0
+c:nobody	nobody	pronoun	0
+c:somewhere	somewhere	adverb	0
+c:everywhere	everywhere	adverb	0
+c:mister	Mr.	noun	0
+c:missus	Mrs., Ms.	noun	0
+c:male	male	adjective	0
+c:female	female	adjective	0
+c:thai_person	Thai (person)	noun	0
+c:foreigner	foreigner	noun	1
+c:germany	Germany	noun	0
+c:thailand	Thailand	noun	0
+c:spain	Spain	noun	0
+c:england	England	noun	0

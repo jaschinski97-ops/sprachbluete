@@ -10,6 +10,7 @@ const { isValidSituation, TOPICS } = domain.load('src/lib/conversation/types');
 const { isValidVocabEntry, pruefeVocabDoc } = domain.load('src/lib/content/vocab-schema');
 const { isValidAudioClip, clipIdFor } = domain.load('src/lib/clips/types');
 const { checkThaiTone, TONE_GATE_LIMITS, TONE_GATE_VERSION } = domain.load('src/lib/content/tone-gate');
+const { sollToeneFuerClipAusSchrift } = domain.load('src/lib/content/soll-toene-schrift');
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 // Die EINE Lernsprachen-Liste der App (src/lib/languages/types.ts).
 const { LANGUAGE_CODES } = domain.load('src/lib/languages/types');
@@ -388,7 +389,10 @@ class ContentPipeline {
       ...this.extraVocabulary,
       ...katalogWoerter,
       ...(stageState ? stageState.entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document) : [])];
-    entry.check = this.checkEntry(entry, media ? path.join(this.work, entry.asset) : undefined, toneWortschatz);
+    const toneSituationen = [
+      ...shipped.entries.filter((item) => item.kind === 'situations').map((item) => item.document),
+      ...(stageState ? stageState.entries.filter((item) => item.kind === 'situations').map((item) => item.document) : [])];
+    entry.check = this.checkEntry(entry, media ? path.join(this.work, entry.asset) : undefined, toneWortschatz, toneSituationen);
     if (stageState) {
       stageState.version = 2;
       stageState.entries = [...stageState.entries.filter((item) => keyOf(item) !== keyOf(entry)), entry];
@@ -414,7 +418,7 @@ class ContentPipeline {
     }
     return this.stageWoerter.woerter;
   }
-  checkEntry(entry, file, toneWortschatz) {
+  checkEntry(entry, file, toneWortschatz, toneSituationen) {
     const check = { status: 'passed', label: 'automatisch geprüft', checkedAt: new Date().toISOString(), scope: 'schema-integrity-decode' };
     if (entry.kind === 'audio') {
       // 18.09. Abend: ffmpeg-Dekodierung + F0-Messung nur für Thai. Nicht-
@@ -423,10 +427,18 @@ class ContentPipeline {
       // „Ergebnisse werden übernommen …"). Die Dekodierbarkeit nicht-thai
       // bleibt gewährleistet: das Stage erzwingt die mp3-Kompression durch
       // ffmpeg, und der Katalog-Check (check.cjs) dekodiert weiterhin alles.
-      check.tone = entry.document.language === 'th'
-        ? checkThaiTone(entry.document, decodeAudio(file), 24000,
-            { woerter: toneWortschatz ?? [] })
-        : { status: 'not-applicable', reason: 'Kein Thai-Ton; nur technische Integritätsprüfung.', version: TONE_GATE_VERSION };
+      // 24.10.2026: Soll-Töne aus Schrift UND Umschrift (Regel-Engine). Bei
+      // Widerspruch wird nicht gewertet — ein strittiger Soll-Ton darf keinen
+      // bezahlten Clip verwerfen. Dialogzeilen werden so erstmals prüfbar.
+      const soll = entry.document.language === 'th'
+        ? sollToeneFuerClipAusSchrift(entry.document, toneWortschatz ?? [], toneSituationen ?? [])
+        : null;
+      check.tone = entry.document.language !== 'th'
+        ? { status: 'not-applicable', reason: 'Kein Thai-Ton; nur technische Integritätsprüfung.', version: TONE_GATE_VERSION }
+        : soll?.art === 'strittig'
+          ? { status: 'unchecked', reason: `Soll-Töne strittig (Schrift gegen Umschrift), nicht gewertet: ${soll.grund}`, version: TONE_GATE_VERSION }
+          : checkThaiTone(entry.document, decodeAudio(file), 24000, { woerter: toneWortschatz ?? [] },
+              soll?.art === 'ok' ? { sollToene: soll.sollToene, sollRoman: soll.sollRoman } : undefined);
       if (['failed', 'unchecked'].includes(check.tone.status)) check.status = check.tone.status;
     } else if (entry.kind === 'images') {
       decodeImage(file);
@@ -509,7 +521,8 @@ class ContentPipeline {
       // 18.09.: Solltöne fürs Tor aus dem GEPLANTEN Gesamtbestand — dieselbe
       // Quelle wie assertDocument zwei Zeilen darüber.
       const toneWortschatz = [...this.extraVocabulary, ...entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document)];
-      entry.check = this.checkEntry(entry, file, toneWortschatz);
+      const toneSituationen = entries.filter((item) => item.kind === 'situations').map((item) => item.document);
+      entry.check = this.checkEntry(entry, file, toneWortschatz, toneSituationen);
       prepared.push({ entry, bytes });
     }
     await fs.mkdir(assetDir, { recursive: true });

@@ -62,7 +62,8 @@ class AutomaticDelivery {
       assertDocument(entry.kind, entry.document, [...this.pipeline.extraVocabulary, ...vocabulary]);
       const bytes = entry.asset ? await fs.readFile(path.join(this.pipeline.root, 'assets/content', entry.asset)) : Buffer.alloc(0);
       if (digestOf(entry.kind, entry.document, bytes) !== entry.digest) throw Error('Gesicherte Inhaltsprüfsumme stimmt nicht.');
-      entry.check = this.pipeline.checkEntry(entry, entry.asset ? path.join(this.pipeline.root, 'assets/content', entry.asset) : undefined, vocabulary);
+      const situationen = [...catalog.entries, ...saved.entries].filter(e => e.kind === 'situations').map(e => e.document);
+      entry.check = this.pipeline.checkEntry(entry, entry.asset ? path.join(this.pipeline.root, 'assets/content', entry.asset) : undefined, vocabulary, situationen);
       if (!isDeliverableEntry(entry)) throw Error('Gesicherter Inhalt hat die erneute Prüfung nicht bestanden.');
       if (entry.check.tone) delete entry.check.tone.track;
       if (entry.asset) {

@@ -83,7 +83,7 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 
 ## Thai-Ton-Gate (`src/lib/content/tone-gate.ts`, Stand `f0-syllables-6`)
 
-- Seit 24.10.2026 `f0-syllables-6`: Bewertung offline mit `npm run content:tone-eval` (Negativproben: falsche Tonfolgen, umgedrehtes/eingeebnetes Signal; Tabellen in `measurements/tone-eval/`). Falsche Freigaben 2,3 % statt 20,8 %, sicher bestanden 37,6 % statt 51,4 %. Soll-Töne auch vom Aufrufer (`sollToene`, `sollRoman`) — die Regel-Engine `sollToeneAusSchrift` ist dafür vorgesehen, im Helper aber noch nicht angeschlossen.
+- Seit 24.10.2026 `f0-syllables-6`: Bewertung offline mit `npm run content:tone-eval` (Negativproben: falsche Tonfolgen, umgedrehtes/eingeebnetes Signal; Tabellen in `measurements/tone-eval/`). Falsche Freigaben 2,3 % statt 20,8 %, sicher bestanden 37,6 % statt 51,4 %. Soll-Töne auch vom Aufrufer (`sollToene`, `sollRoman`) — im Helper angeschlossen über `soll-toene-schrift.ts`: Schrift und Umschrift müssen übereinstimmen, sonst „ungeprüft“ (nie Verwurf); Dialogzeilen werden so geprüft.
 
 - Text-Töne (24.10.2026): `src/lib/thai/tone-rules.ts` rechnet Töne aus der Schrift nach (99,8 % auf Wiktionary-Gold); `pruefeVocabDoc` verwirft Thai-Wörter mit Widerspruch, `npm run content:thai-tones -- datei.json` prüft Dateien. Ausnahmen mit Grund in `tone-exceptions.ts`. Neue Thai-Wörter von Claude tragen „Töne regelgeprüft“ im KI-Vermerk (öffnet die Sprechübung, `hatBelastbareToene`).
 - Gemini-Stimme: Anweisung `th-ton-gemini-1` via `speech_metadata.style`; Kalibrierlauf im Studio-Audio, Stimm-Referenz `_Local/tone-calibration/stimm-referenzen.json`.

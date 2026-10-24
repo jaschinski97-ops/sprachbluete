@@ -90,9 +90,29 @@ function audioRow(entry) {
   return [entry.id, document.language, asset ?? null, check ? check.status : null, check?.tone ? check.tone.status : null];
 }
 
-/** Basis-Einträge ohne die Übersetzungen der App-Sprachen, dazu die Teile je App-Sprache. */
+/**
+ * Nimmt die App-Sprachen aus `value` heraus und legt sie in `target[ui][id]`.
+ * Was keine App-Sprache ist, bleibt; das leere Objekt auch, damit die
+ * Laufzeit die Teile dort hineinlegt.
+ */
+function moveUiTexts(value, uiLanguages, target, id) {
+  const rest = { ...value };
+  for (const ui of uiLanguages) {
+    if (!(ui in rest)) continue;
+    target[ui][id] = rest[ui];
+    delete rest[ui];
+  }
+  return rest;
+}
+
+/**
+ * Basis-Einträge ohne die Übersetzungen der App-Sprachen, dazu die Teile je
+ * App-Sprache. Seit 24.10.2026 wandern auch die Satzübersetzungen des
+ * Wortschatzes (`exampleTranslations`) in die Teile (Feld `exampleTranslations`).
+ */
 function splitTranslations(entries, uiLanguages) {
-  const parts = Object.fromEntries(uiLanguages.map((ui) => [ui, { vocabulary: {}, situations: {} }]));
+  const parts = Object.fromEntries(uiLanguages.map((ui) => [ui, { vocabulary: {}, situations: {}, exampleTranslations: {} }]));
+  const byUi = (field) => Object.fromEntries(uiLanguages.map((ui) => [ui, parts[ui][field]]));
   const base = [];
   const audio = [];
   for (const entry of entries) {
@@ -101,20 +121,16 @@ function splitTranslations(entries, uiLanguages) {
       audio.push(row);
       continue;
     }
-    const translations = entry.document?.translations;
-    if ((entry.kind !== 'vocabulary' && entry.kind !== 'situations') || !isObject(translations)) {
+    if (entry.kind !== 'vocabulary' && entry.kind !== 'situations') {
       base.push(entry);
       continue;
     }
-    // Was keine App-Sprache ist, bleibt in der Basis; das leere Objekt auch,
-    // damit die Laufzeit die Teile dort hineinlegt.
-    const rest = { ...translations };
-    for (const ui of uiLanguages) {
-      if (!(ui in rest)) continue;
-      parts[ui][entry.kind][entry.id] = rest[ui];
-      delete rest[ui];
+    const document = { ...entry.document };
+    if (isObject(document.translations)) document.translations = moveUiTexts(document.translations, uiLanguages, byUi(entry.kind), entry.id);
+    if (entry.kind === 'vocabulary' && isObject(document.exampleTranslations)) {
+      document.exampleTranslations = moveUiTexts(document.exampleTranslations, uiLanguages, byUi('exampleTranslations'), entry.id);
     }
-    base.push({ ...entry, document: { ...entry.document, translations: rest } });
+    base.push({ ...entry, document });
   }
   return { base, audio, parts };
 }

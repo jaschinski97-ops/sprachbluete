@@ -29,7 +29,7 @@ import {
   type DictationScore,
 } from '@/lib/dictation/scoring';
 import { type Rating } from '@/lib/fsrs/types';
-import { anchorOf, type PairDirection } from '@/lib/languages/types';
+import { type PairDirection } from '@/lib/languages/types';
 import { languageOf } from '@/lib/languages/registry';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
@@ -501,14 +501,14 @@ function Feedback({
 
       {/* Die Bedeutung und die Umschrift erst NACH der Auswertung — vorher
           wäre die Lösung lesbar, und das Diktat würde zum Abschreiben. Die
-          deutsche Satzbedeutung steht nur auf der de-Brücke: Andere Anker
-          haben keine Satzübersetzung im Bestand (21.09.2026). */}
+          Satzbedeutung nur, wenn sie in der App-Sprache geliefert ist
+          (`exampleTranslations`, auf Deutsch auch `exampleGerman`). */}
       <ThemedText type="small">{task.text}</ThemedText>
-      {anchorOf(task.direction) === 'de' && (
+      {task.meaning ? (
         <ThemedText type="small" themeColor="textSecondary">
-          {task.german}
+          {task.meaning}
         </ThemedText>
-      )}
+      ) : null}
       <ThemedText type="small" themeColor="textSecondary">
         {task.roman}
       </ThemedText>

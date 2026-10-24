@@ -1,6 +1,6 @@
 import type { VocabEntry } from '@/data/vocab-types';
 import type { UiLanguage } from '../i18n/types';
-import { SENTENCE_TASKS_BY_LANGUAGE } from '@/data/sentence-tasks';
+import { satzaufgabenFuer } from '@/data/sentence-tasks';
 
 import { type FSRSCardState } from '../fsrs/types';
 import { type PairDirection, targetLanguageOf, anchorOf } from '../languages/types';
@@ -97,12 +97,12 @@ export async function produktionsAufgaben(options: {
     random,
   };
 
-  // Sätze zuerst — wo geprüfte Sätze liegen, werden sie gebildet. Der
-  // Satzbestand trägt seine Bedeutungen NUR auf Deutsch (`exampleGerman`) —
-  // auf anderen Brücken gäbe es keinen ehrlichen Auftragsatz, dort springt
-  // die Wort-Ebene ein (21.09.2026, Nutzerbefund en-UI: deutsche Aufträge).
-  if (anchorOf(options.direction) === 'de') {
-    const saetze = SENTENCE_TASKS_BY_LANGUAGE[sprache] ?? [];
+  // Sätze zuerst — wo geprüfte Sätze liegen, werden sie gebildet. Nur Sätze
+  // mit gelieferter Bedeutung in der App-Sprache (seit 24.10.2026
+  // `exampleTranslations`, auf Deutsch auch `exampleGerman`); ohne sie
+  // springt die Wort-Ebene ein (21.09.2026, Nutzerbefund en-UI).
+  {
+    const saetze = satzaufgabenFuer(sprache, anchorOf(options.direction)).filter((task) => task.meaning);
     if (saetze.length >= Math.min(anzahl, 4)) {
       const byVocabId = new Map(saetze.map((task) => [task.vocabId, task]));
       const mitSatz = entries.flatMap((entry) => byVocabId.has(entry.id) ? [byVocabId.get(entry.id)!] : []);
@@ -112,7 +112,7 @@ export async function produktionsAufgaben(options: {
           id: `produktion-satz-${task.vocabId}`,
           vocabId: task.vocabId,
           art: 'satz' as const,
-          bedeutung: task.german,
+          bedeutung: task.meaning ?? task.german,
           ziel: task.text,
           roman: task.roman,
         }));

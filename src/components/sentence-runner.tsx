@@ -11,7 +11,9 @@ import type { VocabEntry } from '@/data/vocab-types';
 import { useMicrophoneCapture } from '@/hooks/use-microphone-capture';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus, stopPronunciation } from '@/lib/audio';
 import { useLocale, type UiLanguage } from '@/lib/i18n';
+import type { PairDirection } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
+import { loadPracticeContext, type PracticeContext } from '@/lib/word-practice';
 import type { CapturedPcm } from '@/lib/speaking';
 import { MIC_ERROR_KEYS } from '@/lib/speaking/mic-error-keys';
 import { measureSentence, preparationRemaining, sentenceAnswers, sentenceSession,
@@ -30,8 +32,10 @@ export function SentenceAction({ label, onPress, disabled = false }: {
 }
 
 
-export function SentenceRunner({ mode, language, anchor = 'de', words, situation, learningStage, onExit }: {
-  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage; words?: VocabEntry[]; situation?: ConversationSituation;
+export function SentenceRunner({ mode, language, anchor = 'de', direction, words, situation, learningStage, onExit }: {
+  mode: SentenceMode; language: SatzSprache; /** Anker-/Bedeutungsseite der Richtung (21.09.2026). */ anchor?: UiLanguage;
+  /** Lernrichtung für den Kartenstand des mitwachsenden Pools; sonst aus Anker und Sprache. */ direction?: PairDirection;
+  words?: VocabEntry[]; situation?: ConversationSituation;
   /** Ohne Kapitel: Stoff nur aus dieser Stufe. */ learningStage?: LearningStage; onExit: () => void;
 }) {
   const { t, uiLanguage, languageName } = useLocale();
@@ -39,7 +43,24 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   // nicht dieselbe Satzfolge und Antwortmischung wie in der Runde davor
   // herauskommt.
   const [seed, setSeed] = useState(() => Date.now());
-  const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor) : sentenceSession(language, seed, anchor, words, learningStage), [language, seed, anchor, words, situation, learningStage]);
+  // Ohne Kapitel wächst der Satzpool mit dem Lernstand (24.10.2026): Karten
+  // und Übungsgedächtnis je Runde frisch lesen, wie beim Diktat.
+  const freierPool = !situation && !words;
+  const richtung = direction ?? `${anchor}_to_${language}` as PairDirection;
+  const [context, setContext] = useState<PracticeContext | null>(null);
+  useEffect(() => {
+    if (!freierPool) return;
+    let cancelled = false;
+    setContext(null);
+    loadPracticeContext(richtung)
+      .catch((): PracticeContext => ({ cards: new Map(), practice: new Map(), now: Date.now() }))
+      .then((loaded) => { if (!cancelled) setContext(loaded); });
+    return () => { cancelled = true; };
+  }, [freierPool, richtung, seed]);
+  const tasks = useMemo(() => situation ? dialogueSentenceTasks(situation, anchor)
+    : words ? sentenceSession(language, seed, anchor, words)
+    : context ? sentenceSession(language, seed, anchor, undefined, learningStage, context) : null,
+  [language, seed, anchor, words, situation, learningStage, context]);
   const [index, setIndex] = useState(0);
   const [round, setRound] = useState(0);
   const [preparedAt, setPreparedAt] = useState(() => Date.now());
@@ -55,7 +76,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   const [stage, setStage] = useState<'prepare' | 'record' | 'result'>('prepare');
   const [hintOpen, setHintOpen] = useState(false);
   const listening = mode === 'sentenceListening';
-  const task = tasks[index];
+  const task = tasks?.[index];
   const windowMs = mode === 'sentenceRepeat' ? SENTENCE_WINDOWS_MS[round] : 15_000;
   const capture = useMicrophoneCapture({ maxDurationMs: windowMs, allowPlayback: mode === 'shadowing' });
   const captureRef = useRef(capture); captureRef.current = capture;
@@ -99,6 +120,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   }, []);
 
   async function play(concurrentRecording = false): Promise<boolean> {
+    if (!task) return false;
     const turn = generation.current;
     const label = languageName(language);
     const request = { text: task.text, language, purpose: 'sentence' as const };
@@ -184,6 +206,9 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
   // Eine Sprache ohne geprüfte Sätze bekommt keinen vorgetäuschten Ablauf:
   // kein Mikrofon, keine Wiedergabe — nur der ehrliche Hinweis, was fehlt
   // (AE-66). Sobald die Registry Satzstoff führt, läuft alles wie bei Thai.
+  if (!tasks) return <ThemedView style={styles.card}>
+    <ThemedText type="small" themeColor="textSecondary">{t('drill.assembling')}</ThemedText>
+  </ThemedView>;
   if (tasks.length === 0) return <ThemedView style={styles.card}>
     <ThemedText type="subtitle">{t('sentence.noneFor', { language: languageName(language) })}</ThemedText>
     <ThemedText type="small">{sentenceFootnote(language, uiLanguage)}</ThemedText>
@@ -219,10 +244,10 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
         : t('sentence.hintShadowing')}</ThemedText>}
     </>}
     {!listening && <>
-      {/* Die deutsche Satzbedeutung nur auf der de-Brücke: Andere Anker haben
-          keine Satzübersetzung im Bestand — der Fokus-Hinweis (wortweise
-          übersetzt) bleibt die ehrliche Verständnishilfe (21.09.2026). */}
-      {(task.meaning || anchor === 'de') && <ThemedText type="smallBold">{task.meaning ?? task.german}</ThemedText>}
+      {/* Die Satzbedeutung nur, wenn sie in der App-Sprache geliefert ist;
+          sonst bleibt der Fokus-Hinweis (wortweise übersetzt) die
+          Verständnishilfe (21.09.2026, je Wort seit 24.10.2026). */}
+      {task.meaning ? <ThemedText type="smallBold">{task.meaning}</ThemedText> : null}
       {/* Der Thai-Satz in Displaygröße: Skalierungsdeckel wie überall, sonst
           schneiden Zeilenhöhe und Tonzeichen einander (UI-Review 2026-09-07). */}
       {(stage !== 'record' || mode === 'shadowing') && <><ThemedText type="subtitle" maxFontSizeMultiplier={2} style={{ lineHeight: displayLineHeight(32, 2) }}>{task.text}</ThemedText>{language === 'th' && task.roman && task.roman !== task.text && <ThemedText>{task.roman}</ThemedText>}</>}
@@ -275,7 +300,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', words, situation
         <SentenceAction label={t('sentence.nextSentence')} onPress={() => reset(index + 1)} />
       </>}
     </>}
-    <ThemedText type="small">{situation ? situationTranslation(situation, uiLanguage).title : anchor !== 'de' ? t('tabs.conversation') : sentenceFootnote(language, uiLanguage)}</ThemedText>
+    <ThemedText type="small">{situation ? situationTranslation(situation, uiLanguage).title : !task.vocabId ? t('tabs.conversation') : sentenceFootnote(language, uiLanguage)}</ThemedText>
   </ThemedView>;
 }
 

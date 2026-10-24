@@ -104,12 +104,12 @@ const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
   shadowing: 'mode.shadowing',
 };
 
-type SatzAufgabe = { id: string; vocabId: string; german: string; text: string; roman: string };
+type SatzAufgabe = { id: string; vocabId: string; german: string; meaning?: string; text: string; roman: string };
 
 function satzAufgaben(tasks: SentenceTask[], anzahl: number, seed: number): SatzAufgabe[] {
   return shuffled(tasks, seededRandom(seed))
     .slice(0, anzahl)
-    .map((task) => ({ id: task.id, vocabId: task.vocabId, german: task.german, text: task.text, roman: task.roman }));
+    .map((task) => ({ id: task.id, vocabId: task.vocabId, german: task.german, meaning: task.meaning, text: task.text, roman: task.roman }));
 }
 
 export function TodayRoundRunner({
@@ -586,9 +586,9 @@ function SatzSegment({
   onAnswered: () => void;
 }) {
   const { t } = useLocale();
-  const stoff = useMemo(() => anchor === 'de'
-    ? satzaufgabenFuer(sprache, anchor).filter((task) => !onlyVocabIds || onlyVocabIds.has(task.vocabId))
-    : [], [sprache, anchor, onlyVocabIds]);
+  // Nur Sätze mit gelieferter Bedeutung in der App-Sprache (24.10.2026).
+  const stoff = useMemo(() => satzaufgabenFuer(sprache, anchor)
+    .filter((task) => task.meaning && (!onlyVocabIds || onlyVocabIds.has(task.vocabId))), [sprache, anchor, onlyVocabIds]);
   const aufgaben = useMemo(
     () => satzAufgaben(stoff, anzahl, anzahl + sprache.length),
     [stoff, anzahl, sprache]
@@ -621,7 +621,7 @@ function SatzSegment({
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t('round.satzPrompt')}</ThemedText>
-      <ThemedText type="subtitle">{aufgabe.german}</ThemedText>
+      <ThemedText type="subtitle">{aufgabe.meaning ?? aufgabe.german}</ThemedText>
       <View style={styles.options}>
         {optionen.map((option, i) => (
           <Pressable
@@ -805,9 +805,9 @@ function ShadowingSegment({
   onDone: () => void;
 }) {
   const { t } = useLocale();
-  const stoff = useMemo(() => anchor === 'de'
-    ? satzaufgabenFuer(sprache, anchor).filter((task) => !onlyVocabIds || onlyVocabIds.has(task.vocabId))
-    : [], [sprache, anchor, onlyVocabIds]);
+  // Nur Sätze mit gelieferter Bedeutung in der App-Sprache (24.10.2026).
+  const stoff = useMemo(() => satzaufgabenFuer(sprache, anchor)
+    .filter((task) => task.meaning && (!onlyVocabIds || onlyVocabIds.has(task.vocabId))), [sprache, anchor, onlyVocabIds]);
   const aufgaben = useMemo(
     () => satzAufgaben(stoff, anzahl, anzahl * 2 + 31),
     [stoff, anzahl]

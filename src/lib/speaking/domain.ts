@@ -65,13 +65,24 @@ export type ToneContourFeedback = {
  * Strecke. Ohne gepruefte Silbengrenzen kann es ein mehrsilbiges Wort deshalb
  * nicht ehrlich mehreren Solltoenen zuordnen (AE-7/AE-8).
  */
+/**
+ * Sind die Solltöne belastbar? Quellengeprüft, KI-kreuzgeprüft oder (seit
+ * 24.10.2026) gegen die Thai-Tonregeln aus der Schrift geprüft — solche
+ * Wörter tragen „regelgeprüft“ im Vermerk; der Helper nimmt sie nur ohne
+ * Ton-Widerspruch an (`pruefeVocabDoc`).
+ */
+export function hatBelastbareToene(entry: VocabEntry): boolean {
+  const note = entry.verificationNote ?? '';
+  return entry.sourceVerified === true || note.startsWith('KI-Kreuzprüfung bestanden') || (note.startsWith('KI-') && note.includes('regelgeprüft'));
+}
+
 export function canBuildSpeakingPrompt(entry: VocabEntry): boolean {
   return (
     // Seit Phase 16: Die Sprechuebung misst Tonhoehenkonturen und gilt damit
     // fuer Thai. Ob dasselbe Verfahren spanische Betonung erkennen kann, ist
     // eine offene Frage und keine Selbstverstaendlichkeit (AE-48).
     entry.language === 'th' &&
-    (entry.sourceVerified === true || entry.verificationNote?.startsWith('KI-Kreuzprüfung bestanden') === true) &&
+    hatBelastbareToene(entry) &&
     Array.isArray(entry.syllables) &&
     entry.syllables.length === 1 &&
     entry.syllables[0].tone !== undefined &&
@@ -80,7 +91,7 @@ export function canBuildSpeakingPrompt(entry: VocabEntry): boolean {
 }
 
 export function buildSpeakingPrompt(entry: VocabEntry): SpeakingPrompt {
-  if (entry.sourceVerified !== true && !entry.verificationNote?.startsWith('KI-Kreuzprüfung bestanden')) {
+  if (!hatBelastbareToene(entry)) {
     throw new Error(
       `"${entry.id}" ist nicht vollständig quellengeprüft — daraus wird keine Sollkontur gebaut.`
     );

@@ -58,6 +58,13 @@ describe('Sollkontur aus verifizierten Vokabeldaten', () => {
     expect(canBuildSpeakingPrompt(entry('raan'))).toBe(false);
   });
 
+  it('nimmt auch Wörter mit regelgeprüften Tönen, aber keine ungeprüften (24.10.2026)', () => {
+    const basis = { ...entry('gai'), sourceVerified: false };
+    expect(canBuildSpeakingPrompt({ ...basis, verificationNote: 'KI-Erzeugung (Claude), Töne regelgeprüft.' })).toBe(true);
+    expect(canBuildSpeakingPrompt({ ...basis, verificationNote: 'KI-Erzeugung, einfach geprüft.' })).toBe(false);
+    expect(canBuildSpeakingPrompt({ ...basis, verificationNote: 'regelgeprüft, aber ohne KI-Kennung' })).toBe(false);
+  });
+
   it('verweigert mehrsilbige und unverifizierte Eintraege mit benanntem Grund', () => {
     expect(() => buildSpeakingPrompt(entry('sawatdii'))).toThrow(/nicht einsilbig/);
     expect(() => buildSpeakingPrompt(entry('raan'))).toThrow(/nicht vollständig quellengeprüft/);

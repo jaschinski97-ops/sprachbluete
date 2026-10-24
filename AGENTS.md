@@ -83,6 +83,9 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 
 ## Thai-Ton-Gate (`src/lib/content/tone-gate.ts`, Stand `f0-syllables-5`)
 
+- Text-Töne (24.10.2026): `src/lib/thai/tone-rules.ts` rechnet Töne aus der Schrift nach (99,8 % auf Wiktionary-Gold); `pruefeVocabDoc` verwirft Thai-Wörter mit Widerspruch, `npm run content:thai-tones -- datei.json` prüft Dateien. Ausnahmen mit Grund in `tone-exceptions.ts`. Neue Thai-Wörter von Claude tragen „Töne regelgeprüft“ im KI-Vermerk (öffnet die Sprechübung, `hatBelastbareToene`).
+- Gemini-Stimme: Anweisung `th-ton-gemini-1` via `speech_metadata.style`; Kalibrierlauf im Studio-Audio, Stimm-Referenz `_Local/tone-calibration/stimm-referenzen.json`.
+
 - Prüft silbenweise gegen den Sollton; bei Sätzen kommt der Soll aus der Roman-Umschrift (`roman-tone.ts`). Der Vorlagenabgleich (`tone-template.ts`) stuft nur hoch, verwirft nie.
 - Ein Verwurf kostet Geld: Das Audio ist weg und wird beim nächsten Lauf neu erzeugt. Deshalb gilt: Geratene Silbengrenzen verwerfen nie über die Ordnung. Tiefere Silbe vorn wird nicht gewertet. Ein steigender Ton in einer nicht-letzten Silbe gilt als „knapp“.
 - Messkern (`speaking/analysis.ts`, seit 17.10.): stetiger Tonhöhenpfad (Viterbi über Korrelationskandidaten) statt globalem Maximum — vorher hatten 65 % der Clips Oktavsprünge. Oktavkorrektur nur bei echtem Sprung zum Nachbarfenster (große Fälle bis 12 Halbtöne bleiben). Verschmolzene Züge und Züge unter 80 ms gelten als geratene Grenze; ein Fall im Nachlauf (≤ 150 ms) zählt mit.

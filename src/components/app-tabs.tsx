@@ -46,15 +46,6 @@ export default function AppTabs() {
         }}
       />
       <Tabs.Screen
-        name="conversation"
-        options={{
-          title: t('tabs.conversation'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="progress"
         options={{
           title: t('tabs.progress'),

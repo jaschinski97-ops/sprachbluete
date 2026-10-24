@@ -22,7 +22,6 @@ type IoniconName = ComponentProps<typeof Ionicons>['name'];
 const LINKS = [
   { name: 'home', href: '/', icon: 'home' },
   { name: 'review', href: '/review', icon: 'layers' },
-  { name: 'conversation', href: '/conversation', icon: 'chatbubbles' },
   { name: 'progress', href: '/progress', icon: 'stats-chart' },
   { name: 'settings', href: '/settings', icon: 'settings' },
 ] as const;
@@ -31,7 +30,6 @@ const LINKS = [
 const LINK_LABELS: Record<(typeof LINKS)[number]['name'], TranslationKey> = {
   home: 'tabs.overview',
   review: 'tabs.learn',
-  conversation: 'tabs.conversation',
   progress: 'tabs.progress',
   settings: 'tabs.settings',
 };

@@ -168,6 +168,7 @@ const ar = {
   "studio.dialogMissingWords": "عدد الحوارات التي لا تحتوي كل الكلمات المستهدفة: {{count}} — {{list}}. تبقى هذه الكلمات مفتوحة وتعود في التشغيل القادم.",
   "studio.dialogRunLabel": "العدد المختار",
   "studio.dialogRunHint": "ينشئ الحوارات الناقصة لكل مستوى حتى العدد أعلاه. «كل اللغات» تستخدم العدد الخاص بكل لغة.",
+  "studio.dialogNoWords": "لا توجد كلمات في هذا المستوى بعد. أنشئ المفردات أولًا.",
   "progress.subtitle": "تقدم التعلم",
   "progress.subtitleLanguage": "تقدم التعلم · {{language}}",
   "progress.loading": "جارٍ تحميل مستوى التعلم …",

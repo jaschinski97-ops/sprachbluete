@@ -168,6 +168,7 @@ const zh = {
   "studio.dialogMissingWords": "{{count}} 段对话没有包含全部目标词：{{list}}。这些词保持未覆盖，下一次运行会重新安排。",
   "studio.dialogRunLabel": "所选数量",
   "studio.dialogRunHint": "为每个级别补齐缺少的对话，直到上面的数量。“所有语言”按各语言自己的数量。",
+  "studio.dialogNoWords": "这个级别还没有单词。请先生成词汇。",
   "progress.subtitle": "学习进度",
   "progress.subtitleLanguage": "学习进度 · {{language}}",
   "progress.loading": "加载学习状态 …",

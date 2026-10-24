@@ -168,6 +168,7 @@ const ja = {
   "studio.dialogMissingWords": "{{count}} 本の会話にすべての目標語が入っていません：{{list}}。これらの語は未カバーのまま、次の実行で再び割り当てられます。",
   "studio.dialogRunLabel": "選んだ数",
   "studio.dialogRunHint": "各レベルで不足している会話を上の数まで作成します。「すべての言語」は各言語ごとの数を使います。",
+  "studio.dialogNoWords": "このレベルにはまだ単語がありません。先に語彙を作成してください。",
   "progress.subtitle": "学習進捗",
   "progress.subtitleLanguage": "学習進捗 · {{language}}",
   "progress.loading": "学習状況を読み込み中 …",

@@ -210,6 +210,7 @@ const de = {
   "studio.dialogMissingWords": "{{count, plural, one {# Dialog enthält} other {# Dialoge enthalten}}} nicht alle Zielwörter: {{list}}. Diese Wörter bleiben offen und kommen beim nächsten Lauf wieder dran.",
   "studio.dialogRunLabel": "Gewählte Anzahl",
   "studio.dialogRunHint": "Erzeugt je Stufe die fehlenden Dialoge bis zur Anzahl oben. „Alle Sprachen“ nimmt je Sprache deren eigene Anzahl.",
+  "studio.dialogNoWords": "Für diese Stufe gibt es noch keine Wörter. Erzeuge zuerst den Wortschatz.",
 
   /* ---------- Fortschritt (progress.tsx) ---------- */
   'progress.subtitle': 'Lernverlauf',

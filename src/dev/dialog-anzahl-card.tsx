@@ -38,6 +38,8 @@ export function abdeckungsText(
   t: (key: TranslationKey, params?: Record<string, string | number>) => string,
   abdeckung: StufenAbdeckung
 ): string[] {
+  // Ohne Wörter dieser Stufe gibt es nichts abzudecken: klar sagen statt „0 von 0“.
+  if (abdeckung.gesamt === 0) return [t('studio.dialogNoWords')];
   return [
     t('studio.dialogCoverage', {
       count: abdeckung.dialogeNachLauf, covered: abdeckung.abgedecktNachLauf,

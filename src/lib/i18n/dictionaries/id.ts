@@ -168,6 +168,7 @@ const id = {
   "studio.dialogMissingWords": "{{count}} dialog tidak memuat semua kata sasaran: {{list}}. Kata-kata ini tetap terbuka dan muncul lagi pada proses berikutnya.",
   "studio.dialogRunLabel": "Jumlah pilihan",
   "studio.dialogRunHint": "Membuat dialog yang kurang per tingkat hingga jumlah di atas. “Semua bahasa” memakai jumlah masing-masing bahasa.",
+  "studio.dialogNoWords": "Belum ada kata di tingkat ini. Buat kosakata terlebih dahulu.",
   "progress.subtitle": "Kemajuan Belajar",
   "progress.subtitleLanguage": "Kemajuan Belajar · {{language}}",
   "progress.loading": "Memuat kemajuan …",

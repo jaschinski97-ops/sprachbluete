@@ -142,6 +142,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   "studio.dialogMissingWords": "{{count, plural, one {# diálogo no contiene} other {# diálogos no contienen}}} todas las palabras objetivo: {{list}}. Estas palabras quedan abiertas y vuelven en la próxima ejecución.",
   "studio.dialogRunLabel": "Número elegido",
   "studio.dialogRunHint": "Crea los diálogos que faltan por nivel hasta el número indicado arriba. «Todos los idiomas» usa el número propio de cada idioma.",
+  "studio.dialogNoWords": "Todavía no hay palabras en este nivel. Genera primero el vocabulario.",
 
   'progress.subtitle': 'Historial de aprendizaje',
   'progress.subtitleLanguage': 'Historial de aprendizaje · {{language}}',

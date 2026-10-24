@@ -168,6 +168,7 @@ const pt = {
   "studio.dialogMissingWords": "{{count, plural, one {# diálogo não contém} other {# diálogos não contêm}}} todas as palavras-alvo: {{list}}. Essas palavras ficam em aberto e voltam na próxima execução.",
   "studio.dialogRunLabel": "Número escolhido",
   "studio.dialogRunHint": "Cria os diálogos que faltam por nível até o número acima. “Todos os idiomas” usa o número próprio de cada idioma.",
+  "studio.dialogNoWords": "Ainda não há palavras neste nível. Gere primeiro o vocabulário.",
   "progress.subtitle": "Progresso de aprendizado",
   "progress.subtitleLanguage": "Progresso de aprendizado · {{language}}",
   "progress.loading": "Carregando progresso …",

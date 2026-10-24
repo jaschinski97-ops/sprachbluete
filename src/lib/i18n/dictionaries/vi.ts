@@ -168,6 +168,7 @@ const vi = {
   "studio.dialogMissingWords": "{{count}} hội thoại không chứa đủ từ mục tiêu: {{list}}. Các từ này vẫn để ngỏ và sẽ quay lại ở lần chạy sau.",
   "studio.dialogRunLabel": "Số đã chọn",
   "studio.dialogRunHint": "Tạo các hội thoại còn thiếu cho mỗi cấp độ đến con số ở trên. “Tất cả ngôn ngữ” dùng con số riêng của từng ngôn ngữ.",
+  "studio.dialogNoWords": "Cấp độ này chưa có từ nào. Hãy tạo từ vựng trước.",
   "progress.subtitle": "Tiến trình học",
   "progress.subtitleLanguage": "Tiến trình học · {{language}}",
   "progress.loading": "Đang tải tiến trình học …",

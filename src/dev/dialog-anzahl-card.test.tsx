@@ -23,3 +23,9 @@ test('die Anzahl liegt je Lernsprache und Stufe', () => {
   expect(dialogAnzahlSchluessel('th', 'pro')).toBe('dialog-anzahl:th:pro');
   expect(dialogAnzahlSchluessel('es', 'beginner')).not.toBe(dialogAnzahlSchluessel('th', 'beginner'));
 });
+
+test('eine Stufe ohne Wörter sagt das klar statt „0 von 0“', () => {
+  const leer = stufenAbdeckung({ language: 'th', stage: 'pro', anzahl: 10, vocabulary: WOERTER, situations: [] });
+  expect(abdeckungsText((key, params) => translate('de', key, params), leer))
+    .toEqual(['Für diese Stufe gibt es noch keine Wörter. Erzeuge zuerst den Wortschatz.']);
+});

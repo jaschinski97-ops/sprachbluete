@@ -168,6 +168,7 @@ const bn = {
   "studio.dialogMissingWords": "{{count}}টি সংলাপে সব লক্ষ্য শব্দ নেই: {{list}}। এই শব্দগুলো খোলা থাকে এবং পরের রানে আবার আসে।",
   "studio.dialogRunLabel": "বাছাই করা সংখ্যা",
   "studio.dialogRunHint": "প্রতি স্তরে উপরের সংখ্যা পর্যন্ত বাদ পড়া সংলাপ তৈরি করে। “সব ভাষা” প্রতিটি ভাষার নিজস্ব সংখ্যা নেয়।",
+  "studio.dialogNoWords": "এই স্তরে এখনও কোনো শব্দ নেই। আগে শব্দভান্ডার তৈরি করুন।",
   "progress.subtitle": "শিক্ষার অগ্রগতি",
   "progress.subtitleLanguage": "শিক্ষার অগ্রগতি · {{language}}",
   "progress.loading": "শিক্ষার অবস্থা লোড হচ্ছে …",

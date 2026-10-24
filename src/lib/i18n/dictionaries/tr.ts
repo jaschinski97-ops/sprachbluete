@@ -168,6 +168,7 @@ const tr = {
   "studio.dialogMissingWords": "{{count}} diyalog tüm hedef kelimeleri içermiyor: {{list}}. Bu kelimeler açık kalır ve sonraki çalıştırmada yeniden gelir.",
   "studio.dialogRunLabel": "Seçilen sayı",
   "studio.dialogRunHint": "Her seviye için eksik diyalogları yukarıdaki sayıya kadar oluşturur. “Tüm diller” her dilin kendi sayısını kullanır.",
+  "studio.dialogNoWords": "Bu seviyede henüz kelime yok. Önce kelime hazinesini oluştur.",
   "progress.subtitle": "Öğrenme süreci",
   "progress.subtitleLanguage": "Öğrenme süreci · {{language}}",
   "progress.loading": "Öğrenme durumu yükleniyor …",

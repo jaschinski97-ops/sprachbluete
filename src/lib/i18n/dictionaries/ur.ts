@@ -168,6 +168,7 @@ const ur = {
   "studio.dialogMissingWords": "{{count}} مکالموں میں تمام ہدف الفاظ نہیں ہیں: {{list}}۔ یہ الفاظ کھلے رہتے ہیں اور اگلے رن میں دوبارہ آتے ہیں۔",
   "studio.dialogRunLabel": "منتخب تعداد",
   "studio.dialogRunHint": "ہر سطح کے لیے اوپر دی گئی تعداد تک باقی مکالمے بناتا ہے۔ ”تمام زبانیں“ ہر زبان کی اپنی تعداد لیتی ہے۔",
+  "studio.dialogNoWords": "اس سطح پر ابھی کوئی الفاظ نہیں ہیں۔ پہلے الفاظ کا ذخیرہ بنائیں۔",
   "progress.subtitle": "سیکھنے کی پیشرفت",
   "progress.subtitleLanguage": "سیکھنے کی پیشرفت · {{language}}",
   "progress.loading": "سیکھنے کی حالت لوڈ ہو رہی ہے …",

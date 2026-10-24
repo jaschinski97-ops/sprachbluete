@@ -168,6 +168,7 @@ const ko = {
   "studio.dialogMissingWords": "대화 {{count}}개에 목표 단어가 모두 들어 있지 않습니다: {{list}}. 이 단어들은 남아 있다가 다음 실행에서 다시 배정됩니다.",
   "studio.dialogRunLabel": "선택한 수",
   "studio.dialogRunHint": "각 단계에서 부족한 대화를 위의 수까지 만듭니다. ‘모든 언어’는 언어마다 정한 수를 씁니다.",
+  "studio.dialogNoWords": "이 단계에는 아직 단어가 없습니다. 먼저 어휘를 생성하세요.",
   "progress.subtitle": "학습 진행",
   "progress.subtitleLanguage": "학습 진행 · {{language}}",
   "progress.loading": "학습 상태 로딩 중 …",

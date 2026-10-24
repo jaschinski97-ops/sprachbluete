@@ -168,6 +168,7 @@ const hi = {
   "studio.dialogMissingWords": "{{count}} संवादों में सभी लक्ष्य शब्द नहीं हैं: {{list}}। ये शब्द खुले रहते हैं और अगले रन में फिर आते हैं।",
   "studio.dialogRunLabel": "चुनी गई संख्या",
   "studio.dialogRunHint": "हर स्तर के लिए ऊपर दी गई संख्या तक छूटे संवाद बनाता है। “सभी भाषाएँ” हर भाषा की अपनी संख्या लेती है।",
+  "studio.dialogNoWords": "इस स्तर पर अभी कोई शब्द नहीं हैं। पहले शब्दावली बनाएँ।",
   "progress.subtitle": "अधिगम प्रगति",
   "progress.subtitleLanguage": "अधिगम प्रगति · {{language}}",
   "progress.loading": "अधिगम स्थिति लोड हो रही है …",

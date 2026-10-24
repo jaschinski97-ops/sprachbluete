@@ -168,6 +168,7 @@ const mr = {
   "studio.dialogMissingWords": "{{count}} संवादांत सर्व लक्ष्य शब्द नाहीत: {{list}}. हे शब्द उघडे राहतात आणि पुढच्या रनमध्ये पुन्हा येतात.",
   "studio.dialogRunLabel": "निवडलेली संख्या",
   "studio.dialogRunHint": "प्रत्येक स्तरासाठी वरील संख्येपर्यंत उरलेले संवाद तयार करते. “सर्व भाषा” प्रत्येक भाषेची स्वतःची संख्या वापरते.",
+  "studio.dialogNoWords": "या स्तरावर अजून शब्द नाहीत. आधी शब्दसंग्रह तयार करा.",
   "progress.subtitle": "अभ्यास प्रगती",
   "progress.subtitleLanguage": "अभ्यास प्रगती · {{language}}",
   "progress.loading": "अभ्यास स्थिती लोड होत आहे …",

@@ -209,3 +209,10 @@ describe('Sprach-Ausnahmen im Studio', () => {
     expect(await loadOwnImageConcepts(store)).toEqual({ es: ['c:money'], th: ['c:food'] });
   });
 });
+
+test('alte Wortbilder zählen nicht als Ersparnis', () => {
+  const alt = { ...word('ki-th-alt', 'th', 'บ้าน', 'ki-th-alt') };
+  const [spec] = planImages({ entries: [alt], motifWords: [alt] });
+  const summary = summarizeImagePlan({ entries: [alt], motifWords: [alt], existingIds: new Set([spec.id]) });
+  expect(summary).toMatchObject({ words: 1, existing: 1, toGenerate: 0, saved: 0 });
+});

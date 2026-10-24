@@ -144,6 +144,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   "studio.dialogMissingWords": "บทสนทนา {{count}} บทไม่มีคำเป้าหมายครบ: {{list}} คำเหล่านี้ยังเปิดอยู่และจะกลับมาในรอบถัดไป",
   "studio.dialogRunLabel": "จำนวนที่เลือก",
   "studio.dialogRunHint": "สร้างบทสนทนาที่ยังขาดในแต่ละระดับจนถึงจำนวนด้านบน “ทุกภาษา” ใช้จำนวนของแต่ละภาษาเอง",
+  "studio.dialogNoWords": "ยังไม่มีคำศัพท์ในระดับนี้ ให้สร้างคำศัพท์ก่อน",
 
   'progress.subtitle': 'ประวัติการเรียน',
   'progress.subtitleLanguage': 'ประวัติการเรียน · {{language}}',

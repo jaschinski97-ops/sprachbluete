@@ -272,7 +272,11 @@ export function summarizeImagePlan(
   const entries = options.entries ?? vocabularyFor(options.language ?? 'th');
   const specs = planImages({ ...options, entries, limit: undefined });
   const words = entries.filter(canHaveImage).length;
-  const existing = specs.filter((spec) => options.existingIds.has(spec.id)).length;
+  const vorhanden = specs.filter((spec) => options.existingIds.has(spec.id));
+  const existing = vorhanden.length;
   const toGenerate = specs.length - existing;
-  return { words, images: specs.length, existing, toGenerate, saved: words - toGenerate };
+  // Alte Wortbilder (ohne Begriff) gäbe es auch bei „ein Bild je Wort“ — sie
+  // sind keine Ersparnis. Gespart ist nur, was gemeinsame Begriffe abnehmen.
+  const altesWortbild = vorhanden.filter((spec) => !spec.concept).length;
+  return { words, images: specs.length, existing, toGenerate, saved: Math.max(0, words - altesWortbild - toGenerate) };
 }

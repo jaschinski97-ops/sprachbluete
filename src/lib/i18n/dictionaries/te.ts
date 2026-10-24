@@ -168,6 +168,7 @@ const te = {
   "studio.dialogMissingWords": "{{count}} సంభాషణల్లో అన్ని లక్ష్య పదాలు లేవు: {{list}}. ఈ పదాలు తెరిచే ఉంటాయి, తదుపరి రన్‌లో మళ్లీ వస్తాయి.",
   "studio.dialogRunLabel": "ఎంచుకున్న సంఖ్య",
   "studio.dialogRunHint": "ప్రతి స్థాయికి పై సంఖ్య వరకు లేని సంభాషణలను సృష్టిస్తుంది. “అన్ని భాషలు” ప్రతి భాష సొంత సంఖ్యను ఉపయోగిస్తుంది.",
+  "studio.dialogNoWords": "ఈ స్థాయిలో ఇంకా పదాలు లేవు. ముందుగా పదకోశాన్ని సృష్టించండి.",
   "progress.subtitle": "అభ్యాస పురోగతి",
   "progress.subtitleLanguage": "అభ్యాస పురోగతి · {{language}}",
   "progress.loading": "అభ్యాస స్థితి లోడ్ అవుతున్నది …",

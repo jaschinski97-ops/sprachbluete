@@ -557,6 +557,20 @@ export function analyzeToneContour(
 ): ToneContourMeasurement {
   const prepared = downsampleForF0(samples, sampleRate);
   const frames = autocorrF0(prepared.samples, prepared.sampleRate, recoverWeakVoicing);
+  return measureFrames(frames, sampleRate, prepared.sampleRate, referenceHz);
+}
+
+/**
+ * Zweiter Teil der Messpipeline: aus fertigen Fenstern die laengste Strecke,
+ * Referenz und Kontur. Getrennt, damit Werkzeuge (Ton-Gate-Bewertung) die
+ * Fenster gezielt veraendern und dieselbe Auswertung erneut laufen lassen.
+ */
+export function measureFrames(
+  frames: F0Frame[],
+  sampleRate: number,
+  analysisSampleRate: number,
+  referenceHz?: number
+): ToneContourMeasurement {
   const voicedMs = frames.filter((frame) => frame.f0 > 0).length * 10;
   const run = longestRun(frames);
 
@@ -565,7 +579,7 @@ export function analyzeToneContour(
       status: 'unmeasurable',
       reason: 'no-voiced-run',
       inputSampleRate: sampleRate,
-      analysisSampleRate: prepared.sampleRate,
+      analysisSampleRate,
       frames,
       voicedMs,
     };
@@ -576,7 +590,7 @@ export function analyzeToneContour(
   return {
     status: 'measured',
     inputSampleRate: sampleRate,
-    analysisSampleRate: prepared.sampleRate,
+    analysisSampleRate,
     frames,
     span,
     voicedMs,

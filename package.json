@@ -72,6 +72,7 @@
     "verify:production": "node scripts/content/verify-production.cjs",
     "content:measure-tones": "node scripts/content/measure-tones.cjs scripts/content/fixtures/tones/index.json",
     "content:tone-report": "node scripts/content/tone-report.cjs",
+    "content:tone-eval": "node scripts/content/tone-eval.cjs",
     "pipeline:release": "node scripts/release-pipeline.cjs",
     "content:tone-tool": "node scripts/build-tone-tool.cjs --check",
     "audit:structure": "node scripts/audit-structure.cjs",

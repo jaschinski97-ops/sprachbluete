@@ -4,7 +4,7 @@
  * Wiederholungen bleiben stufenübergreifend fällig. Grundlage ist der feste
  * Testkatalog; einige Thai-Wörter tragen darin Profi bzw. Fortgeschritten.
  */
-import { grundwortschatz } from '@/data/sentence-tasks';
+import { satzwortschatz, SENTENCE_TASKS_BY_LANGUAGE } from '@/data/sentence-tasks';
 import { VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 import { FIXTURE_CATALOG, fixtureCatalogWithStages } from '@/test-fixtures/fixture-catalog';
 
@@ -143,11 +143,15 @@ describe('freie Übungen je Stufe', () => {
     expect(aufgaben.every((aufgabe) => PRO.has(aufgabe.vocabId))).toBe(true);
   });
 
-  it('Satz verstehen und Diktat nehmen den Grundwortschatz der Stufe', () => {
-    expect(grundwortschatz('th', 'pro').map((entry) => entry.id).sort()).toEqual([...PRO].sort());
-    expect(grundwortschatz('th', 'beginner').every((entry) => isBeginner(entry.id))).toBe(true);
-    // Ohne Stufe wie bisher: alle Thai-Wörter.
-    expect(grundwortschatz('th')).toHaveLength(Math.min(400, VOCABULARY_TH.length));
+  it('Satz verstehen und Diktat nehmen den Satzwortschatz der Stufe', () => {
+    // Jeder Satz der Stufe genau einmal (doppelte Satztexte: das häufigere Wort gewinnt).
+    const pro = satzwortschatz('th', 'pro');
+    expect(pro.every((entry) => PRO.has(entry.id))).toBe(true);
+    expect(new Set(pro.map((entry) => entry.exampleTerm))).toEqual(
+      new Set(VOCABULARY_TH.filter((entry) => PRO.has(entry.id) && entry.exampleTerm).map((entry) => entry.exampleTerm)));
+    expect(satzwortschatz('th', 'beginner').every((entry) => isBeginner(entry.id))).toBe(true);
+    // Ohne Stufe: alle Thai-Sätze, ohne feste Obergrenze (24.10.2026).
+    expect(satzwortschatz('th')).toHaveLength(SENTENCE_TASKS_BY_LANGUAGE.th.length);
 
     const saetze = sentenceSession('th', 1, 'de', undefined, 'pro');
     expect(saetze.length).toBeGreaterThan(0);

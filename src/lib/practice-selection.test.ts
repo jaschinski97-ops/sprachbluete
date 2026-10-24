@@ -167,3 +167,23 @@ describe('Auswahl freier Übungen', () => {
     expect(pick([...neu, ...wacklig], cards, { seed: 7 })).toEqual(pick([...neu, ...wacklig], cards, { seed: 7 }));
   });
 });
+
+describe('knownFromPractice (mitwachsende Satzübungen, 24.10.2026)', () => {
+  it('ein Wort nur im Übungsgedächtnis zählt als gelernt statt als neu', () => {
+    const richtig = practiced('a', true, 2, 1);
+    const falsch = practiced('b', false, 0, 1);
+    expect(wordNeed(undefined, richtig, T0).group).toBe('neu');
+    expect(wordNeed(undefined, richtig, T0, true).group).toBe('sitzt');
+    expect(wordNeed(undefined, falsch, T0, true).group).toBe('wacklig');
+    expect(wordNeed(undefined, undefined, T0, true).group).toBe('neu');
+  });
+
+  it('wacklige Übungswörter kommen vor neuen, auch weit hinten im Wortschatz', () => {
+    const candidates = items('w', 200);
+    const practice = new Map(['w150', 'w160', 'w170'].map((id) => [id, practiced(id, false, 0, 1)]));
+    const chosen = selectPracticeWords(candidates, {
+      idOf: (item) => item.id, cards: new Map(), practice, now: T0, size: 8, random: seededRandom(1), knownFromPractice: true,
+    }).map((item) => item.id);
+    expect(chosen).toEqual(expect.arrayContaining(['w150', 'w160', 'w170']));
+  });
+});

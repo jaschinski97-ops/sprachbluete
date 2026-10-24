@@ -36,11 +36,13 @@ const clip = (language: LanguageCode, text: string): ContentEntry => ({
 const MEANING_CLIP = clip('de', firstThai.german);
 // Ein Wort mit Übersetzungen in mehreren App-Sprachen, damit die Teile etwas tragen.
 const UEBERSETZT = { de: 'Hallo', en: 'hello', ja: 'こんにちは', th: 'สวัสดี', fr: 'bonjour' };
+// Der Beispielsatz desselben Worts in mehreren App-Sprachen (24.10.2026).
+const SATZ_UEBERSETZT = { de: 'Hallo, wie geht es?', en: 'Hello, how are you?', ja: 'こんにちは、お元気ですか。', fr: 'Bonjour, ça va ?' };
 const CATALOG: ContentCatalog = {
   ...FIXTURE_CATALOG,
   entries: [
     ...FIXTURE_CATALOG.entries.map((entry) => entry.id === firstThai.id
-      ? { ...entry, document: { ...entry.document, translations: UEBERSETZT } as ContentEntry['document'] }
+      ? { ...entry, document: { ...entry.document, translations: UEBERSETZT, exampleTranslations: SATZ_UEBERSETZT } as ContentEntry['document'] }
       : entry),
     MEANING_CLIP,
   ],
@@ -220,6 +222,23 @@ test('Schritt 1b: nur App-Sprache und Englisch, beim Wechsel nachgeladen und an 
   expect(danach.translations).toEqual({ en: 'hello', ja: 'こんにちは', th: 'สวัสดี' });
   // Englisch wird nicht ein zweites Mal gelesen.
   expect(read.mock.calls.filter(([id]) => id === MODULES.th.translations.en)).toHaveLength(1);
+});
+
+test('Satzübersetzungen kommen wie die Wortübersetzungen je App-Sprache', async () => {
+  // Die Basis trägt keine Satzübersetzung einer App-Sprache.
+  expect(fileText('th')).not.toContain(SATZ_UEBERSETZT.ja);
+  expect(JSON.stringify(translations.th.ja)).toContain(SATZ_UEBERSETZT.ja);
+  expect(JSON.stringify(translations.th.fr)).not.toContain(SATZ_UEBERSETZT.ja);
+
+  const app = appBuild();
+  await app.languages.setCatalogUiLanguage('ja');
+  await app.languages.ensureLanguages(['th']);
+  const word = () => app.vocabulary.activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!;
+  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, ja: SATZ_UEBERSETZT.ja });
+  await app.languages.setCatalogUiLanguage('fr');
+  expect(word().exampleTranslations).toEqual({ en: SATZ_UEBERSETZT.en, ja: SATZ_UEBERSETZT.ja, fr: SATZ_UEBERSETZT.fr });
+  // Der volle Katalog (Entwicklung) trägt alle.
+  expect(activeVocabularyFor('th').find((entry) => entry.id === firstThai.id)!.exampleTranslations).toEqual(SATZ_UEBERSETZT);
 });
 
 test('Schritt 1b: Clips aus der Tabelle sind dieselben Einträge wie im vollen Katalog', async () => {

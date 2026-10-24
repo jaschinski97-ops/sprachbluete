@@ -585,6 +585,7 @@ function ReviewBody({
           mode={mode}
           language={targetLanguageOf(direction)}
           anchor={anchorOf(direction)}
+          direction={direction}
           words={practiceChapter?.vocabulary}
           situation={practiceChapter?.situation}
           learningStage={freeStage}

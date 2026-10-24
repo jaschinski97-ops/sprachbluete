@@ -2,6 +2,7 @@ import type { VocabEntry } from '@/data/vocab-types';
 import { bundledDocuments } from './content/bundled';
 import { spokenText, situationTranslation, type ConversationSituation } from './conversation/types';
 import type { UiLanguage } from './i18n';
+import { exampleMeaning } from './example-meaning';
 import { poolWoerterDerSzene } from './reading-texts';
 import { targetLanguageOf } from './languages/types';
 
@@ -19,8 +20,10 @@ export function learningExample(entry: VocabEntry, anchor: UiLanguage, scene?: C
       return { text: spokenText(situation, turn), roman: turn.roman, meaning: translation.turns[index] };
     }
   }
-  if (anchor === 'de' && entry.exampleTerm && entry.exampleGerman) {
-    return { text: entry.exampleTerm, roman: entry.exampleRoman ?? '', meaning: entry.exampleGerman };
+  // Eigener Beispielsatz des Worts, wenn seine Bedeutung in der App-Sprache geliefert ist.
+  const meaning = exampleMeaning(entry, anchor);
+  if (entry.exampleTerm && meaning) {
+    return { text: entry.exampleTerm, roman: entry.exampleRoman ?? '', meaning };
   }
   return undefined;
 }

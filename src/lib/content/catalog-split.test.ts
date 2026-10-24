@@ -15,7 +15,9 @@ jest.unmock('../../content/catalog.json');
 const { splitCatalog } = require('../../../scripts/app-catalog-files.cjs') as {
   splitCatalog: (value: ContentCatalog, rules: unknown, sha: string) => {
     files: Record<LanguageCode, { entries: ContentEntry[]; audio: AudioRow[] }>;
-    translations: Record<LanguageCode, Record<UiLanguage, { vocabulary: Record<string, unknown>; situations: Record<string, unknown> }>>;
+    translations: Record<LanguageCode, Record<UiLanguage, {
+      vocabulary: Record<string, unknown>; situations: Record<string, unknown>; exampleTranslations?: Record<string, unknown>;
+    }>>;
     index: ContentCatalog & { appIndex: { languages: Record<LanguageCode, { vocabulary: string[] }> } };
   };
 };
@@ -36,6 +38,10 @@ function assembled(code: LanguageCode): ContentEntry[] {
         const document = byKey.get(`${kind}:${id}`)!.document as { translations?: Record<string, unknown> };
         (document.translations ??= {})[ui] = value;
       }
+    }
+    for (const [id, value] of Object.entries(translations[code][ui].exampleTranslations ?? {})) {
+      const document = byKey.get(`vocabulary:${id}`)!.document as { exampleTranslations?: Record<string, unknown> };
+      (document.exampleTranslations ??= {})[ui] = value;
     }
   }
   return entries;
@@ -91,4 +97,20 @@ test('was eine Lernsprache mit einer App-Sprache lädt, ist ein Bruchteil der Ap
     const geladen = [files[code], translations[code].ja, translations[code].en].map((file) => JSON.stringify(file).length);
     expect(geladen.reduce((sum, chars) => sum + chars, 0)).toBeLessThan(slim / 4);
   }
+});
+
+test('Satzübersetzungen (exampleTranslations) wandern je App-Sprache in die Teile', () => {
+  const wort = full.entries.find((entry) => entry.kind === 'vocabulary' && isDeliverableEntry(entry))!;
+  const code = (wort.document as { language: LanguageCode }).language;
+  const saetze = { de: 'Satz de', en: 'Satz en', ja: 'Satz ja' };
+  const klein: ContentCatalog = {
+    ...full,
+    entries: [{ ...wort, document: { ...wort.document, exampleTranslations: saetze } as ContentEntry['document'] }],
+  };
+  const geteilt = splitCatalog(klein, { languages: LANGUAGE_CODES, uiLanguages: UI_LANGUAGES, isDeliverableEntry, planDeliveryAudio }, 'sha');
+  const basis = geteilt.files[code].entries.find((entry) => entry.id === wort.id)!.document as { exampleTranslations?: unknown };
+  expect(basis.exampleTranslations).toEqual({});
+  expect(geteilt.translations[code].ja.exampleTranslations).toEqual({ [wort.id]: 'Satz ja' });
+  expect(geteilt.translations[code].de.exampleTranslations).toEqual({ [wort.id]: 'Satz de' });
+  expect(geteilt.translations[code].fr.exampleTranslations).toEqual({});
 });

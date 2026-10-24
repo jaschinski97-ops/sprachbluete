@@ -4,8 +4,7 @@ import type { VocabEntry } from './vocab-types';
 
 import {
   buildSentenceTasks,
-  grundwortschatz,
-  GRUNDWORTSCHATZ_GROESSE,
+  satzwortschatz,
   sentenceFootnote,
   SENTENCE_TASKS_BY_LANGUAGE,
 } from './sentence-tasks';
@@ -143,25 +142,60 @@ describe('SENTENCE_TASKS_BY_LANGUAGE im generierten Modus', () => {
   });
 });
 
-describe('Grundwortschatz für Satzübungen ohne Kapitel (Testlauf 16.10.2026)', () => {
+describe('Satzwortschatz für Satzübungen ohne Kapitel', () => {
   afterEach(() => {
     setCurrentCatalog(FIXTURE_CATALOG);
   });
 
-  it('nimmt die häufigen Wörter zuerst und höchstens GRUNDWORTSCHATZ_GROESSE', () => {
+  it('nimmt die häufigen Wörter zuerst — ohne feste Obergrenze (24.10.2026)', () => {
     const basis = generierterKatalog();
     const vorlage = basis.entries[0];
-    const viele = Array.from({ length: GRUNDWORTSCHATZ_GROESSE + 50 }, (_, i) => ({
+    const viele = Array.from({ length: 450 }, (_, i) => ({
       ...vorlage,
       id: `vokabular:th:w${i}`,
       // Umgekehrt gespeichert: Erzeugungsreihenfolge, nicht Speicherreihenfolge, zählt.
       document: { ...vorlage.document, id: `w${i}`, term: `w${i}`, exampleTerm: `ประโยค ${i}`, generatedAt: 1000 + i },
     })).reverse();
     setCurrentCatalog({ ...basis, entries: viele } as never);
-    const woerter = grundwortschatz('th');
-    expect(woerter).toHaveLength(GRUNDWORTSCHATZ_GROESSE);
+    const woerter = satzwortschatz('th');
+    expect(woerter).toHaveLength(450);
     expect(woerter[0].id).toBe('w0');
-    expect(woerter.some((wort) => wort.id === `w${GRUNDWORTSCHATZ_GROESSE}`)).toBe(false);
+    expect(woerter[449].id).toBe('w449');
+  });
+});
+
+describe('Satzbedeutung je App-Sprache (exampleTranslations, 24.10.2026)', () => {
+  const mitUebersetzung = (id: string) => vokabel({
+    id, term: id, exampleTerm: `Satz ${id}.`, language: 'th',
+    exampleTranslations: { en: `Sentence ${id}.`, ja: `文 ${id}。` },
+  });
+
+  it('fragt auf Englisch die gelieferte englische Satzbedeutung ab', () => {
+    const tasks = buildSentenceTasks([mitUebersetzung('a'), mitUebersetzung('b'), mitUebersetzung('c')], 'en');
+    expect(tasks[0].meaning).toBe('Sentence a.');
+    expect(tasks[0].answers).toEqual(['Sentence a.', 'Sentence b.', 'Sentence c.']);
+    expect(tasks[0].answersRoman).toBeUndefined();
+  });
+
+  it('nimmt auf Deutsch exampleTranslations.de vor exampleGerman, sonst exampleGerman', () => {
+    const neu = vokabel({ id: 'n', term: 'n', exampleTerm: 'Satz n.', exampleTranslations: { de: 'Neuer Satz.' } });
+    const alt = vokabel({ id: 'o', term: 'o', exampleTerm: 'Satz o.' });
+    const [a, b] = buildSentenceTasks([neu, alt], 'de');
+    expect(a.meaning).toBe('Neuer Satz.');
+    expect(b.meaning).toBe('Bedeutung Satz o');
+  });
+
+  it('ohne Übersetzung in der App-Sprache: Erkennungsmodus, nie eine fremde Bedeutung', () => {
+    const tasks = buildSentenceTasks([mitUebersetzung('a'), mitUebersetzung('b')], 'fr');
+    expect(tasks[0].meaning).toBeUndefined();
+    expect(tasks[0].answers[0]).toBe('Satz a.');
+    expect(tasks[0].answers).not.toContain('Bedeutung Satz a');
+  });
+
+  it('Ablenker kommen aus dem Pool, auch wenn nur ein Wort gewählt ist', () => {
+    const pool = ['a', 'b', 'c', 'd'].map(mitUebersetzung);
+    const [task] = buildSentenceTasks([pool[2]], 'ja', pool);
+    expect(task.answers).toEqual(['文 c。', '文 d。', '文 a。']);
   });
 });
 

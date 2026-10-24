@@ -1,4 +1,4 @@
-import { SENTENCE_TASKS_BY_LANGUAGE } from '@/data/sentence-tasks';
+import { satzaufgabenFuer } from '@/data/sentence-tasks';
 
 import { dictationTasksFor } from './dictation/tasks';
 import { hoerDrillFuer } from './languages/definitions';
@@ -191,10 +191,10 @@ export function bereichVerfuegbar(direction: PairDirection, kind: Exclude<RoundK
       return hoerDrillFuer(sprache) !== undefined;
     case 'satz':
     case 'shadowing':
-      // Der Satzbestand trägt Bedeutungen nur auf Deutsch (exampleGerman) —
-      // auf anderen Brücken gibt es den Bereich ehrlich nicht (21.09.2026),
-      // die Runde springt ihn übersichtlich mit „emptySkip“.
-      return anchorOf(direction) === 'de' && (SENTENCE_TASKS_BY_LANGUAGE[sprache] ?? []).length > 0;
+      // Nur Sätze mit gelieferter Bedeutung in der App-Sprache (seit
+      // 24.10.2026 `exampleTranslations`, auf Deutsch auch `exampleGerman`);
+      // ohne sie springt die Runde den Bereich mit „emptySkip“.
+      return satzaufgabenFuer(sprache, anchorOf(direction)).some((task) => task.meaning);
     case 'diktat':
       try {
         return dictationTasksFor(sprache, direction).length > 0;

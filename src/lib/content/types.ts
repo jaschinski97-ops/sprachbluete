@@ -71,4 +71,6 @@ export type TranslationPartFile = {
   sourceCatalogSha256: string;
   vocabulary: Record<string, unknown>;
   situations: Record<string, unknown>;
+  /** Satzübersetzungen des Wortschatzes je Vokabel-ID (seit 24.10.2026). */
+  exampleTranslations?: Record<string, unknown>;
 };

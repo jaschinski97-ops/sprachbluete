@@ -3,6 +3,7 @@ import { bridgeText } from '@/lib/languages/bridge';
 import { spokenText, situationTranslation, type ConversationSituation } from '@/lib/conversation/types';
 import { LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
 import { inStage, type LearningStage } from '@/lib/learning-stages';
+import { exampleMeaning } from '@/lib/example-meaning';
 
 import { activeVocabulary } from './active-vocabulary';
 import type { VocabEntry } from './vocab-types';
@@ -13,9 +14,9 @@ export type SentenceTask = {
   vocabId: string;
   /** Der Satz in der Zielsprache. */
   text: string;
-  /** Deutsche Bedeutung des Satzes. */
+  /** Deutsche Bedeutung des Satzes (`exampleGerman`, kann leer sein). */
   german: string;
-  /** A complete, supplied translation; never assembled from word meanings. */
+  /** Gelieferte Satzbedeutung in der Ankersprache; nie aus Wortbedeutungen zusammengesetzt. */
   meaning?: string;
   /** Lesehilfe (Thai: Umschrift; lateinische Sprachen: der Satz selbst). */
   roman: string;
@@ -51,55 +52,67 @@ export function dialogueSentenceTasks(situation: ConversationSituation, anchor: 
   });
 }
 
-/**
- * Baut Satz-Aufgaben aus dem AKTIVEN Wortschatzbestand (18.09.2026).
- *
- * Jede generierte Vokabel trägt einen vollständigen Beispielsatz
- * (exampleTerm/exampleRoman/exampleGerman, „ganz oder gar nicht" im
- * Schema-Vertrag). Diese Funktion macht daraus Aufgaben: Bedeutung aus dem
- * Satz, Ablenker aus den Nachbarn im Bestand (deterministisch — die Sitzung
- * mischt später mit ihrer Aussaat), Fokus-Hinweis = das Kernwort mit seiner
- * Bedeutung.
- *
- * DER ANKER BESTIMMT DIE BEDEUTUNGSSEITE (21.09.2026, Nutzerbefund en-UI):
- * Bis hierher las alles stillschweigend Deutsch — auf der englischen
- * Oberfläche zeigten die Satzübungen deutsche Bedeutungen. Seitdem gilt:
- *
- *   - `anchor: 'de'` (bisheriges Verhalten): „Satz verstehen" fragt die
- *     deutsche Bedeutung ab (`exampleGerman` ist der einzige Satzbestand).
- *   - `anchor ≠ 'de'`: Eine Satz-Übersetzung in der Ankersprache gibt es im
- *     Datenbestand NICHT — die Übung wechselt ehrlich in den
- *     **Erkennungsmodus**: gehört wird der Satz der Zielsprache, gewählt
- *     wird seine geschriebenene Form (dasselbe Design wie beim Deutsch-Ziel,
- *     dessen Optionen immer schon die Zielsätze waren). Der Fokus-Hinweis
- *     bleibt WORTweise übersetzt (`translations[anchor]`).
- */
-export function buildSentenceTasks(words: VocabEntry[], anchor: UiLanguage = 'de'): SentenceTask[] {
+const satzText = (word: VocabEntry) => (word.exampleTerm ?? '').trim();
+
+/** Wörter mit Beispielsatz, doppelte Satztexte entfernt — der erste gewinnt. */
+function eindeutigeSaetze(words: readonly VocabEntry[]): VocabEntry[] {
   const gesehen = new Set<string>();
-  const basis: VocabEntry[] = [];
-  for (const word of words) {
-    const text = (word.exampleTerm ?? '').trim();
-    // Doppelsätze (gleicher Text über zwei Wörtern) würden doppelte Aufgaben
-    // mit derselben Lösung ergeben — der erste gewinnt.
-    if (!text || gesehen.has(text)) continue;
+  return words.filter((word) => {
+    const text = satzText(word);
+    // Doppelsätze würden doppelte Aufgaben mit derselben Lösung ergeben.
+    if (!text || gesehen.has(text)) return false;
     gesehen.add(text);
-    basis.push(word);
+    return true;
+  });
+}
+
+/**
+ * Baut Satz-Aufgaben aus Wörtern mit Beispielsatz (18.09.2026).
+ *
+ * Jede generierte Vokabel trägt einen vollständigen Beispielsatz. Daraus
+ * wird je Wort eine Aufgabe: Bedeutung aus dem Satz, Ablenker aus den
+ * Nachbarn in `pool` (deterministisch — die Sitzung mischt später mit ihrer
+ * Aussaat), Fokus-Hinweis = das Kernwort mit seiner Bedeutung.
+ *
+ * DIE BEDEUTUNGSSEITE (seit 24.10.2026 je Wort): Hat der Satz eine gelieferte
+ * Übersetzung in der Ankersprache (`exampleMeaning`: `exampleTranslations`,
+ * bei `de` sonst `exampleGerman`), fragt „Satz verstehen" diese Bedeutung ab
+ * (`meaning`). Fehlt sie, wechselt die Aufgabe in den **Erkennungsmodus**:
+ * gehört wird der Zielsatz, gewählt seine geschriebene Form. Wortweise
+ * zusammengesetzte Satzbedeutungen gibt es nie.
+ *
+ * `pool` (Vorgabe: `words`) liefert die Ablenker — so bekommt auch eine
+ * kleine Auswahl Ablenker aus dem ganzen Bestand.
+ */
+export function buildSentenceTasks(
+  words: readonly VocabEntry[],
+  anchor: UiLanguage = 'de',
+  pool: readonly VocabEntry[] = words
+): SentenceTask[] {
+  const basis = eindeutigeSaetze(pool);
+  const position = new Map(basis.map((word, index) => [word.id, index]));
+  const romanByText = new Map<string, string>();
+  for (const word of [...words, ...basis]) {
+    if (!romanByText.has(satzText(word))) romanByText.set(satzText(word), (word.exampleRoman ?? '').trim());
   }
-  const ablenkerFeld = anchor === 'de'
-    ? (word: VocabEntry) => (word.exampleGerman ?? '').trim()
-    : (word: VocabEntry) => (word.exampleTerm ?? '').trim();
-  return basis.map((word, index) => {
-    const german = (word.exampleGerman ?? '').trim();
-    const loesung = anchor === 'de' ? german : (word.exampleTerm ?? '').trim();
+  return eindeutigeSaetze(words).map((word) => {
+    const text = satzText(word);
+    const meaning = exampleMeaning(word, anchor);
+    const ablenkerFeld = meaning
+      ? (other: VocabEntry) => exampleMeaning(other, anchor) ?? ''
+      : satzText;
+    const loesung = meaning ?? text;
     const ablenker: string[] = [];
-    for (let schritt = 1; ablenker.length < 2 && schritt < basis.length; schritt += 1) {
-      const andere = basis[(index + schritt) % basis.length];
+    const start = position.get(word.id) ?? -1;
+    for (let schritt = 1; ablenker.length < 2 && schritt <= basis.length; schritt += 1) {
+      const andere = basis[(start + schritt + basis.length) % basis.length];
+      if (satzText(andere) === text) continue;
       const vorschlag = ablenkerFeld(andere);
       if (!vorschlag || vorschlag === loesung || ablenker.includes(vorschlag)) continue;
       ablenker.push(vorschlag);
     }
     // Fokus-Hinweis: das Kernwort mit seiner Bedeutung in der ANKERSPRACHE —
-    // wortweise gibt es sie für alle 20 Sprachen (satzebene nicht).
+    // wortweise gibt es sie für alle 20 Sprachen.
     const bedeutung = anchor === String(word.language)
       ? word.term
       : bridgeText(word, anchor).text;
@@ -107,13 +120,13 @@ export function buildSentenceTasks(words: VocabEntry[], anchor: UiLanguage = 'de
     return {
       id: `sentence-${word.id}`,
       vocabId: word.id,
-      text: (word.exampleTerm ?? '').trim(),
-      german,
+      text,
+      german: (word.exampleGerman ?? '').trim(),
+      ...(meaning ? { meaning } : {}),
       roman: (word.exampleRoman ?? '').trim(),
       focus: `${word.term} · ${bedeutung}`,
       answers,
-      answersRoman: anchor === 'de' ? undefined : answers.map((answer) =>
-        basis.find((candidate) => candidate.exampleTerm?.trim() === answer)?.exampleRoman?.trim() ?? ''),
+      answersRoman: meaning ? undefined : answers.map((answer) => romanByText.get(answer) ?? ''),
       reason: 'KI-erzeugter Beispielsatz des generierten Wortschatzbestands; mit dem Worteintrag erzeugt und kreuzgeprüft.',
       reviewMethod: 'KI-Erzeugung mit Kreuzprüfung (Studio-Pipeline)',
     };
@@ -143,31 +156,19 @@ export function satzaufgabenFuer(language: SatzSprache, anchor: UiLanguage = 'de
 }
 
 /**
- * Wie viele Wörter der Grundwortschatz für Satzübungen ohne Kapitel umfasst.
+ * Alle Wörter einer Lernsprache (optional einer Stufe) mit Beispielsatz, in
+ * Erzeugungsreihenfolge — der Erzeuger schreibt häufige Wörter zuerst.
  *
- * WARUM (Testlauf 16.10.2026): „Satz verstehen“ und das Diktat zogen aus allen
- * 2.000 Beispielsätzen einer Sprache. Fast der ganze Wortschatz trägt keine
- * `learningStage` und gilt damit als Anfängerstoff — so kamen auf der
- * Anfängerstufe Sätze wie „Besucher müssen am Wachhäuschen ihren Ausweis
- * hinterlegen“. Die ersten Wörter in Erzeugungsreihenfolge sind die häufigen
- * (dieselbe Ordnung wie neue Karteikarten in `review-session.ts`).
- *
- * SEIT 18.10.2026 JE STUFE: Mit gewählter Stufe zählen nur deren Wörter —
- * die häufigsten 400 der Stufe, nicht die ersten 400 aller Stufen.
+ * Bis 24.10.2026 schnitt hier eine feste Grenze von 400 Wörtern ab
+ * (`GRUNDWORTSCHATZ_GROESSE`), damit Anfänger keine schweren Sätze bekamen.
+ * Jetzt wählt die Sitzung aus dem ganzen Bestand nach Lernstand
+ * (`selectPracticeWords`): Wer nichts gelernt hat, bekommt die häufigsten
+ * Wörter, danach wächst der Pool mit den gelernten Wörtern mit.
  */
-export const GRUNDWORTSCHATZ_GROESSE = 400;
-
-/** Die häufigsten Wörter einer Lernsprache (optional einer Stufe), in Erzeugungsreihenfolge. */
-export function grundwortschatz(language: SatzSprache, stage?: LearningStage): VocabEntry[] {
-  return inStage(activeVocabulary(), stage)
+export function satzwortschatz(language: SatzSprache, stage?: LearningStage): VocabEntry[] {
+  return eindeutigeSaetze(inStage(activeVocabulary(), stage)
     .filter((word) => String(word.language) === language)
-    .sort((a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id))
-    .slice(0, GRUNDWORTSCHATZ_GROESSE);
-}
-
-/** Satzaufgaben aus dem Grundwortschatz — für Übungen, die ohne Kapitel starten. */
-export function grundsaetzeFuer(language: SatzSprache, anchor: UiLanguage = 'de', stage?: LearningStage): SentenceTask[] {
-  return buildSentenceTasks(grundwortschatz(language, stage), anchor);
+    .sort((a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id)));
 }
 
 /** Die Satzaufgaben je Lernsprache (lazy — der Katalog kann sich zur Laufzeit ändern). */

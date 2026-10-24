@@ -81,10 +81,19 @@ export type WordNeed = {
 export function wordNeed(
   card: FSRSCardState | undefined,
   practice: WordPractice | undefined,
-  now: number
+  now: number,
+  /** Übungsantworten ohne Karte zählen als gelernt (siehe `knownFromPractice`). */
+  knownFromPractice = false
 ): WordNeed {
   const adjustment = practiceAdjustment(practice, now);
-  if (!card || card.lastReview === null) return { group: 'neu', need: adjustment };
+  if (!card || card.lastReview === null) {
+    if (knownFromPractice && practice && practice.total > 0) {
+      // Ohne Karte keine Retrievability: die Trefferquote vertritt sie.
+      const need = practice.correct / practice.total + adjustment;
+      return { group: need < REQUEST_RETENTION ? 'wacklig' : 'sitzt', need };
+    }
+    return { group: 'neu', need: adjustment };
+  }
   const need = retrievability(card, now) + adjustment;
   return { group: need < REQUEST_RETENTION ? 'wacklig' : 'sitzt', need };
 }
@@ -103,6 +112,12 @@ export type PracticeSelectionOptions<T> = {
    * gereiht, wie vor dem 22.10.2026.
    */
   limitNew?: boolean;
+  /**
+   * Ein Wort mit Übungsantworten, aber ohne bewertete Karte gilt als gelernt
+   * statt als neu (Vorgabe: nein). Für die mitwachsenden Satzübungen
+   * (24.10.2026): Wer ein Wort schon in Übungen hatte, kennt es.
+   */
+  knownFromPractice?: boolean;
 };
 
 /**
@@ -119,7 +134,7 @@ export function selectPracticeWords<T>(
 
   const rated = candidates.map((item, index) => {
     const id = idOf(item);
-    return { item, index, ...wordNeed(cards.get(id), practice?.get(id), now) };
+    return { item, index, ...wordNeed(cards.get(id), practice?.get(id), now, options.knownFromPractice) };
   });
   type Rated = (typeof rated)[number];
   const byNeed = (a: Rated, b: Rated) => a.need - b.need || a.index - b.index;

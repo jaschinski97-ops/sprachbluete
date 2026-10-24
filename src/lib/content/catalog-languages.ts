@@ -51,7 +51,10 @@ export function setCatalogSource(next: CatalogSource): void {
 
 const pending = new Map<LanguageCode, Promise<void>>();
 /** Je geladener Sprache: Dokumente mit Übersetzungen nach Art und ID, und welche Teile schon drin sind. */
-type LoadedTexts = { documents: Map<string, { translations?: Record<string, unknown> }>; parts: Set<UiLanguage> };
+type LoadedTexts = {
+  documents: Map<string, { translations?: Record<string, unknown>; exampleTranslations?: Record<string, unknown> }>;
+  parts: Set<UiLanguage>;
+};
 const texts = new Map<LanguageCode, LoadedTexts>();
 /** Die App-Sprache, deren Übersetzungen geladen werden (setzt der I18nProvider). */
 let activeUi: UiLanguage = 'en';
@@ -127,6 +130,11 @@ function mergePart(target: LoadedTexts, part: TranslationPartFile): void {
       const document = target.documents.get(`${kind}:${id}`);
       if (document) (document.translations ??= {})[part.ui] = value;
     }
+  }
+  // Satzübersetzungen des Wortschatzes (24.10.2026); ältere Teile haben das Feld nicht.
+  for (const [id, value] of Object.entries(part.exampleTranslations ?? {})) {
+    const document = target.documents.get(`vocabulary:${id}`);
+    if (document) (document.exampleTranslations ??= {})[part.ui] = value;
   }
   target.parts.add(part.ui as UiLanguage);
 }

@@ -1,8 +1,8 @@
 import { dictationConfigFor } from '@/data/dictation-config';
 
-import { grundsaetzeFuer, satzaufgabenFuer, sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
+import { buildSentenceTasks, satzwortschatz, sentenceFootnote, type SatzSprache } from '@/data/sentence-tasks';
 
-import { seededRandom, shuffled } from '@/lib/drills/random';
+import { seededRandom } from '@/lib/drills/random';
 
 import { anchorOf, type PairDirection } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
@@ -38,6 +38,8 @@ export type DictationTask = {
   text: string;
   /** Bedeutung auf Deutsch — erst NACH der Auswertung gezeigt, sonst liest man die Lösung vor dem Hören. */
   german: string;
+  /** Gelieferte Satzbedeutung in der Ankersprache (24.10.2026), ebenfalls erst nach der Auswertung. */
+  meaning?: string;
   /** Umschrift — ebenfalls erst nach der Auswertung (sie wäre die halbe Lösung). */
   roman: string;
   /** Der Hinweis zur Aufgabe, nach der Auswertung gezeigt. */
@@ -49,10 +51,11 @@ export function dictationTasksFor(
   language: SatzSprache,
   direction: PairDirection,
   /**
-   * Nur Sätze des Grundwortschatzes — für die eigenständige Übung (16.10.2026).
-   * Die Heutige Runde filtert selbst auf ihre Karten und braucht alle Sätze.
+   * Nur Sätze dieser Stufe — für die eigenständige Übung (18.10.2026). Die
+   * feste 400er-Grenze (`grundwortschatz`) ist seit 24.10.2026 weg; die
+   * Auswahl nach Lernstand macht `buildDictationSession`.
    */
-  options: { grundwortschatz?: boolean; stage?: LearningStage } = {}
+  options: { stage?: LearningStage } = {}
 ): DictationTask[] {
   // Der Konfigurationseintrag ist die Fachlichkeit-Prüfung: Eine Sprache
   // ohne Diktat-Regeln kann keine Diktate urteilen.
@@ -61,7 +64,7 @@ export function dictationTasksFor(
   // ZIELsprache — der Anker ändert hier nur, welche Aufgabenbasis der
   // Registry-Cache liefert (de-Brücke: Bedeutungsstoff, sonst derselbe).
   const anchor = anchorOf(direction);
-  return (options.grundwortschatz ? grundsaetzeFuer(language, anchor, options.stage) : satzaufgabenFuer(language, anchor))
+  return buildSentenceTasks(satzwortschatz(language, options.stage), anchor)
     .filter((task) => task.text.trim().length > 0)
     .map((task) => ({
       id: `dictation-${task.vocabId}`,
@@ -70,6 +73,7 @@ export function dictationTasksFor(
       direction,
       text: task.text,
       german: task.german,
+      ...(task.meaning ? { meaning: task.meaning } : {}),
       roman: task.roman,
       focus: task.focus,
     }));
@@ -84,21 +88,24 @@ export const DICTATION_SESSION_SIZE = 10;
  *
  * Mit Kartenstand und Übungsgedächtnis (22.10.2026) wählt das Diktat wie die
  * anderen freien Übungen: Sätze zu gelernten, wackligen Wörtern zuerst, nur
- * wenige zu neuen (`practice-selection.ts`). Ohne sie bleibt es beim Mischen.
+ * wenige zu neuen (`practice-selection.ts`). Seit 24.10.2026 aus allen
+ * Sätzen der Stufe statt der ersten 400; ein Wort, das nur im
+ * Übungsgedächtnis steht, zählt als gelernt. Ohne Lernstand kommen die
+ * häufigsten Wörter zuerst.
  */
 export function buildDictationSession(
   language: SatzSprache,
   direction: PairDirection,
   seed: number = Date.now(),
   size: number = DICTATION_SESSION_SIZE,
-  /** Nur Sätze aus dem Grundwortschatz dieser Stufe (18.10.2026). */
+  /** Nur Sätze dieser Stufe (18.10.2026). */
   stage?: LearningStage,
-  context?: PracticeContext
+  context: PracticeContext = { cards: new Map(), practice: new Map(), now: 0 }
 ): DictationTask[] {
-  const tasks = dictationTasksFor(language, direction, { grundwortschatz: true, stage });
-  const random = seededRandom(seed);
-  if (!context) return shuffled(tasks, random).slice(0, size);
-  return selectPracticeWords(tasks, { ...context, idOf: (task) => task.vocabId, size, random });
+  const tasks = dictationTasksFor(language, direction, { stage });
+  return selectPracticeWords(tasks, {
+    ...context, idOf: (task) => task.vocabId, size, random: seededRandom(seed), knownFromPractice: true,
+  });
 }
 
 /** Der ehrliche Fußtext je Sprache — geerbt von den Satzübungen. */

@@ -293,7 +293,9 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   /** Für welche Stufe `ziele` geladen ist — vorher startet kein Lauf. */
   const [zieleStufe, setZieleStufe] = useState<LearningStage | null>(null);
   const [bestand, setBestand] = useState<Partial<Record<string, number>> | null>(null);
-  const [paketText, setPaketText] = useState('50');
+  // 20 statt 50 (24.10.2026): Mit dem Satz in 20 App-Sprachen ist jedes Wort
+  // rund dreimal so lang; 50 Wörter sprengten die Ausgabegrenze je Aufruf.
+  const [paketText, setPaketText] = useState('20');
   const [thema, setThema] = useState('');
   const [wahl, setWahl] = useState<GeneratorChoice>(() => defaultChoiceFor('vocabulary'));
   const [running, setRunning] = useState(false);
@@ -359,7 +361,7 @@ export function VocabZieleCard({ onFinished, onRunningChange, blocked = false }:
   };
   const zielSetzen = (wert: number) => zielSetzenFuer(sprache, wert);
 
-  const paket = Math.max(1, Math.min(wahl.provider.startsWith('local-') ? 5 : Infinity, Number.parseInt(paketText, 10) || 50));
+  const paket = Math.max(1, Math.min(wahl.provider.startsWith('local-') ? 5 : Infinity, Number.parseInt(paketText, 10) || 20));
   /** Der nächste Lauf je Sprache — vom Paket und vom Sprach-Ziel begrenzt. */
   const mengeFuer = (code: VocabSprache) =>
     Math.min(paket, Math.max(0, (ziele[code] ?? 250) - (bestand?.[code] ?? 0)));

@@ -136,6 +136,13 @@ const en: Partial<Record<TranslationKey, string>> = {
   'topic.services': 'Offices & banking',
   'topic.opinion': 'Opinions & debate',
   'topic.society': 'News & society',
+  "studio.dialogCountTitle": "Dialogues per level",
+  "studio.dialogCountHint": "Dialogues are the common thread of each level. Each new dialogue is built around {{words}} words that no dialogue uses yet (most frequent first). A higher number takes the next words in the next run.",
+  "studio.dialogCoverage": "{{count, plural, one {# dialogue covers} other {# dialogues cover}}} the most frequent {{covered}} of {{total}} words at this level; the remaining {{rest}} come through cards and sentences.",
+  "studio.dialogStock": "Available: {{dialogs}} built from vocabulary, {{older}} older without target words · next run: {{next}} new",
+  "studio.dialogMissingWords": "{{count, plural, one {# dialogue does} other {# dialogues do}}} not contain all target words: {{list}}. These words stay open and come up again in the next run.",
+  "studio.dialogRunLabel": "Chosen number",
+  "studio.dialogRunHint": "Creates the missing dialogues per level up to the number above. “All languages” uses each language’s own number.",
 
   'progress.subtitle': 'Learning history',
   'progress.subtitleLanguage': 'Learning history · {{language}}',

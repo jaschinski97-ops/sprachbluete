@@ -137,6 +137,13 @@ const th: Partial<Record<TranslationKey, string>> = {
   'topic.services': 'หน่วยงานราชการและธนาคาร',
   'topic.opinion': 'ความคิดเห็นและการอภิปราย',
   'topic.society': 'ข่าวและสังคม',
+  "studio.dialogCountTitle": "บทสนทนาต่อระดับ",
+  "studio.dialogCountHint": "บทสนทนาคือแกนหลักของแต่ละระดับ บทสนทนาใหม่แต่ละบทสร้างขึ้นจากคำ {{words}} คำที่ยังไม่มีในบทสนทนาใด (คำที่ใช้บ่อยที่สุดก่อน) ถ้าเพิ่มจำนวน รอบถัดไปจะใช้คำชุดถัดไป",
+  "studio.dialogCoverage": "บทสนทนา {{count}} บทครอบคลุมคำที่ใช้บ่อยที่สุด {{covered}} คำจาก {{total}} คำของระดับนี้ ส่วนอีก {{rest}} คำมาจากบัตรคำและประโยค",
+  "studio.dialogStock": "มีอยู่: {{dialogs}} บทจากคลังคำ, {{older}} บทเก่าที่ไม่มีคำเป้าหมาย · รอบถัดไป: ใหม่ {{next}} บท",
+  "studio.dialogMissingWords": "บทสนทนา {{count}} บทไม่มีคำเป้าหมายครบ: {{list}} คำเหล่านี้ยังเปิดอยู่และจะกลับมาในรอบถัดไป",
+  "studio.dialogRunLabel": "จำนวนที่เลือก",
+  "studio.dialogRunHint": "สร้างบทสนทนาที่ยังขาดในแต่ละระดับจนถึงจำนวนด้านบน “ทุกภาษา” ใช้จำนวนของแต่ละภาษาเอง",
 
   'progress.subtitle': 'ประวัติการเรียน',
   'progress.subtitleLanguage': 'ประวัติการเรียน · {{language}}',

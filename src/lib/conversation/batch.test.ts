@@ -3,8 +3,11 @@ import { DataStore, MemoryDataStore } from '../storage';
 
 import { BatchProgress, missingSpecs, runGenerationBatch } from './batch';
 import { GenerationClient, parseSituation } from './generator';
-import { FULL_RUN, PlanOptions, planSituations, TEST_RUN } from './plan';
-import { ConversationSituation, SituationSpec } from './types';
+import { PlanOptions, planSituations } from './plan';
+import { ALL_LEVELS, ConversationSituation, SituationSpec } from './types';
+
+/** Jedes Thema einmal auf jeder passenden Stufe A1–C2 (früher der Studio-Probelauf). */
+const TEST_RUN: PlanOptions = { variantsPerCombo: 1, levels: ALL_LEVELS };
 
 const T0 = Date.UTC(2026, 7, 30);
 
@@ -92,23 +95,10 @@ describe('planSituations', () => {
     expect(levelsOf('greeting')).toEqual(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
   });
 
-  it('behält die IDs der vorhandenen A1/A2-Dialoge im vollen Plan', () => {
-    const ids = new Set(['th', 'en', 'es', 'de'].flatMap((targetLanguage) =>
-      planSituations({ ...FULL_RUN, targetLanguage: targetLanguage as 'th' }).map((s) => s.id)));
-    for (const id of ['greeting-A1-de_to_th-001', 'market-A2-th_to_de-001', 'restaurant-A2-de_to_es-001', 'travel-A1-de_to_en-001']) {
-      expect(ids.has(id)).toBe(true);
-    }
-  });
-
   it('ist deterministisch - gleiche Eingabe, gleiche IDs', () => {
     expect(planSituations({ ...TEST_RUN, ...ZWEI }).map((s) => s.id)).toEqual(
       planSituations({ ...TEST_RUN, ...ZWEI }).map((s) => s.id)
     );
-  });
-
-  it('kommt beim vollen Lauf auf 236 Situationen je Sprache', () => {
-    expect(planSituations(FULL_RUN)).toHaveLength(236);
-    expect(planSituations({ ...FULL_RUN, ...ZWEI })).toHaveLength(472);
   });
 
   it('deckt beide Richtungen gleich stark ab', () => {

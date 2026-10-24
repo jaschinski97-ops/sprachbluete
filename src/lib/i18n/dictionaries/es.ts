@@ -135,6 +135,13 @@ const es: Partial<Record<TranslationKey, string>> = {
   'topic.services': 'Trámites y banco',
   'topic.opinion': 'Opinión y debate',
   'topic.society': 'Noticias y sociedad',
+  "studio.dialogCountTitle": "Diálogos por nivel",
+  "studio.dialogCountHint": "Los diálogos son el hilo conductor de cada nivel. Cada diálogo nuevo se construye con {{words}} palabras que aún no aparecen en ningún diálogo (las más frecuentes primero). Un número mayor toma las siguientes palabras en la próxima ejecución.",
+  "studio.dialogCoverage": "{{count, plural, one {# diálogo cubre} other {# diálogos cubren}}} las {{covered}} palabras más frecuentes de {{total}} de este nivel; las {{rest}} restantes llegan con tarjetas y frases.",
+  "studio.dialogStock": "Disponibles: {{dialogs}} creados a partir del vocabulario, {{older}} antiguos sin palabras objetivo · próxima ejecución: {{next}} nuevos",
+  "studio.dialogMissingWords": "{{count, plural, one {# diálogo no contiene} other {# diálogos no contienen}}} todas las palabras objetivo: {{list}}. Estas palabras quedan abiertas y vuelven en la próxima ejecución.",
+  "studio.dialogRunLabel": "Número elegido",
+  "studio.dialogRunHint": "Crea los diálogos que faltan por nivel hasta el número indicado arriba. «Todos los idiomas» usa el número propio de cada idioma.",
 
   'progress.subtitle': 'Historial de aprendizaje',
   'progress.subtitleLanguage': 'Historial de aprendizaje · {{language}}',

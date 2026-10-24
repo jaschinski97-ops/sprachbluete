@@ -2,6 +2,7 @@ import { Direction } from '../fsrs/types';
 import { zieleFuerBruecke } from '../languages/goals';
 import { contentDirectionOf, type ForeignBridge, type Lang, LANGUAGE_CODES, LanguageCode } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
+import type { VocabEntry } from '@/data/vocab-types';
 
 /**
  * Vorproduzierte Sprachsituationen.
@@ -131,6 +132,13 @@ export type ConversationSituation = {
   generatedAt: number;
   modelUsed: string;
   translations?: Partial<Record<UiLanguage, SituationTranslation>>;
+  /**
+   * Zielwörter des Dialogs (24.10.2026): Wortschatz-IDs, um die der Dialog
+   * gebaut wurde und die nachweislich im Text vorkommen. Das Kapitel übt
+   * genau diese Wörter. Fehlt das Feld, ist es ein älterer Dialog; dann
+   * sucht das Kapitel die Wörter per Textabgleich.
+   */
+  vocabIds?: string[];
 };
 
 export type SituationTranslation = {
@@ -176,6 +184,13 @@ export type SituationSpec = {
   direction: Direction;
   /** Laufende Nummer innerhalb derselben Kombination. */
   variant: number;
+  /**
+   * Dialoge aus dem Wortschatz (24.10.2026): Wörter, die im Dialog vorkommen
+   * müssen, und schon abgedeckte zum Wiederholen. Ohne Angabe ist es ein
+   * freier Dialog wie vor dem Umbau.
+   */
+  targetWords?: VocabEntry[];
+  reviewWords?: VocabEntry[];
 };
 
 export function situationId(
@@ -202,6 +217,14 @@ export function lesbareLaufkennung(id: string): string {
   const [, , gruppe, teil, richtung, variante] = treffer;
   const stufe = STUDIO_STUFEN[gruppe as keyof typeof STUDIO_STUFEN];
   return `${topic.label} · ${stufe} ${teil === '1' ? 'Einstieg' : 'Aufbau'} · ${richtung} · Variante ${Number(variante)}`;
+}
+
+/** Höchstens so viele Zielwörter je Dialog nimmt der Speicher an. */
+export const MAX_VOCAB_IDS = 40;
+
+function istIdListe(value: unknown): boolean {
+  return Array.isArray(value) && value.length <= MAX_VOCAB_IDS &&
+    value.every((id) => typeof id === 'string' && id.trim() !== '') && new Set(value).size === value.length;
 }
 
 /**
@@ -232,6 +255,7 @@ export function isValidSituation(value: unknown): value is ConversationSituation
     );
   });
   if (!zuegeOk) return false;
+  if (s.vocabIds !== undefined && !istIdListe(s.vocabIds)) return false;
   if (s.translations !== undefined) {
     if (!s.translations || typeof s.translations !== 'object' || Array.isArray(s.translations)) return false;
     for (const translation of Object.values(s.translations)) {

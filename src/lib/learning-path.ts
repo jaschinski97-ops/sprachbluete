@@ -29,17 +29,32 @@ export function chaptersForDirection(
 ): LearningChapter[] {
   const target = targetLanguageOf(direction);
   const contentDirection = contentDirectionOf(target);
-  const scenes = situations
-    .filter((situation) => situation.direction === contentDirection)
-    .sort((a, b) =>
-      a.level.localeCompare(b.level) ||
-      (topicOrder.get(a.topic) ?? 99) - (topicOrder.get(b.topic) ?? 99) ||
-      a.id.localeCompare(b.id)
-    );
   const candidates = writingCandidates(direction, entries)
     .sort((a, b) => (a.generatedAt ?? 0) - (b.generatedAt ?? 0) || a.id.localeCompare(b.id));
+  const byId = new Map(candidates.map((entry) => [entry.id, entry]));
+  const rank = new Map(candidates.map((entry, index) => [entry.id, index]));
+  // Dialoge aus dem Wortschatz (24.10.2026) folgen innerhalb der Stufe der
+  // Häufigkeit ihres ersten Zielworts; ältere Dialoge der Themenreihenfolge.
+  const wortRang = (situation: ConversationSituation) =>
+    situation.vocabIds?.length ? Math.min(...situation.vocabIds.map((id) => rank.get(id) ?? Infinity)) : undefined;
+  const scenes = situations
+    .filter((situation) => situation.direction === contentDirection)
+    .sort((a, b) => {
+      const rangA = wortRang(a);
+      const rangB = wortRang(b);
+      return a.level.localeCompare(b.level) ||
+        Number(rangA === undefined) - Number(rangB === undefined) ||
+        (rangA !== undefined && rangB !== undefined && rangA !== rangB ? rangA - rangB : 0) ||
+        (topicOrder.get(a.topic) ?? 99) - (topicOrder.get(b.topic) ?? 99) ||
+        a.id.localeCompare(b.id);
+    });
 
   return scenes.map((situation) => {
+    // Gespeicherte Zielwörter haben Vorrang: Um sie wurde der Dialog gebaut.
+    if (situation.vocabIds?.length) {
+      const vocabulary = situation.vocabIds.flatMap((id) => byId.get(id) ?? []).slice(0, CHAPTER_WORDS);
+      return { id: situation.id, situation, vocabulary };
+    }
     const sceneWords = poolWoerterDerSzene(situation, candidates, target !== 'th');
     // Thai has no spaces between words. Prefer complete longer matches, so
     // incidental one-character substrings do not push scene words out.

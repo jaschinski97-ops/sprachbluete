@@ -2,7 +2,7 @@ import { Direction } from '../fsrs/types';
 import { directionsFor, LANGUAGE_CODES, LanguageCode } from '../languages/types';
 
 import {
-  ALL_LEVELS, Level, LEVELS, situationId, SituationSpec, TopicId, topicFitsLevel, TOPICS, Situationssprache, SITUATION_SPRACHEN,
+  Level, LEVELS, situationId, SituationSpec, TopicId, topicFitsLevel, TOPICS, Situationssprache, SITUATION_SPRACHEN,
 } from './types';
 
 /**
@@ -28,19 +28,10 @@ export type PlanOptions = {
   variantsPerCombo?: number;
 };
 
-/**
- * Probelauf des Studios: jedes Thema einmal auf jeder passenden Stufe A1–C2,
- * 59 Situationen je Sprache (Anfänger 16, Fortgeschritten 23, Profi 20).
- */
-export const TEST_RUN: PlanOptions = { variantsPerCombo: 1, levels: ALL_LEVELS };
-
-/**
- * Der große Lauf, den der Nutzer im Studio selbst startet: 4 Varianten je
- * Thema und passender Stufe = 236 Situationen je Sprache (Nutzerentscheidung
- * 18.10.2026: mehr Themen statt mehr Varianten). `content:integrity` zählt
- * die fehlenden Situationen gegen genau diesen Plan.
- */
-export const FULL_RUN: PlanOptions = { variantsPerCombo: 4, levels: ALL_LEVELS };
+// Das feste Raster für den Studio-Lauf (Probelauf 59, voller Lauf 236 je
+// Sprache) ist seit 24.10.2026 entfallen: Studio-Dialoge entstehen aus dem
+// Wortschatz mit frei wählbarer Anzahl (`dialog-words.ts`). Dieser Planer
+// bleibt für gezielte Läufe über Themen und Stufen.
 
 export function planSituations(options: PlanOptions = {}): SituationSpec[] {
   const language = options.language ?? 'th';

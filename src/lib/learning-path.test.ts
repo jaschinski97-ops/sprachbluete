@@ -43,6 +43,29 @@ test('Kapitel nutzen nur Dialogwörter und füllen nicht mit fremdem Wortschatz 
   expect(chapters[0].vocabulary.map((word) => word.id)).toEqual(chapters[1].vocabulary.map((word) => word.id));
 });
 
+test('Kapitel aus dem Wortschatz üben genau ihre gespeicherten Zielwörter und folgen deren Häufigkeit', () => {
+  const words: VocabEntry[] = Array.from({ length: 30 }, (_, index) => ({
+    id: `w${index}`, term: `w${index}`, language: 'en', romanization: `w${index}`, german: `Wort ${index}`,
+    partOfSpeech: 'noun', register: 'neutral', isConcrete: false, sourceVerified: false, syllables: [], generatedAt: index,
+  }));
+  const en = (id: string, topic: ConversationSituation['topic'], level: ConversationSituation['level']) =>
+    ({ ...scene(id, topic, level), direction: 'de_to_en' as const,
+      scriptTurns: [{ speaker: 'learner' as const, thai: 'w0 w1 w2', roman: '', german: '' }] });
+  const spaet = { ...en('greeting-A1-spaet', 'greeting', 'A1'), vocabIds: ['w25', 'w24', 'unbekannt'] };
+  const frueh = { ...en('travel-A1-frueh', 'travel', 'A1'), vocabIds: Array.from({ length: 25 }, (_, index) => `w${index}`) };
+  const alt = en('market-A1-alt', 'market', 'A1');
+  const zweite = { ...en('home-A2', 'home', 'A2'), vocabIds: ['w0'] };
+  const chapters = chaptersForDirection('de_to_en', [zweite, alt, spaet, frueh], words);
+
+  // Stufe zuerst, darin Wortschatz-Dialoge nach ihrem häufigsten Wort, ältere danach.
+  expect(chapters.map((chapter) => chapter.id)).toEqual(['travel-A1-frueh', 'greeting-A1-spaet', 'market-A1-alt', 'home-A2']);
+  // Gespeicherte Reihenfolge, höchstens 20, unbekannte IDs fallen weg.
+  expect(chapters[0].vocabulary.map((word) => word.id)).toEqual(Array.from({ length: 20 }, (_, index) => `w${index}`));
+  expect(chapters[1].vocabulary.map((word) => word.id)).toEqual(['w25', 'w24']);
+  // Ohne vocabIds wie bisher per Textabgleich.
+  expect(chapters[2].vocabulary.map((word) => word.id)).toEqual(['w0', 'w1', 'w2']);
+});
+
 test('Kapitelabschluss bleibt pro Lernrichtung und Dialog lokal gespeichert', async () => {
   const store = new MemoryDataStore();
   await store.init();

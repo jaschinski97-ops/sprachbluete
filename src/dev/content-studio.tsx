@@ -7,6 +7,7 @@ import { ThemedButton } from '@/components/themed-button';
 import { ContentReport } from './content-report';
 import { VocabZieleCard } from './vocab-ziele-card';
 import { DialogAnzahlCard, ladeDialogAnzahl } from './dialog-anzahl-card';
+import { ToneCalibrationCard } from './tone-calibration-card';
 import { durchschnittsAnteil } from '@/lib/content/wortschatz-anteil';
 import { findeDuplikat } from '@/lib/content/aehnlichkeit';
 import { useLocale } from '@/lib/i18n';
@@ -672,6 +673,8 @@ export default function ContentStudio() {
             <ThemedText type="small">{audioWarnung}</ThemedText>
           </ThemedView>
         ) : null}
+        {/* 24.10.2026: Stimme für Thai-Töne wählen, bevor der große Lauf startet. */}
+        <ToneCalibrationCard blocked={running} onRunningChange={setRunning} />
       <GeneratorCard
         blocked={running} managedKeys onManageKeys={() => setSection('keys')} onRunningChange={setRunning}
         heading="Generator: Hörclips"

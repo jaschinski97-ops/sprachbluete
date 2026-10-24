@@ -1,3 +1,5 @@
+import type { ProviderId } from '../providers/types';
+
 import type { AudioClipSpec } from './types';
 
 /**
@@ -31,9 +33,43 @@ const THAI_SENTENCE =
 
 export type TtsInstructions = { id: string; text: string };
 
-/** Die Anweisung für einen Clip — `null` für alle Sprachen außer Thai. */
-export function ttsInstructionsFor(spec: Pick<AudioClipSpec, 'language' | 'kind'>): TtsInstructions | null {
+/**
+ * Gemini-Fassung (24.10.2026, für `gemini-3.8-flash-tts`).
+ *
+ * WIE GEMINI SIE NIMMT: Laut Doku (ai.google.dev/gemini-api/docs/speech-
+ * generation, Abschnitt Migration) liest Gemini 3.8 TTS das Feld `text`
+ * „strictly as a verbatim transcript“. Eine Regieanweisung im Text würde
+ * mitgesprochen. Stil gehört in `speech_metadata.style` am selben Teil
+ * (generateContent: an jedes `part`; Interactions: als Annotation). Die
+ * Sprache erkennt das Modell selbst, ein Sprachfeld gibt es nicht.
+ *
+ * WARUM KÜRZER ALS DIE OPENAI-FASSUNG: Die Doku rät zu kurzen Stilangaben
+ * und warnt vor Alter, Geschlecht, Namen oder Akzentwechseln darin. Die
+ * Tonregeln bleiben, weil genau sie das Ziel sind.
+ */
+export const THAI_GEMINI_TTS_INSTRUCTIONS_ID = 'th-ton-gemini-1';
+
+const GEMINI_TONES =
+  'Every syllable keeps its full lexical tone: mid stays level, low stays low, falling starts high and drops, high stays high, rising starts low and climbs.';
+
+const GEMINI_THAI_WORD =
+  `Slow, clear citation form of one isolated Thai word for learners, spoken once. ${GEMINI_TONES} No statement intonation and no pitch drop at the end.`;
+
+const GEMINI_THAI_SENTENCE =
+  `Calm, clear Thai at a natural learner pace. ${GEMINI_TONES} Keep the sentence melody flat so it never overrides the tones, also on the last syllable.`;
+
+/**
+ * Die Anweisung für einen Clip — `null` für alle Sprachen außer Thai.
+ * Ohne Anbieter gilt die OpenAI-Fassung (bisheriges Verhalten).
+ */
+export function ttsInstructionsFor(
+  spec: Pick<AudioClipSpec, 'language' | 'kind'>,
+  provider?: ProviderId
+): TtsInstructions | null {
   if (spec.language !== 'th') return null;
+  if (provider === 'gemini') {
+    return { id: THAI_GEMINI_TTS_INSTRUCTIONS_ID, text: spec.kind === 'vocab' ? GEMINI_THAI_WORD : GEMINI_THAI_SENTENCE };
+  }
   return { id: THAI_TTS_INSTRUCTIONS_ID, text: spec.kind === 'vocab' ? THAI_WORD : THAI_SENTENCE };
 }
 
@@ -43,4 +79,17 @@ export function ttsInstructionsFor(spec: Pick<AudioClipSpec, 'language' | 'kind'
  */
 export function supportsTtsInstructions(model: string): boolean {
   return /^gpt-4o/i.test(model.trim());
+}
+
+/**
+ * Welche Gemini-Modelle `speech_metadata.style` kennen: TTS-Modelle ab
+ * Version 3.8. Ältere (2.5-…-preview-tts, 3.1-…-preview) bekommen nur den
+ * reinen Text, ein unbekanntes Feld könnte die Anfrage scheitern lassen.
+ */
+export function supportsGeminiSpeechStyle(model: string): boolean {
+  const name = model.trim().toLowerCase();
+  const version = /^gemini-(\d+)(?:\.(\d+))?/.exec(name);
+  if (!version || !/tts/.test(name)) return false;
+  const [major, minor] = [Number(version[1]), Number(version[2] ?? 0)];
+  return major > 3 || (major === 3 && minor >= 8);
 }

@@ -25,7 +25,7 @@ export const VOICE_SOURCES = {
     title: 'Speech generation (text-to-speech) — Gemini API',
     url: 'https://ai.google.dev/gemini-api/docs/speech-generation',
     retrieved: '2026-09-04',
-    note: 'Liefert die Stimmnamen und je einen Stilbegriff; nennt kein Geschlecht.',
+    note: 'Liefert die Stimmnamen und je einen Stilbegriff; nennt kein Geschlecht. Am 2026-10-24 für gemini-3.8-flash-tts erneut abgeglichen: dieselben dreißig Namen und Stilbegriffe.',
   },
   geminiGender: {
     title: 'Chirp 3: HD voices — Cloud Text-to-Speech',
@@ -153,3 +153,12 @@ export function describeVoice(provider: ProviderId, name: string): string {
         : 'Geschlecht nicht dokumentiert';
   return voice.style ? `${gender} · „${voice.style}"` : gender;
 }
+
+/**
+ * Vorschlag für den Thai-Kalibrierlauf (24.10.2026): drei ruhige, deutlich
+ * sprechende Gemini-Stimmen — „Firm“, „Informative“, „Clear“. Kore ist die
+ * bisherige Vorgabe des großen Laufs; welche wirklich trägt, misst erst der
+ * Lauf (der Stilbegriff sagt nichts über Töne).
+ */
+export const KALIBRIER_STIMMEN_VORSCHLAG = ['Kore', 'Charon', 'Erinome'] as const;
+export const MAX_KALIBRIER_STIMMEN = 3;

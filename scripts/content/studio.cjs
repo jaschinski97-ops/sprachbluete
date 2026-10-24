@@ -6,6 +6,7 @@ const { generateLocalImage } = require('./local-image.cjs');
 const { generateLocalText } = require('./local-text.cjs');
 const { ContentPipeline } = require('./pipeline.cjs');
 const { AutomaticDelivery } = require('./automatic-delivery.cjs');
+const toneCalibration = require('./tone-calibration.cjs');
 const { tryWriteProtocol } = require('../pipeline/protocol.cjs');
 const { loadEnvLocal } = require('../pipeline/env.cjs');
 
@@ -264,6 +265,23 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
         await fs.mkdir(path.join(root, 'pipeline', 'logs'), { recursive: true });
         await fs.appendFile(path.join(root, 'pipeline', 'logs', 'studio-failures.ndjson'), zeilen.join('\n') + '\n', 'utf8');
         json(200, { written: zeilen.length });
+        return;
+      }
+      // Thai-Kalibrierlauf (24.10.2026, scripts/content/tone-calibration.cjs):
+      // Clips bleiben unter _Local/tone-calibration/, nie im Katalog.
+      if (req.method === 'GET' && req.url === '/tone-calibration') { json(200, toneCalibration.stand(root)); return; }
+      if (req.method === 'POST' && ['/tone-calibration/start', '/tone-calibration/clip', '/tone-calibration/report'].includes(req.url)) {
+        if (!originAllowed(req.headers.origin) || req.headers['content-type'] !== 'application/json') { json(403, { error: 'Nur die lokale Entwickler-App darf kalibrieren.' }); return; }
+        let size = 0; const parts = [];
+        for await (const chunk of req) {
+          size += chunk.length;
+          if (size > 16 * 1024 * 1024) { json(413, { error: 'Kalibrierclip zu groß.' }); return; }
+          parts.push(chunk);
+        }
+        const data = JSON.parse(Buffer.concat(parts).toString('utf8') || '{}');
+        if (req.url === '/tone-calibration/start') json(200, toneCalibration.startStimme(root, data));
+        else if (req.url === '/tone-calibration/clip') json(200, toneCalibration.speichereClip(root, data));
+        else json(200, toneCalibration.baueBericht(root));
         return;
       }
       // Die frühere Route /catalog/clear-generated („alles Generierte löschen“)

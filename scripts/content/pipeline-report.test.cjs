@@ -23,7 +23,9 @@ test('generated vocabulary can be staged, published, deleted and regenerated wit
   const pipeline = new ContentPipeline(root);
   const word = { id: 'ki-en-test', language: 'en', term: 'hello', german: 'hallo', romanization: 'həˈləʊ', ipa: 'həˈləʊ',
     partOfSpeech: 'interjection', register: 'neutral', isConcrete: false, syllables: [], sourceVerified: false,
-    verificationNote: 'KI-Erzeugung', translations: { de: 'hallo', th: 'สวัสดี' }, generatedAt: Date.now() };
+    verificationNote: 'KI-Erzeugung', translations: { de: 'hallo', th: 'สวัสดี' }, generatedAt: Date.now(),
+    // Neue KI-Wörter tragen seit 24.10.2026 einen gemeinsamen Begriff (ohne Beispiel keine Satzübersetzungen).
+    concept: 'c:hello' };
   await pipeline.stage({ kind: 'vocabulary', document: word });
   await pipeline.publish();
   assert.equal((await pipeline.catalog()).vocabularySource, 'generated');

@@ -2,6 +2,7 @@ import { learningLanguage, passtZurSchrift } from '../languages/definitions';
 import { isLanguageCode, LANGUAGE_CODES } from '../languages/types';
 import { isSharedConcept } from '../concepts';
 import { UI_LANGUAGES } from '../i18n/types';
+import { pruefeThaiWortToene } from '../thai/tone-check';
 import type { VocabEntry } from '@/data/vocab-types';
 
 /**
@@ -143,7 +144,11 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
   return true;
 }
 
-export type VocabPruefung = { ok: boolean; fehler: string[] };
+/**
+ * `hinweise` (seit 24.10.2026, nur wenn vorhanden): Unsicherheiten der
+ * Thai-Ton-Prüfung — kein Fehler, aber vor dem Audio-Lauf ansehen.
+ */
+export type VocabPruefung = { ok: boolean; fehler: string[]; hinweise?: string[] };
 
 /** Regelbasierte Prüfung eines Dokuments — die Basis unter der KI-Kreuzprüfung. */
 export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
@@ -184,9 +189,14 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
   }
 
   // Sprachliche Pflicht-Merkmale je Stufe der App-Übungen:
+  const hinweise: string[] = [];
   if (language === 'th') {
     if (!doc.syllables || doc.syllables.length === 0) fehler.push('Thai ohne Silbenauszeichnung (Ton kann nicht geprüft/gezeigt werden).');
     else if (doc.syllables.some((s) => !s.tone)) fehler.push('Thai-Silben ohne Ton.');
+    // Ton-Engine (24.10.2026): Schrift gegen Umschrift, Silben und Beispielsatz.
+    const toene = pruefeThaiWortToene(doc);
+    fehler.push(...toene.fehler);
+    hinweise.push(...toene.hinweise);
   }
   if (language === 'es' && doc.partOfSpeech === 'noun' && !doc.spanishNoun) {
     fehler.push('Spanisches Substantiv ohne Genus/Artikel.');
@@ -207,5 +217,5 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
     fehler.push('Quellengeprüft ohne Quellenangabe.');
   }
 
-  return { ok: fehler.length === 0, fehler };
+  return { ok: fehler.length === 0, fehler, ...(hinweise.length ? { hinweise } : {}) };
 }

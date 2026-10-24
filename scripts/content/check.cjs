@@ -9,6 +9,7 @@ const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 const { decodeAudio, decodeImage } = require('./media.cjs');
 const { vocabSchluessel } = domain.load('src/lib/content/vocab-schema');
 const { imageCandidateIds } = domain.load('src/lib/images/concept-images');
+const { pruefeThaiWortToene, pruefeThaiDialogToene } = domain.load('src/lib/thai/tone-check');
 const { createHash } = require('node:crypto');
 
 /** `extraVocabulary`: nur für Tests mit festen Fixture-Wörtern (siehe ContentPipeline). */
@@ -98,16 +99,29 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
     const { fehlend } = pruefeZielwoerter(situation, situation.vocabIds.map((id) => wortNachId.get(id)));
     if (fehlend.length) errors.push(`situations:${situation.id}: Zielwörter nicht im Dialog: ${fehlend.map((word) => word.term).join(', ')}`);
   }
+  // Thai-Ton-Engine (24.10.2026): Schrift gegen Umschrift in Wörtern,
+  // Beispielsätzen und Dialogzeilen. Widerspruch = Fehler, unsicher = Hinweis.
+  const thaiTonHinweise = [];
+  for (const word of words.filter((entry) => String(entry.language) === 'th')) {
+    const pruefung = pruefeThaiWortToene(word);
+    errors.push(...pruefung.fehler.map((text) => `vocabulary:${word.id}: ${text}`));
+    thaiTonHinweise.push(...pruefung.hinweise.map((text) => `vocabulary:${word.id}: ${text}`));
+  }
+  for (const situation of situations.filter((entry) => entry.direction.split('_to_')[1] === 'th')) {
+    const pruefung = pruefeThaiDialogToene(situation.scriptTurns ?? []);
+    errors.push(...pruefung.fehler.map((text) => `situations:${situation.id}: ${text}`));
+    thaiTonHinweise.push(...pruefung.hinweise.map((text) => `situations:${situation.id}: ${text}`));
+  }
   if (!integrityOnly) {
     if (missingAudio.length) errors.push(`${missingAudio.length}/${neededAudio.length} benötigte Hörclips fehlen (auch Deutsch). System-TTS ist kein garantierter Offline-Ersatz.`);
     if (missingImages.length) errors.push(`${missingImages.length} konkrete Vokabeln ohne automatisch geprüftes Bild.`);
   }
   return { checkedAt: new Date().toISOString(), integrityOnly, entries: catalog.entries.length, contentBytes,
-    audioSourceBytes, audioCompressedBytes, uncheckedThaiDelivered, missing: { audio: missingAudio.map((spec) => spec.id), images: missingImages.map((entry) => entry.id) }, errors };
+    audioSourceBytes, audioCompressedBytes, uncheckedThaiDelivered, thaiTonHinweise, missing: { audio: missingAudio.map((spec) => spec.id), images: missingImages.map((entry) => entry.id) }, errors };
 }
 if (require.main === module) {
   const result = checkContent(path.resolve(__dirname, '../..'), { integrityOnly: process.argv.includes('--integrity-only') });
-  console.log(JSON.stringify({ ...result, missing: Object.fromEntries(Object.entries(result.missing).map(([kind, ids]) => [kind, ids.length])) }, null, 2));
+  console.log(JSON.stringify({ ...result, thaiTonHinweise: { anzahl: result.thaiTonHinweise.length, erste: result.thaiTonHinweise.slice(0, 20) }, missing: Object.fromEntries(Object.entries(result.missing).map(([kind, ids]) => [kind, ids.length])) }, null, 2));
   process.exitCode = result.errors.length ? 1 : 0;
 }
 module.exports = { checkContent };

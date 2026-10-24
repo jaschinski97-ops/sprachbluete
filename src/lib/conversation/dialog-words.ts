@@ -26,7 +26,7 @@ export const ZIELWOERTER_JE_DIALOG = 20;
 /** Schon abgedeckte Wörter, die ein neuer Dialog wieder aufgreift. */
 export const WIEDERHOLWOERTER_JE_DIALOG = 4;
 /** Startwerte im Studio. */
-export const DIALOGE_VORSCHLAG: Record<LearningStage, number> = { beginner: 20, experienced: 15, pro: 10 };
+export const DIALOGE_VORSCHLAG: Record<LearningStage, number> = { beginner: 25, experienced: 15, pro: 10 };
 export const MAX_DIALOGE_JE_STUFE = 200;
 
 /** Wörter in Häufigkeitsreihenfolge (stabil: gleiche Zeit behält die Reihenfolge). */

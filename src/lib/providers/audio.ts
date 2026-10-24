@@ -6,7 +6,7 @@ import {
   wavDurationMs,
 } from '../clips/bytes';
 
-import { supportsTtsInstructions } from '../clips/tts-instructions';
+import { supportsGeminiSpeechStyle, supportsTtsInstructions } from '../clips/tts-instructions';
 import { describeHttpError, fieldNamesOf, postForBytes, postJson } from './http';
 import { AudioClient, AudioRequest, AudioResponse, ProviderId, unsupported } from './types';
 
@@ -97,27 +97,48 @@ export function parseGeminiAudio(payload: unknown, model: string, voice: string)
   );
 }
 
+/**
+ * Der Anfragekörper für `generateContent` — getrennt, damit ein Test genau
+ * prüfen kann, was gesprochen wird und was nicht.
+ *
+ * Gemini 3.8 TTS liest `text` wörtlich vor. Die Sprechanweisung steht
+ * deshalb NIE im Text, sondern in `speech_metadata.style` desselben Teils
+ * (Doku: „attach speech_metadata … to each part“). Ältere Modelle bekommen
+ * sie gar nicht; dort bleibt es beim reinen Text.
+ */
+export function geminiSpeechBody(model: string, voice: string, request: AudioRequest): {
+  body: Record<string, unknown>;
+  instructionsId?: string;
+} {
+  const style = request.instructions && supportsGeminiSpeechStyle(model) ? request.instructions : undefined;
+  return {
+    body: {
+      contents: [{
+        role: 'user',
+        parts: [{ text: request.text, ...(style ? { speech_metadata: { style: style.text } } : {}) }],
+      }],
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
+      },
+    },
+    ...(style ? { instructionsId: style.id } : {}),
+  };
+}
+
 export function createGeminiAudioClient(apiKey: string, model: string, voice: string): AudioClient {
   return {
     provider: 'gemini',
     model,
     voice,
     async synthesize(request: AudioRequest): Promise<AudioResponse> {
+      const { body, instructionsId } = geminiSpeechBody(model, voice, request);
       const payload = await postJson({
         url: `${GEMINI_BASE}/${encodeURIComponent(model.trim())}:generateContent`,
         headers: { 'x-goog-api-key': apiKey },
-        body: {
-          // Nur der Text - keine Regieanweisung davor. Ein TTS-Modell liest
-          // vor, was es bekommt; eine Anweisung wie "Sprich Thai:" wuerde im
-          // Zweifel mitgesprochen.
-          contents: [{ role: 'user', parts: [{ text: request.text }] }],
-          generationConfig: {
-            responseModalities: ['AUDIO'],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
-          },
-        },
+        body,
       });
-      return parseGeminiAudio(payload, model, voice);
+      return { ...parseGeminiAudio(payload, model, voice), ...(instructionsId ? { instructionsId } : {}) };
     },
   };
 }

@@ -18,7 +18,8 @@ export type ClipGenerationClient = {
 export function createClipClient(audio: AudioClient): ClipGenerationClient {
   return {
     async generate(spec) {
-      const instructions = ttsInstructionsFor(spec);
+      // Die Fassung hängt am Anbieter: OpenAI `instructions`, Gemini `speech_metadata.style`.
+      const instructions = ttsInstructionsFor(spec, audio.provider);
       const response = await audio.synthesize({
         text: spec.text,
         language: spec.language,

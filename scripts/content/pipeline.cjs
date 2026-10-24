@@ -13,6 +13,9 @@ const { checkThaiTone, TONE_GATE_LIMITS, TONE_GATE_VERSION } = domain.load('src/
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 // Die EINE Lernsprachen-Liste der App (src/lib/languages/types.ts).
 const { LANGUAGE_CODES } = domain.load('src/lib/languages/types');
+// Bilder je Begriff (24.10.2026): dieselben Regeln wie App und Studio.
+const { isSharedConcept } = domain.load('src/lib/concepts');
+const { imageIdFor, imageOwnLanguage, imageInLanguageSelection, imageOrphanedBy } = domain.load('src/lib/images/concept-images');
 const { decodeAudio, decodeImage } = require('./media.cjs');
 const { tryWriteProtocol } = require('../pipeline/protocol.cjs');
 
@@ -55,6 +58,21 @@ async function atomicFile(file, bytes) {
 async function atomicJson(file, value) {
   await atomicFile(file, JSON.stringify(value, null, 2) + '\n');
 }
+/**
+ * Woran ein Bild hängt. Alter Bestand: Bild-ID = Wort-ID eines konkreten
+ * Worts. Begriffsbild: ID aus dem Begriff (`concept-…`, Ausnahme mit
+ * `-<sprache>`), und mindestens ein konkretes Wort trägt den Begriff — bei
+ * einer Ausnahme eines ihrer Sprache.
+ */
+function imageDocumentLinked(doc, vocabulary) {
+  if (doc.concept === undefined && doc.language === undefined) {
+    return doc.id === doc.vocabId && vocabulary.some((word) => word.id === doc.id && word.isConcrete);
+  }
+  if (!isSharedConcept(doc.concept) || typeof doc.vocabId !== 'string') return false;
+  if (doc.language !== undefined && !LANGUAGE_CODES.includes(doc.language)) return false;
+  if (doc.id !== imageIdFor(doc.concept, doc.language)) return false;
+  return vocabulary.some((word) => word.concept === doc.concept && word.isConcrete && (doc.language === undefined || word.language === doc.language));
+}
 function assertDocument(kind, doc, vocabulary = []) {
   if (!KINDS.includes(kind) || !doc || !/^[a-zA-Z0-9_-]{1,180}$/.test(doc.id)) throw Error('Ungültige Inhaltsart oder ID.');
   const valid = kind === 'situations' ? isValidSituation(doc) && ['A1','A2','B1','B2','C1','C2'].includes(doc.level) && TOPICS.some((topic) => topic.id === doc.topic) && Number.isFinite(doc.generatedAt) && typeof doc.modelUsed === 'string' :
@@ -65,13 +83,13 @@ function assertDocument(kind, doc, vocabulary = []) {
     // Phase 2, Schritt 4: Wortschatz als Inhaltsart — derselbe Weg über
     // Stage und catalog.json. 'de' ist gültig (abgeleiteter de-Pool).
     kind === 'vocabulary' ? isValidVocabEntry(doc) :
-    doc.id === doc.vocabId && vocabulary.some((word) => word.id === doc.id && word.isConcrete) && ['png','jpeg','webp'].includes(doc.format) && typeof doc.prompt === 'string' && typeof doc.model === 'string' && Number.isFinite(doc.generatedAt);
+    imageDocumentLinked(doc, vocabulary) && ['png','jpeg','webp'].includes(doc.format) && typeof doc.prompt === 'string' && typeof doc.model === 'string' && Number.isFinite(doc.generatedAt);
   if (!valid) throw Error(`Inhalt verletzt den ${kind}-Vertrag: ${doc.id}`);
   // Export content documents only. Preferences, keys, learner records and
   // unrecognised top-level fields cannot cross this boundary.
   const fields = {
     situations: 'id level topic direction title setting scriptTurns corrections generatedAt modelUsed translations',
-    images: 'id vocabId format byteSize blobKey prompt model generatedAt',
+    images: 'id vocabId concept language format byteSize blobKey prompt model generatedAt',
     audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice instructionsId generatedAt synthetic',
     vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman sourceVerified source verificationNote note',
   }[kind].split(' ');
@@ -171,8 +189,10 @@ class ContentPipeline {
   static abhaengigeSchluessel(kind, ids, entries) {
     if (kind !== 'vocabulary') return [];
     const weg = new Set(ids);
+    // Begriffsbilder (24.10.2026) gehen erst mit dem letzten Wort ihres Begriffs.
+    const woerter = entries.filter((item) => item.kind === 'vocabulary').map((item) => item.document);
     return entries
-      .filter((item) => item.kind === 'images' && weg.has(item.document?.vocabId || item.id))
+      .filter((item) => item.kind === 'images' && imageOrphanedBy({ id: item.id, ...item.document }, weg, woerter))
       .map(keyOf);
   }
   /**
@@ -252,9 +272,13 @@ class ContentPipeline {
     const stichtag = Date.parse('2026-09-14T00:00:00.000Z');
     const istGeneriert = (entry) => {
       if (kind && entry.kind !== kind) return false;
-      const language = entry.kind === 'situations' ? entry.document.direction.split('_to_')[1] :
-        entry.kind === 'images' ? vocab.find(word => word.id === entry.document.vocabId)?.language : entry.document.language;
-      if (languages && !languages.includes(language)) return false;
+      if (entry.kind === 'images') {
+        // Ein gemeinsames Begriffsbild nur, wenn alle Sprachen gewählt sind, die es zeigen.
+        if (languages && !imageInLanguageSelection(entry.document, vocab, languages)) return false;
+      } else {
+        const language = entry.kind === 'situations' ? entry.document.direction.split('_to_')[1] : entry.document.language;
+        if (languages && !languages.includes(language)) return false;
+      }
       if (includeBase && ['situations','images','audio'].includes(entry.kind)) return true;
       if (entry.kind === 'vocabulary') return String(entry.id ?? '').startsWith('ki-');
       const zeit = entry.document?.generatedAt;
@@ -319,7 +343,7 @@ class ContentPipeline {
     const stageState = kontext ? null : await readJson(this.stageFile, { version: 2, entries: [] });
     const katalogWoerter = kontext?.vocabulary ?? shipped.entries.filter(e => e.kind === 'vocabulary').map(e => e.document);
     assertDocument(kind, document, [...this.extraVocabulary, ...katalogWoerter]);
-    const language = document.language ?? document.direction?.split('_to_')[1] ?? (kind === 'images' ? [...this.extraVocabulary, ...katalogWoerter].find(word => word.id === document.vocabId)?.language : undefined);
+    const language = kind === 'images' ? imageOwnLanguage(document, [...this.extraVocabulary, ...katalogWoerter]) : document.language ?? document.direction?.split('_to_')[1];
     const cutoff = Math.max(shipped.deleted?.[`${kind}:${document.id}`] ?? -1, shipped.clearedBefore?.[kind] ?? -1, shipped.clearedBefore?.[`${kind}:${language}`] ?? -1);
     if (cutoff >= 0 && (kind !== 'vocabulary' || document.id.startsWith('ki-')) && (document.generatedAt ?? 0) <= cutoff) throw Error('Dieser alte Entwurf wurde gelöscht. Bitte neu erzeugen.');
     let bytes = Buffer.alloc(0);

@@ -5,6 +5,7 @@ import { CONTENT_ASSETS } from '../../content/assets';
 import type { ContentCatalog, ContentDocuments, ContentEntry, ContentKind } from './types';
 import { isDeliverableEntry } from './audio-policy';
 import { catalogRevision, currentCatalog, setCurrentCatalog } from './catalog-state';
+import { imageOwnLanguage } from '../images/concept-images';
 
 /**
  * Die auslieferbaren Einträge, einmal je Katalogstand nach Art und ID
@@ -43,11 +44,13 @@ function deliverableIndex(): DeliverableIndex {
 export function setLiveCatalog(value: ContentCatalog) {
   setCurrentCatalog(value);
 }
-export function isDeletedDraft(kind: ContentKind, doc: { id: string; generatedAt?: number; language?: string; direction?: string; vocabId?: string }, source: ContentCatalog = currentCatalog()) {
+export function isDeletedDraft(kind: ContentKind, doc: { id: string; generatedAt?: number; language?: string; direction?: string; vocabId?: string; concept?: string }, source: ContentCatalog = currentCatalog()) {
   if (kind === 'vocabulary' && !doc.id.startsWith('ki-')) return false;
-  const language = doc.language ?? doc.direction?.split('_to_')[1] ?? (kind === 'images'
-    ? [...source.entries.filter(entry => entry.kind === 'vocabulary').map(entry => entry.document as ContentDocuments['vocabulary'])].find(word => word.id === doc.vocabId)?.language
-    : undefined);
+  // Bilder: Ausnahme und alter Bestand haben eine Sprache, das gemeinsame
+  // Begriffsbild keine (es fällt nur unter den sprachlosen Stichtag).
+  const language = kind === 'images'
+    ? imageOwnLanguage(doc, source.entries.filter(entry => entry.kind === 'vocabulary').map(entry => entry.document as ContentDocuments['vocabulary']))
+    : doc.language ?? doc.direction?.split('_to_')[1];
   const cutoff = Math.max(source.deleted?.[`${kind}:${doc.id}`] ?? -1, source.clearedBefore?.[kind] ?? -1, source.clearedBefore?.[`${kind}:${language}`] ?? -1);
   return cutoff >= 0 && (doc.generatedAt ?? 0) <= cutoff;
 }

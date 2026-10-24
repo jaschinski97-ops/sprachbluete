@@ -8,6 +8,7 @@ const { checkThaiTone } = domain.load('src/lib/content/tone-gate');
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 const { decodeAudio, decodeImage } = require('./media.cjs');
 const { vocabSchluessel } = domain.load('src/lib/content/vocab-schema');
+const { imageCandidateIds } = domain.load('src/lib/images/concept-images');
 const { createHash } = require('node:crypto');
 
 /** `extraVocabulary`: nur für Tests mit festen Fixture-Wörtern (siehe ContentPipeline). */
@@ -81,7 +82,9 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
   const words = [...catalog.entries.filter(e => e.kind === 'vocabulary').map(e => e.document)];
   const neededAudio = planDeliveryAudio(situations, undefined, words);
   const missingAudio = neededAudio.filter((spec) => !seen.has(`audio:${spec.id}`));
-  const missingImages = words.filter((entry) => entry.isConcrete && !seen.has(`images:${entry.id}`));
+  // Bilder je Begriff (24.10.2026): Ein Wort hat ein Bild, wenn sein Begriff
+  // (oder, alter Bestand, das Wort selbst) eines hat — aus welcher Sprache auch immer.
+  const missingImages = words.filter((entry) => entry.isConcrete && !imageCandidateIds(entry).some((id) => seen.has(`images:${id}`)));
   const missingSituations = ['th', 'en', 'es', 'de'].flatMap(targetLanguage => planSituations({ ...FULL_RUN, targetLanguage })).filter((spec) => !seen.has(`situations:${spec.id}`));
   if (!integrityOnly) {
     if (missingAudio.length) errors.push(`${missingAudio.length}/${neededAudio.length} benötigte Hörclips fehlen (auch Deutsch). System-TTS ist kein garantierter Offline-Ersatz.`);

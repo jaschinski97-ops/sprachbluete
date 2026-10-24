@@ -1,5 +1,5 @@
 import { stageForLevel } from '@/lib/learning-stages';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ApiKeysCard } from '@/components/api-keys-card';
 import { SettingsRow } from '@/components/settings-row';
@@ -14,6 +14,7 @@ import { estimateRunCost } from './run-cost';
 import { Drossel, gedrosselt } from '@/lib/generation/drossel';
 import { clearContentSelection, startAutomaticDelivery, studioRequest, type StudioState } from './content-client';
 import { fahreKette, planChain, type ChainStep } from './chain-run';
+import { limitPlan } from '@/lib/generation/plan';
 import { planDeliveryAudio } from '@/lib/content/audio-plan';
 import { previewAudioDelivery } from '@/lib/content/delivery-preview';
 
@@ -35,7 +36,11 @@ import { FULL_RUN, planSituations, TEST_RUN } from '@/lib/conversation/plan';
 import { getActiveBlobBackend, getImageBlobStore } from '@/lib/images/blob-store';
 import { runImageBatch, missingImageSpecs } from '@/lib/images/batch';
 import { createImageGenerationClient } from '@/lib/images/generator';
-import { countImageCandidates, IMAGE_TEST_RUN, planImages } from '@/lib/images/plan';
+import { IMAGE_TEST_RUN, planImages, summarizeImagePlan, type ImagePlanSummary } from '@/lib/images/plan';
+import { loadOwnImageConcepts, saveOwnImageConcepts, type OwnImageConcepts } from '@/lib/images/own-concepts';
+import { isRejectedImageAsset } from '@/lib/images/reviewed-assets';
+import { bundledDocuments, bundledEntry } from '@/lib/content/bundled';
+import { ImageOwnConceptsCard } from './image-own-concepts-card';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { VocabEntry } from '@/data/vocab-types';
 import { LANGUAGE_ORDER, LANGUAGE_LABELS } from '@/lib/languages/registry';
@@ -105,22 +110,30 @@ const SITUATION_RUNS: RunOption[] = [
 function poolFuer(code: Lang): VocabEntry[] { return activeVocabularyFor(code); }
 
 /**
- * Der Bilderlauf haengt seit Phase 18 an der gewaehlten Sprache: Wie viele
- * Bilder es werden, steht erst fest, wenn die Sprache feststeht. Die
- * de-Pool-Begriffe teilen das Konzeptbild ihres Ankers (AE-46) — der Lauf
- * toppt fehlende Konzeptbilder auf.
+ * Der Bilderlauf haengt seit Phase 18 an der gewaehlten Sprache. Seit dem
+ * 24.10.2026 plant er je Begriff ein Bild: Begriffe, die schon ein Bild haben
+ * (gleich aus welcher Sprache), laufen nicht mit, und die Zahl am Knopf ist
+ * die der neuen Bilder.
  */
-function imageRunOptions(language: Lang): RunOption[] {
-  const alle = countImageCandidates(poolFuer(language));
+function imageRunOptions(language: Lang, summary: ImagePlanSummary | null): RunOption[] {
+  const neu = summary ? String(summary.toGenerate) : '…';
+  const gespart = summary ? ` (${summary.saved} gespart, ein Bild je Begriff)` : '';
   return [
     { id: 'test', label: 'Probelauf', hint: `${IMAGE_TEST_RUN} Bilder — kleiner Testlauf` },
     {
       id: 'full',
-      label: 'Alle konkreten Vokabeln',
-      hint: `${alle} Bilder (${LANGUAGE_LABELS[language]}) — kostet echtes Geld und dauert`,
-      localHint: `${alle} Bilder (${LANGUAGE_LABELS[language]}) — läuft lokal; benötigt Zeit und Strom`,
+      label: 'Alle konkreten Begriffe',
+      hint: `${neu} neue Bilder (${LANGUAGE_LABELS[language]})${gespart} — kostet echtes Geld und dauert`,
+      localHint: `${neu} neue Bilder (${LANGUAGE_LABELS[language]})${gespart} — läuft lokal; benötigt Zeit und Strom`,
     },
   ];
+}
+
+/** Bild-IDs mit verwendbarem Bild im Live-Katalog — abgelehnte Motive zählen nicht. */
+function vorhandeneBildIds(): Set<string> {
+  return new Set(bundledDocuments('images')
+    .filter((image) => !isRejectedImageAsset(bundledEntry('images', image.id)?.asset))
+    .map((image) => image.id));
 }
 
 /**
@@ -271,6 +284,8 @@ export default function ContentStudio() {
   // SEIT DEM 10.09. VOM TYP `Lang`: Deutsch ist als Generier-Sprache dabei
   // (X_to_de-Rückseiten, abgeleiteter de-Pool) — siehe `ALLE_SPRACHEN`.
   const [mediaLanguage, setMediaLanguage] = useState<Lang>('th');
+  // Bilder je Begriff: Sprach-Ausnahmen (Studio-Option) und die Einsparung.
+  const [ownImageConcepts, setOwnImageConcepts] = useState<OwnImageConcepts>({});
 
   const refreshSituations = useCallback(async () => {
     const [count, nachRichtung] = await Promise.all([countSituations(), countSituationsByDirection()]);
@@ -300,6 +315,17 @@ export default function ContentStudio() {
     setImages(count);
     setImagesByLanguage(nachSprache);
   }, []);
+
+  useEffect(() => {
+    void loadOwnImageConcepts().then(setOwnImageConcepts).catch(() => {});
+  }, []);
+
+  // Die Einsparung neu rechnen, sobald Bestand, Sprache oder Ausnahmen wechseln.
+  const imageSummary = useMemo<ImagePlanSummary | null>(() => (images === null ? null : summarizeImagePlan({
+    entries: poolFuer(mediaLanguage),
+    ownImageConcepts: ownImageConcepts[mediaLanguage],
+    existingIds: vorhandeneBildIds(),
+  })), [mediaLanguage, ownImageConcepts, images]);
 
   /** Der ganze Bestand auf einmal — der „Aktualisieren“-Knopf und onFinished. */
   const refreshStock = useCallback(async () => {
@@ -450,9 +476,12 @@ export default function ContentStudio() {
       chain ?? [{ key: language, label: LANGUAGE_LABELS[language] }],
       (key) => planImages({
         entries: poolFuer(key as Lang),
-        ...(optionId === 'full' ? {} : { limit: IMAGE_TEST_RUN }),
+        // Je Begriff ein Bild; eingetragene Ausnahmen bekommen ein eigenes.
+        ownImageConcepts: ownImageConcepts[key],
       }),
-      (specs) => missingImageSpecs(specs),
+      // Erst die fehlenden, dann der Probelauf-Deckel: sonst träfe ein
+      // Probelauf nur Begriffe, die eine andere Sprache längst bebildert hat.
+      async (specs) => limitPlan(await missingImageSpecs(specs), optionId === 'full' ? undefined : IMAGE_TEST_RUN),
       maxNew
     );
     if (!await confirmRun(estimateRunCost('images', provider, model, all.map(() => ({}))))) return;
@@ -477,7 +506,7 @@ export default function ContentStudio() {
     }
     setReportRevision(value => value + 1);
   },
-    [t]
+    [t, ownImageConcepts]
   );
 
   const startClips = useCallback(
@@ -609,10 +638,17 @@ export default function ContentStudio() {
       ) : null}
 
       {section === 'bilder' ? (
+      <>
+      <ImageOwnConceptsCard
+        languageLabel={LANGUAGE_LABELS[mediaLanguage]}
+        concepts={ownImageConcepts[mediaLanguage] ?? []}
+        summary={imageSummary}
+        onChange={(concepts) => { void saveOwnImageConcepts(mediaLanguage, concepts).then(setOwnImageConcepts); }}
+      />
       <GeneratorCard
         blocked={running} managedKeys onManageKeys={() => setSection('keys')} onRunningChange={setRunning}
         heading="Generator: Bilder"
-        description="Ein Bild je konkreter Vokabel — vorhandene werden übersprungen. Prüfung: dekodierbar und prompt-konform (ohne Text im Bild gebaut); ob das Bild zum Wort passt, prüfst du in der Vorschau."
+        description="Ein Bild je Begriff — alle Lernsprachen nutzen es gemeinsam; Begriffe mit Bild (auch aus anderen Sprachen) werden übersprungen. Prüfung: dekodierbar und prompt-konform (ohne Text im Bild gebaut); ob das Bild zum Wort passt, prüfst du in der Vorschau."
         group="images"
         choice={generators.images}
         onChoiceChange={(change) => changeGenerator('images', change)}
@@ -620,7 +656,7 @@ export default function ContentStudio() {
         onLanguageChange={setMediaLanguage}
         statusLine={`Im Speicher: ${images === null ? '…' : `${images} Bilder insgesamt`} · Ablage ${blobBackend ?? '…'}`}
         counts={sprachZaehler(imagesByLanguage, mediaLanguage)}
-        runOptions={imageRunOptions(mediaLanguage)}
+        runOptions={imageRunOptions(mediaLanguage, imageSummary)}
         onStart={startImages}
         onDelete={async (languages) => { await clearContentSelection('images', languages); await refreshImages(); }}
         deleteLabel="Alle Bilder löschen"
@@ -628,6 +664,7 @@ export default function ContentStudio() {
         onFinished={refreshStock}
         allRun={{ label: 'Alle Sprachen', steps: ALLE_SPRACHEN }}
       />
+      </>
       ) : null}
 
       {section === 'audio' ? (

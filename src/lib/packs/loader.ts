@@ -100,12 +100,15 @@ export async function packAudioUri(language: PackLanguage, clipId: string): Prom
   return packFileUri(language, entry?.asset ? `audio/${entry.asset}` : null);
 }
 
-/** URI eines Vokabelbilds im aktiven Paket, sonst null. */
-export async function packImageUri(language: PackLanguage, vocabId: string): Promise<string | null> {
+/**
+ * URI eines Bilds im aktiven Paket, sonst null. `imageId` ist die Bild-ID
+ * (`concept-…` für ein Begriffsbild, beim alten Bestand die Vokabel-ID).
+ */
+export async function packImageUri(language: PackLanguage, imageId: string): Promise<string | null> {
   const index = await loadPackIndex(language);
   if (!index) return null;
   // Endung bewusst offen lassen (webp, oder PNG-Fallback vom Pack-Bau).
-  const prefix = `images/${vocabId}.`;
+  const prefix = `images/${imageId}.`;
   const match = [...index.paths].find((path) => path.startsWith(prefix));
   return packFileUri(language, match ?? null);
 }

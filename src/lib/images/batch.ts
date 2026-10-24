@@ -64,6 +64,10 @@ function imageExists(db: DataStore, blobs: ImageBlobStore) {
  */
 function isCurrentImage(spec: ImageSpec, doc: VocabImage, asset: string): boolean {
   if (isRejectedImageAsset(asset)) return false;
+  // Begriffsbild (24.10.2026): Der Prompt hängt am Anker-Wort und kann je
+  // Sprache leicht anders lauten. Ein vorhandenes Bild gilt trotzdem — sonst
+  // bezahlte jede weitere Sprache denselben Begriff noch einmal.
+  if (spec.concept) return doc.concept === spec.concept;
   return !doc.prompt || doc.prompt === buildImagePrompt(spec);
 }
 
@@ -82,7 +86,7 @@ function imageTask(
       assertConcreteSpec(spec);
 
       const image = await client.generate(spec);
-      const blobKey = blobKeyFor(spec.vocabId, image.format);
+      const blobKey = blobKeyFor(spec.id, image.format);
 
       // Reihenfolge mit Absicht: erst die Bilddaten, dann das Dokument. Bricht
       // die App dazwischen ab, fehlt das Dokument — der Eintrag gilt als nicht
@@ -92,6 +96,8 @@ function imageTask(
       const doc: VocabImage = {
         id: spec.id,
         vocabId: spec.vocabId,
+        ...(spec.concept ? { concept: spec.concept } : {}),
+        ...(spec.language ? { language: spec.language } : {}),
         format: image.format,
         byteSize: base64ByteLength(image.base64),
         blobKey,

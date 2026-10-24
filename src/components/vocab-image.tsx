@@ -31,8 +31,14 @@ export function VocabImageView({ entry }: { entry: VocabEntry }) {
     // Abstrakte Einträge haben nie ein Bild - gar nicht erst nachsehen.
     if (!entry.isConcrete) return;
     // Sprache mitgeben: Ein installiertes Sprachpaket gewinnt gegen das
-    // eingebettete Asset (Pack-Bild-Naht, Roadmap v2).
-    loadVocabImageUri(entry.id, undefined, undefined, entry.language)
+    // eingebettete Asset (Pack-Bild-Naht, Roadmap v2). Das Wort selbst
+    // mitgeben: Das Bild hängt seit 24.10.2026 an seinem Begriff.
+    loadVocabImageUri(
+      { id: entry.id, concept: entry.concept, language: entry.language },
+      undefined,
+      undefined,
+      entry.language
+    )
       .then((found) => {
         if (active) setLoaded({ id: entry.id, uri: found });
       })
@@ -42,7 +48,7 @@ export function VocabImageView({ entry }: { entry: VocabEntry }) {
     return () => {
       active = false;
     };
-  }, [entry.id, entry.isConcrete, entry.language]);
+  }, [entry.id, entry.concept, entry.isConcrete, entry.language]);
 
   if (!uri) return null;
 

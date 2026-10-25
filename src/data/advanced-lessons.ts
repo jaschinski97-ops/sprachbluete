@@ -1,13 +1,16 @@
 import type { LanguageCode } from '@/lib/languages/types';
 
+/** Eine Verständnisfrage mit genau drei Antworten; `correctIndex` zeigt auf die richtige in `options`. */
 export type AdvancedQuestion = {
   prompt: string;
   options: [string, string, string];
   correctIndex: 0 | 1 | 2;
   explanation: string;
+  // Umschrift (nur Thai) mit denselben Positionen wie `prompt`/`options`/`explanation`.
   roman?: { prompt: string; options: [string, string, string]; explanation: string };
 };
 
+/** Eine Einheit: drei Absätze zum Hören/Lesen, drei Fragen, Schreib- und Sprechauftrag samt Musterantwort. */
 export type AdvancedLesson = {
   id: string;
   language: LanguageCode;
@@ -17,6 +20,7 @@ export type AdvancedLesson = {
   writingPrompt: string;
   speakingPrompt: string;
   modelAnswer: string;
+  // Umschrift zu allen Texten (nur Thai); Absätze stehen an denselben Indizes wie `paragraphs`.
   roman?: {
     title: string;
     paragraphs: [string, string, string];

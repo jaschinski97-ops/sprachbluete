@@ -39,6 +39,10 @@ import { activeVocabularyFor } from '@/data/active-vocabulary';
  * ist — gesperrte Szenen nennen ihren Stand, statt still zu fehlen. Kein
  * FSRS-Schreiben: Der Text übt das Lesen und Hören, die Karten laufen in
  * Karteikarte, Diktat und „Sag es auf …“.
+ *
+ * Einstieg: Liste der Szenen der Richtung (offen oder gesperrt), nach der Wahl die Textansicht.
+ * Mit `situationId` (Aufruf aus einem Kapitel) wird diese Szene direkt und ohne Freischaltprüfung geöffnet.
+ * `onExit` verlässt die Übung.
  */
 export function ReadingTextsRunner({
   direction,
@@ -53,6 +57,8 @@ export function ReadingTextsRunner({
   const [stoff, setStoff] = useState<LeseStoff[] | null>(null);
   const [gewaehlt, setGewaehlt] = useState<ConversationSituation | null>(null);
 
+  // Szenen und Kartenstand der Richtung laden und daraus Freischaltung und Fortschritt je Szene berechnen.
+  // `cancelled` verwirft veraltete Ergebnisse; beim Verlassen verstummt das Vorlesen.
   useEffect(() => {
     let cancelled = false;
     setGewaehlt(null);
@@ -70,6 +76,7 @@ export function ReadingTextsRunner({
             cards,
             latin: targetLanguageOf(direction) !== 'th',
           });
+        // Feste Szene aus einem Kapitel: immer offen, unabhängig vom Wortschatzstand.
         const selected = situationId ? all.filter((entry) => entry.situation.id === situationId).map(entry => ({ ...entry, offen: true })) : all;
         setStoff(selected);
         if (situationId && selected[0]) setGewaehlt(selected[0].situation);
@@ -91,6 +98,7 @@ export function ReadingTextsRunner({
     );
   }
 
+  // Szene gewählt: „Zurück“ führt zur Liste, bei fester Szene (Kapitel) ganz hinaus.
   if (gewaehlt) {
     return (
       <TextAnsicht
@@ -119,6 +127,8 @@ export function ReadingTextsRunner({
     );
   }
 
+  // Szenenliste (höchstens 40): Gesperrte Szenen bleiben sichtbar und nennen ihren Stand
+  // (begonnene von nötigen Wörtern).
   return (
     <>
       <View style={styles.headerRow}>
@@ -192,12 +202,17 @@ function TextAnsicht({
       tokenisiereFuerAntippen(zeile.thai, pool, sprache !== 'th', uiLanguage)
     );
   }, [situation, sprache, uiLanguage]);
+  // `woerter`: zuletzt angetippte Wörter (höchstens 3, neuestes vorn) für die Bedeutungsleiste unter der Zeile;
+  // `uebersetzt`: Zeilenindizes mit aufgedeckter Übersetzung; `fragenStufe`: null = Lesen, Zahl = Index der Frage
+  // (hinter der letzten Frage folgt der Abschluss).
   const [woerter, setWoerter] = useState<{ text: string; roman: string; german: string }[]>([]);
   const [uebersetzt, setUebersetzt] = useState<Set<number>>(new Set());
   const [fragenStufe, setFragenStufe] = useState<number | null>(null);
 
+  // Fester Seed aus dem Titel: dieselbe Szene ergibt bei jedem Öffnen dieselben Fragen.
   const fragen = useMemo(() => verstaendnisFragen(situation, situation.title.length + 5), [situation]);
 
+  // Zeile vorlesen; ohne Clip und ohne Systemstimme bleibt es stumm, das Lesen funktioniert trotzdem.
   const spiele = useCallback((zeile: ConversationTurn) => {
     void (async () => {
       try {
@@ -210,6 +225,7 @@ function TextAnsicht({
     })();
   }, [sprache]);
 
+  // Nur Wörter aus dem Bestand (`token.entry`) sind antippbar; ein erneutes Antippen rückt das Wort wieder nach vorn.
   const antippen = (token: TextToken) => {
     if (!token.entry) return;
     setWoerter((liste) => {
@@ -218,6 +234,7 @@ function TextAnsicht({
     });
   };
 
+  // Übersetzung einer Zeile ein- bzw. ausblenden (Umschalter je Zeilenindex).
   const zeileUebersetzen = (i: number) => {
     setUebersetzt((alt) => {
       const neu = new Set(alt);
@@ -363,10 +380,16 @@ function TextAnsicht({
   );
 }
 
+/**
+ * Eine Verständnisfrage (Bedeutung oder „Wer sagt …?“). Die erste Antwort sperrt die Auswahl, zeigt Richtig/Falsch
+ * und hebt die richtige Option hervor; erst dann erscheint „Weiter“. Nichts wird bewertet oder gespeichert.
+ * `showRoman` blendet die Umschrift (nur Thai) ein.
+ */
 function FrageAnsicht({ frage, weiter, showRoman }: { frage: VerstaendnisFrage; weiter: () => void; showRoman: boolean }) {
   const { t } = useLocale();
   const [gewaehlt, setGewaehlt] = useState<number | null>(null);
 
+  // Sprecherfragen haben feste Optionen (Du/Gegenüber), Bedeutungsfragen bringen ihre Zeilen als Optionen mit.
   const optionenMitLabels: { label: string }[] =
     frage.art === 'sprecher'
       ? [{ label: t('conversation.you') }, { label: t('conversation.partner') }]

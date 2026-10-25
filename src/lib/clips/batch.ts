@@ -54,6 +54,14 @@ export type ClipRunOptions = {
    * Ohne das übersprang der Lauf genau den Clip, um den es ging (Testrunde 26.09.).
    */
   overwrite?: boolean;
+  /**
+   * Die Stimme hat schon viele bestandene Thai-Clips im Katalog: kein
+   * Ton-Notstopp (25.10.2026). Beim Fortsetzen stehen die Wörter vorn, die
+   * im letzten Lauf durchfielen; die Stichprobe der ersten zehn traf so fast
+   * nur Problemfälle und stoppte Thai, obwohl die Stimme 564 Clips bestanden
+   * hatte. Die Register-Probe und die Prüfung jedes Clips bleiben.
+   */
+  bewaehrteStimme?: boolean;
 };
 
 /** Vorhanden heißt: Dokument **und** Datei — sonst Karteileiche (AE-14). */
@@ -104,7 +112,7 @@ function clipTask(
   tone: { passed: number; failed: number; other: number },
   now: () => number,
   toneWortschatz?: readonly ToneWort[],
-  frueh: { geprueft: number; failed: number; notstopp: boolean } = { geprueft: 0, failed: 0, notstopp: false },
+  frueh: { geprueft: number; failed: number; notstopp: boolean; aus?: boolean } = { geprueft: 0, failed: 0, notstopp: false },
   register: { probe: RegisterProbe; gestoppt: boolean } = { probe: leereRegisterProbe(), gestoppt: false },
   onProduced?: ClipRunOptions['onProduced']
 ): BatchTask<AudioClipSpec> {
@@ -132,7 +140,7 @@ function clipTask(
         if (toneCheck.status === 'passed' || toneCheck.status === 'failed') {
           frueh.geprueft += 1;
           if (toneCheck.status === 'failed') frueh.failed += 1;
-          if (frueh.geprueft === TON_NOTSTOPP_STICHPROBE && frueh.failed >= TON_NOTSTOPP_FEHLGRENZE) {
+          if (!frueh.aus && frueh.geprueft === TON_NOTSTOPP_STICHPROBE && frueh.failed >= TON_NOTSTOPP_FEHLGRENZE) {
             frueh.notstopp = true;
           }
         }
@@ -202,7 +210,7 @@ export async function runClipBatch(options: ClipRunOptions): Promise<BatchProgre
   const db = options.store ?? (await getStore());
   const blobs = options.blobStore ?? (await getAudioBlobStore());
   const tone = { passed: 0, failed: 0, other: 0 };
-  const frueh = { geprueft: 0, failed: 0, notstopp: false };
+  const frueh = { geprueft: 0, failed: 0, notstopp: false, aus: options.bewaehrteStimme === true };
   const register = { probe: leereRegisterProbe(), gestoppt: false };
   const registerStand = () => {
     const urteil = beurteileRegisterProbe(register.probe);

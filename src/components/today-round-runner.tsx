@@ -52,6 +52,7 @@ import { ratingForScore, scoreDictation } from '@/lib/dictation/scoring';
  * bewertet wurde: Karteikarten und bestandene Diktate.
  */
 
+// FSRS-Bewertung (1–4) → Beschriftung der Bewertungsknöpfe unter der aufgedeckten Karte; darunter ihre Farbpaare.
 const RATING_KEYS: Record<Rating, TranslationKey> = {
   1: 'rating.again',
   2: 'rating.hard',
@@ -70,6 +71,7 @@ const RATINGS: Rating[] = [1, 2, 3, 4];
 
 /** Der Hör-Drill je Sprache — derselbe Stoff wie in der Einzelübung. */
 
+// Aufgabentext je Hör-Drill (siehe `hoerDrillFuer`); jede Drill-ID braucht hier einen Eintrag.
 const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   tone: 'drill.prompt.tone',
   stressHear: 'drill.prompt.stressHear',
@@ -89,6 +91,7 @@ const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   partizip: 'drill.prompt.partizip',
 };
 
+// Diktat-Aufforderung je Lernsprache.
 const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
   th: 'dictation.promptTh',
   en: 'dictation.promptEn',
@@ -96,6 +99,7 @@ const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
   de: 'dictation.promptDe',
 };
 
+// Anzeigenamen der Segmentarten für die Fortschrittszeile und den „übersprungen“-Hinweis.
 const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
   cards: 'mode.cards',
   hoeren: 'skill.hoeren',
@@ -104,14 +108,21 @@ const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
   shadowing: 'mode.shadowing',
 };
 
+// Eine Aufgabe für „Satz bilden“ und Shadowing: der Satz (`text`/`roman`) und seine Bedeutung in der App-Sprache.
 type SatzAufgabe = { id: string; vocabId: string; german: string; meaning?: string; text: string; roman: string };
 
+// Mischt die Sätze mit festem Seed (gleiche Runde = gleiche Reihenfolge bei jedem Neuzeichnen) und nimmt `anzahl`.
 function satzAufgaben(tasks: SentenceTask[], anzahl: number, seed: number): SatzAufgabe[] {
   return shuffled(tasks, seededRandom(seed))
     .slice(0, anzahl)
     .map((task) => ({ id: task.id, vocabId: task.vocabId, german: task.german, meaning: task.meaning, text: task.text, roman: task.roman }));
 }
 
+/**
+ * Führt die Heutige Runde aus: `buildTodayRound` liefert den Plan (Segmente mit je `items` Aufgaben), der Runner
+ * geht ihn Schritt für Schritt ab. `stage` begrenzt neue Karten und Mischstoff auf die gewählte Stufe;
+ * `onExit` verlässt die Runde, „Bereich überspringen“ lässt das aktuelle Segment aus.
+ */
 export function TodayRoundRunner({
   direction,
   stage,
@@ -127,11 +138,14 @@ export function TodayRoundRunner({
   // deutsche Sätze gebildet, diktiert und mitgesprochen, nicht thailändische.
   const sprache = targetLanguageOf(direction);
 
+  // `erledigt`: flacher Zeiger über alle Aufgaben aller Segmente (siehe Kopfkommentar); `uebersprungen`: Segmentarten,
+  // die per „Bereich überspringen“ ausgelassen wurden und in der Zusammenfassung genannt werden.
   const [runde, setRunde] = useState<TodayRound | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [erledigt, setErledigt] = useState(0);
   const [uebersprungen, setUebersprungen] = useState<RoundKind[]>([]);
 
+  // Runde einmal pro Richtung/Stufe zusammenstellen; beim Verlassen läuft keine Wiedergabe weiter.
   useEffect(() => {
     let cancelled = false;
     buildTodayRound(direction, undefined, undefined, stage)
@@ -147,6 +161,7 @@ export function TodayRoundRunner({
     };
   }, [direction, stage]);
 
+  // „Neue Runde“ bzw. „Erneut versuchen“: Zustand zurücksetzen und den Plan neu bauen.
   const restart = useCallback(() => {
     setRunde(null);
     setErledigt(0);
@@ -157,7 +172,8 @@ export function TodayRoundRunner({
       .catch((e) => setLoadError(e instanceof Error ? e.message : String(e)));
   }, [direction, stage]);
 
-  // Die aktuelle Stelle im Strang: Segmente abarbeiten, bis der Zeiger passt.
+  // Die aktuelle Stelle im Strang: Segmente abarbeiten, bis der Zeiger passt. `position` ist der Index innerhalb
+  // des Segments; hinter dem letzten Segment ist `segment` leer (Rundenende).
   const { segment, position, segIndex } = (() => {
     if (!runde) return { segment: undefined, position: 0, segIndex: 0 };
     let rest = erledigt;
@@ -168,6 +184,7 @@ export function TodayRoundRunner({
     }
     return { segment: undefined, position: 0, segIndex: runde.plan.length };
   })();
+  // Wörter der Kartenrunde: die ersten `items` fälligen Karten, so viele wie das Karten-Segment verwendet.
   const roundWordIds = useMemo(
     () => new Set(runde?.due.slice(0, runde.plan.find((part) => part.kind === 'cards')?.items ?? 0)
       .map((item) => item.entry.id) ?? []),
@@ -238,6 +255,7 @@ export function TodayRoundRunner({
     );
   }
 
+  // Segment auslassen: merken und den Zeiger hinter die restlichen Aufgaben des Segments setzen.
   const springeWeiter = () => {
     setUebersprungen((liste) => [...liste, segment.kind]);
     setErledigt(erledigt + (segment.items - position));
@@ -318,6 +336,10 @@ export function TodayRoundRunner({
 
 /* ---------- Karten ---------- */
 
+/**
+ * Karteikarten-Segment: zeigt die Karte an `position`, nach dem Aufdecken die vier FSRS-Bewertungen.
+ * Jede Bewertung schreibt die Karte fort (`rateCard`) und meldet über `onRated` den nächsten Schritt.
+ */
 function KartenSegment({
   direction,
   items,
@@ -335,6 +357,7 @@ function KartenSegment({
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  // Neue Karte: wieder verdeckt starten.
   useEffect(() => setRevealed(false), [position]);
 
   if (!item) {
@@ -345,6 +368,7 @@ function KartenSegment({
     );
   }
 
+  // Ein Speicherfehler blockiert die Runde nicht (`catch`); `busy` verhindert doppeltes Bewerten derselben Karte.
   const rate = async (rating: Rating) => {
     if (busy) return;
     setBusy(true);
@@ -398,6 +422,11 @@ function KartenSegment({
 
 /* ---------- Hören (Drill-Aufgaben derselben Engine) ---------- */
 
+/**
+ * Hör-Segment: eine Auswahlfrage aus der Drill-Engine (`buildDrillSession`), der Ton spielt automatisch.
+ * Die Antwort geht nur ins Tagesprotokoll (und bei Wort-Drills ins Übungsgedächtnis), nie in FSRS.
+ * Ohne Drill für die Sprache, ohne Fragen oder bei Fehler erscheint statt der Frage ein Hinweis zum Überspringen.
+ */
 function HoerenSegment({
   sprache,
   direction,
@@ -450,6 +479,7 @@ function HoerenSegment({
     };
   }, [drill, sprache, direction, anzahl, onlyVocabIds]);
 
+  // `position % length`: Gibt es weniger Fragen als geplante Aufgaben, wiederholen sie sich reihum.
   const frage = fragen && fragen.length > 0 ? fragen[position % fragen.length] : null;
   useEffect(() => setChosen(null), [position]);
 
@@ -470,6 +500,7 @@ function HoerenSegment({
     })();
   }, [frage]);
 
+  // Beim Erscheinen jeder Frage automatisch abspielen (`spiele` ändert sich mit der Frage).
   useEffect(() => {
     spiele();
   }, [spiele]);
@@ -513,6 +544,7 @@ function HoerenSegment({
           <Pressable
             key={`${option.label}:${i}`}
             onPress={() => {
+              // Nur die erste Wahl zählt. Protokoll und Übungsgedächtnis, keine FSRS-Bewertung.
               if (chosen !== null) return;
               setChosen(i);
               void recordDrill(i === frage.correctIndex, Date.now(), undefined, frage.drill, direction).catch(() => {});
@@ -569,6 +601,10 @@ function optionSchrift<T>(chosen: T | null, option: T, correct: T): ThemeColor {
 
 /* ---------- Satz bilden (Bedeutung → geprüfter Satz) ---------- */
 
+/**
+ * „Satz bilden“ als Zuordnung: Die Bedeutung wird gezeigt, aus vier Sätzen ist der passende zu wählen
+ * (drei Ablenker aus den übrigen Aufgaben der Runde). Reine Selbstkontrolle: keine Speicherung, keine Bewertung.
+ */
 function SatzSegment({
   sprache,
   anchor,
@@ -597,6 +633,7 @@ function SatzSegment({
   const [chosen, setChosen] = useState<string | null>(null);
   useEffect(() => setChosen(null), [position]);
 
+  // Antwortoptionen mit festem Seed (Position und Aufgabe), damit sie beim Neuzeichnen nicht umspringen.
   const optionen = useMemo(() => {
     if (!aufgabe) return [];
     const fremde = shuffled(
@@ -661,6 +698,10 @@ function SatzSegment({
 
 /* ---------- Diktat ---------- */
 
+/**
+ * Diktat-Segment: Satz anhören, eintippen, prüfen (`scoreDictation`). Bestanden wird die Karte des Worts
+ * fortgeschrieben (fehlerfrei „Gut“, mit Abweichung „Schwer“); nicht Bestandenes ändert die Karte nicht.
+ */
 function DiktatSegment({
   sprache,
   direction,
@@ -678,6 +719,7 @@ function DiktatSegment({
 }) {
   const { t } = useLocale();
   const colors = useTheme();
+  // Diktataufgaben des Stoffs; ein Ladefehler ergibt eine leere Liste (es erscheint dann der Überspringen-Hinweis).
   const tasks = useMemo(() => {
     try {
       return dictationTasksFor(sprache, direction)
@@ -706,6 +748,7 @@ function DiktatSegment({
         const config = dictationConfigFor(task.language);
         const score = scoreDictation(draft, task.text, config);
         setErgebnis(score.passed ? 'passed' : 'failed');
+        // Protokoll und Übungsgedächtnis immer; die FSRS-Karte nur bei bestandenem Diktat (siehe unten).
         await recordDrill(score.passed, Date.now(), undefined, 'dictation', direction).catch(() => {});
         await recordWordPractice(task.vocabId, score.passed).catch(() => {});
         if (score.passed) {
@@ -788,6 +831,10 @@ function DiktatSegment({
 
 /* ---------- Shadowing (Mitsprechen ohne Messung) ---------- */
 
+/**
+ * Shadowing-Segment: Satz vorlesen lassen und mitsprechen. Es gibt keine Messung und keine Bewertung;
+ * fehlt Clip und Stimme (`fehlt`), erscheint statt des Satzes ein Hinweis zum Überspringen.
+ */
 function ShadowingSegment({
   sprache,
   anchor,
@@ -815,6 +862,7 @@ function ShadowingSegment({
   const aufgabe = aufgaben.length > 0 ? aufgaben[position % aufgaben.length] : null;
   const [fehlt, setFehlt] = useState(false);
 
+  // Liefert, ob wirklich etwas abgespielt wurde; `false` (kein Clip, keine Stimme, Fehler) lässt das Segment ausfallen.
   const spiele = useCallback(async (): Promise<boolean> => {
     if (!aufgabe) return false;
     try {

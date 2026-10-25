@@ -113,6 +113,24 @@ function imageRunOptions(language: Lang, summary: ImagePlanSummary | null): RunO
   ];
 }
 
+/** Ab so vielen bestandenen Thai-Clips gilt eine Stimme als bewährt. */
+const BEWAEHRT_AB = 50;
+
+/**
+ * Hat diese Stimme schon genug bestandene Thai-Clips im Katalog? Dann
+ * entfällt der Ton-Notstopp (siehe `bewaehrteStimme` in `clips/batch.ts`).
+ */
+function istBewaehrteStimme(voice: string | undefined): boolean {
+  if (!voice) return false;
+  let bestanden = 0;
+  for (const clip of bundledDocuments('audio')) {
+    if (clip.language !== 'th' || clip.voice !== voice) continue;
+    if (bundledEntry('audio', clip.id)?.check?.status === 'passed') bestanden += 1;
+    if (bestanden >= BEWAEHRT_AB) return true;
+  }
+  return false;
+}
+
 /** Bild-IDs mit verwendbarem Bild im Live-Katalog — abgelehnte Motive zählen nicht. */
 function vorhandeneBildIds(): Set<string> {
   return new Set(bundledDocuments('images')
@@ -566,6 +584,7 @@ export default function ContentStudio() {
               shouldCancel: () => shouldCancel?.() || delivery.failed,
               onProduced: (document, base64) => delivery.deliver('audio', document, base64),
               concurrency: parallel,
+              bewaehrteStimme: istBewaehrteStimme(voice),
             });
             for (const fehler of ergebnis.errors) if (fehler.id.startsWith('ton-')) stopps.push(fehler.message);
           });

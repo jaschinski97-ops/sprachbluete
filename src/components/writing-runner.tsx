@@ -46,6 +46,11 @@ const RATING_KEYS: Record<Rating, TranslationKey> = {
   4: 'rating.easy',
 };
 
+/**
+ * Schreibübung für eine Richtung: Aufgaben aus `buildWritingSession`, wahlweise aus einer festen Wortliste
+ * (`entries`, z. B. Kapitel) oder aus der gewählten `stage`; `size` begrenzt die Rundenlänge. Jede Antwort
+ * geht über `submitWriting` in die Karte (FSRS) — außer wenn die Lösung zuvor eingeblendet wurde (`assisted`).
+ */
 export function WritingRunner({
   direction,
   entries,
@@ -68,13 +73,16 @@ export function WritingRunner({
   const [round, setRound] = useState(0);
   const [index, setIndex] = useState(0);
   const [draft, setDraft] = useState('');
+  // `result`: Ergebnis der aktuellen Aufgabe (nicht null = beantwortet); `results`: alle der Runde für die Auswertung.
   const [result, setResult] = useState<WritingResult | null>(null);
   const [results, setResults] = useState<WritingResult[]>([]);
   const [busy, setBusy] = useState(false);
+  // `assisted`: Lösung wurde zum Abschreiben eingeblendet; `assistedCount` zählt solche Aufgaben der Runde.
   const [assisted, setAssisted] = useState(false);
   const [assistedCount, setAssistedCount] = useState(0);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
+  // Neue Runde (auch bei „Neue Runde“ über `round`): alles zurücksetzen und die Aufgaben neu zusammenstellen.
   useEffect(() => {
     let cancelled = false;
     setSession(null);
@@ -93,6 +101,8 @@ export function WritingRunner({
 
   const prompt = session?.prompts[index] ?? null;
 
+  // Antwort abgeben: `submitWriting` bewertet und schreibt die Karte fort (FSRS). Mit `assisted` (Lösung vorher
+  // gesehen) bleibt die Karte unberührt. `busy` und `result` verhindern doppeltes Absenden.
   const submit = useCallback(async () => {
     if (!prompt || busy || result) return;
     setBusy(true);
@@ -134,6 +144,7 @@ export function WritingRunner({
     );
   }
 
+  // Hinter der letzten Aufgabe: Zusammenfassung. War jede Antwort abgeschrieben, zählte nichts als Wiederholung.
   if (index >= session.prompts.length) {
     const score = summarizeWriting(results);
     const missed = results.filter((entry) => !entry.verdict.correct);
@@ -176,6 +187,7 @@ export function WritingRunner({
 
   if (!prompt) return null;
 
+  // Nach der Auswertung sind Eingabe und Hilfen gesperrt; die Rückmeldung steht unter der Aufgabe.
   const answered = result !== null;
 
   return (
@@ -282,6 +294,10 @@ export function WritingRunner({
   );
 }
 
+/**
+ * Rückmeldung zu einer beantworteten Aufgabe: genau/richtig/falsch, Fehlerhinweis (z. B. Artikel, Tonzeichen),
+ * Musterlösung samt Zusatzinfos und eine Zeile, was die Bewertung mit der Wiederholung macht.
+ */
 function Feedback({
   result,
   toneColor,
@@ -291,6 +307,7 @@ function Feedback({
 }) {
   const { t } = useLocale();
   const { verdict, rating, prompt } = result;
+  // Rahmenfarbe aus der Tonfarbpalette: richtig = „mid“, falsch = „falling“.
   const border = verdict.correct ? toneColor('mid') : toneColor('falling');
 
   return (
@@ -324,6 +341,7 @@ function Feedback({
   );
 }
 
+/** Schlichter Textknopf (mindestens 44 px hoch) zum Verlassen der Übung. */
 function ExitButton({ onExit, label }: { onExit: () => void; label: string }) {
   return (
     <Pressable

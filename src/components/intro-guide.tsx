@@ -35,6 +35,8 @@ export function IntroGuide() {
   const { t } = useLocale();
   const [page, setPage] = useState(0);
 
+  // Öffnet die Einführung selbst, wenn `meta/intro-seen` noch fehlt; sichtbar wird sie über den globalen
+  // Zustand (`useIntroVisible`), den auch der Eintrag in den Einstellungen setzt.
   useEffect(() => {
     void showIntroOnFirstStart();
   }, []);
@@ -45,11 +47,14 @@ export function IntroGuide() {
     void closeIntro();
   };
 
+  // Zurück/Überspringen teilen sich den linken Platz (Seite 1 hat kein „Zurück“); die letzte Seite schließt.
   if (!visible) return null;
   const current = INTRO_PAGES[page]!;
   const last = page === INTRO_PAGES.length - 1;
 
   return (
+    // Hintergrund mit Hex-Alpha `e6` (≈ 90 % deckend); `accessibilityViewIsModal` verbirgt dahinterliegende Inhalte
+    // für Screenreader auf iOS.
     <Modal transparent animationType="fade" visible onRequestClose={close}>
       <View style={[styles.backdrop, { backgroundColor: `${theme.background}e6` }]}>
         <View

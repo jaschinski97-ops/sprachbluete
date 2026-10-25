@@ -7,7 +7,11 @@ import { useTheme } from '@/hooks/use-theme';
 import { useLocale } from '@/lib/i18n';
 import { LEARNING_STAGES, STAGE_KEYS, type LearningStage } from '@/lib/learning-stages';
 
-/** Anfänger · Fortgeschritten · Profi als Segment-Schalter (Lernen, Gespräch, Studio). */
+/** Anfänger · Fortgeschritten · Profi als Segment-Schalter (Lernen, Gespräch, Studio).
+ *
+ * Steuerbar von außen (`value`/`onChange`); `counts` zeigt optional die Anzahl Inhalte je Stufe unter dem Namen.
+ * Barrierefrei als Radiogruppe: jedes Segment ist ein `radio` mit `selected`-Zustand und mindestens 44 px Höhe.
+ */
 export function LearningStagePicker({ value, onChange, disabled = false, counts }: {
   value: LearningStage;
   onChange: (value: LearningStage) => void;

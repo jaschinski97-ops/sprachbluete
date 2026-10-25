@@ -2,9 +2,13 @@
 
 Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
 
-# ThaiSpeaker — Kurzstand für die nächste KI (25.09.2026)
+# ThaiSpeaker — Kurzstand für die nächste KI (25.10.2026)
 
 Vollständiger Verlauf aller Runden: `docs/archiv/arbeitsverlauf-bis-2026-09-25.md` (nur bei Bedarf per grep lesen), dazu `docs/PROGRESS.md` und das Git-Log. Neue Ergebnisse hier KURZ eintragen. Diese Datei wird bei jedem Chat geladen, deshalb nur Dauerhaftes, keine Laufberichte.
+
+## Geschützte Bereiche (zuerst lesen)
+
+Fertige, abgesicherte Teile ändert keine KI ohne ausdrückliche Freigabe des Nutzers im laufenden Chat, die den Bereich nennt. Ein allgemeiner Auftrag („aufräumen“, „schneller machen“, „Übung bauen“) ist keine Freigabe. Liste, Gründe und Schnittstellen: `docs/geschuetzte-bereiche.md`. Bereiche: Lernplanung (FSRS, `practice-selection`), Thai-Töne/Umschrift (Tonregeln, Ton-Gate, Tonmessung), Speicherung der Lernstände, Katalog je Lernsprache/App-Build, Inhalts-Pipeline, Sprachpakete, feste Lerndaten (`numbers`, `latin-alphabet`, `thai-script`). Wächter: `scripts/schutz.test.cjs` (in `npm run test:scripts`) meldet jede Änderung; nach freigegebener Änderung `node scripts/schutz.cjs freigeben <datei>`.
 
 ## Produkt
 
@@ -30,8 +34,8 @@ Neu aufgebaut seit 24.10.2026: Wortschatz th 1.995, en 1.973, es 1.934, de 1.958
 ```bash
 npx expo start --web --port 8081 --max-workers 2   # App + Studio (Studio nur auf 8081 sichtbar)
 node scripts/content/studio.cjs                      # Studio-Helper auf 8082, liest .env.local
-npx tsc --noEmit && npx jest --maxWorkers=6 --testPathIgnorePatterns=/.claude/   # Typen + Tests (~1340); siehe Hinweis unten
-npm run test:scripts                                 # alle Skript-Tests (node --test, 77; ein Rauchtest wird übersprungen, wenn gh installiert ist)
+npx tsc --noEmit && npx jest --maxWorkers=6 --testPathIgnorePatterns=/.claude/   # Typen + Tests (~1690); siehe Hinweis unten
+npm run test:scripts                                 # alle Skript-Tests (node --test, ~115, inkl. Schutz-Wächter)
 npm run test:content-pipeline                        # nur Pipeline-Tests
 npm run content:integrity                            # Katalog-Integrität (errors muss leer sein)
 ```
@@ -42,7 +46,7 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 
 ## Arbeitsregeln
 
-- Optik „Kirschblüte“ (23.10.2026, ersetzt „Nachtflug“): Tag/Nacht folgt dem Gerät oder der Wahl in Einstellungen → „Tag & Nacht“ (`lib/appearance.ts`, `meta`/`appearance`; Farben immer über `@/hooks/use-color-scheme`, nie direkt aus `react-native`) (Web-Hook `use-color-scheme.web.ts` über `useSyncExternalStore`, sonst blieben verdeckte Reiter im alten Modus). Szenen je Reiter in `src/components/sakura-scenes.tsx` (`ScreenScaffold szene=…`: zweige/trauerkirsche/laternen/fluss/fuji), Effekt-Bausteine in `fx.tsx`. Fluss und Fuji sind lokal mit FLUX gemalte WebPs (`assets/images/szenen/`, Tag+Nacht), Bewegung darüber aus Code. Knöpfe Jade (`gradientStart/End`, `gradientText`), Mon-Abzeichen rosa. Neue Farb-Tokens in beide Modi, Kontrasttests in `constants/*.test.ts`. Asset-`require` in `src/` relativ (`../../assets/…`), `@/assets` kennt Jest nicht. Textschein nur über `textGlow()` (`fx.tsx`): auf zwei Stilobjekte verteilt zeigt das Web keinen Schatten.
+- Optik „Kirschblüte“ (23.10.2026, ersetzt „Nachtflug“): Tag/Nacht folgt dem Gerät oder der Wahl in Einstellungen → „Tag & Nacht“ (`lib/appearance.ts`, `meta`/`appearance`; Farben immer über `@/hooks/use-color-scheme`, nie direkt aus `react-native`) (Web-Hook `use-color-scheme.web.ts` über `useSyncExternalStore`, sonst blieben verdeckte Reiter im alten Modus). Szenen je Reiter in `src/components/sakura-scenes.tsx` (`ScreenScaffold szene=…`: zweige/trauerkirsche/laternen/fluss/fuji), Effekt-Bausteine in `fx.tsx`. Fluss und Fuji sind lokal mit FLUX gemalte WebPs (`assets/images/szenen/`, Tag+Nacht), Bewegung darüber aus Code. Knöpfe Jade (`gradientStart/End`, `gradientText`), Mon-Abzeichen rosa. Neue Farb-Tokens in beide Modi, Kontrasttests in `constants/*.test.ts`. Asset-`require` in `src/` relativ (`../../assets/…`), `@/assets` kennt Jest nicht. Textschein nur über `textGlow()` (`fx.tsx`): auf zwei Stilobjekte verteilt zeigt das Web keinen Schatten. Akku (25.10.2026): Deko-Animationen laufen nur bei sichtbarem Reiter, nicht in Übungen (`ScreenScaffold ruhig`) und nur bis 45 s nach der letzten Berührung (`lib/aktivitaet.ts`); ein Schleier hinter der Inhaltsspalte hält Text über den Blüten lesbar.
 - Web-Lernstände liegen in IndexedDB (`storage/document-persistence.web.ts`); alte localStorage-Sammlungen werden atomar mit Sicherung übernommen. Bekannte Fehlmotive werden nach Dateihash in `images/reviewed-assets.ts` unterdrückt; neue Bilddateien mit anderem Hash bleiben zulässig. Kapitel berücksichtigen gespeicherte Plurale und einfache englische Nomenplurale.
 
 - App-Builds (jeder Nicht-Entwicklungsbau: `expo export`, EAS, Gradle-Release) laden den Katalog je Lernsprache (seit 18.10.2026, `docs/katalog-je-lernsprache-konzept.md` Schritt 1 + 1b): `metro.config.js` erzeugt beim Start `assets/catalog/<lang>.catalog` (schlank, ohne Übersetzungen, Clips als Tabelle) und `<lang>-<ui>.catalog` je App-Sprache (`scripts/app-catalog-files.cjs`, gitignored, Stempel gegen `catalog.json`); der Transformer setzt statt `catalog.json` nur den Index ein. Zur Laufzeit lädt das Ladetor (`components/catalog-gate.tsx`) die Lernsprache, Bildschirme halten ihre Sprache über `useCatalogLanguages`, geladen werden App-Sprache + Englisch (`setCatalogUiLanguage`). Synchrone Aufrufer für ALLE Sprachen (Anzahlen, IDs) nehmen `vocabularyCountFor`/`vocabularyIdsFor`, nie `activeVocabularyFor` einer ungeladenen Sprache. Liest App-Code ein neues Katalogfeld, in `slimEntry` (`scripts/metro-app-catalog.cjs`) aufnehmen; `catalog-split.test.ts` prüft die Aufteilung am echten Katalog. Dev/Studio (8081) und Jest behalten den vollen Katalog. Messen: `scripts/measure-android-start.sh` (Ausgabe `measurements/`, gitignored).

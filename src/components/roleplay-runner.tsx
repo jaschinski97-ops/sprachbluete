@@ -41,12 +41,19 @@ import { compareDialogue } from '@/lib/production/dialogue-compare';
  * Die Zusammenfassung zählt nur die eigenen Zeilen.
  */
 
+// Selbstbewertung nach der Musterlösung (Gut/Schwer/Nochmal; „Leicht“ wird nie angeboten).
+// Der Wert fließt nur in die Zählung der „sicheren“ Zeilen, nicht in FSRS.
 const SELBST_RATINGS: { rating: Rating; key: TranslationKey }[] = [
   { rating: 3, key: 'rating.good' },
   { rating: 2, key: 'rating.hard' },
   { rating: 1, key: 'rating.again' },
 ];
 
+/**
+ * Rollenspiel-Übung für eine Richtung: Szene wählen (oder per `situationId` direkt eine feste Szene), dann
+ * Zeile für Zeile durch das Skript. Die Szenen kommen aus `loadSituations`, gefiltert auf die Lernsprache und
+ * in der App-Sprache beschriftet. `onExit` verlässt die Übung, auch aus der Szenenliste und mitten in einer Szene.
+ */
 export function RoleplayRunner({
   direction,
   situationId,
@@ -59,14 +66,19 @@ export function RoleplayRunner({
   const { t, uiLanguage } = useLocale();
   const colors = useTheme();
   const sprache = targetLanguageOf(direction);
+  // Spracherkennung des Geräts (Web oder nativ); `verfuegbar` entscheidet, ob der Sprechknopf erscheint.
   const naht = useMemo(() => spracherkennung(), []);
 
+  // `szenen`: alle passenden Szenen (null = lädt noch); `szene`: gewählte Szene; `stufe`: Index der aktuellen
+  // Skriptzeile; `eigene`/`sichere`: beantwortete eigene Zeilen und davon mit Bewertung „Schwer“ oder besser.
   const [szenen, setSzenen] = useState<ConversationSituation[] | null>(null);
   const [szene, setSzene] = useState<ConversationSituation | null>(null);
   const [stufe, setStufe] = useState(0);
   const [eigene, setEigene] = useState(0);
   const [sichere, setSichere] = useState(0);
 
+  // Szenen der Lernsprache laden (Richtung endet auf `_to_<Lernsprache>`); mit `situationId` startet direkt diese.
+  // Beim Verlassen oder Sprachwechsel verstummt die Wiedergabe der Partnerzeile.
   useEffect(() => {
     let cancelled = false;
     setSzene(null);
@@ -167,6 +179,7 @@ export function RoleplayRunner({
 
   const zeile = szene.scriptTurns[stufe];
 
+  // Hinter der letzten Zeile: Zusammenfassung. Mit fester `situationId` gibt es keine Szenenliste zum Zurückkehren.
   if (!zeile) {
     return (
       <ThemedView type="backgroundElement" style={styles.card}>
@@ -202,6 +215,7 @@ export function RoleplayRunner({
         erkenne={naht.erkennen}
         hatErkennung={naht.verfuegbar}
         onWeiter={(sicher2) => {
+          // Partnerzeilen (Bewertung `null`) zählen nicht; bei eigenen gilt Schwer (2) oder besser als „sicher“.
           if (zeile.speaker === 'learner') {
             setEigene((v) => v + 1);
             if (sicher2 !== null && sicher2 >= 2) setSichere((v) => v + 1);
@@ -221,6 +235,11 @@ export function RoleplayRunner({
   );
 }
 
+/**
+ * Eine einzelne Skriptzeile. Partnerzeile: wird vorgelesen und angezeigt. Eigene Zeile: nur die Bedeutung ist
+ * sichtbar; die Antwort wird getippt, gesprochen (`erkenne`, falls `hatErkennung`) oder nach Blick auf die
+ * Musterlösung selbst bewertet. `onWeiter` meldet die Bewertung (`null` bei Partnerzeilen) an die Szene.
+ */
 function SzeneZeile({
   zeile,
   sprache,
@@ -237,12 +256,15 @@ function SzeneZeile({
   const { t } = useLocale();
   const colors = useTheme();
   const anDerReihe = zeile.speaker === 'learner';
+  // Zustand der eigenen Zeile: Eingabe → Ergebnis des tolerant geprüften Vergleichs oder Selbstbewertung
+  // (`selbstOffen`).
   const [eingabe, setEingabe] = useState('');
   const [ergebnis, setErgebnis] = useState<ProduktionsErgebnis | null>(null);
   const [selbstOffen, setSelbstOffen] = useState(false);
   const [hoert, setHoert] = useState(false);
   const [erkennungsFehler, setErkennungsFehler] = useState<ErkennungsFehler | null>(null);
 
+  // Zeile vorlesen (Clip oder Systemstimme). Fehlt beides, bleibt es still und der Text bleibt sichtbar.
   const spiele = useCallback(() => {
     void (async () => {
       try {
@@ -261,10 +283,12 @@ function SzeneZeile({
     })();
   }, [zeile.thai, sprache]);
 
+  // Partnerzeilen spielen automatisch beim Einblenden; die eigene Zeile wartet auf die lernende Person.
   useEffect(() => {
     if (!anDerReihe) spiele();
   }, [anDerReihe, spiele]);
 
+  // Gesprochene Antwort: Das erkannte Ergebnis wird wie getippter Text geprüft; `hoert` zeigt die laufende Aufnahme.
   const sprechenStarten = () => {
     if (!erkenne) return;
     setErkennungsFehler(null);
@@ -279,6 +303,8 @@ function SzeneZeile({
     })();
   };
 
+  // Eigene Zeile in drei Zuständen: Eingabe offen → Prüfergebnis (Bewertung via `bewertungFuerErgebnis`: genau = Gut,
+  // Akzent/Tonzeichen fehlen = Schwer) → bei „falsch“ oder auf Wunsch die Selbstbewertung nach der Musterlösung.
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="small" themeColor="textSecondary">

@@ -46,13 +46,18 @@ export function WordSpeakingRunner({
   const colors = useTheme();
   const language = targetLanguageOf(direction);
 
+  // `tasks` = null: Runde wird geladen; `empty`: Es gibt in dieser Stufe keine Wörter; `notice`: Hinweis zur
+  // Wiedergabe (keine Stimme / Fehler), erscheint unter dem Wort.
   const [tasks, setTasks] = useState<WordSpeakingTask[] | null>(null);
   const [empty, setEmpty] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const [notice, setNotice] = useState<TranslationKey | null>(null);
+  // Laufnummer: Jeder Neustart und jedes Verlassen erhöht sie, damit späte Antworten (Laden, Wiedergabe)
+  // einer alten Runde nichts mehr in den State schreiben.
   const generation = useRef(0);
 
+  // Neue Runde laden (Start, „Neue Runde“, „Erneut versuchen“).
   const restart = useCallback(() => {
     const turn = ++generation.current;
     setTasks(null);
@@ -71,6 +76,7 @@ export function WordSpeakingRunner({
       });
   }, [direction, stage]);
 
+  // Beim Einhängen und bei Richtungs-/Stufenwechsel laden; beim Verlassen Laufnummer erhöhen und Ton stoppen.
   useEffect(() => {
     restart();
     return () => {
@@ -136,6 +142,7 @@ export function WordSpeakingRunner({
 
   const task = tasks[index];
 
+  // Hinter dem letzten Wort: Abschluss ohne Punktzahl (es gibt keine Aussprachemessung für diese Sprachen).
   if (!task) {
     return (
       <ThemedView type="backgroundElement" style={styles.card}>
@@ -161,6 +168,7 @@ export function WordSpeakingRunner({
         </ThemedText>
         <Pressable
           onPress={() => {
+            // Laufende Wiedergabe-Antworten entwerten, dann Ton stoppen und gehen.
             generation.current += 1;
             void stopPronunciation();
             onExit();

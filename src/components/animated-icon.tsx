@@ -5,8 +5,14 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
+// Länge der Ausblend-Animation in Millisekunden.
 const DURATION = 750;
 
+/**
+ * Vollbild-Overlay beim Start, das den nativen Splash nahtlos weiterführt.
+ * Ablauf: Overlay steht zuerst still (`animate = false`); sobald es gelayoutet ist, wird der native Splash
+ * ausgeblendet und die Keyframe-Animation (anwachsen, ausblenden) startet. Danach entfernt sich das Overlay selbst.
+ */
 export function AnimatedSplashOverlay() {
   const [animate, setAnimate] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -38,6 +44,7 @@ export function AnimatedSplashOverlay() {
     <Animated.View
       entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
         'worklet';
+        // Läuft auf dem UI-Thread; den State (Overlay entfernen) setzt `scheduleOnRN` auf dem JS-Thread.
         if (finished) {
           scheduleOnRN(setVisible, false);
         }
@@ -48,6 +55,7 @@ export function AnimatedSplashOverlay() {
   ) : (
     <View
       onLayout={() => {
+        // Erst nach dem ersten Layout den nativen Splash ausblenden, damit dazwischen kein leerer Frame aufblitzt.
         SplashScreen.hideAsync().finally(() => {
           setAnimate(true);
         });

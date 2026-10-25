@@ -21,6 +21,7 @@ import {
   type WordListMode,
 } from '@/lib/word-list';
 
+// Ablauf einer Liste: ansehen (study) → verdeckte Seite eintragen (quiz) → ausgewertet (checked).
 type Phase = 'study' | 'quiz' | 'checked';
 
 /**
@@ -40,6 +41,11 @@ async function flushPending(pending: Pending): Promise<void> {
   if (open && open.answers.length > 0) await saveWordListAnswers(open.answers, open.mode).catch(() => {});
 }
 
+/**
+ * Äußere Hülle der Wortliste: hält Richtung, Modus (Bedeutung oder Wort eintragen) und die Rundennummer.
+ * Jede neue Liste ist eine neu eingehängte `WordListRound` (Schlüssel enthält die Runde), der Modus bleibt erhalten.
+ * `stage` begrenzt die Wörter auf die gewählte Stufe; `onExit` führt zurück.
+ */
 export function WordListRunner({
   direction,
   stage,
@@ -65,6 +71,7 @@ export function WordListRunner({
   );
 }
 
+/** Eine einzelne Liste mit 20 Wörtern samt Phasenwechsel, Eingabefeldern und Auswertung. */
 function WordListRound({
   direction,
   stage,
@@ -86,16 +93,21 @@ function WordListRound({
   const language = targetLanguageOf(direction);
   const setMode = onMode;
 
+  // `list` bleibt `null`, bis `buildWordList` die Wörter gewählt hat (Auswahl nach Lernstand, siehe `lib/word-list`).
   const [list, setList] = useState<WordList | null>(null);
   const [phase, setPhase] = useState<Phase>('study');
   const [drafts, setDrafts] = useState<string[]>([]);
   const [answers, setAnswers] = useState<WordListAnswer[]>([]);
+  // Zuletzt fokussiertes Feld: Das Sonderzeichen aus der Palette wird dort angehängt.
   const [focused, setFocused] = useState(0);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  // Eingabefelder nach Zeilenindex, damit „Weiter“ auf der Tastatur das nächste Feld fokussieren kann.
   const inputs = useRef<(TextInput | null)[]>([]);
   // Noch nicht gespeicherte Auswertung — beim Verlassen nachholen.
   const pending = useRef<Pending['current']>(null);
 
+  // Beim Verlassen (Unmount) eine noch offene Auswertung nachträglich speichern; `flushPending` liest den Ref
+  // erst im Cleanup und bekommt so den letzten Stand.
   useEffect(() => {
     const box = pending;
     return () => {
@@ -103,6 +115,7 @@ function WordListRound({
     };
   }, []);
 
+  // Liste laden und leere Entwürfe anlegen; `cancelled` verwirft eine veraltete Antwort bei Richtungswechsel.
   useEffect(() => {
     let cancelled = false;
     void buildWordList({ direction, stage }).then((next) => {
@@ -120,6 +133,9 @@ function WordListRound({
     if (phase === 'quiz') inputs.current[0]?.focus();
   }, [phase]);
 
+  // „Alle prüfen“: wertet jede Zeile aus. Gespeichert wird bewusst noch nicht (siehe `pending`), damit
+  // „Zählt doch“ ein Synonym noch umwerten kann, bevor es als FSRS-Bewertung in die Karte geht
+  // (Bedeutung: höchstens „Schwer“; Wort eintragen: wie die Schreibübung).
   const check = () => {
     if (!list) return;
     const checked = list.items.map((item, index) => checkWordListAnswer(item, mode, drafts[index] ?? ''));
@@ -129,12 +145,14 @@ function WordListRound({
     setPaletteOpen(false);
   };
 
+  // Eigene Antwort von Hand als richtig zählen („Zählt doch“); gespeichert wird sie als „Schwer“ (`ratingForAnswer`).
   const accept = (index: number) => {
     const next = answers.map((answer, position) => (position === index ? { ...answer, accepted: true } : answer));
     pending.current = { answers: next, mode };
     setAnswers(next);
   };
 
+  // Erst speichern (`rateCard` je Wort plus Übungsgedächtnis), dann die nächste Liste öffnen.
   const nextRound = async () => {
     await flushPending(pending);
     onNext();
@@ -162,9 +180,11 @@ function WordListRound({
     );
   }
 
+  // `meaning`: Die Bedeutung ist verdeckt und wird eingetragen; `word`: das Lernwort ist verdeckt (Schreiben).
   const hidesMeaning = mode === 'meaning';
   const correctCount = answers.filter((answer) => answer.correct || answer.accepted).length;
   const filled = drafts.filter((draft) => draft.trim()).length;
+  // Sonderzeichen-Palette nur beim Eintragen des Lernworts und nur für Sprachen, die eine haben.
   const hasPalette = !hidesMeaning && learningLanguage(language).palette !== null;
 
   return (
@@ -203,6 +223,7 @@ function WordListRound({
       </View>
 
       {list.items.map((item, index) => {
+        // Vor der Auswertung gibt es noch keine `answer`; danach zählen richtige und von Hand akzeptierte Antworten.
         const answer = answers[index];
         const ok = answer ? answer.correct || answer.accepted : false;
         const wordCell = (
@@ -228,6 +249,8 @@ function WordListRound({
             style={[styles.cell, styles.input, !hidesMeaning && language === 'th' && styles.thaiInput, { color: theme.text, borderColor: theme.cardBorder }]}
           />
         );
+        // Je Phase: study zeigt beide Seiten, quiz ersetzt die verdeckte Seite durch ein Eingabefeld, checked durch
+        // die gegebene Antwort. Rahmenfarbe erst nach der Auswertung (Tonfarben „mid“/„falling“ = richtig/falsch).
         return (
           <View
             key={item.vocabId}
@@ -287,6 +310,7 @@ function WordListRound({
   );
 }
 
+/** Die eigene Antwort nach der Prüfung: falsche durchgestrichen und gedämpft, leere als „—“. */
 function Given({ answer }: { answer: WordListAnswer | undefined }) {
   const ok = answer ? answer.correct || answer.accepted : false;
   return (

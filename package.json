@@ -68,6 +68,8 @@
     "test:pack-build": "node --test scripts/content/build-pack.test.cjs",
     "test:pipeline-report": "node --test scripts/content/pipeline-report.test.cjs",
     "test:scripts": "node --test \"scripts/**/*.test.cjs\"",
+    "schutz:pruefen": "node scripts/schutz.cjs pruefe",
+    "schutz:freigeben": "node scripts/schutz.cjs freigeben",
     "eas-build-post-install": "node scripts/content/eas-gate.cjs",
     "verify:production": "node scripts/content/verify-production.cjs",
     "content:measure-tones": "node scripts/content/measure-tones.cjs scripts/content/fixtures/tones/index.json",

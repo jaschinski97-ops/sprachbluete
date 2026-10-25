@@ -10,8 +10,11 @@ import {
   type MicrophoneCaptureStatus,
 } from '@/lib/speaking/microphone-capture';
 
+// Gewünschte Abtastrate; maßgeblich ist später die tatsächlich gelieferte (`context.sampleRate`).
 const REQUESTED_SAMPLE_RATE = 16_000;
 const WORKLET_NAME = 'thai-speaker-pcm-capture';
+// Quelltext des AudioWorklet-Prozessors; wird zur Laufzeit über eine Blob-URL geladen (keine eigene Datei nötig).
+// Er mischt alle Eingangskanäle zu Mono und reicht jeden Puffer per `postMessage` an den Hauptthread weiter.
 const WORKLET_SOURCE = `
 class ThaiSpeakerPcmCapture extends AudioWorkletProcessor {
   process(inputs) {
@@ -29,6 +32,7 @@ class ThaiSpeakerPcmCapture extends AudioWorkletProcessor {
 registerProcessor('${WORKLET_NAME}', ThaiSpeakerPcmCapture);
 `;
 
+// Sichtbarer Teil des Zustands (löst Neuzeichnen aus); alles Übrige liegt in Refs.
 type CaptureView = {
   status: MicrophoneCaptureStatus;
   elapsedMs: number;
@@ -36,6 +40,7 @@ type CaptureView = {
   error: MicrophoneCaptureError | null;
 };
 
+// Alle Web-Audio-Objekte einer laufenden Aufnahme; sie müssen beim Beenden vollständig freigegeben werden.
 type WebAudioResources = {
   context: AudioContext;
   mediaStream: MediaStream;
@@ -51,6 +56,7 @@ const INITIAL_VIEW: CaptureView = {
   error: null,
 };
 
+// Der Konstruktor heißt in älteren Safari-Versionen `webkitAudioContext`; ohne Web Audio (z. B. Server) `null`.
 function audioContextConstructor(): typeof AudioContext | null {
   if (typeof window === 'undefined') return null;
   const candidate = window.AudioContext ??
@@ -58,6 +64,7 @@ function audioContextConstructor(): typeof AudioContext | null {
   return candidate ?? null;
 }
 
+// Übersetzt einen Fehler von `getUserMedia` & Co.: verweigerte Freigabe → `permission-denied`, sonst `start-failed`.
 function webStartError(error: unknown): MicrophoneCaptureError {
   const name =
     typeof DOMException !== 'undefined' && error instanceof DOMException ? error.name : '';
@@ -86,6 +93,7 @@ function createAudioContext(AudioContextClass: typeof AudioContext): AudioContex
   }
 }
 
+// Bevorzugter Aufnahmeweg: Der Prozessor läuft im Audio-Thread und liefert Mono-Puffer samt Abtastrate an `onSamples`.
 async function createWorkletNode(
   context: AudioContext,
   onSamples: (samples: Float32Array, sampleRate: number) => void
@@ -137,6 +145,10 @@ export function useMicrophoneCapture(
 ): MicrophoneCaptureController {
   const maxDurationMs = captureDurationMs(options.maxDurationMs);
   const [view, setView] = useState<CaptureView>(INITIAL_VIEW);
+  // Refs statt State, weil Audio-Callbacks und Timer den aktuellen Wert sofort brauchen:
+  // - statusRef: synchroner Spiegel von `view.status` (State hinkt einen Render hinterher),
+  // - generationRef: wird bei Abbruch/Unmount erhöht und entwertet noch laufende asynchrone Fortsetzungen,
+  // - acceptingRef: Schranke für `acceptSamples`, nur während der Aufnahme werden Daten angenommen.
   const mountedRef = useRef(true);
   const statusRef = useRef<MicrophoneCaptureStatus>('idle');
   const generationRef = useRef(0);
@@ -148,11 +160,14 @@ export function useMicrophoneCapture(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastProgressRef = useRef(0);
   const failureRef = useRef<MicrophoneCaptureError | null>(null);
+  // Immer die neueste `finish`-Funktion, damit Audio-Callback und Timer nicht an einer alten Closure hängen.
   const finishRef = useRef<(reachedLimit: boolean) => Promise<CapturedPcm | null>>(
     async () => null
   );
+  // Läuft schon ein Beenden, bekommen weitere Aufrufer dasselbe Promise (Stopp ist idempotent).
   const finishPromiseRef = useRef<Promise<CapturedPcm | null> | null>(null);
 
+  // Zustand nur setzen, solange die Komponente eingehängt ist (verspätete Callbacks nach dem Unmount).
   const updateView = useCallback((change: Partial<CaptureView>) => {
     if (mountedRef.current) setView((current) => ({ ...current, ...change }));
   }, []);
@@ -172,6 +187,7 @@ export function useMicrophoneCapture(
     }
   }, []);
 
+  // Gibt Mikrofon und Audio-Graph frei (mehrfach aufrufbar; ohne laufende Aufnahme passiert nichts).
   const releaseResources = useCallback(async () => {
     const resources = resourcesRef.current;
     resourcesRef.current = null;
@@ -199,9 +215,12 @@ export function useMicrophoneCapture(
     await resources.context.close().catch(() => {});
   }, []);
 
+  // Nimmt jeden Puffer aus Worklet bzw. ScriptProcessor entgegen: sammelt bis zur Zeitgrenze, meldet den Fortschritt
+  // höchstens alle 100 ms und beendet die Aufnahme selbst, sobald das Limit erreicht ist.
   const acceptSamples = useCallback(
     (samples: Float32Array, sampleRate: number) => {
       if (!acceptingRef.current || sampleRate <= 0) return;
+      // Die erste gelieferte Rate gilt für die ganze Aufnahme; ändert sie sich, ist die Messung unbrauchbar.
       if (sampleRateRef.current === null) {
         sampleRateRef.current = sampleRate;
       } else if (Math.abs(sampleRateRef.current - sampleRate) > 0.5) {
@@ -214,6 +233,7 @@ export function useMicrophoneCapture(
         return;
       }
 
+      // Auf die erlaubte Länge kappen, damit auch ein zu großer letzter Puffer das Limit nicht überschreitet.
       const limit = Math.floor((sampleRate * maxDurationMs) / 1_000);
       const remaining = Math.max(0, limit - lengthRef.current);
       const kept = samples.length <= remaining ? samples : samples.slice(0, remaining);
@@ -238,6 +258,9 @@ export function useMicrophoneCapture(
     [maxDurationMs, updateView]
   );
 
+  // Beendet die Aufnahme (manueller Stopp, Zeit- oder Speichergrenze, Fehler) und liefert die Samples oder `null`.
+  // Die Puffer werden vorab in lokale Variablen übernommen und geleert; spätere Schritte prüfen `generation`,
+  // damit ein inzwischen abgebrochener oder neu gestarteter Durchlauf nichts mehr überschreibt.
   const finish = useCallback(
     (reachedLimit: boolean): Promise<CapturedPcm | null> => {
       if (finishPromiseRef.current) return finishPromiseRef.current;
@@ -302,6 +325,7 @@ export function useMicrophoneCapture(
   );
   finishRef.current = finish;
 
+  // Harter Abbruch: Entwertet laufende Starts/Stopps über die Generation, gibt das Mikrofon frei und verwirft alles.
   const cancel = useCallback(() => {
     generationRef.current += 1;
     finishPromiseRef.current = null;
@@ -318,6 +342,8 @@ export function useMicrophoneCapture(
     });
   }, [clearTimer, releaseResources, resetBuffers, updateView]);
 
+  // Startet die Aufnahme: erst Berechtigung (beim Tastendruck), dann Audio-Graph aufbauen. Nach jedem `await` wird
+  // geprüft, ob inzwischen abgebrochen oder ausgehängt wurde; dann wird sauber aufgeräumt und `false` geliefert.
   const start = useCallback(async (): Promise<boolean> => {
     if (statusRef.current !== 'idle') return false;
 
@@ -355,6 +381,8 @@ export function useMicrophoneCapture(
       // Context und Berechtigungsdialog entstehen beide aus dem ausdruecklichen
       // Start-Klick. Es gibt keinen Permission-Check beim Mounten.
       await context.resume();
+      // Echo-Unterdrückung, Rauschfilter und automatische Pegelung bleiben aus, damit die Tonhöhenmessung
+      // das unbearbeitete Signal bekommt.
       mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           channelCount: { ideal: 1 },
@@ -370,6 +398,7 @@ export function useMicrophoneCapture(
         return false;
       }
 
+      // Aufnahmeknoten wählen: AudioWorklet, bei Fehler oder Fehlen der veraltete ScriptProcessor als Rückfall.
       const source = context.createMediaStreamSource(mediaStream);
       let captureNode: AudioWorkletNode | ScriptProcessorNode;
       if (context.audioWorklet && typeof AudioWorkletNode !== 'undefined') {
@@ -384,6 +413,8 @@ export function useMicrophoneCapture(
         throw new Error('Weder AudioWorklet noch ScriptProcessor ist verfuegbar.');
       }
 
+      // Der Knoten hängt über einen stummen Gain (0) am Ausgang: Der Graph wird verarbeitet, ohne dass das
+      // Mikrofonsignal über die Lautsprecher zu hören ist.
       const silentGain = context.createGain();
       silentGain.gain.value = 0;
       source.connect(captureNode);
@@ -407,6 +438,7 @@ export function useMicrophoneCapture(
     acceptingRef.current = true;
     statusRef.current = 'recording';
     updateView({ status: 'recording' });
+    // Zeitgrenze als Sicherung, falls die Puffer kein Limit auslösen (z. B. weil keine Daten kommen).
     timerRef.current = setTimeout(() => {
       acceptingRef.current = false;
       void finishRef.current(true);
@@ -420,6 +452,7 @@ export function useMicrophoneCapture(
     updateView({ lastCapture: null, error: null });
   }, [updateView]);
 
+  // Beim Aushängen laufende Aufnahme beenden und das Mikrofon freigeben.
   useEffect(() => {
     mountedRef.current = true;
     return () => {

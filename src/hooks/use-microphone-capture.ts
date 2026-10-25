@@ -18,8 +18,10 @@ import {
   type MicrophoneCaptureStatus,
 } from '@/lib/speaking/microphone-capture';
 
+// Gewünschte Abtastrate; maßgeblich ist später die tatsächlich gelieferte (`buffer.sampleRate`).
 const REQUESTED_SAMPLE_RATE = 16_000;
 
+// Sichtbarer Teil des Zustands (löst Neuzeichnen aus); alles Übrige liegt in Refs.
 type CaptureView = {
   status: MicrophoneCaptureStatus;
   elapsedMs: number;
@@ -34,6 +36,7 @@ const INITIAL_VIEW: CaptureView = {
   error: null,
 };
 
+// Packt einen Fehler beim nativen Start in den gemeinsamen Fehlertyp (`start-failed`).
 function nativeStartError(error: unknown): MicrophoneCaptureError {
   return {
     code: 'start-failed',
@@ -57,6 +60,10 @@ export function useMicrophoneCapture(
   const maxDurationMs = captureDurationMs(options.maxDurationMs);
   const allowPlayback = options.allowPlayback === true;
   const [view, setView] = useState<CaptureView>(INITIAL_VIEW);
+  // Refs statt State, weil Audio-Callbacks und Timer den aktuellen Wert sofort brauchen:
+  // - statusRef: synchroner Spiegel von `view.status` (State hinkt einen Render hinterher),
+  // - generationRef: wird bei Abbruch/Unmount erhöht und entwertet noch laufende asynchrone Fortsetzungen,
+  // - acceptingRef: Schranke für `onBuffer`, nur während der Aufnahme werden Daten angenommen.
   const mountedRef = useRef(true);
   const statusRef = useRef<MicrophoneCaptureStatus>('idle');
   const generationRef = useRef(0);
@@ -67,22 +74,28 @@ export function useMicrophoneCapture(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastProgressRef = useRef(0);
   const failureRef = useRef<MicrophoneCaptureError | null>(null);
+  // Immer die neueste `finish`-Funktion, damit `onBuffer` und der Timer nicht an einer alten Closure hängen.
   const finishRef = useRef<(reachedLimit: boolean) => Promise<CapturedPcm | null>>(
     async () => null
   );
+  // Läuft schon ein Beenden, bekommen weitere Aufrufer dasselbe Promise (Stopp ist idempotent).
   const finishPromiseRef = useRef<Promise<CapturedPcm | null> | null>(null);
   // Hat ein Start die iOS-Audiositzung auf Aufnahme gestellt? Dann muss jeder
   // Stopp sie zurück auf Wiedergabe bringen (lib/audio-mode.ts).
   const sessionTouchedRef = useRef(false);
 
+  // Zustand nur setzen, solange die Komponente eingehängt ist (verspätete Callbacks nach dem Unmount).
   const updateView = useCallback((change: Partial<CaptureView>) => {
     if (mountedRef.current) setView((current) => ({ ...current, ...change }));
   }, []);
 
+  // Wird vom Stream für jeden gelieferten Puffer aufgerufen: sammelt Mono-Samples bis zur Zeitgrenze,
+  // meldet den Fortschritt höchstens alle 100 ms und beendet die Aufnahme selbst, wenn das Limit erreicht ist.
   const onBuffer = useCallback(
     (buffer: AudioStreamBuffer) => {
       if (!acceptingRef.current || buffer.sampleRate <= 0) return;
 
+      // Die erste gelieferte Rate gilt für die ganze Aufnahme; ändert sie sich, ist die Messung unbrauchbar.
       if (sampleRateRef.current === null) {
         sampleRateRef.current = buffer.sampleRate;
       } else if (Math.abs(sampleRateRef.current - buffer.sampleRate) > 0.5) {
@@ -95,6 +108,7 @@ export function useMicrophoneCapture(
         return;
       }
 
+      // Auf die erlaubte Länge kappen, damit auch ein zu großer letzter Puffer das Limit nicht überschreitet.
       const mono = int16PcmToMono(buffer.data, buffer.channels);
       const limit = Math.floor((buffer.sampleRate * maxDurationMs) / 1_000);
       const remaining = Math.max(0, limit - lengthRef.current);
@@ -142,6 +156,7 @@ export function useMicrophoneCapture(
     }
   }, [stream]);
 
+  // Sammelpuffer und Messwerte der laufenden Aufnahme leeren.
   const resetBuffers = useCallback(() => {
     chunksRef.current = [];
     lengthRef.current = 0;
@@ -157,6 +172,9 @@ export function useMicrophoneCapture(
     }
   }, []);
 
+  // Beendet die Aufnahme (manueller Stopp, Zeit- oder Speichergrenze, Fehler) und liefert die Samples oder `null`.
+  // Die Puffer werden vorab in lokale Variablen übernommen und geleert; spätere Schritte prüfen `generation`,
+  // damit ein inzwischen abgebrochener oder neu gestarteter Durchlauf nichts mehr überschreibt.
   const finish = useCallback(
     (reachedLimit: boolean): Promise<CapturedPcm | null> => {
       if (finishPromiseRef.current) return finishPromiseRef.current;
@@ -237,6 +255,7 @@ export function useMicrophoneCapture(
   );
   finishRef.current = finish;
 
+  // Harter Abbruch: Entwertet laufende Starts/Stopps über die Generation, stoppt den Stream und verwirft alles.
   const cancel = useCallback(() => {
     generationRef.current += 1;
     finishPromiseRef.current = null;
@@ -257,6 +276,8 @@ export function useMicrophoneCapture(
     });
   }, [clearTimer, resetBuffers, stopStream, updateView]);
 
+  // Startet die Aufnahme: erst Berechtigung (beim Tastendruck), dann der PCM-Stream. Nach jedem `await` wird
+  // geprüft, ob inzwischen abgebrochen oder ausgehängt wurde; dann wird sauber aufgeräumt und `false` geliefert.
   const start = useCallback(async (): Promise<boolean> => {
     if (statusRef.current !== 'idle') return false;
 
@@ -324,6 +345,7 @@ export function useMicrophoneCapture(
 
     statusRef.current = 'recording';
     updateView({ status: 'recording' });
+    // Zeitgrenze als Sicherung, falls die Puffer kein Limit auslösen (z. B. weil keine Daten kommen).
     timerRef.current = setTimeout(() => {
       acceptingRef.current = false;
       void finishRef.current(true);
@@ -337,6 +359,7 @@ export function useMicrophoneCapture(
     updateView({ lastCapture: null, error: null });
   }, [updateView]);
 
+  // Beim Aushängen laufende Aufnahme beenden und Ressourcen freigeben.
   useEffect(() => {
     mountedRef.current = true;
     return () => {

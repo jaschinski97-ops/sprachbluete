@@ -37,16 +37,24 @@ export function LanguagePacksSection() {
   );
 }
 
+/**
+ * Eine Zeile je Lernsprache: Zustandstext links, rechts je nach Stand „Laden“, „Aktualisieren“ und/oder „Entfernen“.
+ * Der Zustand (`usePackStatus`) liegt global in `lib/packs/state`; die Zeile stößt nur Aktionen an.
+ */
 function PackRow({ language }: { language: LanguageCode }) {
   const { t, languageName } = useLocale();
   const status = usePackStatus(language);
+  // Beim Einblenden einmal den installierten Stand lesen und die neueste Release-Version abfragen.
   useEffect(() => {
     void refreshPack(language);
   }, [language]);
 
   const name = languageName(language);
+  // Während Download/Installation sind alle Knöpfe gesperrt.
   const laeuft = status.phase === 'downloading' || status.phase === 'installing';
   const groesse = status.latest ? megabytes(status.latest.zipBytes) : null;
+  // Zustandstext nach Priorität: laufender Vorgang → installierte Version → „nichts veröffentlicht“ (`latest === null`)
+  // → „nicht installiert“ (auch wenn die Abfrage noch aussteht, etwa offline; Laden bleibt dann möglich).
   const zustand =
     status.phase === 'downloading'
       ? t('pack.downloading', { percent: Math.round(status.progress * 100) })
@@ -58,6 +66,8 @@ function PackRow({ language }: { language: LanguageCode }) {
             ? t('pack.unavailable')
             : t('pack.notInstalled');
 
+  // Rechts: ohne Paket oder nach einem Fehler „Laden“ (gesperrt, solange sicher nichts veröffentlicht ist);
+  // mit Paket „Aktualisieren“ nur bei neuerer Version sowie immer „Entfernen“.
   return (
     <View style={styles.row}>
       <View style={styles.texte}>

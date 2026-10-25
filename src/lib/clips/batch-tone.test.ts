@@ -288,6 +288,33 @@ describe('Automatische Tonprüfung im Clip-Lauf', () => {
     expect(result.errors.find((error) => error.id === 'ton-notstopp')?.message).toContain('Stimme');
   });
 
+  it('stoppt eine bewährte Stimme nicht — durchgefallene Clips bleiben trotzdem draußen', async () => {
+    const store = await freshStore();
+    const blobs = freshBlobs();
+    const spec = specOf('ไม่', 'test-bewaehrt');
+    let aufrufe = 0;
+    const client: ClipGenerationClient = {
+      async generate() {
+        aufrufe += 1;
+        return { base64: sineWavBase64(120, 240), format: 'wav', model: 'test-tts', voice: 'Testa', provider: 'gemini', durationMs: 400 };
+      },
+    };
+
+    const result = await runClipBatch({
+      specs: Array.from({ length: 12 }, (_, i) => ({ ...spec, id: `${spec.id}-${i}` })),
+      client,
+      store,
+      blobStore: blobs,
+      now: () => T0,
+      bewaehrteStimme: true,
+    });
+
+    expect(aufrufe).toBe(12);
+    expect(result.failed).toBe(12);
+    expect(result.errors.some((error) => error.id === 'ton-notstopp')).toBe(false);
+    expect(await store.get('audio', `${spec.id}-0`)).toBeNull();
+  });
+
   it('greift nicht unter der Fehlgrenze — brauchbare Stimmen laufen durch', async () => {
     const store = await freshStore();
     const blobs = freshBlobs();

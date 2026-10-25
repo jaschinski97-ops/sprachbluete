@@ -13,8 +13,10 @@ import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
+// Ablauf einer B1-Einheit: Hören → Verständnisfragen → Lesen → Schreiben/Sprechen.
 type Phase = 'listen' | 'questions' | 'read' | 'produce';
 
+// Schlüssel in der lokalen Meta-Ablage (`readMeta`/`writeMeta`): Entwurf und Abschluss je Richtung und Einheit.
 function draftKey(direction: PairDirection, id: string): string {
   return `advanced-lesson:${direction}:${id}:draft`;
 }
@@ -25,6 +27,10 @@ function doneKey(direction: PairDirection, id: string): string {
 
 /** An offline practice unit. Open answers receive a model and a self-check,
  * never an invented semantic score. The only stored text is the local draft.
+ *
+ * Die Einheit kommt aus `ADVANCED_LESSONS` (Lernsprache der Richtung `direction`). Nur die Verständnisfragen
+ * landen als Übungsantwort (`recordDrill`, Art „advanced“); Entwurf und Abschluss liegen lokal in der Meta-Ablage.
+ * `onExit` führt zurück zur Übersicht.
  */
 export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDirection; onExit: () => void }) {
   const { t } = useLocale();
@@ -44,9 +50,12 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
   const [audioUnavailable, setAudioUnavailable] = useState(true);
   const [hasClip, setHasClip] = useState(false);
   const [playing, setPlaying] = useState(false);
+  // Sperre gegen Doppeltipp: „Weiter“ schreibt asynchron ins Protokoll, die Antwort zählt nur einmal.
   const answerInFlight = useRef(false);
   const [recordingAnswer, setRecordingAnswer] = useState(false);
 
+  // Pro Absatz prüfen, ob ein gebündelter Clip oder eine Systemstimme bereitsteht. Ohne beides
+  // (`audioUnavailable`) bleibt der Text sichtbar und der Hörknopf verschwindet.
   useEffect(() => {
     let cancelled = false;
     void Promise.all([
@@ -58,6 +67,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     return () => { cancelled = true; };
   }, [lesson.language, lesson.paragraphs, listenIndex]);
 
+  // Gespeicherten Entwurf und Abschlussmarke laden; beim Verlassen läuft keine Wiedergabe weiter.
   useEffect(() => {
     let cancelled = false;
     void Promise.all([
@@ -72,6 +82,8 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     return () => { cancelled = true; void stopPronunciation(); };
   }, [direction, lesson.id]);
 
+  // Absatz abspielen. Gibt es weder Clip noch Stimme (`false` = Sprache fehlt im System), wird er
+  // nur als Text angeboten; ein unbekannter Stand (`null`) darf es trotzdem versuchen.
   const play = useCallback((paragraph: string) => {
     setPlaying(true);
     setAudioUnavailable(false);
@@ -92,6 +104,8 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     })();
   }, [lesson.language]);
 
+  // Wertet die gewählte Option aus, protokolliert sie als Übungsantwort und geht zur nächsten Frage
+  // bzw. nach der letzten ins Lesen. Schlägt das Speichern fehl, bleibt die Frage stehen (Fehlertext).
   const nextQuestion = async () => {
     if (selected === null || answerInFlight.current) return;
     answerInFlight.current = true;
@@ -112,6 +126,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
     }
   };
 
+  // Erst rendern, wenn Entwurf und Abschlussmarke geladen sind (sonst erschiene kurz ein leerer Entwurf).
   if (!ready) return <ThemedText type="small" themeColor="textSecondary">{t('round.assembling')}</ThemedText>;
 
   return <View style={styles.root}>
@@ -135,6 +150,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
       <ThemedButton label={t('common.next')} onPress={() => {
         void stopPronunciation();
         if (listenIndex + 1 < lesson.paragraphs.length) {
+          // Nächster Absatz: Status zurücksetzen, bis der Effekt oben neu geprüft hat (Text bleibt vorerst sichtbar).
           setHasClip(false);
           setAudioUnavailable(true);
           setListenIndex((value) => value + 1);
@@ -213,6 +229,7 @@ export function AdvancedLessonRunner({ direction, onExit }: { direction: PairDir
         disabled={completed || !draft.trim()}
         variant="primary"
         onPress={() => {
+          // Abschluss = Entwurf sichern, dann Marke setzen. Reine Selbstkontrolle: keine Bewertung, kein FSRS.
           setSaveError(null);
           void (async () => {
             try {

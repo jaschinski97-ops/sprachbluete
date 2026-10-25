@@ -8,7 +8,11 @@ import { useTheme } from '@/hooks/use-theme';
 import { clearApiKey, getKeyStorageMode, loadApiKey, looksLikeApiKey, saveApiKey, type KeyStorageMode } from '@/lib/api-key';
 import { PROVIDERS, PROVIDER_INFO, type ProviderId } from '@/lib/providers/types';
 
-/** One stored credential per provider; generation choices remain with each generator. */
+/** One stored credential per provider; generation choices remain with each generator.
+ *
+ * Nur im Entwicklerstudio sichtbar (`__DEV__`, sonst `null`). Liste aller Anbieter mit Schlüssel, Auswahl öffnet
+ * die Eingabe für genau einen Anbieter. Gespeichert wird über `@/lib/api-key` (Ablage je nach Plattform, siehe `mode`).
+ */
 export function ApiKeysCard() {
   const theme = useTheme();
   const [selected, setSelected] = useState<ProviderId | null>(null);
@@ -18,6 +22,7 @@ export function ApiKeysCard() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  // Beim Öffnen vorhandene Schlüssel je Anbieter lesen; `cancelled` verhindert State-Updates nach dem Schließen.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -32,6 +37,8 @@ export function ApiKeysCard() {
     return () => { cancelled = true; };
   }, []);
 
+  // Speichert den Entwurf des gewählten Anbieters bzw. löscht den Schlüssel (`remove`). `busy` sperrt Doppelklicks,
+  // vor dem Speichern prüft `looksLikeApiKey` nur die Form, nicht ob der Schlüssel beim Anbieter gültig ist.
   async function save(remove = false) {
     if (!selected || busy || !loaded) return;
     const value = (drafts[selected] ?? '').trim();
@@ -46,6 +53,7 @@ export function ApiKeysCard() {
     finally { setBusy(false); }
   }
 
+  // Hooks laufen oben unbedingt; erst hier wird ausgeblendet, weil Schlüssel nur im Entwicklerstudio gepflegt werden.
   if (!__DEV__) return null;
   return <View style={styles.column}>
     <ThemedText type="small" themeColor="textSecondary">Ein Schlüssel je Anbieter. Den Anbieter wählst du beim jeweiligen Generator.</ThemedText>

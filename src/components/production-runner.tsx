@@ -50,6 +50,7 @@ import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler } from '
  * selbst — „Nochmal" oder ohne Bewertung weiter.
  */
 
+// Sprachcode der Lernsprache → Locale für die Spracherkennung des Geräts.
 const SR_LOCALE: Record<'th' | 'en' | 'es' | 'de', string> = {
   th: 'th-TH',
   en: 'en-US',
@@ -57,12 +58,18 @@ const SR_LOCALE: Record<'th' | 'en' | 'es' | 'de', string> = {
   de: 'de-DE',
 };
 
+// Selbstbewertung (Gut/Schwer/Nochmal) nach der Musterlösung; „Leicht“ wird hier bewusst nicht angeboten.
 const SELBST_RATINGS: { rating: Rating; key: TranslationKey }[] = [
   { rating: 3, key: 'rating.good' },
   { rating: 2, key: 'rating.hard' },
   { rating: 1, key: 'rating.again' },
 ];
 
+/**
+ * Übung „Sag es auf …“ für eine Richtung: zeigt die Bedeutung, die lernende Person liefert das Lernwort bzw. den
+ * Satz (getippt, gesprochen oder selbst bewertet). Aufgaben kommen aus `produktionsAufgaben` (nur aus `stage`),
+ * jede Bewertung schreibt dieselbe FSRS-Karte fort wie Karteikarte und Diktat. `onExit` verlässt die Übung.
+ */
 export function ProductionRunner({
   direction,
   stage,
@@ -76,8 +83,12 @@ export function ProductionRunner({
   const { t, languageName } = useLocale();
   const colors = useTheme();
   const sprache = targetLanguageOf(direction);
+  // Spracherkennung des Geräts; ohne sie (`verfuegbar` false) gibt es nur Tippen und Selbstbewertung.
   const naht = useMemo(() => spracherkennung(), []);
 
+  // `ergebnis`: tolerant geprüfte Antwort (null = noch offen); `selbstOffen`: Musterlösung zeigen und selbst bewerten;
+  // `falschBewertung`: Selbstbewertung nach einem falschen Ergebnis (die Karte wird nur fortgeschrieben,
+  // wenn eine Stufe gewählt wird).
   const [aufgaben, setAufgaben] = useState<ProduktionsAufgabe[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -88,6 +99,7 @@ export function ProductionRunner({
   const [erkennungsFehler, setErkennungsFehler] = useState<ErkennungsFehler | null>(null);
   const [falschBewertung, setFalschBewertung] = useState<Rating | null>(null);
 
+  // Runde laden (Start und „Neue Runde“).
   const laden = useCallback(() => {
     setAufgaben(null);
     setLoadError(null);
@@ -106,6 +118,7 @@ export function ProductionRunner({
 
   const aufgabe = aufgaben && aufgaben.length > 0 ? aufgaben[index] : null;
 
+  // Bei jeder neuen Aufgabe Eingabe und Ergebnis zurücksetzen.
   useEffect(() => {
     setEingabe('');
     setErgebnis(null);
@@ -123,11 +136,14 @@ export function ProductionRunner({
       } catch {
         // Ein fehlgeschlagenes Kartenschreiben darf die Runde nicht stoppen.
       }
+      // Für die Tagesstatistik gilt alles außer „Nochmal“ als richtig.
       await recordDrill(rating !== 1, Date.now(), undefined, 'produktion', direction).catch(() => {});
     },
     [aufgabe, direction]
   );
 
+  // Antwort (getippt oder erkannt) prüfen: genau → „Gut“, nur Akzent/Tonzeichen abweichend → „Schwer“; beides wird
+  // sofort in die Karte geschrieben. Bei „falsch“ entscheidet die lernende Person selbst (Knöpfe unter dem Ergebnis).
   const pruefen = useCallback(
     (text: string) => {
       if (!aufgabe || text.trim().length === 0) return;
@@ -140,6 +156,7 @@ export function ProductionRunner({
     [aufgabe, sprache, schreiben]
   );
 
+  // Sprechen: Der erkannte Text läuft durch denselben Vergleich wie getippter; `hoert` zeigt die laufende Aufnahme.
   const sprechenStarten = useCallback(() => {
     if (!naht.erkennen) return;
     setErkennungsFehler(null);
@@ -172,6 +189,7 @@ export function ProductionRunner({
     })();
   }, [aufgabe, sprache]);
 
+  // Zur nächsten Aufgabe; das Zurücksetzen von Eingabe und Ergebnis übernimmt der Effekt auf `index`.
   const weiter = useCallback(() => {
     setErkennungsFehler(null);
     setIndex((value) => value + 1);
@@ -191,6 +209,7 @@ export function ProductionRunner({
     );
   }
 
+  // Keine aktuelle Aufgabe: entweder Rundenende, keine Wörter für diese Stufe oder noch am Laden.
   if (!aufgabe) {
     if (aufgaben && aufgaben.length > 0 && index >= aufgaben.length) {
       return <ThemedView type="backgroundElement" style={styles.card}>
@@ -222,6 +241,7 @@ export function ProductionRunner({
     );
   }
 
+  // Kopfzeile mit Fortschritt und Abbrechen (stoppt eine laufende Wiedergabe).
   const kopf = (
     <View style={styles.headerRow}>
       <ThemedText type="small" themeColor="textSecondary">

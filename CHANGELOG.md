@@ -2,6 +2,8 @@
 
 ## 25.10.2026
 
+- Tageslimit des Anbieters stoppt Studio-Läufe sofort (`lib/generation/tageslimit.ts`): Gemini erlaubt für `gemini-3.8-flash-tts` auf Tier 2 nur 10.000 Anfragen pro Tag, danach kommt 429 „requests per day limit exceeded“, auch mit Guthaben. Vorher versuchte der Lauf jeden restlichen Eintrag einzeln; jetzt endet er mit „Tageslimit erreicht, weiter ab …“ (Zeit aus der Fehlermeldung) im Feld „Letzter Lauf“.
+- Schleier: Auf breiten Bildschirmen liegt der Übergang außerhalb der Inhaltsspalte, die Spalte ist ganz abgedeckt.
 - Testrunde als neuer Nutzer (eigene Runde plus vier Test-Agenten in getrennten Browser-Speichern), Funde behoben:
   - „Weiter lernen“ öffnet das aktive Lernziel; vorher fragte der Lern-Reiter neue Nutzer noch einmal nach der Sprache.
   - Kapitel 0: feste Umschrift für alle 44 Konsonanten-Merkwörter (`MERKWORT_UMSCHRIFT`, Test gegen Tonregeln und Umschrift-Wächter); seit dem Neuaufbau fehlte sie bei Merkwörtern, die nicht im Wortschatz stehen.

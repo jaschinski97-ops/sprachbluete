@@ -16,6 +16,7 @@ import { estimateRunCost } from './run-cost';
 import { Drossel, gedrosselt } from '@/lib/generation/drossel';
 import { clearContentSelection, startAutomaticDelivery, studioRequest, type StudioState } from './content-client';
 import { abgelehntZeile, ladeLetztenLauf, merkeLetztenLauf } from './last-run';
+import { mitTageslimit, neuerTageslimitStand, tageslimitMeldung, type TageslimitStand } from '@/lib/generation/tageslimit';
 import { fahreKette, planChain, type ChainStep } from './chain-run';
 import { limitPlan } from '@/lib/generation/plan';
 import { planDeliveryAudio } from '@/lib/content/audio-plan';
@@ -268,7 +269,7 @@ export default function ContentStudio() {
   const [letzterLauf, setLetzterLauf] = useState(ladeLetztenLauf);
   /** Schließt die Übernahme ab und hält das Ergebnis fest, auch bei Abbruch. */
   const schliesseAb = useCallback(async (
-    delivery: Awaited<ReturnType<typeof startAutomaticDelivery>>, extra: string[] = [],
+    delivery: Awaited<ReturnType<typeof startAutomaticDelivery>>, extra: string[] = [], limit?: TageslimitStand,
   ) => {
     let count = 0;
     let fehler: unknown;
@@ -277,6 +278,7 @@ export default function ContentStudio() {
       t('studio.autoDelivered', { count }),
       abgelehntZeile(delivery.rejected),
       ...extra,
+      limit?.erreicht ? tageslimitMeldung(limit) : null,
       fehler ? `Lauf abgebrochen: ${fehler instanceof Error ? fehler.message : String(fehler)}` : null,
     ].filter(Boolean).join('\n');
     setExportMessage(text);
@@ -472,16 +474,18 @@ export default function ContentStudio() {
     /** Dialoge, in denen Zielwörter fehlen — gemeldet, nicht verworfen. */
     const ohneAlleWoerter: string[] = [];
     const drossel = new Drossel({ max: parallel });
+    // Tageslimit des Anbieters: erster Treffer stoppt den Lauf (25.10.2026).
+    const limit = neuerTageslimitStand();
     const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
     try {
-        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
+        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed || limit.erreicht },
           (missing, onStepProgress) => runGenerationBatch({
             specs: missing,
             // Turbo (23.10.2026): mehrere Situationen gleichzeitig; die Drossel
             // bremst bei 429 selbst, statt fest 400 ms zu warten.
-            client: gedrosselt(createGenerationClient(provider, apiKey, model), drossel),
+            client: mitTageslimit(gedrosselt(createGenerationClient(provider, apiKey, model), drossel), limit),
             concurrency: parallel,
-            onProgress: onStepProgress, shouldCancel: () => shouldCancel?.() || delivery.failed,
+            onProgress: onStepProgress, shouldCancel: () => shouldCancel?.() || delivery.failed || limit.erreicht,
             onProduced: async situation => {
               if (findeDuplikat(situation, referenz)) throw Error(t('studio.duplicateSituation'));
               await delivery.deliver('situations', situation);
@@ -493,7 +497,8 @@ export default function ContentStudio() {
           }));
     } finally {
       await schliesseAb(delivery,
-        ohneAlleWoerter.length ? [t('studio.dialogMissingWords', { count: ohneAlleWoerter.length, list: ohneAlleWoerter.join(' · ') })] : []);
+        ohneAlleWoerter.length ? [t('studio.dialogMissingWords', { count: ohneAlleWoerter.length, list: ohneAlleWoerter.join(' · ') })] : [],
+        limit);
       await studioRequest('/state');
     }
     setReportRevision(value => value + 1);
@@ -522,19 +527,20 @@ export default function ContentStudio() {
     // ComfyUI bleibt bei einem Bild zugleich (eine Grafikkarte); Cloud-Anbieter
     // laufen parallel und bremsen bei 429 selbst.
     const drossel = new Drossel({ max: parallel });
+    const limit = neuerTageslimitStand();
     const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
     try {
-      await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed },
+      await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || delivery.failed || limit.erreicht },
         (missing, onStepProgress) => runImageBatch({
           specs: missing,
-          client: gedrosselt(createImageGenerationClient(provider, apiKey, model), drossel),
+          client: mitTageslimit(gedrosselt(createImageGenerationClient(provider, apiKey, model), drossel), limit),
           concurrency: parallel,
           onProgress: onStepProgress,
-          shouldCancel: () => shouldCancel?.() || delivery.failed,
+          shouldCancel: () => shouldCancel?.() || delivery.failed || limit.erreicht,
           onProduced: (document, base64) => delivery.deliver('images', document, base64),
         }));
     } finally {
-      await schliesseAb(delivery);
+      await schliesseAb(delivery, [], limit);
       await studioRequest('/state');
     }
     setReportRevision(value => value + 1);
@@ -565,12 +571,13 @@ export default function ContentStudio() {
       // (Gemini 6,5 s, Helper 0,5 s) bremst die Drossel, sobald der Anbieter
       // 429 meldet, und wartet so lange, wie er es verlangt.
       const drossel = new Drossel({ max: parallel });
-      const client = gedrosselt(createClipGenerationClient(provider, apiKey, model, voice ?? ''), drossel);
+      const limit = neuerTageslimitStand();
+      const client = mitTageslimit(gedrosselt(createClipGenerationClient(provider, apiKey, model, voice ?? ''), drossel), limit);
       const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
       /** Selbststopps der Tonprüfung (Notstopp, Register-Probe) für die Endmeldung. */
       const stopps: string[] = [];
       try {
-        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
+        await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel: () => shouldCancel?.() || limit.erreicht },
           async (missing, onStepProgress) => {
             const ergebnis = await runClipBatch({
               specs: missing,
@@ -581,7 +588,7 @@ export default function ContentStudio() {
               // Sprachen berührt das nicht (das Tor meldet dort not-applicable).
               toneWortschatz: poolFuer('th'),
               onProgress: onStepProgress,
-              shouldCancel: () => shouldCancel?.() || delivery.failed,
+              shouldCancel: () => shouldCancel?.() || delivery.failed || limit.erreicht,
               onProduced: (document, base64) => delivery.deliver('audio', document, base64),
               concurrency: parallel,
               bewaehrteStimme: istBewaehrteStimme(voice),
@@ -589,7 +596,7 @@ export default function ContentStudio() {
             for (const fehler of ergebnis.errors) if (fehler.id.startsWith('ton-')) stopps.push(fehler.message);
           });
       } finally {
-        await schliesseAb(delivery, stopps);
+        await schliesseAb(delivery, stopps, limit);
         await studioRequest('/state');
       }
       setReportRevision(value => value + 1);

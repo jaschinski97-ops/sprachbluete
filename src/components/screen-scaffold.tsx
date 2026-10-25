@@ -88,16 +88,19 @@ function Schleier({ staerke }: { staerke: number }) {
   const { width } = useWindowDimensions();
   const spalte = Math.min(width, MaxContentWidth + Spacing.three * 2);
   const rand = Math.max(0, (width - spalte) / 2) / Math.max(1, width);
-  const auslauf = 0.12;
-  const innen = Math.min(0.45, rand + auslauf);
+  // Breit: Der Übergang liegt AUSSERHALB der Spalte, sie ist ganz abgedeckt.
+  // Schmal (Spalte = Bildschirm): Übergang auf den äußeren 12 %.
+  const breit = rand > 0.04;
+  const aussen = breit ? Math.max(0, rand - 0.06) : 0;
+  const innen = breit ? rand + 0.01 : 0.12;
   return (
     <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
       <Defs>
         <LinearGradient id={id} x1="0" y1="0" x2="1" y2="0">
-          <Stop offset={Math.max(0, rand - 0.02)} stopColor={theme.background} stopOpacity={0} />
+          <Stop offset={aussen} stopColor={theme.background} stopOpacity={0} />
           <Stop offset={innen} stopColor={theme.background} stopOpacity={staerke} />
           <Stop offset={1 - innen} stopColor={theme.background} stopOpacity={staerke} />
-          <Stop offset={Math.min(1, 1 - rand + 0.02)} stopColor={theme.background} stopOpacity={0} />
+          <Stop offset={1 - aussen} stopColor={theme.background} stopOpacity={0} />
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />

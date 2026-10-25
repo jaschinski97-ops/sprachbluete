@@ -7,7 +7,7 @@ import {
 } from '../clips/bytes';
 
 import { supportsGeminiSpeechStyle, supportsTtsInstructions } from '../clips/tts-instructions';
-import { describeHttpError, fieldNamesOf, postForBytes, postJson } from './http';
+import { describeHttpError, fieldNamesOf, GEMINI_BASE, postForBytes, postJson } from './http';
 import { AudioClient, AudioRequest, AudioResponse, ProviderId, unsupported } from './types';
 
 /**
@@ -41,7 +41,6 @@ import { AudioClient, AudioRequest, AudioResponse, ProviderId, unsupported } fro
 // Gemini (Google)
 // ---------------------------------------------------------------------------
 
-export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /**
  * Liest die Audioantwort von `generateContent` aus.

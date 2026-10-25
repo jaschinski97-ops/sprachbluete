@@ -1,8 +1,9 @@
 import { ReactNode, type RefObject } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import { BrushStroke, Reveal, textGlow } from './fx';
+import { BrushStroke, Reveal, textGlow, useSvgId } from './fx';
 import { SakuraBackground, type SzenenArt } from './sakura-scenes';
 import { ThemedText } from './themed-text';
 
@@ -21,6 +22,11 @@ type Props = {
   scrollRef?: RefObject<ScrollView | null>;
   /** Kirschblüten-Motiv dieses Bildschirms (jeder Reiter hat sein eigenes). */
   szene?: SzenenArt;
+  /**
+   * Während einer Übung: Die Szene steht still und tritt weiter zurück
+   * (25.10.2026). Spart Akku und lässt Aufgaben und Antworten lesbar.
+   */
+  ruhig?: boolean;
   children?: ReactNode;
 };
 
@@ -33,12 +39,13 @@ type Props = {
  * Web-Build ist sonst die Fläche unter dem Inhalt transparent, und im
  * Dunkelmodus stand die helle Überschrift auf dem weißen Browser-Canvas.
  */
-export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, szene, children }: Props) {
+export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, szene, ruhig = false, children }: Props) {
   const theme = useTheme();
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top', 'left', 'right']}>
       {/* Kirschblüten-Szene (23.10.2026) liegt fest hinter dem scrollenden Inhalt. */}
-      <SakuraBackground szene={szene} />
+      <SakuraBackground szene={szene} ruhig={ruhig} />
+      <Schleier staerke={ruhig ? 0.78 : 0.5} />
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={styles.scroll}
@@ -65,6 +72,36 @@ export function ScreenScaffold({ title, subtitle, headerAction, scrollRef, szene
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+/**
+ * Sanfter Schleier in der Grundfarbe zwischen Szene und Inhalt (25.10.2026).
+ * Testrunde: Blütenzweige lagen unter Untertiteln, „Karte 1 von 20“ und dem
+ * Stufen-Reiter und machten sie schwer lesbar. Der Schleier deckt die
+ * Inhaltsspalte ab und läuft zu den Rändern aus, dort bleibt die Szene voll
+ * sichtbar. Auf schmalen Geräten bleiben je rund 12 % Rand frei sichtbar.
+ */
+function Schleier({ staerke }: { staerke: number }) {
+  const theme = useTheme();
+  const id = useSvgId('schleier');
+  const { width } = useWindowDimensions();
+  const spalte = Math.min(width, MaxContentWidth + Spacing.three * 2);
+  const rand = Math.max(0, (width - spalte) / 2) / Math.max(1, width);
+  const auslauf = 0.12;
+  const innen = Math.min(0.45, rand + auslauf);
+  return (
+    <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
+      <Defs>
+        <LinearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+          <Stop offset={Math.max(0, rand - 0.02)} stopColor={theme.background} stopOpacity={0} />
+          <Stop offset={innen} stopColor={theme.background} stopOpacity={staerke} />
+          <Stop offset={1 - innen} stopColor={theme.background} stopOpacity={staerke} />
+          <Stop offset={Math.min(1, 1 - rand + 0.02)} stopColor={theme.background} stopOpacity={0} />
+        </LinearGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />
+    </Svg>
   );
 }
 

@@ -162,6 +162,20 @@ const defaultBackend: PronunciationBackend = {
 
 let backend = defaultBackend;
 
+/** So lange darf die Stimmenliste brauchen, bevor sie als unbekannt gilt. */
+export const STIMMEN_ZEITLIMIT_MS = 1500;
+
+/** Wartet höchstens `ms` auf `arbeit`; danach gilt `ersatz`. */
+function mitZeitlimit<T>(arbeit: Promise<T>, ms: number, ersatz: T): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const uhr = setTimeout(() => resolve(ersatz), ms);
+    arbeit.then(
+      (wert) => { clearTimeout(uhr); resolve(wert); },
+      (fehler) => { clearTimeout(uhr); reject(fehler); }
+    );
+  });
+}
+
 // Wiedergabe- und Stoppvorgaenge laufen geordnet. Sonst koennte ein langsamer
 // Clip-Aufloeser *nach* einem bereits angeforderten Stopp doch noch starten.
 let playbackQueue: Promise<void> = Promise.resolve();
@@ -261,7 +275,10 @@ export async function isLanguageAvailable(
 ): Promise<boolean | null> {
   let locales: string[];
   try {
-    locales = await backend.availableLocales();
+    // Zeitlimit (25.10.2026): expo-speech wartet im Browser ohne jede
+    // Systemstimme endlos auf „voiceschanged“. Die Hörübung blieb dann für
+    // immer gesperrt (Testrunde 25.10.). Nach dem Limit gilt: unbekannt.
+    locales = await mitZeitlimit(backend.availableLocales(), STIMMEN_ZEITLIMIT_MS, []);
   } catch {
     return null;
   }

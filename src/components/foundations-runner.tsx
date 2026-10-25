@@ -22,6 +22,7 @@ import {
   spellingQuestions,
   spellingWords,
   thaiConsonantKeyword,
+  thaiConsonantKeywordRoman,
   thaiConsonantSpoken,
   thaiConsonantSyllable,
   toneExampleCandidates,
@@ -432,11 +433,22 @@ function AlphabetStep({ language }: { language: LatinLanguage }) {
   );
 }
 
+/**
+ * Ein Buchstabe beim Buchstabieren: der Buchstabe selbst, dazu sein Name,
+ * wo er mehr verrät als der Buchstabe (N „en“, H „hache“), sonst die
+ * Aussprache (A /eɪ/). Vorher stand nur der Name oder nur die Lautschrift
+ * da — „a – en – dee“ bzw. „/aː/ – /ɛl/“ (Testrunde 25.10.).
+ */
+function buchstabe(letter: LatinLetter): string {
+  const name = letter.name && letter.name.toLowerCase() !== letter.lower ? letter.name : null;
+  return `${letter.upper} ${name ?? letter.ipa}`;
+}
+
 /** Die Buchstabennamen eines Wortes — geschrieben und als Text für die Stimme. */
 function spelled(language: LatinLanguage, word: string): { shown: string; spoken: string } {
   const letters = spellOut(language, word);
   return {
-    shown: letters.map((letter) => letter.name ?? letter.ipa).join(' – '),
+    shown: letters.map(buchstabe).join(' – '),
     spoken: letters.map((letter) => letter.spoken).join(', '),
   };
 }
@@ -519,7 +531,9 @@ function ConsonantsStep() {
               {members.map((consonant) => {
                 const keyword = thaiConsonantKeyword(consonant);
                 const entry = vocabulary.get(keyword);
-                const name = `${thaiConsonantSyllable(consonant)}${entry ? ` ${entry.romanization}` : ''}`;
+                // Feste Umschrift des Merkworts, nicht mehr aus dem Wortschatz.
+                const merkwort = thaiConsonantKeywordRoman(consonant);
+                const name = `${thaiConsonantSyllable(consonant)}${merkwort ? ` ${merkwort}` : ''}`;
                 return (
                   <Tile
                     key={consonant.symbol}

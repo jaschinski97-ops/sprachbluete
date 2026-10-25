@@ -150,7 +150,10 @@ export default function DashboardScreen() {
           13.09.) — Thai zeigt die Töne, Deutsch den deutschen Gruß. */}
       <LanguageHero language={goalLanguage(aktivesZiel)} />
 
-      <Link href="/review" asChild>
+      {/* Mit Richtung: Ein neuer Nutzer hat noch kein gemerktes Ziel, ohne
+          Adresse fragte der Lern-Reiter dann erneut nach der Sprache, obwohl
+          die Zahl am Knopf schon zum aktiven Ziel gehört (Testrunde 25.10.). */}
+      <Link href={`/review?direction=${aktivesZiel.direction}`} asChild>
         {/* accessible: Knopf und Badge sind eine Handlung — der Screenreader
             soll sie als eine Ansage bringen, nicht als zwei Elemente.
             Die Fläche steht bewusst auf dem inneren View, NICHT auf dem

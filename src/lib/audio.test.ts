@@ -1,5 +1,6 @@
 import {
   isLanguageAvailable,
+  STIMMEN_ZEITLIMIT_MS,
   playPronunciation,
   PronunciationBackend,
   registerAudioAssetResolver,
@@ -233,6 +234,23 @@ describe('isLanguageAvailable', () => {
   it('sagt auch bei einem Fehler "weiss nicht"', async () => {
     withLocales(new Error('nicht unterstuetzt'));
     expect(await isLanguageAvailable('th')).toBeNull();
+  });
+
+  it('wartet nicht endlos auf eine Stimmenliste, die nie kommt (Browser ohne Stimme)', async () => {
+    jest.useFakeTimers();
+    try {
+      setPronunciationBackend({
+        async playAsset() {},
+        async speak() {},
+        async stop() {},
+        availableLocales: () => new Promise<string[]>(() => {}),
+      });
+      const antwort = isLanguageAvailable('th');
+      jest.advanceTimersByTime(STIMMEN_ZEITLIMIT_MS);
+      expect(await antwort).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 

@@ -189,7 +189,9 @@ export function WritingRunner({
 
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">
-          {t(writingPromptKey(prompt.language), { language: languageName(prompt.language) })}
+          {/* „Mit Akzentzeichen“ nur, wenn die Lösung wirklich eines hat
+              (vorher auch bei „o“ — Testrunde 25.10.). */}
+          {t(prompt.language === 'es' && !/[áéíóúüñ¿¡]/i.test(prompt.solution) ? 'writing.promptGeneric' : writingPromptKey(prompt.language), { language: languageName(prompt.language) })}
         </ThemedText>
 
         <View style={styles.promptBlock}>

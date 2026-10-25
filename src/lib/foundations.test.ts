@@ -1,6 +1,7 @@
 import { CONSONANT_BY_SYMBOL, THAI_CONSONANTS } from '@/data/thai-script';
 import type { VocabEntry } from '@/data/vocab-types';
 
+import { sollAusSchriftUndUmschrift } from './content/soll-toene-schrift';
 import { romanSyllableProblem, toneOfRoman } from './content/thai-romanization';
 import { seededRandom } from './drills/random';
 import { modesForDirection } from './exercise-catalog';
@@ -15,6 +16,7 @@ import {
   PRICE_QUIZ_VALUES,
   spellingQuestions,
   spellingWords,
+  thaiConsonantKeywordRoman,
   thaiConsonantSpoken,
   thaiConsonantSyllable,
   toneExampleCandidates,
@@ -41,6 +43,16 @@ describe('Kapitel 0: Schritte', () => {
 });
 
 describe('Kapitel 0: Thai-Schrift', () => {
+  it('jedes der 44 Merkwörter hat eine Umschrift, die zu den Tonregeln passt', () => {
+    for (const consonant of THAI_CONSONANTS) {
+      const roman = thaiConsonantKeywordRoman(consonant);
+      const merkwort = consonant.name.split(' ').slice(1).join(' ');
+      expect({ merkwort, roman: roman !== null }).toEqual({ merkwort, roman: true });
+      expect({ merkwort, art: sollAusSchriftUndUmschrift(merkwort, roman!, 'wort')?.art }).toEqual({ merkwort, art: 'ok' });
+      for (const silbe of roman!.split('-')) expect({ silbe, problem: romanSyllableProblem(silbe) }).toEqual({ silbe, problem: null });
+    }
+  });
+
   it('leitet die Konsonantennamen aus Klasse und Anlaut her', () => {
     const names = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ต', 'ป', 'อ', 'ห', 'ฮ'].map((symbol) => thaiConsonantSyllable(CONSONANT_BY_SYMBOL[symbol]));
     expect(names).toEqual(['gɔɔ', 'khɔ̌ɔ', 'khɔɔ', 'ngɔɔ', 'jɔɔ', 'chɔ̌ɔ', 'dtɔɔ', 'bpɔɔ', 'ɔɔ', 'hɔ̌ɔ', 'hɔɔ'].map((name) => name.normalize('NFC')));

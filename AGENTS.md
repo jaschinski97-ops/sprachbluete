@@ -4,7 +4,7 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 
 # ThaiSpeaker — Kurzstand für die nächste KI (25.09.2026)
 
-Vollständiger Verlauf aller Runden: `docs/arbeitsverlauf-bis-2026-09-25.md` (nur bei Bedarf per grep lesen), dazu `docs/PROGRESS.md` und das Git-Log. Neue Ergebnisse hier KURZ eintragen. Diese Datei wird bei jedem Chat geladen, deshalb nur Dauerhaftes, keine Laufberichte.
+Vollständiger Verlauf aller Runden: `docs/archiv/arbeitsverlauf-bis-2026-09-25.md` (nur bei Bedarf per grep lesen), dazu `docs/PROGRESS.md` und das Git-Log. Neue Ergebnisse hier KURZ eintragen. Diese Datei wird bei jedem Chat geladen, deshalb nur Dauerhaftes, keine Laufberichte.
 
 ## Produkt
 

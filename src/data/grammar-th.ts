@@ -55,7 +55,7 @@ export const POLITE_ITEMS: readonly PoliteItem[] = [
   ITEM('polite-mai-gin-muu-m', 'ผม ไม่ กิน หมู', 'phǒm mâi gin mǔu', 'Ich esse kein Schweinefleisch.', 'male'),
   ITEM('polite-chuap-gaafe-m', 'ผม ชอบ กาแฟ', 'phǒm chɔ̂ɔp gaa-fɛɛ', 'Ich mag Kaffee.', 'male'),
   ITEM('polite-gin-khaao-m', 'ผม กิน ข้าว', 'phǒm gin khâao', 'Ich esse Reis.', 'male'),
-  ITEM('polite-tam-aahaan-m', 'ผม ทำ อาหาร', 'phǒm tham aa-hǎan', 'Ich mache Essen.', 'male'),
+  ITEM('polite-tam-aahaan-m', 'ผม ทำ อาหาร', 'phǒm tham aa-hǎan', 'Ich koche.', 'male'),
   ITEM('polite-duu-maew-m', 'ผม ดู แมว', 'phǒm duu mɛɛo', 'Ich schaue die Katze an.', 'male'),
   ITEM('polite-mai-ruu-m', 'ผม ไม่ รู้', 'phǒm mâi rúu', 'Ich weiß nicht.', 'male'),
   ITEM('polite-bpai-talaat-f', 'ฉัน ไป ตลาด', 'chǎn bpai dtà-làat', 'Ich gehe zum Markt.', 'female'),

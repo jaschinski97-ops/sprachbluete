@@ -1,4 +1,4 @@
-import { fieldNamesOf, postJson } from './http';
+import { fieldNamesOf, GEMINI_BASE, postJson } from './http';
 import { ProviderId, TextClient, TextRequest, TextResponse, unsupported } from './types';
 
 // Umfangreiche Wort-/Dialogpakete und ihre Prüfung brauchen mehrere Minuten.
@@ -117,7 +117,6 @@ export function createOpenAiTextClient(apiKey: string, model: string): TextClien
 // Gemini (Google)
 // ---------------------------------------------------------------------------
 
-export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export function geminiEndpoint(model: string, method: string): string {
   // Der Modellname kommt aus einem Freitextfeld (Pflicht 5) und landet im

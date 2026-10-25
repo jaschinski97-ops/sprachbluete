@@ -1,12 +1,15 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
 import { IntroGuide } from '@/components/intro-guide';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { meldeAktivitaet } from '@/lib/aktivitaet';
 import { loadErscheinung } from '@/lib/appearance';
 import { restorePlaybackAudioMode } from '@/lib/audio-mode';
 import { installClipLookup } from '@/lib/clips/lookup';
@@ -30,9 +33,25 @@ void loadErscheinung().catch(() => {});
 // jeder Anhören-Knopf kaputt). Siehe lib/audio-mode.ts.
 void restorePlaybackAudioMode();
 
+/** Meldet jede Berührung an `lib/aktivitaet` — ohne sie einer Geste wegzunehmen. */
+function aktivBeiBeruehrung(): boolean {
+  meldeAktivitaet();
+  return false;
+}
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  // Im Browser zählen auch Mausrad und Tastatur als Benutzung (Akku, 25.10.2026).
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const ereignisse = ['wheel', 'keydown', 'pointerdown'] as const;
+    for (const art of ereignisse) document.addEventListener(art, meldeAktivitaet, { passive: true });
+    return () => {
+      for (const art of ereignisse) document.removeEventListener(art, meldeAktivitaet);
+    };
+  }, []);
   return (
+    <View style={styles.wurzel} onStartShouldSetResponderCapture={aktivBeiBeruehrung} onMoveShouldSetResponderCapture={aktivBeiBeruehrung}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {/* auto statt der Systemvorgabe: ohne diese Angabe blieben die
           Statusbar-Icons weiss und waren im Hellmodus unlesbar. */}
@@ -53,5 +72,10 @@ export default function TabLayout() {
         </CatalogGate>
       </I18nProvider>
     </ThemeProvider>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wurzel: { flex: 1 },
+});

@@ -81,6 +81,7 @@
     "web:content": "node scripts/sync-web-content.cjs"
   },
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "jest": {
     "preset": "jest-expo",
     "testMatch": [

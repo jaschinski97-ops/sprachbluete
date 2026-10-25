@@ -19,7 +19,7 @@ const TONE_NAME_KEYS: Record<string, TranslationKey> = {
 };
 
 /**
- * Die fünf Grundtöne mit Kontur, Farbe und Tonzeichen.
+ * Die fünf Grundtöne mit Kontur, Farbe und dem Tonzeichen der Umschrift.
  *
  * `compact` lässt die Erklärtexte weg — für die Lernansicht, wo die Legende
  * nur als Erinnerung dient.
@@ -46,7 +46,7 @@ export function ToneLegend({ compact = false }: { compact?: boolean }) {
               </ThemedText>
               {!compact ? (
                 <ThemedText type="small" themeColor="textSecondary">
-                  {TONES[tone].mark || t('tone.noMark')}
+                  {TONES[tone].roman}
                 </ThemedText>
               ) : null}
             </View>

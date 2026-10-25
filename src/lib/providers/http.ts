@@ -11,6 +11,9 @@
  * schlechtere Geschäft.
  */
 
+/** Gemini-Endpunkt für Text, Bild und Sprache — vorher je Client einzeln definiert. */
+export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+
 /**
  * Beschreibt einen fehlgeschlagenen Aufruf so, dass die Ursache aus der
  * Fehlerliste des Laufs hervorgeht.

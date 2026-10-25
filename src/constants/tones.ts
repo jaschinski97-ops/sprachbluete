@@ -3,12 +3,14 @@
  *
  * Colours, labels and contour paths are carried over from the verified web
  * reference prototype ("Thai Lernbegleiter.html"). The five tones are the
- * standard Thai tone inventory; `mark` names the tone mark that (in the most
- * common spelling class) produces the tone.
+ * standard Thai tone inventory; `roman` is the vowel mark the app's
+ * romanization uses for the tone (a, à, â, á, ǎ).
  *
- * NOTE: the tone mark alone does not determine the tone in Thai — the
- * consonant class and syllable type matter too. `mark` is a learning aid for
- * the tone legend, not a spelling rule.
+ * SEIT 25.10.2026 `roman` STATT `mark`: Die Legende zeigte vorher das
+ * Thai-Tonzeichen (่ = tief, ้ = fallend). Das stimmt nur für Mittel- und
+ * Hochklasse; bei Tiefklasse ergibt ่ „fallend“ (เล่น lên), und die Übung
+ * „Ton herleiten“ widersprach der Legende (Testrunde 25.10.). Die Farben
+ * hängen ohnehin an der Umschrift, deren Zeichen eindeutig sind.
  *
  * FARBEN JE MODUS (Phase 9, AE-24): Der Referenzprototyp hatte **eine**
  * Farbe je Ton. Nachgerechnet nach WCAG 2.1 verfehlte die in beiden
@@ -27,35 +29,35 @@ export const TONES = {
     colors: { light: '#546850', dark: '#88a083' },
     /** contour path drawn in a 34x21 viewBox */
     path: 'M3 10 L31 10',
-    mark: '',
+    roman: 'a',
   },
   low: {
     label: 'Tief',
     adjective: 'Tiefer',
     colors: { light: '#4f6076', dark: '#8a9bb1' },
     path: 'M3 16 L31 16',
-    mark: '่ (mai ek)',
+    roman: 'à',
   },
   falling: {
     label: 'Fallend',
     adjective: 'Fallender',
     colors: { light: '#95503e', dark: '#c88b7a' },
     path: 'M3 5 Q17 5 31 17',
-    mark: '้ (mai tho)',
+    roman: 'â',
   },
   high: {
     label: 'Hoch',
     adjective: 'Hoher',
     colors: { light: '#78602b', dark: '#ba9443' },
     path: 'M3 5 L31 5',
-    mark: '๊ (mai tri)',
+    roman: 'á',
   },
   rising: {
     label: 'Steigend',
     adjective: 'Steigender',
     colors: { light: '#4f6861', dark: '#82a097' },
     path: 'M3 16 Q17 16 31 4',
-    mark: '๋ (mai chattawa)',
+    roman: 'ǎ',
   },
 } as const;
 

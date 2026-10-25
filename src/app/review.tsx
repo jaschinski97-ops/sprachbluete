@@ -453,6 +453,7 @@ function ReviewBody({
 
   return (
     <ScreenScaffold szene="trauerkirsche"
+      ruhig={mode !== 'path'}
       title={t('tabs.learn')}
       scrollRef={scrollRef}
       headerAction={<ZurueckZurUebersicht />}

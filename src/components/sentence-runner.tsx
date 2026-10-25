@@ -295,7 +295,8 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
         disabled={!heard || answer !== null || busy}
         onPress={() => { if (!heard || answer !== null) return; setAnswer(option); if (option === task.answers[0]) setCorrect(value => value + 1); void stopPronunciation(); }} />)}
       {answer !== null && <>
-        <ThemedText accessibilityLiveRegion="polite">{answer === task.answers[0] ? t('sentence.correct') : t('sentence.meant', { answer: task.answers[0] })}</ThemedText>
+        {/* Das Urteil steht auch als Text da, nicht nur als Farbe (Testrunde 25.10.). */}
+        <ThemedText accessibilityLiveRegion="polite">{answer === task.answers[0] ? t('sentence.correct') : `${t('drill.wrong')} · ${t('sentence.meant', { answer: task.answers[0] })}`}</ThemedText>
         <ThemedText>{task.text}</ThemedText>
         {language === 'th' && task.roman && task.roman !== task.text ? <ThemedText>{task.roman}</ThemedText> : null}
         <ThemedText type="small">{task.focus}</ThemedText>

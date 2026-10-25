@@ -19,15 +19,13 @@ import Animated, {
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/use-theme';
+import { useNutzerAktiv } from '@/lib/aktivitaet';
 
 /**
  * Effekt-Bausteine der Oberfläche (seit 23.10.2026 „Kirschblüte“, Tag und
@@ -108,28 +106,45 @@ export function GradientFill({ radius = 0, from, to }: { radius?: number; from?:
  * Ein Glanzlicht, das alle paar Sekunden schräg über die Fläche wandert —
  * für den einen wichtigsten Knopf eines Bildschirms. Der Elternrahmen
  * braucht `overflow: 'hidden'`.
+ *
+ * Akku (25.10.2026): bewegt per `translateX` statt über `left` (das zwang den
+ * Browser zu einem Layout je Bild), zwischen zwei Durchläufen läuft keine
+ * Animationsschleife mehr, sondern nur ein Zeitgeber, und bei ruhendem
+ * Nutzer (`lib/aktivitaet`) steht es ganz.
  */
 export function Shine({ every = 4200 }: { every?: number }) {
   const reduce = useReducedMotion();
   const sichtbar = useScreenFocused();
+  const nutzerAktiv = useNutzerAktiv();
   const x = useSharedValue(-1);
+  const breite = useSharedValue(0);
+  const laeuft = !reduce && sichtbar && nutzerAktiv;
   useEffect(() => {
-    if (reduce || !sichtbar) return;
-    x.set(
-      withRepeat(
-        withSequence(withTiming(-1, { duration: 0 }), withDelay(every, withTiming(1, { duration: 1100, easing: Easing.out(Easing.cubic) }))),
-        -1,
-        false
-      )
-    );
-    return () => cancelAnimation(x);
-  }, [every, reduce, sichtbar, x]);
-  const style = useAnimatedStyle(() => ({ left: `${-40 + 140 * ((x.value + 1) / 2)}%` as `${number}%` }));
+    if (!laeuft) return;
+    const durchlauf = () => {
+      x.set(-1);
+      x.set(withTiming(1, { duration: 1100, easing: Easing.out(Easing.cubic) }));
+    };
+    const uhr = setInterval(durchlauf, every + 1100);
+    return () => {
+      clearInterval(uhr);
+      cancelAnimation(x);
+      x.set(-1);
+    };
+  }, [every, laeuft, x]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: breite.value * (-0.4 + 1.4 * ((x.value + 1) / 2)) }, { skewX: '-20deg' }],
+  }));
   if (reduce) return null;
   return (
-    <Animated.View pointerEvents="none" style={[styles.shine, style]}>
-      <GradientFill from="rgba(255,255,255,0)" to="rgba(255,255,255,0.45)" />
-    </Animated.View>
+    <View
+      pointerEvents="none"
+      style={StyleSheet.absoluteFill}
+      onLayout={(event) => breite.set(event.nativeEvent.layout.width)}>
+      <Animated.View style={[styles.shine, style]}>
+        <GradientFill from="rgba(255,255,255,0)" to="rgba(255,255,255,0.45)" />
+      </Animated.View>
+    </View>
   );
 }
 
@@ -269,25 +284,13 @@ export function useCountUp(text: string, duration = 700): string {
   return animiert ? `${wert}${rest}` : text;
 }
 
-/** Ein sanftes, endloses Pulsieren — z. B. für einen Leuchtpunkt. */
-export function usePulse(min = 0.55, max = 1, duration = 1600) {
-  const reduce = useReducedMotion();
-  const v = useSharedValue(max);
-  useEffect(() => {
-    if (reduce) return;
-    v.set(withRepeat(withTiming(min, { duration, easing: Easing.inOut(Easing.sin) }), -1, true));
-    return () => cancelAnimation(v);
-  }, [duration, max, min, reduce, v]);
-  return useAnimatedStyle(() => ({ opacity: v.value }));
-}
-
 const styles = StyleSheet.create({
   shine: {
     position: 'absolute',
     top: 0,
     bottom: 0,
+    left: 0,
     width: '35%',
-    transform: [{ skewX: '-20deg' }],
   },
   disabled: {
     opacity: 0.45,

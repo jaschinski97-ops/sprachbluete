@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
   withDelay,
   withRepeat,
+  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 // `Symbol` umbenannt: Unter dem eigenen Namen überdeckt es das eingebaute
@@ -32,6 +33,7 @@ import { useScreenFocused, useSvgId } from './fx';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
+import { useNutzerAktiv } from '@/lib/aktivitaet';
 
 /**
  * Kirschblüten-Szenen hinter den Reitern (23.10.2026, Nutzerwunsch „bei
@@ -46,8 +48,9 @@ import { useTheme } from '@/hooks/use-theme';
  * - `fuji` (Einstellungen): gemalter Fuji am See mit Mond oder Sonne,
  *   darüber ziehender Dunst und ein wiegender Zweig.
  *
- * Überall fallen Blütenblätter. Unsichtbare Reiter und „Bewegung
- * reduzieren“ halten alles an; dann stehen die Blätter still im Bild.
+ * Überall fallen Blütenblätter. Unsichtbare Reiter, „Bewegung reduzieren“,
+ * Übungen (`ruhig`) und 45 s ohne Berührung (`lib/aktivitaet`) halten alles
+ * an; dann stehen die Blätter still im Bild.
  * Alles liegt unter dem Inhalt und fängt keine Berührungen.
  */
 export type SzenenArt = 'zweige' | 'trauerkirsche' | 'laternen' | 'fluss' | 'fuji';
@@ -63,12 +66,32 @@ function seeded(seed: number) {
   };
 }
 
+/**
+ * Startet die Schleife 0 → 1 → 0 → 1 … — nach einer Pause genau dort, wo
+ * sie stand (25.10.2026). Vorher lief `withRepeat` nach einer Pause nur noch
+ * zwischen dem Haltepunkt und 1: Die Zweige zuckten an jeder Rundengrenze,
+ * und die Blätter sprangen beim Aufwachen alle nach oben.
+ */
+function starteSchleife(wert: SharedValue<number>, dauer: number, verzug: number): void {
+  const runde = withRepeat(
+    withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: dauer, easing: Easing.linear })),
+    -1,
+    false
+  );
+  const stand = wert.get();
+  if (stand > 0 && stand < 1) {
+    wert.set(withSequence(withTiming(1, { duration: dauer * (1 - stand), easing: Easing.linear }), runde));
+  } else {
+    wert.set(withDelay(verzug, runde));
+  }
+}
+
 /** Eine endlose Schleife 0 → 1, solange `aktiv`. */
 function useSchleife(dauer: number, aktiv: boolean, verzug = 0): SharedValue<number> {
   const wert = useSharedValue(0);
   useEffect(() => {
     if (!aktiv) return;
-    wert.set(withDelay(verzug, withRepeat(withTiming(1, { duration: dauer, easing: Easing.linear }), -1, false)));
+    starteSchleife(wert, dauer, verzug);
     return () => cancelAnimation(wert);
   }, [aktiv, dauer, verzug, wert]);
   return wert;
@@ -589,8 +612,8 @@ function FallendesBlatt({ werte, aktiv }: { werte: BlattWerte; aktiv: boolean })
 
   useEffect(() => {
     if (!aktiv) return;
-    weg.set(0);
-    weg.set(withDelay(werte.verzug, withRepeat(withTiming(1, { duration: werte.dauer, easing: Easing.linear }), -1, false)));
+    // Läuft vom stillen Platz (`ruhe`) bzw. Haltepunkt aus weiter.
+    starteSchleife(weg, werte.dauer, werte.verzug);
     return () => cancelAnimation(weg);
   }, [aktiv, weg, werte.dauer, werte.verzug]);
 
@@ -649,12 +672,16 @@ function Himmel() {
   );
 }
 
-export function SakuraBackground({ szene = 'zweige' }: { szene?: SzenenArt }) {
+export function SakuraBackground({ szene = 'zweige', ruhig = false }: { szene?: SzenenArt; ruhig?: boolean }) {
   const reduce = useReducedMotion();
   const sichtbar = useScreenFocused();
   const { width } = useWindowDimensions();
   const massstab = Math.max(1, Math.min(1.6, width / VB_B));
-  const aktiv = !reduce && sichtbar;
+  // `ruhig` (25.10.2026): während Übungen steht die Szene still — sie lief
+  // dort vorher dauerhaft mit 10–20 Blättern und wiegenden Zweigen.
+  // Und nur, solange jemand die App benutzt (Akku, `lib/aktivitaet`).
+  const nutzerAktiv = useNutzerAktiv();
+  const aktiv = !reduce && sichtbar && !ruhig && nutzerAktiv;
   const blaetter = useMemo(() => blattWerte(BLAETTER_JE_SZENE[szene]), [szene]);
 
   return (

@@ -184,6 +184,29 @@ export function thaiConsonantKeyword(consonant: ThaiConsonant): string {
   return consonant.name.split(' ').slice(1).join(' ');
 }
 
+/**
+ * Umschrift der 44 Merkwörter im Paiboon-Stil der App (25.10.2026). Vorher
+ * kam sie aus dem Wortschatz; seit dem Neuaufbau stehen viele Merkwörter
+ * (ฉิ่ง, ปฏัก, ฤๅษี …) dort nicht mehr, und die Kachel zeigte nur „chɔ̌ɔ“.
+ * Feste Tabelle statt Wortschatz: Ein Test prüft jede Zeile gegen die
+ * Tonregeln aus der Schrift und den Umschrift-Wächter.
+ */
+export const MERKWORT_UMSCHRIFT: Readonly<Record<string, string>> = {
+  'ไก่': 'gài', 'ไข่': 'khài', 'ขวด': 'khùat', 'ควาย': 'khwaai', 'คน': 'khon', 'ระฆัง': 'rá-khang',
+  'งู': 'nguu', 'จาน': 'jaan', 'ฉิ่ง': 'chìng', 'ช้าง': 'cháang', 'โซ่': 'sôo', 'เฌอ': 'chəə',
+  'หญิง': 'yǐng', 'ชฎา': 'chá-daa', 'ปฏัก': 'bpà-dtàk', 'ฐาน': 'thǎan', 'มณโฑ': 'mon-thoo',
+  'ผู้เฒ่า': 'phûu-thâo', 'เณร': 'neen', 'เด็ก': 'dèk', 'เต่า': 'dtào', 'ถุง': 'thǔng',
+  'ทหาร': 'thá-hǎan', 'ธง': 'thong', 'หนู': 'nǔu', 'ใบไม้': 'bai-máai', 'ปลา': 'bplaa',
+  'ผึ้ง': 'phʉ̂ng', 'ฝา': 'fǎa', 'พาน': 'phaan', 'ฟัน': 'fan', 'สำเภา': 'sǎm-phao', 'ม้า': 'máa',
+  'ยักษ์': 'yák', 'เรือ': 'rʉa', 'ลิง': 'ling', 'แหวน': 'wɛ̌ɛn', 'ศาลา': 'sǎa-laa', 'ฤๅษี': 'rʉʉ-sǐi',
+  'เสือ': 'sʉ̌a', 'หีบ': 'hìip', 'จุฬา': 'jù-laa', 'อ่าง': 'àang', 'นกฮูก': 'nók-hûuk',
+};
+
+/** Umschrift des Merkworts, z. B. „gài“ für ก. */
+export function thaiConsonantKeywordRoman(consonant: ThaiConsonant): string | null {
+  return MERKWORT_UMSCHRIFT[thaiConsonantKeyword(consonant)] ?? null;
+}
+
 /** Was die Stimme liest: der Name in Thai-Schrift, ก → „กอ ไก่“. */
 export function thaiConsonantSpoken(consonant: ThaiConsonant): string {
   return `${consonant.symbol}อ ${thaiConsonantKeyword(consonant)}`;

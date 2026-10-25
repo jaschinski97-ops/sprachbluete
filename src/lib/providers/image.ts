@@ -1,4 +1,4 @@
-import { fieldNamesOf, postJson } from './http';
+import { fieldNamesOf, GEMINI_BASE, postJson } from './http';
 import { ImageClient, ImageRequest, ImageResponse, ProviderId, unsupported } from './types';
 
 /**
@@ -54,7 +54,6 @@ export function withPromptFallbacks(request: ImageRequest): string {
 // Gemini (Google)
 // ---------------------------------------------------------------------------
 
-export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /**
  * Liest ein Bild aus einer `generateContent`-Antwort.

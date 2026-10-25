@@ -37,6 +37,10 @@ export function ThemedButton({ label, variant = 'secondary', disabled, ...rest }
     <PressableScale
       disabled={disabled}
       accessibilityRole="button"
+      // Ausdrücklich gesetzt (25.10.2026): Im Web kam die Beschriftung über
+      // Verlauf und Animationsrahmen nicht als Name beim Screenreader an.
+      // Ein eigenes `accessibilityLabel` in `rest` gewinnt weiterhin.
+      accessibilityLabel={label}
       accessibilityState={{ disabled: Boolean(disabled) }}
       style={[
         styles.button,

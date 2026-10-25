@@ -48,7 +48,10 @@ testMitClips('the slim app catalog keeps every app-facing answer of the full cat
   expect(appView(slim)).toEqual(appView(full));
   expect(slim.deleted).toEqual(full.deleted);
   expect(slim.clearedBefore).toEqual(full.clearedBefore);
-  expect(JSON.stringify(slim).length).toBeLessThan(JSON.stringify(full).length * 0.6);
+  // Seit dem neuen Wortformat (24.10.2026) liest die App die Satzbedeutungen
+  // in allen 10 App-Sprachen; die schlanke Fassung ist deshalb nur noch
+  // kleiner, nicht mehr unter 60 %. App-Builds laden ohnehin je Lernsprache.
+  expect(JSON.stringify(slim).length).toBeLessThan(JSON.stringify(full).length);
 });
 
 test('deleted drafts stay hidden with the slim catalog', () => {

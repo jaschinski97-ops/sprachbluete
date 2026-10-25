@@ -108,8 +108,17 @@ class AutomaticDelivery {
   }
   async accept(token, payload) {
     const run = this.require(token);
-    const entry = await this.pipeline.stage(payload, { catalog: run.catalog, vocabulary: [...run.vocabulary.values()] });
-    if (!isDeliverableEntry(entry)) throw Error(entry.check.reason ?? entry.check.tone?.reason ?? 'Inhaltsprüfung fehlgeschlagen.');
+    const entry = await this.pipeline.stage(payload, { catalog: run.catalog, vocabulary: [...run.vocabulary.values()] }).catch((error) => {
+      // Ein Eintrag, der den Vertrag verletzt, betrifft nur sich selbst.
+      if (/Vertrag/.test(error.message)) error.abgelehnt = true;
+      throw error;
+    });
+    if (!isDeliverableEntry(entry)) {
+      // Nur DIESER Eintrag fällt durch (z. B. Ton-Gate) — der Lauf geht weiter.
+      const fehler = Error(entry.check.reason ?? entry.check.tone?.reason ?? 'Inhaltsprüfung fehlgeschlagen.');
+      fehler.abgelehnt = true;
+      throw fehler;
+    }
     const previous = run.entries.get(keyOf(entry)) ?? run.catalog.entries.find(item => keyOf(item) === keyOf(entry));
     const budgetBytes = run.budgetBytes - (previous ? shippingBytes(previous) : 0) + shippingBytes(entry);
     if (budgetBytes > BUDGET) throw Error('Inhaltsbudget überschritten; dieser Eintrag bleibt im Stage.');

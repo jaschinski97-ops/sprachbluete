@@ -15,6 +15,7 @@ import type { ConversationSituation as Situation } from '@/lib/conversation/type
 import { estimateRunCost } from './run-cost';
 import { Drossel, gedrosselt } from '@/lib/generation/drossel';
 import { clearContentSelection, startAutomaticDelivery, studioRequest, type StudioState } from './content-client';
+import { abgelehntZeile, ladeLetztenLauf, merkeLetztenLauf } from './last-run';
 import { fahreKette, planChain, type ChainStep } from './chain-run';
 import { limitPlan } from '@/lib/generation/plan';
 import { planDeliveryAudio } from '@/lib/content/audio-plan';
@@ -245,6 +246,26 @@ export default function ContentStudio() {
   const [running, setRunning] = useState(false);
   const [reportRevision, setReportRevision] = useState(0);
   const [exportMessage, setExportMessage] = useState('');
+  // Ergebnis des letzten Laufs — übersteht das Neuladen am Laufende.
+  const [letzterLauf, setLetzterLauf] = useState(ladeLetztenLauf);
+  /** Schließt die Übernahme ab und hält das Ergebnis fest, auch bei Abbruch. */
+  const schliesseAb = useCallback(async (
+    delivery: Awaited<ReturnType<typeof startAutomaticDelivery>>, extra: string[] = [],
+  ) => {
+    let count = 0;
+    let fehler: unknown;
+    try { count = await delivery.finish(); } catch (error) { fehler = error; }
+    const text = [
+      t('studio.autoDelivered', { count }),
+      abgelehntZeile(delivery.rejected),
+      ...extra,
+      fehler ? `Lauf abgebrochen: ${fehler instanceof Error ? fehler.message : String(fehler)}` : null,
+    ].filter(Boolean).join('\n');
+    setExportMessage(text);
+    merkeLetztenLauf(text);
+    setLetzterLauf(ladeLetztenLauf());
+    if (fehler) throw fehler;
+  }, [t]);
   const [situations, setSituations] = useState<number | null>(null);
   const [storedSituations, setStoredSituations] = useState<ConversationSituation[]>([]);
   const [situationsByDirection, setSituationsByDirection] = useState<SituationDirectionCounts | null>(null);
@@ -453,16 +474,13 @@ export default function ContentStudio() {
             },
           }));
     } finally {
-      const count = await delivery.finish();
-      setExportMessage([
-        t('studio.autoDelivered', { count }),
-        ...(ohneAlleWoerter.length ? [t('studio.dialogMissingWords', { count: ohneAlleWoerter.length, list: ohneAlleWoerter.join(' · ') })] : []),
-      ].join('\n'));
+      await schliesseAb(delivery,
+        ohneAlleWoerter.length ? [t('studio.dialogMissingWords', { count: ohneAlleWoerter.length, list: ohneAlleWoerter.join(' · ') })] : []);
       await studioRequest('/state');
     }
     setReportRevision(value => value + 1);
   },
-    [t]
+    [t, schliesseAb]
   );
 
   const startImages = useCallback(
@@ -498,13 +516,12 @@ export default function ContentStudio() {
           onProduced: (document, base64) => delivery.deliver('images', document, base64),
         }));
     } finally {
-      const count = await delivery.finish();
-      setExportMessage(t('studio.autoDelivered', { count }));
+      await schliesseAb(delivery);
       await studioRequest('/state');
     }
     setReportRevision(value => value + 1);
   },
-    [t, ownImageConcepts]
+    [t, ownImageConcepts, schliesseAb]
   );
 
   const startClips = useCallback(
@@ -532,10 +549,12 @@ export default function ContentStudio() {
       const drossel = new Drossel({ max: parallel });
       const client = gedrosselt(createClipGenerationClient(provider, apiKey, model, voice ?? ''), drossel);
       const delivery = await startAutomaticDelivery(count => setExportMessage(t('studio.autoDelivered', { count })));
+      /** Selbststopps der Tonprüfung (Notstopp, Register-Probe) für die Endmeldung. */
+      const stopps: string[] = [];
       try {
         await fahreKette(steps, all.length, { onChainStep, onProgress, shouldCancel },
           async (missing, onStepProgress) => {
-            await runClipBatch({
+            const ergebnis = await runClipBatch({
               specs: missing,
               client,
               // 18.09.: Das Tontor liest die Solltöne je Silbe aus dem AKTIVEN
@@ -548,15 +567,15 @@ export default function ContentStudio() {
               onProduced: (document, base64) => delivery.deliver('audio', document, base64),
               concurrency: parallel,
             });
+            for (const fehler of ergebnis.errors) if (fehler.id.startsWith('ton-')) stopps.push(fehler.message);
           });
       } finally {
-        const count = await delivery.finish();
-        setExportMessage(t('studio.autoDelivered', { count }));
+        await schliesseAb(delivery, stopps);
         await studioRequest('/state');
       }
       setReportRevision(value => value + 1);
     },
-    [t]
+    [t, schliesseAb]
   );
 
   return (
@@ -606,6 +625,11 @@ export default function ContentStudio() {
       {section === 'keys' ? <ApiKeysCard /> : null}
       {section === 'reports' ? <><ContentReport revision={reportRevision} /><DiagnosticsCard /></> : null}
       {exportMessage ? <ThemedText accessibilityLiveRegion="polite" type="small">{exportMessage}</ThemedText> : null}
+      {!exportMessage && letzterLauf ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {`Letzter Lauf (beendet ${new Date(letzterLauf.at).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}):\n${letzterLauf.text}`}
+        </ThemedText>
+      ) : null}
       {/* Phase 2, Schritt 2: Unterreiter „Text, Wörter & Inhalte“ — die
           Wortschatz-Karte zeigt den Bestand und den Weg zur Zielgrößen-
           Erzeugung (Schritt 4 baut sie aus); Dialoge laufen wie bisher. */}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 25.10.2026
+
+- Studio-Läufe brechen nicht mehr ab, wenn der Helper einen einzelnen Eintrag ablehnt. Bisher beendete eine einzige Ablehnung (z. B. ein Thai-Clip, der bei der zweiten Tonprüfung im Helper durchfiel) den ganzen Lauf; der erste Gemini-Hörclip-Lauf stoppte so nach 1.172 Thai-Wörtern. Jetzt antwortet der Helper bei einer Ablehnung oder Vertragsverletzung mit 422, das Studio zählt den Eintrag und arbeitet weiter; der nächste Lauf erzeugt ihn neu. Abbruch nur noch bei echten Fehlern (Budget, Helper weg, Lauf nicht mehr aktiv).
+- Das Ergebnis eines Laufs (übernommen, abgelehnt mit Gründen, Tonstopps, Abbruchgrund) steht nach dem Neuladen am Laufende weiter im Studio („Letzter Lauf …“, `src/dev/last-run.ts`, localStorage). Vorher sprang die App zur Übersicht und die Meldung war weg.
+- Zwei Katalogtests passen zum Zwischenstand der Clip-Läufe: Sprachen ohne Clips werden beim Clip-Abgleich übersprungen, und die schlanke App-Fassung muss nur noch kleiner als der volle Katalog sein (mit Satzbedeutungen in 10 App-Sprachen liegt sie bei rund 80 %).
+
 ## 24.10.2026
 
 - 200 neue Dialoge im Katalog (je Lernsprache 25 Anfänger, 15 Fortgeschritten, 10 Profi), von Claude geschrieben statt eines bezahlten Studio-Laufs. Wortplanung wie im Studio (je Dialog die nächsten 20 noch nicht abgedeckten Wörter plus 4 zum Wiederholen), Prüfung mit dem Studio-Parser, Thai-Zeilen zusätzlich gegen Tonregeln und Umschrift. Englisch, Spanisch und Deutsch wurden danach Korrektur gelesen (u. a. „I send them now“ → „I'll send them now“); fünf geänderte deutsche Korrektur-Hinweise in alle Sprachen nachgezogen. Die Dialoge sind jetzt die Kapitel unter „Lernen“. Der Preis-Test von Kapitel 0 prüft nicht mehr feste Beträge, sondern dass mindestens ein Preis je Sprache wortgleich in den Dialogen steht.

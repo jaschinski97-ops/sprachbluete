@@ -68,6 +68,35 @@ test('failed delivery stops subsequent handoffs and finish still saves earlier a
   } finally { await delivery.finish().catch(() => {}); global.fetch = originalFetch; }
 });
 
+test('a single item rejected by the helper check (422) is counted and the run keeps delivering', async () => {
+  const originalFetch = global.fetch;
+  const originalCatalog = currentCatalog();
+  setCurrentCatalog({ version: 2, entries: [] });
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  global.fetch = jest.fn(async (url, options) => {
+    if (String(url).endsWith('/delivery/start')) return { ok: true, json: async () => ({ token: 'run' }) } as Response;
+    if (String(url).endsWith('/delivery/item')) {
+      const payload = JSON.parse(options!.body as string);
+      if (payload.document.id === 'bad') return { ok: false, status: 422, json: async () => ({ error: 'Ton-Check fehlgeschlagen', abgelehnt: true }) } as Response;
+      return { ok: true, status: 200, json: async () => ({ kind: payload.kind, id: payload.document.id, document: payload.document }) } as Response;
+    }
+    return { ok: true, json: async () => ({ count: 2 }) } as Response;
+  });
+  const gemeldet: number[] = [];
+  const delivery = await startAutomaticDelivery(undefined, (rejected) => gemeldet.push(rejected.length));
+  try {
+    await delivery.deliver('audio', { id: 'good' });
+    await delivery.deliver('audio', { id: 'bad' });
+    await delivery.deliver('audio', { id: 'later' });
+    await delivery.flush();
+    expect(delivery.failed).toBe(false);
+    expect(delivery.rejected).toEqual([{ id: 'bad', reason: 'Ton-Check fehlgeschlagen' }]);
+    expect(gemeldet).toEqual([1]);
+    expect(await delivery.finish()).toBe(2);
+    expect(currentCatalog().entries.map((e: ContentEntry) => e.id)).toEqual(['good', 'later']);
+  } finally { await delivery.finish().catch(() => {}); global.fetch = originalFetch; setCurrentCatalog(originalCatalog); warn.mockRestore(); }
+});
+
 test('invalid local records and missing media do not prevent later drafts from exporting', async () => {
   const originalFetch = global.fetch;
   const staged: { kind: string; document: { id: string } }[] = [];

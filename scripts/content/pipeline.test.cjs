@@ -115,7 +115,8 @@ test('failed checks never become live; external catalog edits retain the recover
   const delivery = new AutomaticDelivery(pipeline);
   const { token } = await delivery.begin();
   const word = VOCABULARY.find(item => item.id === 'kha');
-  await assert.rejects(delivery.accept(token, audio(wav(120, 240), word)));
+  // Nur dieser Eintrag fällt durch; der Lauf bleibt aktiv (Studio zählt ihn, bricht nicht ab).
+  await assert.rejects(delivery.accept(token, audio(wav(120, 240), word)), (error) => error.abgelehnt === true);
   assert.equal(delivery.catalog().entries.length, 0);
   await delivery.accept(token, { kind: 'situations', document: situation });
   await pipeline.writeCatalog({ version: 2, entries: [], deleted: { unrelated: 1 } });
@@ -141,7 +142,7 @@ test('automatic delivery keeps budget accounting correct for replacements and re
   const replacement = await delivery.accept(token, { kind: 'situations', document: { ...situation, setting: 'longer setting for replacement' } });
   assert.equal(delivery.active.budgetBytes, shippingBytes(replacement));
   delivery.active.budgetBytes = BUDGET;
-  await assert.rejects(delivery.accept(token, { kind: 'situations', document: { ...situation, id: 'greeting-A1-de_to_th-002' } }), /Budget|budget/);
+  await assert.rejects(delivery.accept(token, { kind: 'situations', document: { ...situation, id: 'greeting-A1-de_to_th-002' } }), (error) => /Budget|budget/.test(error.message) && !error.abgelehnt);
   assert.equal(delivery.catalog().entries.length, 1);
   assert.deepEqual(await delivery.finish(token), { count: 1 });
 });

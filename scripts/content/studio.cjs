@@ -315,7 +315,10 @@ function createStudio(root, { getApiKey, openaiFetch, logRun, allowRequest = cre
       const operation = queue.then(action);
       queue = operation.catch(() => {});
       json(200, await operation);
-    } catch (error) { json(400, { error: error.message }); }
+    } catch (error) {
+      // 422: ein einzelner Eintrag hat die Prüfung nicht bestanden; der Lauf bleibt aktiv.
+      json(error.abgelehnt ? 422 : 400, error.abgelehnt ? { error: error.message, abgelehnt: true } : { error: error.message });
+    }
   });
   const idle = setInterval(() => {
     if (generating || !delivery.active || Date.now() - delivery.active.touched < 120000) return;

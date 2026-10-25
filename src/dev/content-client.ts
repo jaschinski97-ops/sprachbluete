@@ -38,18 +38,24 @@ export async function clearContentSelection(kind: 'vocabulary' | 'situations' | 
 export const STUDIO_URL = 'http://127.0.0.1:8082';
 /** One durable delivery per new item. One in-flight handoff can overlap the
  * next model request; awaiting the previous item bounds memory and failures. */
-export async function startAutomaticDelivery(onDelivered?: (count: number) => void) {
+export async function startAutomaticDelivery(
+  onDelivered?: (count: number) => void,
+  onRejected?: (rejected: { id: string; reason: string }[]) => void,
+) {
   const { token } = await studioRequest<{ token: string }>('/delivery/start', {});
   let pending: Promise<void> = Promise.resolve();
   let handoff: Promise<void> = Promise.resolve();
   let count = 0;
   let failure: unknown;
   let finalized = false;
+  // Einzelne Einträge, die der Helper abgelehnt hat — sie stoppen den Lauf nicht.
+  const rejected: { id: string; reason: string }[] = [];
   const heartbeat = setInterval(() => {
     void studioRequest('/delivery/touch', { token }).catch(error => { failure = error; });
   }, 30000);
   return {
     get failed() { return failure !== undefined; },
+    get rejected() { return [...rejected]; },
     deliver(kind: ContentEntry['kind'], document: unknown, base64?: string) {
       // Audio workers may arrive together: serialize enqueueing as well as HTTP.
       handoff = handoff.then(async () => {
@@ -59,6 +65,12 @@ export async function startAutomaticDelivery(onDelivered?: (count: number) => vo
           const catalog = currentCatalog();
           setLiveCatalog({ ...catalog, entries: [...catalog.entries.filter(item => item.kind !== entry.kind || item.id !== entry.id), entry] });
           invalidateClipIndex(); count += 1; onDelivered?.(count);
+        }, (error: Error & { abgelehnt?: boolean }) => {
+          if (!error.abgelehnt) throw error;
+          const id = (document as { id?: string } | null)?.id ?? '?';
+          rejected.push({ id, reason: error.message });
+          console.warn(`[Studio] ${id} abgelehnt: ${error.message}`);
+          onRejected?.([...rejected]);
         });
         // Keep a rejection observed until finish/deliver propagates it to the UI.
         void pending.catch(error => { failure = error; });
@@ -125,7 +137,12 @@ export async function studioRequest<T>(path: string, data?: unknown): Promise<T>
     });
   } catch { throw new Error('Lokales Inhaltsstudio nicht erreichbar. Im Repo „npm run content:studio“ starten.'); }
   const result = await response.json();
-  if (!response.ok) throw new Error(result.error ?? 'Inhaltsexport fehlgeschlagen.');
+  if (!response.ok) {
+    const error = new Error(result.error ?? 'Inhaltsexport fehlgeschlagen.') as Error & { abgelehnt?: boolean };
+    // 422 = nur dieser Eintrag fiel durch die Prüfung des Helpers.
+    if (response.status === 422 || result.abgelehnt) error.abgelehnt = true;
+    throw error;
+  }
   if (path === '/state') setLiveCatalog((result as StudioState).shipped);
   return result as T;
 }

@@ -2,6 +2,7 @@
 
 ## 25.10.2026
 
+- Katalogbilder auf 512-Pixel-WebP verkleinert (`content-plan/verkleinere-bilder.cjs`): Gemini liefert 1024er JPEGs mit rund 380 KB, die App zeigt höchstens 512 Pixel. Alle 616 Bilder gingen als neue Fassung durch die Helper-Prüfung (Qualität 85, optisch gleich): 237 MiB → 8,4 MiB. Damit passen alle geplanten Hörclips ins 512-MiB-Budget; vorher wäre der Clip-Lauf spätestens bei Deutsch am Budget gescheitert.
 - Studio-Läufe brechen nicht mehr ab, wenn der Helper einen einzelnen Eintrag ablehnt. Bisher beendete eine einzige Ablehnung (z. B. ein Thai-Clip, der bei der zweiten Tonprüfung im Helper durchfiel) den ganzen Lauf; der erste Gemini-Hörclip-Lauf stoppte so nach 1.172 Thai-Wörtern. Jetzt antwortet der Helper bei einer Ablehnung oder Vertragsverletzung mit 422, das Studio zählt den Eintrag und arbeitet weiter; der nächste Lauf erzeugt ihn neu. Abbruch nur noch bei echten Fehlern (Budget, Helper weg, Lauf nicht mehr aktiv).
 - Das Ergebnis eines Laufs (übernommen, abgelehnt mit Gründen, Tonstopps, Abbruchgrund) steht nach dem Neuladen am Laufende weiter im Studio („Letzter Lauf …“, `src/dev/last-run.ts`, localStorage). Vorher sprang die App zur Übersicht und die Meldung war weg.
 - Zwei Katalogtests passen zum Zwischenstand der Clip-Läufe: Sprachen ohne Clips werden beim Clip-Abgleich übersprungen, und die schlanke App-Fassung muss nur noch kleiner als der volle Katalog sein (mit Satzbedeutungen in 10 App-Sprachen liegt sie bei rund 80 %).

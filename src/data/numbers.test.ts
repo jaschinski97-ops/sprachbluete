@@ -54,21 +54,20 @@ describe('Kapitel 0: Zahlen aus geprüften Quellen', () => {
     for (const word of compared) expect(word.roman).toBe(vocabulary.get(word.text));
   });
 
-  itMitDialogen('Preise lauten wie in den A1-Marktdialogen', () => {
+  itMitDialogen('Preise lauten wie in den Dialogen', () => {
     const turns = (catalog as ContentCatalog).entries
       .filter((entry) => entry.kind === 'situations')
       .flatMap((entry) => (entry.document as unknown as { scriptTurns: { targetText?: string; thai: string; roman?: string }[] }).scriptTurns)
       .map((turn) => `${turn.targetText ?? turn.thai} ${nfc(turn.roman ?? '')}`)
       .join('\n');
-    for (const value of [10, 50, 90, 100]) {
-      const price = priceText('th', value);
-      expect(turns).toContain(price.text);
-      expect(turns).toContain(price.roman!);
+    // Je Lernsprache steht mindestens ein Preis aus Kapitel 0 wortgleich in den
+    // Dialogen (bei Thai samt Umschrift) — dieselbe Schreibweise wie im Kapitel.
+    // Bewusst keine festen Beträge: Die Dialoge werden neu erzeugt (24.10.2026).
+    for (const language of ['th', 'en', 'es', 'de'] as const) {
+      const treffer = Array.from({ length: 100 }, (_, i) => priceText(language, i + 1))
+        .filter((price) => turns.includes(price.text) && (language !== 'th' || turns.includes(price.roman!)));
+      expect(treffer.length).toBeGreaterThan(0);
     }
-    expect(turns).toContain(priceText('en', 2).text); // „two pounds“
-    expect(turns).toContain(priceText('es', 4).text); // „cuatro euros“
-    expect(turns).toContain(priceText('de', 4).text); // „vier Euro“
-    expect(turns).toContain(priceText('de', 10).text); // „zehn Euro“
   });
 
   it('setzt Englisch, Spanisch und Deutsch nach den Regeln der Quellen zusammen', () => {

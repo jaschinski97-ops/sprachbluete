@@ -5,6 +5,7 @@ const domain = require('./domain.cjs');
 const { planDeliveryAudio } = domain.load('src/lib/content/audio-plan');
 const { pruefeZielwoerter } = domain.load('src/lib/conversation/dialog-words');
 const { checkThaiTone } = domain.load('src/lib/content/tone-gate');
+const { sollToeneFuerClipAusSchrift } = domain.load('src/lib/content/soll-toene-schrift');
 const { isDeliverableEntry } = domain.load('src/lib/content/audio-policy');
 const { decodeAudio, decodeImage } = require('./media.cjs');
 const { vocabSchluessel } = domain.load('src/lib/content/vocab-schema');
@@ -55,7 +56,16 @@ function checkContent(root, { integrityOnly = false, extraVocabulary = [] } = {}
         audioCompressedBytes += bytes.length;
         // 18.09.: Solltöne aus dem Katalogwortschatz — das Tor findet die ki-*-Woerter nur so.
         const toneWortschatz = [...extraVocabulary, ...catalog.entries.filter(e => e.kind === 'vocabulary').map(e => e.document)];
-        const tone = checkThaiTone(entry.document, decodeAudio(path.join(root, 'assets/content', entry.asset)), 24000, { woerter: toneWortschatz });
+        // 26.10.2026: dieselben Soll-Töne wie beim Übernehmen (pipeline.checkEntry):
+        // aus Schrift UND Umschrift, auch für Dialogzeilen; strittig = ungeprüft.
+        // Vorher rechnete die Prüfung ohne sie und meldete jede so geprüfte
+        // Dialogzeile als „Status verändert“.
+        const situationen = catalog.entries.filter(e => e.kind === 'situations').map(e => e.document);
+        const soll = entry.document.language === 'th' ? sollToeneFuerClipAusSchrift(entry.document, toneWortschatz, situationen) : null;
+        const tone = soll?.art === 'strittig'
+          ? { status: 'unchecked', reason: `Soll-Töne strittig: ${soll.grund}` }
+          : checkThaiTone(entry.document, decodeAudio(path.join(root, 'assets/content', entry.asset)), 24000, { woerter: toneWortschatz },
+            soll?.art === 'ok' ? { sollToene: soll.sollToene, sollRoman: soll.sollRoman } : undefined);
         if (entry.check.tone?.status !== tone.status || tone.status === 'failed') throw Error('Thai-Tontor nicht bestanden oder Status verändert: ' + tone.reason);
         if (entry.document.language === 'th' && tone.status === 'unchecked') uncheckedThaiDelivered++;
       } else if (entry.kind === 'images') {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 26.10.2026
+
+- Hörclips komplett im Katalog: alle vier Lernsprachen mit Wörtern, Beispielsätzen und Dialogzeilen (gemini-3.8-flash-tts, Stimme Kore), dazu die 616 Begriffsbilder. Rund 30 Thai-Clips fehlen nach Ton-Gate-Verwurf; dort spricht die Systemstimme. Medien ~437 MiB.
+- `content:integrity` rechnet die Thai-Solltöne jetzt wie die Übernahme aus Schrift und Umschrift (`sollToeneFuerClipAusSchrift`), auch für Dialogzeilen. Vorher meldete sie jede so geprüfte Dialogzeile als „Status verändert“.
+
 ## 25.10.2026
 
 - Tageslimit des Anbieters stoppt Studio-Läufe sofort (`lib/generation/tageslimit.ts`): Gemini erlaubt für `gemini-3.8-flash-tts` auf Tier 2 nur 10.000 Anfragen pro Tag, danach kommt 429 „requests per day limit exceeded“, auch mit Guthaben. Vorher versuchte der Lauf jeden restlichen Eintrag einzeln; jetzt endet er mit „Tageslimit erreicht, weiter ab …“ (Zeit aus der Fehlermeldung) im Feld „Letzter Lauf“.

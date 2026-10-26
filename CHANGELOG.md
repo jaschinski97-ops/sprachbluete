@@ -2,6 +2,7 @@
 
 ## 26.10.2026
 
+- Repo umbenannt in `jaschinski97-ops/sprachbluete`: Paket-Quelle (`app.json` → `extra.pack.repo`), Doku und Webseite angepasst. Webseite jetzt unter https://jaschinski97-ops.github.io/sprachbluete/ (Datenschutz: …/datenschutz.html).
 - Neuer Name **Sprachblüte** und neues Logo (Kirschblüte in den App-Farben mit Jade-Sprechblase auf Nachtblau; App-Icon, Android-Icons, Splash, Favicon aus `assets/images/logo.svg`, erzeugt mit `scripts/logo.cjs`). Bundle-ID/Package `com.sprachbluete.app`, Markenname oben in der App in allen 10 Sprachen, Splash-Overlay im neuen Nachtblau und quadratisch.
 - Sprachpakete v1 für th, en, es, de als GitHub-Releases veröffentlicht (Nutzerentscheidung: Store-App lädt Medien per Download, Profil `production`).
 - Webseite auf GitHub Pages (Branch `gh-pages`): Startseite mit Support, Datenschutzerklärung (de) und Privacy Policy (en).

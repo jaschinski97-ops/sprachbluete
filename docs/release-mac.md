@@ -7,17 +7,17 @@ Stand 26.10.2026. Für Claude Code auf dem Mac und für Nico. Die App heißt
 
 - Code, Katalog und Medien auf GitHub (`main`), Lizenz PolyForm NC + CC BY-NC-SA.
 - Sprachpakete als Releases veröffentlicht: `pack-th-v1`, `pack-en-v1`, `pack-es-v1`,
-  `pack-de-v1` (Repo `jaschinski97-ops/nico_sprachApp_Linguistik`, öffentlich).
+  `pack-de-v1` (Repo `jaschinski97-ops/sprachbluete`, öffentlich).
   Die Store-App lädt Hörclips und Bilder je Lernsprache daraus nach.
 - Webseite (GitHub Pages, Branch `gh-pages`):
-  - Support/Marketing: https://jaschinski97-ops.github.io/nico_sprachApp_Linguistik/
-  - Datenschutz (de): https://jaschinski97-ops.github.io/nico_sprachApp_Linguistik/datenschutz.html
-  - Privacy (en): https://jaschinski97-ops.github.io/nico_sprachApp_Linguistik/privacy.html
+  - Support/Marketing: https://jaschinski97-ops.github.io/sprachbluete/
+  - Datenschutz (de): https://jaschinski97-ops.github.io/sprachbluete/datenschutz.html
+  - Privacy (en): https://jaschinski97-ops.github.io/sprachbluete/privacy.html
 - Logo: `assets/images/logo.svg` (Quelle), erzeugt mit `scripts/logo.cjs`.
 
 ## Ablauf auf dem Mac
 
-1. Klonen und einrichten: `git clone https://github.com/jaschinski97-ops/nico_sprachApp_Linguistik.git`,
+1. Klonen und einrichten: `git clone https://github.com/jaschinski97-ops/sprachbluete.git`,
    Node 24 (nvm), `npm install`, dann `npx tsc --noEmit` und
    `npx jest --maxWorkers=6 --testPathIgnorePatterns=/.claude/`.
 2. Expo: Konto auf expo.dev (Nico), `npm install -g eas-cli`, `eas login`,

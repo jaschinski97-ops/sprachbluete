@@ -57,10 +57,10 @@ iPhone bei Apps über 200 MB nach; Tester installieren am besten im WLAN.
 
 Die GitHub-Anmeldung (`gh`) ist auf diesem Rechner bereits eingerichtet.
 
-Zuerst in `app.json` unter `expo.extra.pack.repo` den Platzhalter `OWNER/REPO`
-durch `jaschinski97-ops/jaschinski97-ops-LanguageApp` ersetzen. Dorthin lädt
-`pack:publish` hoch, und von dort lädt die App. Das Repo muss öffentlich sein
-(ist es). Dann im Projektordner die Pakete bauen:
+In `app.json` steht unter `expo.extra.pack.repo` bereits
+`jaschinski97-ops/sprachbluete`. Dorthin lädt `pack:publish` hoch, und von
+dort lädt die App. Das Repo muss öffentlich sein (ist es); die Pakete v1 sind
+seit 26.10.2026 veröffentlicht. Dann im Projektordner die Pakete bauen:
 
 ```bash
 npm run pack:build -- --lang all

@@ -18,7 +18,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'tabs.conversation': 'Conversación',
   'tabs.progress': 'Progreso',
   'tabs.settings': 'Ajustes',
-  'tabs.brand': 'Compañero de aprendizaje',
+  'tabs.brand': "Sprachblüte",
   'tabs.mainNavA11y': 'Navegación principal',
 
   'home.subtitle': '¿Qué idioma aprendes hoy?',

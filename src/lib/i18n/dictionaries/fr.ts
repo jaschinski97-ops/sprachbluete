@@ -14,7 +14,7 @@ const fr = {
   "tabs.conversation": "Conversation",
   "tabs.progress": "Progrès",
   "tabs.settings": "Paramètres",
-  "tabs.brand": "Accompagnateur d'apprentissage",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "Navigation principale",
   "home.subtitle": "Quelle langue apprends-tu aujourd'hui ?",
   "home.systemLanguage": "Langue système : {{language}}",

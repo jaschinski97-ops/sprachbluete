@@ -12,6 +12,7 @@ Fertige, abgesicherte Teile ändert keine KI ohne ausdrückliche Freigabe des Nu
 
 ## Produkt
 
+- **Name: Sprachblüte** (seit 26.10.2026, Nutzerentscheidung; vorher „Thai Lernbegleiter“). Bundle-ID/Package `com.sprachbluete.app`, Logo `assets/images/logo.svg` (Kirschblüte + Jade-Sprechblase, erzeugt mit `scripts/logo.cjs`). Interne Speichernamen `thai-lernbegleiter-…` bleiben (Lernstände). Release-Ablauf: `docs/release-mac.md`. Store-Build = Profil `production` mit Sprachpaketen (keine eingebetteten Medien, Nutzerentscheidung 26.10.); Pakete `pack-<lang>-v1` sind veröffentlicht. Webseite mit Datenschutz/Support: Branch `gh-pages`, https://jaschinski97-ops.github.io/nico_sprachApp_Linguistik/.
 - Offline-Sprachlern-App (Expo SDK 57, React Native, Web + Android/iOS). Inhalte kommen komplett mit dem Build; KI-Anbieter nutzt nur der Admin im Entwicklerstudio.
 - **4 Lernsprachen:** `LANGUAGE_CODES = ['th','en','es','de']` (`src/lib/languages/types.ts`), zentral definiert in `src/lib/languages/definitions.ts`. Anleitung für neue Lernsprachen: `docs/neue-lernsprache.md`, die Checkliste ist als Test `definitions.test.ts` festgehalten.
 - **10 App-Sprachen** seit 24.10.2026 (Nutzerentscheidung: de, en, th plus die meistgesprochenen): de, en, es, th, ar, zh, hi, fr, bn, pt (`UI_LANGUAGES`, Wörterbücher `src/lib/i18n/`). ru, ur, id, ja, mr, te, tr, ta, vi, ko entfernt (in Git). NUR Oberflächen- und Bedeutungssprachen, **niemals Lernziele**. Unbekannte Systemsprache → Englisch.

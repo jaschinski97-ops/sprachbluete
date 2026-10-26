@@ -67,13 +67,15 @@ export function AnimatedSplashOverlay() {
 }
 
 const styles = StyleSheet.create({
+  // Quadratisch wie das Sprachblüte-Logo (26.10.2026; vorher 200 × 170).
   image: {
     width: 200,
-    height: 170,
+    height: 200,
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#07071A',
+    // Nachtblau wie Splash und App-Hintergrund (app.json).
+    backgroundColor: '#0B1628',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,

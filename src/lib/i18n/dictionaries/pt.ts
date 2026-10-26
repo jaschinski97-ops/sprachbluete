@@ -14,7 +14,7 @@ const pt = {
   "tabs.conversation": "Conversa",
   "tabs.progress": "Progresso",
   "tabs.settings": "Configurações",
-  "tabs.brand": "Apoio ao aprendizado",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "Navegação principal",
   "home.subtitle": "Qual idioma você está aprendendo hoje?",
   "home.systemLanguage": "Idioma do sistema: {{language}}",

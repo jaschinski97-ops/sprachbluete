@@ -19,7 +19,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   'tabs.conversation': 'Conversation',
   'tabs.progress': 'Progress',
   'tabs.settings': 'Settings',
-  'tabs.brand': 'Learning companion',
+  'tabs.brand': "Sprachblüte",
   'tabs.mainNavA11y': 'Main navigation',
 
   'home.subtitle': 'Which language are you learning today?',

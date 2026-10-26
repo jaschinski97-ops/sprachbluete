@@ -14,7 +14,7 @@ const zh = {
   "tabs.conversation": "对话",
   "tabs.progress": "进度",
   "tabs.settings": "设置",
-  "tabs.brand": "学习助手",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "主导航",
   "home.subtitle": "你今天学习什么语言？",
   "home.systemLanguage": "系统语言：{{language}}",

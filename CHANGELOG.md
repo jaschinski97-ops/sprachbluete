@@ -2,6 +2,10 @@
 
 ## 26.10.2026
 
+- Neuer Name **Sprachblüte** und neues Logo (Kirschblüte in den App-Farben mit Jade-Sprechblase auf Nachtblau; App-Icon, Android-Icons, Splash, Favicon aus `assets/images/logo.svg`, erzeugt mit `scripts/logo.cjs`). Bundle-ID/Package `com.sprachbluete.app`, Markenname oben in der App in allen 10 Sprachen, Splash-Overlay im neuen Nachtblau und quadratisch.
+- Sprachpakete v1 für th, en, es, de als GitHub-Releases veröffentlicht (Nutzerentscheidung: Store-App lädt Medien per Download, Profil `production`).
+- Webseite auf GitHub Pages (Branch `gh-pages`): Startseite mit Support, Datenschutzerklärung (de) und Privacy Policy (en).
+- `docs/release-mac.md`: Release-Ablauf für das MacBook.
 - Hörclips komplett im Katalog: alle vier Lernsprachen mit Wörtern, Beispielsätzen und Dialogzeilen (gemini-3.8-flash-tts, Stimme Kore), dazu die 616 Begriffsbilder. Rund 30 Thai-Clips fehlen nach Ton-Gate-Verwurf; dort spricht die Systemstimme. Medien ~437 MiB.
 - `content:integrity` rechnet die Thai-Solltöne jetzt wie die Übernahme aus Schrift und Umschrift (`sollToeneFuerClipAusSchrift`), auch für Dialogzeilen. Vorher meldete sie jede so geprüfte Dialogzeile als „Status verändert“.
 

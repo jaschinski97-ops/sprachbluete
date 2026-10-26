@@ -14,7 +14,7 @@ const bn = {
   "tabs.conversation": "আলাপ",
   "tabs.progress": "অগ্রগতি",
   "tabs.settings": "সেটিংস",
-  "tabs.brand": "শিক্ষা সঙ্গী",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "মূল নেভিগেশন",
   "home.subtitle": "আপনি আজ কোন ভাষা শিখছেন?",
   "home.systemLanguage": "সিস্টেম ভাষা: {{language}}",

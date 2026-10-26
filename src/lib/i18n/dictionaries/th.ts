@@ -21,7 +21,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   'tabs.conversation': 'บทสนทนา',
   'tabs.progress': 'ความก้าวหน้า',
   'tabs.settings': 'ตั้งค่า',
-  'tabs.brand': 'ผู้ช่วยเรียนภาษา',
+  'tabs.brand': "Sprachblüte",
   'tabs.mainNavA11y': 'เมนูหลัก',
 
   'home.subtitle': 'วันนี้จะเรียนภาษาอะไร?',

@@ -14,7 +14,7 @@ const hi = {
   "tabs.conversation": "बातचीत",
   "tabs.progress": "प्रगति",
   "tabs.settings": "सेटिंग्स",
-  "tabs.brand": "लर्निंग साथी",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "मुख्य नेविगेशन",
   "home.subtitle": "आप आज कौन सी भाषा सीख रहे हैं?",
   "home.systemLanguage": "सिस्टम भाषा: {{language}}",

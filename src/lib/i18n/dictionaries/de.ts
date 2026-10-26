@@ -25,7 +25,7 @@ const de = {
   'tabs.conversation': 'Gespräch',
   'tabs.progress': 'Fortschritt',
   'tabs.settings': 'Einstellungen',
-  'tabs.brand': 'Lernbegleiter',
+  'tabs.brand': "Sprachblüte",
   'tabs.mainNavA11y': 'Hauptnavigation',
 
   /* ---------- Übersicht (index.tsx) ---------- */

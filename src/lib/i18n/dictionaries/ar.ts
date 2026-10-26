@@ -14,7 +14,7 @@ const ar = {
   "tabs.conversation": "محادثة",
   "tabs.progress": "تقدم",
   "tabs.settings": "إعدادات",
-  "tabs.brand": "مساعد التعلم",
+  "tabs.brand": "Sprachblüte",
   "tabs.mainNavA11y": "التنقل الرئيسي",
   "home.subtitle": "ما اللغة التي تتعلمها اليوم؟",
   "home.systemLanguage": "لغة النظام: {{language}}",

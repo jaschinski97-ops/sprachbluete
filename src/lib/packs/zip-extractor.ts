@@ -1,6 +1,12 @@
 /**
  * Nativer Entpacker auf Basis von `react-native-zip-archive`.
  *
+ * Name (28.10.2026): Die Datei hieß `extractor.native.ts`. Metro löst auf
+ * iOS/Android `./extractor` dann zu DIESER Datei auf, `createPackExtractor`
+ * fehlte, und jedes Entpacken scheiterte mit „undefined is not a function“
+ * (Jest löst anders auf, die Tests blieben grün). Keine `.native`-Endung
+ * neben einer gleichnamigen Datei vergeben.
+ *
  * Stand 2026-09-09: Die Abhaengigkeit ist installiert (react-native-zip-
  * archive 9.5.1 in package.json). `createPackExtractor()` kehrt auf dem
  * Geraet mit dem naechsten NATIVEN Build etwas anderes als `null` zurueck —

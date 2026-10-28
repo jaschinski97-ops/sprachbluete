@@ -19,7 +19,7 @@
 
 import { Platform } from 'react-native';
 
-import { createNativeExtractor } from './extractor.native';
+import { createNativeExtractor } from './zip-extractor';
 
 export interface PackExtractor {
   /**

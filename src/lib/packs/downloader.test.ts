@@ -157,6 +157,26 @@ describe('installLanguagePack via local helper override', () => {
     expect(mock.__fileAt(`${installedPackUri('th', 1)}/manifest.json`)).toBeUndefined();
   });
 
+  test('names the stage of an unexpected native error (iPhone showed only "undefined is not a function")', async () => {
+    const release = releaseFixture(1, 10);
+    mock.__setDownload(packZipUrl(OVERRIDE_CONFIG, 'th', 1), Buffer.alloc(10, 1));
+    const extractor: PackExtractor = {
+      async extract() {
+        throw new TypeError('undefined is not a function');
+      },
+    };
+    await expect(installLanguagePack('th', {
+      deps: {
+        fetch: fakeFetch(new Map([
+          ['http://localhost:8082/packs/th/index.json', JSON.stringify({ versions: [1], latest: 1 })],
+          ['http://localhost:8082/packs/th/thai-pack-th-v1.manifest.json', JSON.stringify(release)],
+        ])),
+        extractor,
+        config: OVERRIDE_CONFIG,
+      },
+    })).rejects.toMatchObject({ stage: 'extract', message: '[extract] undefined is not a function' });
+  });
+
   test('a preferred version that is not available aborts before any download', async () => {
     const calls: FetchCall[] = [];
     const responses = new Map([

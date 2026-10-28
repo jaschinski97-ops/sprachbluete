@@ -172,6 +172,27 @@ export async function installLanguagePack(
   language: PackLanguage,
   options: InstallPackOptions = {}
 ): Promise<InstalledPackResult> {
+  // Fremde Fehler tragen den Schritt im Text (28.10.2026): Auf dem iPhone
+  // stand nur „undefined is not a function“, ohne zu verraten, wo.
+  let schritt: PackDownloadStage = 'version';
+  const onProgress = options.onProgress;
+  try {
+    return await installiere(language, {
+      ...options,
+      onProgress: (progress) => {
+        // `cleanup` meldet der finally-Block auch im Fehlerfall — er ist nie die Ursache.
+        if (progress.stage !== 'cleanup') schritt = progress.stage;
+        onProgress?.(progress);
+      },
+    });
+  } catch (error) {
+    if (error instanceof PackInstallError || (error as Error)?.name === 'AbortError') throw error;
+    const text = error instanceof Error ? error.message : String(error);
+    throw new PackInstallError(`[${schritt}] ${text}`, schritt);
+  }
+}
+
+async function installiere(language: PackLanguage, options: InstallPackOptions): Promise<InstalledPackResult> {
   const { version: preferred, onProgress, signal, deps } = options;
   const fetchImpl = deps?.fetch ?? fetch;
   const config = deps?.config ?? loadPackConfig();

@@ -156,7 +156,9 @@ class Geraet {
       const ende = xml.lastIndexOf('</hierarchy>');
       if (start >= 0 && ende > start) {
         this.letztesXml = xml.slice(start, ende + '</hierarchy>'.length);
-        return leseKnoten(this.letztesXml);
+        // Merken: Ein Auslesen kostet ~2 s, Abläufe nutzen es weiter.
+        this.letzteKnoten = leseKnoten(this.letztesXml);
+        return this.letzteKnoten;
       }
       await schlafe(500);
     }
@@ -211,7 +213,7 @@ class Geraet {
   async tippe(muster, optionen) {
     const k = await this.warteAuf(muster, optionen);
     this.tippeAuf(k.mitte.x, k.mitte.y);
-    await schlafe(350);
+    await schlafe(150);
     return k;
   }
 
@@ -225,7 +227,7 @@ class Geraet {
       const treffer = finde(await this.lies(), name).filter((k) => k.klickbar).sort((a, b) => b.y1 - a.y1);
       if (treffer.length) {
         this.tippeAuf(treffer[0].mitte.x, treffer[0].mitte.y);
-        await schlafe(500);
+        await schlafe(200);
         return;
       }
       if (Date.now() > bis) throw new Error(`Reiter nicht gefunden: ${name}`);

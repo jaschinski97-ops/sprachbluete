@@ -33,52 +33,53 @@ async function oeffneLernen(g, sprache) {
   await g.warteAuf(sprache);
 }
 
+/**
+ * Übungsknöpfe eines aufgeklappten Bereichs aus einem gelesenen Bildschirm:
+ * alles Antippbare zwischen Bereichskopf und dem nächsten Bereich, der
+ * Kapitel-Liste oder dem Reiterbalken.
+ */
+function knoepfeAus(knoten, name) {
+  const kopf = knoten.find((k) => k.klickbar && k.beschriftung === name);
+  if (!kopf) return { kopf: null, knoepfe: [] };
+  const andere = BEREICHE.map(t).filter((n) => n !== name);
+  const kapitel = [tMuster('chapter.position', { ende: false }), new RegExp(`^${t('foundations.chapter')}`)];
+  const unter = (pruefe) =>
+    knoten.filter((n) => n.klickbar && n.y1 > kopf.y2 && pruefe(n)).map((n) => n.y1).sort((x, y) => x - y)[0] ?? Infinity;
+  const grenze = Math.min(
+    unter((n) => andere.includes(n.beschriftung)),
+    unter((n) => kapitel.some((m) => m.test(n.beschriftung))),
+    Math.min(...knoten.filter((n) => REITER.map(t).includes(n.text)).map((n) => n.y1), Infinity),
+  );
+  const knoepfe = knoten
+    .filter((n) => n.klickbar && n.y1 >= kopf.y2 && n.y2 <= grenze && (n.beschriftung || n.text))
+    .map((n) => ({ ...n, name: n.beschriftung || n.text }));
+  return { kopf, knoepfe };
+}
+
 /** Klappt einen Lernbereich auf und liefert die Knöpfe seiner Übungen (mit Position). */
 async function uebungsKnoepfe(g, bereichSchluessel) {
   const name = t(bereichSchluessel);
   await g.scrolleZu(name);
-  let knoten = await g.lies();
-  const kopf = () => knoten.find((k) => k.klickbar && k.beschriftung === name);
-  const knoepfeUnter = () => {
-    const k = kopf();
-    if (!k) return [];
-    const andere = BEREICHE.map(t).filter((n) => n !== name);
-    const naechster = knoten
-      .filter((n) => n.klickbar && andere.includes(n.beschriftung) && n.y1 > k.y2)
-      .map((n) => n.y1)
-      .sort((a, b) => a - b)[0] ?? Infinity;
-    const reiterOben = Math.min(...knoten.filter((n) => REITER.map(t).includes(n.text)).map((n) => n.y1), Infinity);
-    // Unter dem letzten Bereich folgt die Kapitel-Liste: keine Übungen.
-    const kapitel = [tMuster('chapter.position', { ende: false }), new RegExp(`^${t('foundations.chapter')}`)];
-    const ersterKapitel = knoten
-      .filter((n) => n.klickbar && kapitel.some((m) => m.test(n.beschriftung)) && n.y1 > k.y2)
-      .map((n) => n.y1)
-      .sort((a, b) => a - b)[0] ?? Infinity;
-    const grenze = Math.min(naechster, reiterOben, ersterKapitel);
-    return knoten.filter((n) => n.klickbar && n.y1 >= k.y2 && n.y2 <= grenze && (n.beschriftung || n.text));
-  };
+  let stand = knoepfeAus(g.letzteKnoten, name);
   // Bereichskopf nach oben holen, damit aufgeklappte Übungen nicht unter dem
-  // Reiterbalken liegen (sonst hielte der Test einen offenen Bereich für zu
-  // und klappte ihn zu).
+  // Reiterbalken liegen (sonst hielte der Test einen offenen Bereich für zu).
   const nachOben = async () => {
-    const k = kopf();
-    if (k && k.y1 > 700) {
-      g.wischeVon(k.y1, 400);
-      await schlafe(700);
-      knoten = await g.lies();
+    if (stand.kopf && stand.kopf.y1 > 700) {
+      g.wischeVon(stand.kopf.y1, 400);
+      await schlafe(400);
+      stand = knoepfeAus(await g.lies(), name);
     }
   };
   await nachOben();
-  if (knoepfeUnter().length === 0) {
-    const k = kopf();
-    assert.ok(k, `Bereich „${name}“ nicht gefunden`);
+  if (stand.knoepfe.length === 0) {
+    assert.ok(stand.kopf, `Bereich „${name}“ nicht gefunden`);
     // Über die Position: „Speaking“ heißt auch eine Übung.
-    g.tippeAuf(k.mitte.x, k.mitte.y);
-    await schlafe(800);
-    knoten = await g.lies();
+    g.tippeAuf(stand.kopf.mitte.x, stand.kopf.mitte.y);
+    await schlafe(400);
+    stand = knoepfeAus(await g.lies(), name);
     await nachOben();
   }
-  return knoepfeUnter().map((k) => ({ ...k, name: k.beschriftung || k.text }));
+  return stand.knoepfe;
 }
 
 /** Namen der Übungen eines Lernbereichs. */
@@ -86,26 +87,39 @@ async function uebungenIn(g, bereichSchluessel) {
   return (await uebungsKnoepfe(g, bereichSchluessel)).map((k) => k.name);
 }
 
-/** Öffnet eine Übung, prüft, dass sie steht, und geht zurück. */
-async function pruefeUebung(g, bereichSchluessel, uebung, protokoll) {
-  const knopf = (await uebungsKnoepfe(g, bereichSchluessel)).find((k) => k.name === uebung);
-  assert.ok(knopf, `Übung „${uebung}“ fehlt in ${t(bereichSchluessel)}`);
-  // Über die Position: „Speaking“ heißt auch der Bereich selbst.
-  g.tippeAuf(knopf.mitte.x, knopf.mitte.y);
-  // Jede Übung zeigt oben „Zurück“ und ihren Titel.
-  await g.warteAuf(t('common.back'), { zeit: 20_000 });
-  await schlafe(800);
-  assert.ok(g.appImVordergrund(), `App nach „${uebung}“ nicht mehr im Vordergrund (Absturz?)`);
-  const knoten = await g.lies();
-  const inhalt = knoten.filter((k) => (k.text || k.beschriftung) && k.y1 > 700 && k.y2 < 2200).length;
-  assert.ok(inhalt >= 2, `„${uebung}“ zeigt keinen Inhalt`);
-  protokoll(`    ✓ ${t(bereichSchluessel)} → ${uebung}`);
-  await g.tippe(t('common.back'));
-  await g.warteAuf(t('level.choose'), { zeit: 10_000 }).catch(async () => {
-    // Manche Übungen haben eine eigene Zwischenseite: noch einmal zurück.
-    await g.tippe(t('common.back'));
-    await g.warteAuf(t('level.choose'));
-  });
+/**
+ * Öffnet jede Übung eines Bereichs, prüft, dass sie steht, und geht zurück.
+ * Sparsam gelesen (je Übung ~3 Auslesungen): Nach „Zurück“ zeigt der
+ * Lern-Reiter dieselbe Stelle, die Knöpfe kommen aus diesem einen Bild.
+ */
+async function pruefeBereich(g, bereichSchluessel, protokoll) {
+  const bereich = t(bereichSchluessel);
+  let knoepfe = await uebungsKnoepfe(g, bereichSchluessel);
+  assert.ok(knoepfe.length > 0, `${bereich}: keine Übungen sichtbar`);
+  const namen = knoepfe.map((k) => k.name);
+  for (const uebung of namen) {
+    let knopf = knoepfe.find((k) => k.name === uebung);
+    if (!knopf) {
+      knopf = (await uebungsKnoepfe(g, bereichSchluessel)).find((k) => k.name === uebung);
+      assert.ok(knopf, `Übung „${uebung}“ fehlt in ${bereich}`);
+    }
+    g.tippeAuf(knopf.mitte.x, knopf.mitte.y);
+    // Jede Übung zeigt oben „Zurück“.
+    const zurueck = await g.warteAuf(t('common.back'), { zeit: 20_000 });
+    assert.ok(g.appImVordergrund(), `App nach „${uebung}“ nicht mehr im Vordergrund (Absturz?)`);
+    const inhalt = g.letzteKnoten.filter((k) => (k.text || k.beschriftung) && k.y1 > 700 && k.y2 < 2200).length;
+    assert.ok(inhalt >= 2, `„${uebung}“ zeigt keinen Inhalt`);
+    protokoll(`    ✓ ${bereich} → ${uebung}`);
+    g.tippeAuf(zurueck.mitte.x, zurueck.mitte.y);
+    // Zurück im Lern-Reiter? Dann stehen die Knöpfe im selben Bild.
+    await g.warteAuf(t('level.choose'), { zeit: 8_000 }).catch(async () => {
+      // Übung mit eigener Zwischenseite: noch einmal zurück.
+      await g.tippe(t('common.back'));
+      await g.warteAuf(t('level.choose'));
+    });
+    knoepfe = knoepfeAus(g.letzteKnoten, bereich).knoepfe;
+  }
+  return namen.length;
 }
 
 const ABLAEUFE = [
@@ -184,17 +198,12 @@ const ABLAEUFE = [
   ...['Thai', 'Spanish', 'German'].map((sprache) => ({
     name: `Jede Übung öffnet (${sprache})`,
     schonend: true,
+    // Thai immer; Spanisch und Deutsch nur mit --alle (je ~3 min).
+    alleSprachen: sprache !== 'Thai',
     async lauf(g, { protokoll }) {
       await oeffneLernen(g, sprache);
       let anzahl = 0;
-      for (const bereich of BEREICHE) {
-        const uebungen = await uebungenIn(g, bereich);
-        assert.ok(uebungen.length > 0, `${t(bereich)}: keine Übungen sichtbar`);
-        for (const uebung of uebungen) {
-          await pruefeUebung(g, bereich, uebung, protokoll);
-          anzahl++;
-        }
-      }
+      for (const bereich of BEREICHE) anzahl += await pruefeBereich(g, bereich, protokoll);
       assert.ok(anzahl >= 10, `Nur ${anzahl} Übungen gefunden`);
     },
   })),
@@ -224,13 +233,21 @@ const ABLAEUFE = [
       const erste = await g.warteAuf(tMuster('cards.progress'));
       const gesamt = Number(/(\d+)\D*$/.exec(erste.text)[1]);
       assert.ok(gesamt > 0 && gesamt <= 20, `Rundengröße ${gesamt} (erwartet 1–20)`);
-      for (let i = 1; i <= gesamt; i++) {
-        await g.warteAuf(t('cards.progress', { index: i, total: gesamt }));
-        await g.tippe(t('card.revealA11y'));
-        await g.tippe(t('rating.a11y', { label: t(i % 4 === 0 ? 'rating.again' : 'rating.good') }));
+      // Bis die Runde endet: aufdecken, bewerten. Karte 2 einmal „Again“ —
+      // sie kommt in der Runde wieder, der Zähler verschiebt sich dann.
+      const aufdecken = t('card.revealA11y');
+      let bewertet = 0;
+      for (; bewertet < gesamt * 2 + 5; bewertet++) {
+        const { index, knoten } = await g.warteAufEines([aufdecken, t('round.done'), t('cards.nothingDue'), tMuster('cards.summaryIdle', { ende: false })], { zeit: 15_000 })
+          .catch(() => ({ index: -1 }));
+        if (index !== 0) break;
+        g.tippeAuf(knoten.mitte.x, knoten.mitte.y);
+        const label = t('rating.a11y', { label: t(bewertet === 1 ? 'rating.again' : 'rating.good') });
+        await g.tippe(label);
       }
-      await g.warteBisWeg(tMuster('cards.progress'), { zeit: 10_000 });
-      protokoll(`    ✓ ${gesamt} Karten bewertet`);
+      assert.ok(bewertet >= gesamt, `Nur ${bewertet} von ${gesamt} Karten bewertet`);
+      assert.ok(!(await g.sieht(aufdecken)), 'Runde endet nicht');
+      protokoll(`    ✓ ${bewertet} Bewertungen, Runde mit ${gesamt} Karten beendet`);
       // Die Bewertungen zählen im Fortschritt.
       await g.tippeReiter(t('tabs.progress'));
       await g.warteAuf(t('progress.subtitle'));

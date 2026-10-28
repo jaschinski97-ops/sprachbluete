@@ -4,6 +4,7 @@
  * Klick-Tests am Android-Emulator starten (28.10.2026).
  *
  *   npm run e2e:android                 schonend: ändert keine Lernstände
+ *   npm run e2e:android -- --alle       dazu Übungsrundgang Spanisch + Deutsch
  *   npm run e2e:android -- --frisch     alles, auf frischer App; vorher
  *                                       Emulator-Schnappschuss, danach zurück
  *   npm run e2e:android -- --nur Karte  nur Abläufe, deren Name passt
@@ -25,6 +26,7 @@ function argumente(liste) {
   const nurIndex = liste.indexOf('--nur');
   return {
     frisch: liste.includes('--frisch'),
+    alle: liste.includes('--alle') || liste.includes('--frisch'),
     nur: nurIndex >= 0 ? new RegExp(liste[nurIndex + 1], 'i') : null,
   };
 }
@@ -36,14 +38,14 @@ function emulatorBefehl(...befehl) {
 }
 
 async function main() {
-  const { frisch, nur } = argumente(process.argv.slice(2));
+  const { frisch, alle, nur } = argumente(process.argv.slice(2));
   const stempel = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const ablage = path.join(__dirname, '../../measurements/e2e', stempel);
   const g = new Geraet({ ablage });
   const protokoll = (zeile) => console.log(zeile);
 
   g.pruefeVerbindung();
-  const auswahl = ABLAEUFE.filter((a) => (frisch || a.schonend) && (!nur || nur.test(a.name)));
+  const auswahl = ABLAEUFE.filter((a) => (frisch || a.schonend) && (alle || nur || !a.alleSprachen) && (!nur || nur.test(a.name)));
   // Bei --frisch: erst die Einführung (braucht leere Daten), dann der Rest.
   auswahl.sort((a, b) => Number(a.name.startsWith('Einführung') ? 0 : 1) - Number(b.name.startsWith('Einführung') ? 0 : 1));
 
@@ -80,7 +82,7 @@ async function main() {
             await g.warteAuf(t('home.heroCta'));
           }
           // Übersicht steht; kurz Luft, bis die Reiter Berührungen annehmen.
-          await schlafe(1500);
+          await schlafe(800);
         }
         await ablauf.lauf(g, { protokoll });
         const fehler = g.fehlerImLog();
@@ -114,7 +116,7 @@ async function main() {
 
   const fehlgeschlagen = ergebnisse.filter((e) => !e.ok);
   const dauer = ergebnisse.reduce((s, e) => s + e.ms, 0) / 1000;
-  protokoll(`\n${ergebnisse.length - fehlgeschlagen.length}/${ergebnisse.length} Abläufe bestanden (${dauer.toFixed(0)} s)${frisch ? '' : ' — schonend; alles: --frisch'}`);
+  protokoll(`\n${ergebnisse.length - fehlgeschlagen.length}/${ergebnisse.length} Abläufe bestanden (${dauer.toFixed(0)} s)${frisch ? '' : alle ? ' — schonend; alles: --frisch' : ' — schonend, Übungen nur Thai; mehr: --alle / --frisch'}`);
   process.exitCode = fehlgeschlagen.length ? 1 : 0;
 }
 

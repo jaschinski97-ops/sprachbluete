@@ -7,12 +7,16 @@ dem Gerät auftreten (zum Beispiel der Entpacker-Fehler `extractor.native.ts`
 vom 28.10.).
 
 Kein zusätzliches Werkzeug nötig: Node + `adb` aus dem Android-SDK.
+Jedes Auslesen des Bildschirms (`uiautomator dump`) kostet fest ~2 s; die
+Abläufe lesen deshalb sparsam (`g.letzteKnoten` wiederverwenden). Gedacht
+für den Lauf vor einem Build, nicht nebenbei.
 
 ## Ablauf
 
 ```bash
 emulator -avd ThaiSpeaker_API36 -no-audio -gpu swiftshader_indirect -memory 4096 -cores 4
-npm run e2e:android                    # schonend, ändert keine Lernstände (~10 min)
+npm run e2e:android                    # schonend, Übungen nur Thai (~6 min)
+npm run e2e:android -- --alle          # dazu Übungen Spanisch + Deutsch (~+8 min)
 npm run e2e:android -- --nur Karte     # nur passende Abläufe
 npm run e2e:android -- --frisch        # alles, inkl. Einführung und Bewerten
 ```

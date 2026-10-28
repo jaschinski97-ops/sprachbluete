@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Pressable, StyleSheet, View } from 'react-native';
-import { MeasuredToneContour } from './measured-tone-contour';
+import { AufnahmeVergleich } from './aufnahme-vergleich';
 import { ThemedText, displayLineHeight } from './themed-text';
 import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
@@ -74,7 +74,8 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
   const [recorded, setRecorded] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
-  const [result, setResult] = useState<SentenceMeasurement | null>(null);
+  // Messung UND Aufnahme: der Vergleich braucht die PCM noch nach `capture.clear()`.
+  const [result, setResult] = useState<{ messung: SentenceMeasurement; aufnahme: CapturedPcm } | null>(null);
   const [stage, setStage] = useState<'prepare' | 'record' | 'result'>('prepare');
   const [hintOpen, setHintOpen] = useState(false);
   const listening = mode === 'sentenceListening';
@@ -108,6 +109,9 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
   useEffect(() => {
     const sub = AppState.addEventListener('change', state => {
       if (state === 'active' || permissionPending.current) return;
+      // Im fertigen Ergebnis läuft nichts mehr: Ein System-Dialog (etwa
+      // „Sprache laden“ der Worterkennung) darf es nicht verwerfen (29.10.2026).
+      if (stageRef.current === 'result') return;
       generation.current++; active.current = false; locked.current = false;
       captureRef.current.cancel(); void stopPronunciation();
       setBusy(false); setStage('prepare'); setResult(null); setHeard(false);
@@ -155,7 +159,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
     await new Promise<void>(resolve => setTimeout(resolve, 0));
     try {
       if (turn !== generation.current) return;
-      setResult(measureSentence(recording));
+      setResult({ messung: measureSentence(recording), aufnahme: recording });
       setRecorded(value => value.includes(index) ? value : [...value, index]);
       setStage('result');
     } catch { if (turn === generation.current) { setNotice(t('sentence.measureFailed')); setStage('prepare'); } }
@@ -278,9 +282,9 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
       <SentenceAction label={t('sentence.stop')} onPress={() => void stop()} disabled={busy} />
     </>}
     {result && <>
-      <ThemedText type="smallBold">{t('sentence.measurement', { seconds: (result.durationMs / 1000).toFixed(1) })}</ThemedText>
-      <ThemedText type="small">{t('sentence.voicedNote', { percent: result.voicedFramePercent })}{result.reachedLimit ? ` ${t('sentence.limitReached')}` : ''}</ThemedText>
-      {result.contour.status === 'measured' ? <><MeasuredToneContour points={result.contour.summary.pts} /><ThemedText type="small">{t('sentence.contourNote', { duration: result.contour.summary.durMs })}</ThemedText></> : <ThemedText type="small">{t('sentence.noVoiced')}</ThemedText>}
+      {/* Seit 28.10.2026: Vergleich mit dem Vorbild statt reiner Messwerte. */}
+      <AufnahmeVergleich text={task.text} roman={task.roman} sprache={language} aufnahme={result.aufnahme} frames={result.messung.contour.frames} />
+      {result.messung.reachedLimit ? <ThemedText type="small" themeColor="textSecondary">{t('sentence.limitReached')}</ThemedText> : null}
       <SentenceAction label={t('sentence.reprepare')} onPress={() => reset(index, round)} />
       <SentenceAction label={mode === 'sentenceRepeat' && round < 2 ? t('sentence.nextWindow') : t('sentence.nextSentence')} onPress={() => mode === 'sentenceRepeat' && round < 2 ? reset(index, round + 1) : reset(index + 1)} />
     </>}

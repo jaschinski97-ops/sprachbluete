@@ -110,7 +110,12 @@ test('shadowing enforces preparation, hearing and headphones before mic; plays o
   expect(mockStart.mock.invocationCallOrder[0]).toBeLessThan(mockPlay.mock.invocationCallOrder[0]);
   await press(d('sentence.stop')); await act(async () => jest.advanceTimersByTime(1));
   expect(mockClear).toHaveBeenCalled();
-  expect(JSON.stringify(tree.toJSON())).toContain(d('sentence.noVoiced'));
+  // Seit 28.10.2026: Vergleichsansicht statt reiner Messwerte — Hörknöpfe und,
+  // ohne messbare Stimme, der Hinweis zum Sprechen.
+  const ansicht = JSON.stringify(tree.toJSON());
+  for (const key of ['vergleich.hoerenVorbild', 'vergleich.hoerenIch', 'vergleich.hoerenWechsel', 'vergleich.unpassendKurz'] as const) {
+    expect(ansicht).toContain(d(key));
+  }
   await press(d('sentence.nextSentence'));
   expect(button(d('sentence.start')).props.disabled).toBe(true);
 });
@@ -185,6 +190,22 @@ test('the microphone permission dialog is no interruption (emulator test 17.10.2
   // Während der laufenden Aufnahme bleibt der Hintergrund eine Unterbrechung.
   await act(async () => { handlers.forEach(handler => handler('background')); });
   expect(JSON.stringify(tree.toJSON())).toContain(d('sentence.interrupted'));
+});
+
+test('a system dialog over the finished result keeps it (download of the offline language, 29.10.2026)', async () => {
+  const addListener = AppState.addEventListener as unknown as jest.Mock;
+  const vorher = addListener.mock.calls.length;
+  await act(async () => { tree = create(<SentenceRunner language="th" mode="sentenceRepeat" onExit={() => {}} />); });
+  const handlers = addListener.mock.calls.slice(vorher).map((call) => call[1] as (state: string) => void);
+  await press(d('sentence.listen')); await act(async () => jest.advanceTimersByTime(15000));
+  await press(d('sentence.start'));
+  await press(d('sentence.stop')); await act(async () => jest.advanceTimersByTime(1));
+  expect(JSON.stringify(tree.toJSON())).toContain(d('vergleich.hoerenWechsel'));
+  await act(async () => { handlers.forEach(handler => handler('background')); });
+  await act(async () => { handlers.forEach(handler => handler('active')); });
+  const json = JSON.stringify(tree.toJSON());
+  expect(json).not.toContain(d('sentence.interrupted'));
+  expect(json).toContain(d('vergleich.hoerenWechsel'));
 });
 
 test('a language without audited sentences shows an honest notice and never touches the microphone (AE-66)', async () => {

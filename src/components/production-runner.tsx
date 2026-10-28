@@ -165,11 +165,12 @@ export function ProductionRunner({
         language: SR_LOCALE[sprache],
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
+        ...(aufgabe ? { hinweise: [aufgabe.ziel] } : {}),
       });
       if (text) pruefen(text);
       else setHoert(false);
     })();
-  }, [naht, sprache, pruefen]);
+  }, [naht, sprache, pruefen, aufgabe]);
 
   /** Musterlösung abspielen — nach der Antwort oder für die Selbstbewertung. */
   const musterAbspielen = useCallback(() => {
@@ -309,7 +310,8 @@ export function ProductionRunner({
                 {t(ERKENNUNGS_FEHLER_KEYS[erkennungsFehler])}
               </ThemedText>
             ) : null}
-            {naht.verfuegbar ? (
+            {/* Nur im Browser geht die Aufnahme an einen Anbieter; auf dem Gerät bleibt sie lokal. */}
+            {naht.verfuegbar && naht.art === 'browser' ? (
               <ThemedText type="small" themeColor="textSecondary">{t('production.recognitionPrivacy')}</ThemedText>
             ) : null}
           </>

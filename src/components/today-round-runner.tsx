@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
+import { AufnahmeVergleich } from './aufnahme-vergleich';
 import { Flashcard } from './flashcard';
 import { ENTER_PRUEFT } from './sentence-input';
 import { ThemedButton } from './themed-button';
@@ -35,6 +36,9 @@ import {
   type TodayRound,
 } from '@/lib/today-round';
 import { ratingForScore, scoreDictation } from '@/lib/dictation/scoring';
+import { useMicrophoneCapture } from '@/hooks/use-microphone-capture';
+import type { CapturedPcm } from '@/lib/speaking';
+import { MIC_ERROR_KEYS } from '@/lib/speaking/mic-error-keys';
 
 /**
  * Der Läufer der Heutigen Runde (`lib/today-round` entscheidet, hier wird
@@ -861,6 +865,22 @@ function ShadowingSegment({
   );
   const aufgabe = aufgaben.length > 0 ? aufgaben[position % aufgaben.length] : null;
   const [fehlt, setFehlt] = useState(false);
+  // Kurzfassung des Shadowing-Vergleichs (28.10.2026): nachsprechen,
+  // aufnehmen, sich selbst und das Vorbild hören, erkannte Wörter.
+  const capture = useMicrophoneCapture({ maxDurationMs: RUNDE_AUFNAHME_MS });
+  const [aufnahme, setAufnahme] = useState<CapturedPcm | null>(null);
+  useEffect(() => {
+    if (capture.lastCapture) setAufnahme(capture.lastCapture);
+  }, [capture.lastCapture]);
+  const aufnehmen = async () => {
+    setAufnahme(null);
+    await stopPronunciation();
+    await capture.start();
+  };
+  const stoppen = async () => {
+    const fertig = await capture.stop();
+    if (fertig) setAufnahme(fertig);
+  };
 
   // Liefert, ob wirklich etwas abgespielt wurde; `false` (kein Clip, keine Stimme, Fehler) lässt das Segment ausfallen.
   const spiele = useCallback(async (): Promise<boolean> => {
@@ -898,13 +918,25 @@ function ShadowingSegment({
         <ThemedText type="small" themeColor="textSecondary">{aufgabe.roman}</ThemedText>
       ) : null}
       <ThemedText type="small" themeColor="textSecondary">
-        {t('round.shadowNote')}
+        {t('round.shadowNoteMic')}
       </ThemedText>
-      <ThemedButton label={t('dictation.play')} onPress={() => { void spiele().then((played) => { if (!played) setFehlt(true); }); }} />
-      <ThemedButton label={t('common.next')} onPress={onDone} />
+      <ThemedButton label={t('dictation.play')} disabled={capture.isRecording} onPress={() => { void spiele().then((played) => { if (!played) setFehlt(true); }); }} />
+      {capture.isRecording ? (
+        <ThemedButton label={t('round.shadowStop', { seconds: Math.max(0, Math.ceil((RUNDE_AUFNAHME_MS - capture.elapsedMs) / 1000)) })} onPress={() => void stoppen()} />
+      ) : (
+        <ThemedButton label={t(aufnahme ? 'round.shadowRecordAgain' : 'round.shadowRecord')} onPress={() => void aufnehmen()} />
+      )}
+      {capture.error ? (
+        <ThemedText type="small" themeColor="textSecondary">{t(MIC_ERROR_KEYS[capture.error.code])}</ThemedText>
+      ) : null}
+      {aufnahme ? <AufnahmeVergleich text={aufgabe.text} roman={aufgabe.roman} sprache={sprache} aufnahme={aufnahme} kompakt /> : null}
+      <ThemedButton label={t('common.next')} disabled={capture.isRecording} onPress={onDone} />
     </ThemedView>
   );
 }
+
+/** Aufnahmefenster in der Heutigen Runde. */
+const RUNDE_AUFNAHME_MS = 12_000;
 
 const styles = StyleSheet.create({
   tapTarget: {

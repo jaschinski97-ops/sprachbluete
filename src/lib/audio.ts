@@ -194,21 +194,9 @@ export function setPronunciationBackend(next: PronunciationBackend | null): void
   backend = next ?? defaultBackend;
 }
 
-/**
- * Spielt die Aussprache ab. Eine laufende Ausgabe wird vorher abgebrochen —
- * sonst stapeln sich die Äußerungen, wenn schnell mehrfach getippt wird.
- */
-async function playPronunciationNow(
-  request: PronunciationRequest
-): Promise<PlaybackResult> {
+/** Welcher Clip für diese Anfrage gespielt würde — dieselbe Regel wie beim Abspielen. */
+async function clipFuer(request: PronunciationRequest): Promise<{ uri: string | null; resolved: ResolvedClip | null }> {
   const text = request.text.trim();
-  const unavailable: PlaybackResult = { kind: 'unavailable', label: 'advanced.unavailable' };
-  if (!text) return unavailable;
-
-  await backend.stop().catch(() => {
-    // Nichts lief, das ist kein Fehler.
-  });
-
   let uri: string | null = null;
   let resolved: ResolvedClip | null = null;
   if (request.audioAssetId && request.language !== 'th') {
@@ -226,6 +214,56 @@ async function playPronunciationNow(
     // A legacy string resolver has no gate evidence and can never feed a tone test.
     if (request.language === 'th' && request.purpose === 'tone' && !allowsThaiPlayback(resolved?.toneStatus, 'tone')) uri = null;
   }
+  return { uri, resolved };
+}
+
+/**
+ * Der Clip, den `playPronunciation` für diesen Text spielen würde — für den
+ * Shadowing-Vergleich (Vorbild-Kurve nach Clip-ID, Wiedergabe bis zum Ende).
+ * `null`: es gäbe nur die Systemstimme.
+ */
+export async function findePronunciationClip(request: PronunciationRequest): Promise<{ uri: string; id: string | null } | null> {
+  if (!request.text.trim()) return null;
+  const { uri, resolved } = await clipFuer(request);
+  return uri ? { uri, id: resolved?.id ?? null } : null;
+}
+
+/** Gerätestimme mit Rückmeldung am Ende (für „Im Wechsel“). */
+export function sprichBisEnde(text: string, language: SpeechLanguage): Promise<void> {
+  return new Promise((fertig) => {
+    let erledigt = false;
+    const ende = () => {
+      if (!erledigt) {
+        erledigt = true;
+        fertig();
+      }
+    };
+    // Sicherheitsnetz: manche Plattformen melden das Ende nie.
+    setTimeout(ende, Math.min(20_000, 1500 + text.length * 180));
+    try {
+      Speech.speak(text, { language: LOCALE(language), rate: RATE(language), onDone: ende, onStopped: ende, onError: ende });
+    } catch {
+      ende();
+    }
+  });
+}
+
+/**
+ * Spielt die Aussprache ab. Eine laufende Ausgabe wird vorher abgebrochen —
+ * sonst stapeln sich die Äußerungen, wenn schnell mehrfach getippt wird.
+ */
+async function playPronunciationNow(
+  request: PronunciationRequest
+): Promise<PlaybackResult> {
+  const text = request.text.trim();
+  const unavailable: PlaybackResult = { kind: 'unavailable', label: 'advanced.unavailable' };
+  if (!text) return unavailable;
+
+  await backend.stop().catch(() => {
+    // Nichts lief, das ist kein Fehler.
+  });
+
+  const { uri, resolved } = await clipFuer({ ...request, text });
   if (uri) {
     if (request.concurrentRecording) await backend.playAsset(uri, true);
     else await backend.playAsset(uri);

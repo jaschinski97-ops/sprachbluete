@@ -214,6 +214,7 @@ export function RoleplayRunner({
         sprache={sprache}
         erkenne={naht.erkennen}
         hatErkennung={naht.verfuegbar}
+        erkennungImBrowser={naht.art === 'browser'}
         onWeiter={(sicher2) => {
           // Partnerzeilen (Bewertung `null`) zählen nicht; bei eigenen gilt Schwer (2) oder besser als „sicher“.
           if (zeile.speaker === 'learner') {
@@ -245,12 +246,15 @@ function SzeneZeile({
   sprache,
   erkenne,
   hatErkennung,
+  erkennungImBrowser,
   onWeiter,
 }: {
   zeile: ConversationTurn;
   sprache: LanguageCode;
   erkenne?: ErkennungsNaht['erkennen'];
   hatErkennung: boolean;
+  /** Nur im Browser geht die Aufnahme an einen Anbieter (Hinweis neben dem Knopf). */
+  erkennungImBrowser: boolean;
   onWeiter: (sicher: Rating | null) => void;
 }) {
   const { t } = useLocale();
@@ -297,6 +301,7 @@ function SzeneZeile({
         language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE' }[sprache],
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
+        hinweise: [zeile.thai],
       });
       if (text) { setEingabe(text); setErgebnis(compareDialogue(text, zeile.thai, sprache)); }
       else setHoert(false);
@@ -373,7 +378,7 @@ function SzeneZeile({
                   {t(ERKENNUNGS_FEHLER_KEYS[erkennungsFehler])}
                 </ThemedText>
               ) : null}
-              {hatErkennung ? (
+              {hatErkennung && erkennungImBrowser ? (
                 <ThemedText type="small" themeColor="textSecondary">{t('production.recognitionPrivacy')}</ThemedText>
               ) : null}
             </>

@@ -57,27 +57,38 @@
       "expo-asset",
       "expo-localization",
       "expo-image",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "The app uses the microphone only for the speaking exercises. The recording stays on this device; the analysis runs locally and sends no audio to any provider.",
+          "speechRecognitionPermission": "The app recognises the words you say in the speaking exercises. Recognition runs on this device; no audio is sent to any provider."
+        }
+      ]
     ],
     "locales": {
       "en": {
         "ios": {
-          "NSMicrophoneUsageDescription": "The app uses the microphone only for the speaking exercises. The recording stays on this device; the analysis runs locally and sends no audio to any provider."
+          "NSMicrophoneUsageDescription": "The app uses the microphone only for the speaking exercises. The recording stays on this device; the analysis runs locally and sends no audio to any provider.",
+          "NSSpeechRecognitionUsageDescription": "The app recognises the words you say in the speaking exercises. Recognition runs on this device; no audio is sent to any provider."
         }
       },
       "de": {
         "ios": {
-          "NSMicrophoneUsageDescription": "Die App nutzt das Mikrofon nur für die Sprechübungen. Die Aufnahme bleibt auf diesem Gerät; die Auswertung läuft lokal und sendet keine Audiodaten an einen Anbieter."
+          "NSMicrophoneUsageDescription": "Die App nutzt das Mikrofon nur für die Sprechübungen. Die Aufnahme bleibt auf diesem Gerät; die Auswertung läuft lokal und sendet keine Audiodaten an einen Anbieter.",
+          "NSSpeechRecognitionUsageDescription": "Die App erkennt in den Sprechübungen, welche Wörter du sagst. Die Erkennung läuft auf diesem Gerät; es werden keine Audiodaten an einen Anbieter gesendet."
         }
       },
       "es": {
         "ios": {
-          "NSMicrophoneUsageDescription": "La app usa el micrófono solo para los ejercicios de hablar. La grabación se queda en este dispositivo; el análisis se hace localmente y no envía audio a ningún proveedor."
+          "NSMicrophoneUsageDescription": "La app usa el micrófono solo para los ejercicios de hablar. La grabación se queda en este dispositivo; el análisis se hace localmente y no envía audio a ningún proveedor.",
+          "NSSpeechRecognitionUsageDescription": "La app reconoce las palabras que dices en los ejercicios de hablar. El reconocimiento se hace en este dispositivo; no se envía audio a ningún proveedor."
         }
       },
       "th": {
         "ios": {
-          "NSMicrophoneUsageDescription": "แอปใช้ไมโครโฟนเฉพาะในแบบฝึกพูด เสียงที่บันทึกจะอยู่ในอุปกรณ์นี้เท่านั้น การวิเคราะห์ทำในเครื่องและไม่ส่งข้อมูลเสียงไปยังผู้ให้บริการใด"
+          "NSMicrophoneUsageDescription": "แอปใช้ไมโครโฟนเฉพาะในแบบฝึกพูด เสียงที่บันทึกจะอยู่ในอุปกรณ์นี้เท่านั้น การวิเคราะห์ทำในเครื่องและไม่ส่งข้อมูลเสียงไปยังผู้ให้บริการใด",
+          "NSSpeechRecognitionUsageDescription": "แอปจะจำคำที่คุณพูดในแบบฝึกพูด การจำเสียงทำงานบนอุปกรณ์นี้ และไม่ส่งข้อมูลเสียงไปยังผู้ให้บริการใด"
         }
       }
     },

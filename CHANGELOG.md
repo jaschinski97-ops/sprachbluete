@@ -1,5 +1,10 @@
 # Changelog
 
+## 28.10.2026
+
+- Sprachpaket-Download auf dem iPhone repariert: Beim ersten Download gab es den Ordner `Dokumente/packs` noch nicht, iOS lehnte das Schreiben der Zip ab. Der Downloader legt ihn jetzt vorher an. Das Test-Dateisystem verhielt sich nachsichtiger als das Gerät (legte fehlende Ordner still an und hatte `packs` vorab); es verlangt jetzt wie iOS einen vorhandenen Zielordner, ohne den Fix schlagen zwei Tests fehl.
+- Animationen ruhiger auf dem iPhone (Ruckeln und Grafikfehler gemeldet): Blütenblätter kippen flach (Stauchung statt 3D-`rotateY` mit `perspective`, das flackerte), Zweige, Vorhänge, Laternen, Dunst und Blätter werden einmal als Bild zwischengespeichert (`shouldRasterizeIOS`/`renderToHardwareTextureAndroid`), die gemalten Hintergründe zoomen nicht mehr, rund ein Drittel weniger fallende Blätter.
+
 ## 26.10.2026
 
 - Repo umbenannt in `jaschinski97-ops/sprachbluete`: Paket-Quelle (`app.json` → `extra.pack.repo`), Doku und Webseite angepasst. Webseite jetzt unter https://jaschinski97-ops.github.io/sprachbluete/ (Datenschutz: …/datenschutz.html).

@@ -204,6 +204,11 @@ export async function installLanguagePack(
   try {
     // 3. Zip laden (App-Cache), Fortschritt, Byte-Check.
     report('download', { version, bytesWritten: 0, totalBytes: release.zipBytes });
+    // Paketordner zuerst anlegen (28.10.2026): Beim ersten Download gab es
+    // `Dokumente/packs` noch nicht, iOS lehnte das Schreiben der Zip ab, und
+    // kein Paket liess sich laden. Angelegt wurde der Ordner erst beim Aktivieren.
+    const rootDir = new Directory(root);
+    if (!rootDir.exists) rootDir.create({ intermediates: true, idempotent: true });
     const zipFile = new File(cacheZipUri);
     if (zipFile.exists) zipFile.delete();
     const task: DownloadTask = File.createDownloadTask(packZipUrl(config, language, version), zipFile, {

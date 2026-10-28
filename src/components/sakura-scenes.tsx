@@ -112,6 +112,14 @@ function szenenFarben(nacht: boolean) {
     : { dunst: '#FFFFFF', dunstStaerke: 0.5, glanz: '#FFFFFF', stamm: '#5C3E37', laterneA: '#E4513E', laterneB: '#FFC27A', glut: 0.32 };
 }
 
+/**
+ * Einmal als Bild zwischenspeichern, dann nur noch verschieben/drehen
+ * (28.10.2026, Ruckeln auf dem iPhone): Die SVG-Inhalte der bewegten Teile
+ * ändern sich nie, nur ihre Lage. Ohne das zeichnete iOS Zweige, Vorhänge und
+ * Laternen samt Dutzender Blüten in jedem Bild neu.
+ */
+const ALS_BILD = { shouldRasterizeIOS: true, renderToHardwareTextureAndroid: true } as const;
+
 /** Bühne für Vollbild-Szenen: Bezugsmaß 375 × 812, unten ausgerichtet, füllt jede Größe. */
 const VB_B = 375;
 const VB_H = 812;
@@ -262,7 +270,7 @@ function BluetenZweig({
 
   return (
     <>
-      <Animated.View style={[lage, ast]}>
+      <Animated.View {...ALS_BILD} style={[lage, ast]}>
         <Svg width={breite} height={hoehe} viewBox={rahmen}>
           {/* Weiche Lichtflecken (Bokeh): zum Rand hin unsichtbar. */}
           <Defs>
@@ -280,7 +288,7 @@ function BluetenZweig({
           ))}
         </Svg>
       </Animated.View>
-      <Animated.View style={[lage, blueten]}>
+      <Animated.View {...ALS_BILD} style={[lage, blueten]}>
         <Svg width={breite} height={hoehe} viewBox={rahmen}>
           <Defs>
             <BluetenSymbol id={blueteId} />
@@ -344,8 +352,8 @@ function Vorhang({ straenge, seite, aktiv }: { straenge: Strang[]; seite: 'links
   );
   return (
     <>
-      <Animated.View style={[styles.oben, { height: hoehe }, ursprung, lageA]}>{lage(straenge.filter((_, i) => i % 2 === 0), 0)}</Animated.View>
-      <Animated.View style={[styles.oben, { height: hoehe }, ursprung, lageB]}>{lage(straenge.filter((_, i) => i % 2 === 1), 1)}</Animated.View>
+      <Animated.View {...ALS_BILD} style={[styles.oben, { height: hoehe }, ursprung, lageA]}>{lage(straenge.filter((_, i) => i % 2 === 0), 0)}</Animated.View>
+      <Animated.View {...ALS_BILD} style={[styles.oben, { height: hoehe }, ursprung, lageB]}>{lage(straenge.filter((_, i) => i % 2 === 1), 1)}</Animated.View>
     </>
   );
 }
@@ -399,6 +407,7 @@ function Laterne({ x, y, groesse, dauer, phase, aktiv }: { x: number; y: number;
   const h = 100 * m;
   return (
     <Animated.View
+      {...ALS_BILD}
       style={[styles.absolut, { left: x * (width / VB_B) - b / 2, top: y * (width / VB_B), width: b, height: h, transformOrigin: 'top center' } as ViewStyle, schwingen]}>
       <Svg width={b} height={h} viewBox="0 0 70 100">
         <Defs>
@@ -463,15 +472,18 @@ const GEMAELDE = {
   fuji: { nacht: require('../../assets/images/szenen/fuji-nacht.webp'), tag: require('../../assets/images/szenen/fuji-tag.webp') },
 };
 
-/** Ein Gemälde als Hintergrund, das sich kaum merklich heranzoomt und wieder zurückgeht. */
-function Gemaelde({ bild, aktiv }: { bild: keyof typeof GEMAELDE; aktiv: boolean }) {
+/**
+ * Ein Gemälde als ruhiger Hintergrund. Bis 28.10.2026 zoomte es dauernd
+ * langsam hinein und heraus; ein bildschirmgroßes Bild jedes Bild neu zu
+ * skalieren kostete auf dem iPhone spürbar Leistung. Die Bewegung kommt jetzt
+ * nur noch aus Glitzern, Dunst und Blättern davor.
+ */
+function Gemaelde({ bild }: { bild: keyof typeof GEMAELDE }) {
   const nacht = useColorScheme() === 'dark';
   // Fenstergröße wie die Bühne der Overlays: Bild und Glitzern liegen deckungsgleich.
   const { width, height } = useWindowDimensions();
-  const zeit = useSchleife(30000, aktiv);
-  const zoom = useAnimatedStyle(() => ({ transform: [{ scale: 1.02 + 0.03 * (0.5 - 0.5 * Math.cos(zeit.value * Math.PI * 2)) }] }));
   return (
-    <Animated.View style={[styles.absolut, { left: 0, top: 0, width, height, transformOrigin: '50% 60%' } as ViewStyle, zoom]}>
+    <View style={[styles.absolut, { left: 0, top: 0, width, height }]}>
       <Image
         source={nacht ? GEMAELDE[bild].nacht : GEMAELDE[bild].tag}
         style={{ width, height }}
@@ -480,7 +492,7 @@ function Gemaelde({ bild, aktiv }: { bild: keyof typeof GEMAELDE; aktiv: boolean
         transition={400}
         accessible={false}
       />
-    </Animated.View>
+    </View>
   );
 }
 
@@ -539,7 +551,7 @@ function Dunst({ y, hoehe, dauer, weite, aktiv }: { y: number; hoehe: number; da
   const zeit = useSchleife(dauer, aktiv);
   const stil = useAnimatedStyle(() => ({ transform: [{ translateX: weite * s * Math.sin(zeit.value * Math.PI * 2) }] }));
   return (
-    <Animated.View style={[styles.absolut, { left: -40 * s, top: oy + (y - hoehe / 2) * s, width: width + 80 * s, height: hoehe * s }, stil]}>
+    <Animated.View {...ALS_BILD} style={[styles.absolut, { left: -40 * s, top: oy + (y - hoehe / 2) * s, width: width + 80 * s, height: hoehe * s }, stil]}>
       <Svg width="100%" height="100%" viewBox="0 0 100 10" preserveAspectRatio="none">
         <Defs>
           <RadialGradient id={id} cx="50%" cy="50%" r="50%">
@@ -557,7 +569,7 @@ function Dunst({ y, hoehe, dauer, weite, aktiv }: { y: number; hoehe: number; da
 function FlussSzene({ aktiv }: { aktiv: boolean }) {
   return (
     <>
-      <Gemaelde bild="fluss" aktiv={aktiv} />
+      <Gemaelde bild="fluss" />
       {GLITZER.map(([x, y, w], i) => (
         <Glitzer key={i} x={x} y={y} w={w} index={i} aktiv={aktiv} />
       ))}
@@ -575,7 +587,7 @@ function FujiSzene({ aktiv }: { aktiv: boolean }) {
   const { width } = useWindowDimensions();
   return (
     <>
-      <Gemaelde bild="fuji" aktiv={aktiv} />
+      <Gemaelde bild="fuji" />
       <Dunst y={540} hoehe={40} dauer={18000} weite={22} aktiv={aktiv} />
       <Dunst y={600} hoehe={34} dauer={14000} weite={-18} aktiv={aktiv} />
       <BluetenZweig zweig={ZWEIG_LINKS} seite="links" massstab={(width / VB_B) * 0.95} dauer={8300} aktiv={aktiv} />
@@ -622,19 +634,21 @@ function FallendesBlatt({ werte, aktiv }: { werte: BlattWerte; aktiv: boolean })
     const t = p * Math.PI * 2;
     return {
       opacity: p < 0.04 ? p * 25 : p > 0.94 ? (1 - p) * 16 : 1,
+      // Kippen flach statt in 3D (28.10.2026): `perspective` + `rotateY`
+      // flackerten auf dem iPhone. Eine Drehung um die Hochachse um θ sieht
+      // von vorn aus wie eine Stauchung auf cos θ — dasselbe Bild in 2D.
       transform: [
-        { perspective: 400 },
         { translateX: werte.x * width + Math.sin(t * werte.welle) * werte.weite + p * werte.drift },
         { translateY: -30 + p * (height + 60) },
         { rotate: `${p * werte.dreh}deg` },
-        { rotateY: `${Math.sin(t * werte.flip) * 65}deg` },
+        { scaleX: Math.max(0.12, Math.cos((Math.sin(t * werte.flip) * 65 * Math.PI) / 180)) },
       ],
     };
   });
 
   const g = 14 * werte.groesse;
   return (
-    <Animated.View style={[styles.blatt, stil]}>
+    <Animated.View {...ALS_BILD} style={[styles.blatt, stil]}>
       <Svg width={g} height={g} viewBox="-8 -8 16 16">
         <Path d="M0 7 C -6 2, -6 -5, -2 -7 L 0 -5 L 2 -7 C 6 -5, 6 2, 0 7 Z" fill={theme.petal} stroke={theme.blossomEdge} strokeWidth={0.6} />
       </Svg>
@@ -642,7 +656,8 @@ function FallendesBlatt({ werte, aktiv }: { werte: BlattWerte; aktiv: boolean })
   );
 }
 
-const BLAETTER_JE_SZENE: Record<SzenenArt, number> = { zweige: 16, trauerkirsche: 18, laternen: 12, fluss: 20, fuji: 10 };
+// Seit 28.10.2026 rund ein Drittel weniger Blätter (Leistung auf dem iPhone).
+const BLAETTER_JE_SZENE: Record<SzenenArt, number> = { zweige: 10, trauerkirsche: 12, laternen: 8, fluss: 12, fuji: 6 };
 
 /* ---------- Szene ---------- */
 

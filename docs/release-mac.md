@@ -47,3 +47,16 @@ Connect akzeptieren, „Zur Prüfung einreichen“.
   und veröffentlichen (`npm run pack:publish -- --lang <l>`, nur mit Nicos Ja); kein neuer
   App-Build nötig.
 - Für Google Play gilt dasselbe Profil (`production`, App Bundle).
+
+## Neuen Build hochladen (Update)
+
+Auf dem Mac im Projektordner:
+
+1. Lokale Änderungen von `eas init` (owner/projectId in `app.json`) sichern:
+   `git add app.json && git commit -m "Link EAS project"`.
+2. `git pull --rebase origin main` (holt die Fixes), dann `git push origin HEAD:main`,
+   damit die Projekt-Verknüpfung auch auf GitHub liegt.
+3. `eas build -p ios --profile production --auto-submit` — baut mit höherer
+   Build-Nummer und lädt direkt zu TestFlight hoch.
+4. Nach 10–30 min in TestFlight testen: Sprachpaket laden, Animationen.
+

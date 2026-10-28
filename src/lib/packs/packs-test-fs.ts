@@ -71,8 +71,13 @@ export class MockFile {
         const payload = state.downloads.get(url);
         if (payload instanceof Error) throw payload;
         if (payload === undefined) throw Error(`Kein Test-Download fuer ${url} angemeldet.`);
+        // Wie auf dem Geraet (28.10.2026): Der Zielordner muss existieren.
+        // Vorher legte das Test-Dateisystem ihn still an; auf dem iPhone
+        // scheiterte deshalb der erste Paket-Download, ohne dass ein Test es sah.
+        if (!new MockDirectory(parentOf(destination.uri)).exists) {
+          throw Error(`Zielordner fehlt: ${parentOf(destination.uri)}`);
+        }
         state.files.set(destination.uri, payload);
-        state.dirs.add(parentOf(destination.uri));
         options?.onProgress?.({ bytesWritten: payload.length, totalBytes: payload.length });
         return destination;
       },
@@ -170,7 +175,9 @@ export function createMock(): MockFileSystem {
       state.files.clear();
       state.dirs.clear();
       state.downloads.clear();
-      state.dirs.add('/mock-doc/packs');
+      // Wie ein frisch installiertes iPhone: Den Dokumente-Ordner gibt es,
+      // `packs` legt erst die App an (28.10.2026; vorher war er vorab da).
+      state.dirs.add('/mock-doc');
     },
     __seedFile(path, content) {
       const normalized = normalize(path);

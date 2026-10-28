@@ -24,7 +24,7 @@
   "src/lib/fsrs/fsrs.ts": "39f0d8635dfca27819208a310ce949b79213366616a26d955e193d58822ba466",
   "src/lib/fsrs/types.ts": "405b1d98425329f3e8281c30ef7b80fcc2ad8cfa8ce418373c5db0531e3c22ac",
   "src/lib/generation/drossel.ts": "0838d4da3c8832c51423e85a57acea29524b8489bd7645b4ae2b19ea7054ff4e",
-  "src/lib/packs/config.ts": "276797b08cc358925994c9c0314ed471faad870988236408153df2642041e606",
+  "src/lib/packs/config.ts": "393a1165878deee3c0fd69286135730bd10e67c884ea79be9214103558fe2fb4",
   "src/lib/packs/manifest.ts": "9acbc516940c2c8c2bb25f09b7330ce58cd2f787323a044d53ef87fbb7232be5",
   "src/lib/packs/store.ts": "1cec5dd5af34c50efbb99c55e92efd87fa41019a6c7074931ba2a0cf9f8f42c6",
   "src/lib/practice-selection.ts": "1811d80317a0adc614f93e122d421adefccc8aaa250da31c11862333bf582d86",

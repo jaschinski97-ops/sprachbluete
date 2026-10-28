@@ -2,6 +2,7 @@
 
 ## 28.10.2026
 
+- Sprachpaket-Download, eigentliche Ursache: `loadPackConfig` las `expo-constants` ohne `.default`. Im Store-Build war `expoConfig` dadurch leer, die App fiel still auf den Platzhalter `OWNER/REPO` zurück und fand für keine Sprache ein Paket (Knopf ohne Größe, „Laden fehlgeschlagen“). Neuer Test `config.test.ts` bildet das Modul wie im Build nach und prüft, dass `app.json` ein echtes Repo trägt. Unter „Laden fehlgeschlagen“ steht jetzt klein der technische Grund. `eas.json` kennt die App-Store-Connect-ID, der Upload fragt nicht mehr nach der Apple-ID.
 - Sprachpaket-Download auf dem iPhone repariert: Beim ersten Download gab es den Ordner `Dokumente/packs` noch nicht, iOS lehnte das Schreiben der Zip ab. Der Downloader legt ihn jetzt vorher an. Das Test-Dateisystem verhielt sich nachsichtiger als das Gerät (legte fehlende Ordner still an und hatte `packs` vorab); es verlangt jetzt wie iOS einen vorhandenen Zielordner, ohne den Fix schlagen zwei Tests fehl.
 - Animationen ruhiger auf dem iPhone (Ruckeln und Grafikfehler gemeldet): Blütenblätter kippen flach (Stauchung statt 3D-`rotateY` mit `perspective`, das flackerte), Zweige, Vorhänge, Laternen, Dunst und Blätter werden einmal als Bild zwischengespeichert (`shouldRasterizeIOS`/`renderToHardwareTextureAndroid`), die gemalten Hintergründe zoomen nicht mehr, rund ein Drittel weniger fallende Blätter.
 

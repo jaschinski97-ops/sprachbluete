@@ -37,6 +37,10 @@ type ExtraPack = {
   pack?: { repo?: unknown; baseUrlOverride?: unknown };
 };
 
+type ExpoConstantsDaten = { expoConfig?: { extra?: ExtraPack } | null };
+/** So kommt `require('expo-constants')` an: Daten unter `default` (ESM-Interop). */
+type ExpoConstantsModul = ExpoConstantsDaten & { default?: ExpoConstantsDaten };
+
 /** Liest `expo.extra.pack`; `source` nur fuer Tests. */
 export function loadPackConfig(source?: unknown): PackConfig {
   let extra: ExtraPack | undefined;
@@ -47,9 +51,12 @@ export function loadPackConfig(source?: unknown): PackConfig {
       // Lazy-Require statt statischem Import: expo-constants ist im
       // Node-Testprozess unnuetz, und das Pack-Modul muss dort importierbar
       // bleiben (Loader degradiert dann auf eingebettete Assets).
+      // `expo-constants` exportiert nur `default` (28.10.2026): Ohne `.default`
+      // war `expoConfig` im Store-Build leer, die App fiel still auf
+      // `OWNER/REPO` zurück und kein Sprachpaket liess sich finden.
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const Constants = require('expo-constants') as { expoConfig?: { extra?: ExtraPack } };
-      extra = Constants.expoConfig?.extra;
+      const modul = require('expo-constants') as ExpoConstantsModul;
+      extra = (modul.default ?? modul).expoConfig?.extra;
     } catch {
       return DEFAULT_PACK_CONFIG;
     }

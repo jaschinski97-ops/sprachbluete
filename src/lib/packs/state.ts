@@ -23,6 +23,12 @@ export type PackStatus = {
   phase: 'idle' | 'downloading' | 'installing' | 'error';
   /** 0–1 während des Downloads. */
   progress: number;
+  /**
+   * Technischer Grund des letzten Fehlschlags (28.10.2026), klein unter der
+   * Meldung angezeigt. Vorher hiess jeder Fehler nur „Internetverbindung
+   * prüfen“, auch der falsche Repo-Name; die Ursache war so nicht zu sehen.
+   */
+  grund?: string;
 };
 
 const LEER: PackStatus = { installed: null, latest: undefined, phase: 'idle', progress: 0 };
@@ -64,7 +70,7 @@ export async function refreshPack(language: PackLanguage, { force = false } = {}
 export async function downloadPack(language: PackLanguage): Promise<boolean> {
   const jetzt = stand.get(language) ?? LEER;
   if (jetzt.phase === 'downloading' || jetzt.phase === 'installing') return false;
-  setze(language, { phase: 'downloading', progress: 0 });
+  setze(language, { phase: 'downloading', progress: 0, grund: undefined });
   try {
     const ergebnis = await installLanguagePack(language, {
       onProgress: ({ stage, bytesWritten, totalBytes }) => {
@@ -74,8 +80,8 @@ export async function downloadPack(language: PackLanguage): Promise<boolean> {
     });
     setze(language, { installed: ergebnis.version, phase: 'idle', progress: 0 });
     return true;
-  } catch {
-    setze(language, { phase: 'error', progress: 0 });
+  } catch (fehler) {
+    setze(language, { phase: 'error', progress: 0, grund: fehler instanceof Error ? fehler.message : String(fehler) });
     return false;
   }
 }

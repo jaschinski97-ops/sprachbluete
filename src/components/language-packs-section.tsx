@@ -76,6 +76,10 @@ function PackRow({ language }: { language: LanguageCode }) {
           {zustand}
         </ThemedText>
         {status.phase === 'error' ? <ThemedText type="smallBold">{t('pack.failed')}</ThemedText> : null}
+        {/* Der technische Grund, klein darunter: hilft bei Rückmeldungen (28.10.2026). */}
+        {status.phase === 'error' && status.grund ? (
+          <ThemedText type="small" themeColor="textSecondary" selectable>{status.grund}</ThemedText>
+        ) : null}
       </View>
       {status.installed === null || status.phase === 'error' ? (
         <ThemedButton

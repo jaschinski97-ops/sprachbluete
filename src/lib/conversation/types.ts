@@ -1,6 +1,5 @@
 import { Direction } from '../fsrs/types';
-import { zieleFuerBruecke } from '../languages/goals';
-import { contentDirectionOf, type ForeignBridge, type Lang, LANGUAGE_CODES, LanguageCode } from '../languages/types';
+import { contentDirectionOf, LANGUAGE_CODES, LanguageCode } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
 import type { VocabEntry } from '@/data/vocab-types';
 
@@ -44,14 +43,6 @@ export const SITUATION_SPRACHEN: readonly {
   ...LANGUAGE_CODES.filter((code) => code === 'de'),
   ...LANGUAGE_CODES.filter((code) => code !== 'de'),
 ].map((sprache) => ({ sprache, direction: contentDirectionOf(sprache) }));
-
-/** Die Gesprächs-Sprachen einer Oberfläche — die App-Sprache selbst lernt man nicht. */
-export function situationSprachenFuerBruecke(bridge: UiLanguage) {
-  // Dieselben Sprachen wie die Lernziele der Oberfläche — also auch Thai auf
-  // Thai-Oberfläche („Thai von Deutsch“), aber nie Deutsch auf deutscher.
-  const lernsprachen = new Set(zieleFuerBruecke(bridge as Lang | ForeignBridge).map((ziel) => ziel.language));
-  return SITUATION_SPRACHEN.filter(entry => lernsprachen.has(entry.sprache));
-}
 
 /**
  * Gesprächsthemen in Kapitel-Reihenfolge: `learning-path.ts` sortiert je

@@ -1,22 +1,14 @@
 import { isDeAnchored, isPairDirection } from '../languages/types';
 
-import { lesbareLaufkennung, situationSprachenFuerBruecke, situationId, SITUATION_SPRACHEN, Situationssprache } from './types';
+import { lesbareLaufkennung, situationId, SITUATION_SPRACHEN, Situationssprache } from './types';
 
 /**
- * Der Gesprächs-Reiter listet SPRACHEN (14.09.): Die Zuordnung Sprache →
- * Richtungs-Menge ist die Schiene des ganzen Reiters — steht sie schief,
- * landen die Dialoge unter der falschen Sprache. Darum festgenagelt.
+ * Die Zuordnung Sprache → Richtungs-Menge entscheidet, unter welcher Sprache
+ * Dialoge gespeichert, vertont und als Kapitel gezeigt werden — steht sie
+ * schief, landen die Dialoge unter der falschen Sprache. Darum festgenagelt.
+ * (Der eigene Gesprächs-Reiter ist seit 24.10.2026 entfernt.)
  */
-describe('SITUATION_SPRACHEN — die Sprachliste des Gesprächs-Reiters', () => {
-  it('zeigt dieselben Sprachen wie die Lernziele der Oberfläche', () => {
-    // Deutsch nie auf deutscher Oberfläche (Nutzerentscheidung 19.09.).
-    expect(situationSprachenFuerBruecke('de').map(e => e.sprache)).toEqual(['th', 'en', 'es']);
-    // Thai-Oberfläche: Thai ausgeblendet wie Deutsch auf deutscher (08.10.2026).
-    expect(situationSprachenFuerBruecke('th').map(e => e.sprache)).toEqual(['de', 'en', 'es']);
-    // Englische Oberfläche: Englisch lernt man dort nicht.
-    expect(situationSprachenFuerBruecke('en').map(e => e.sprache)).toEqual(['de', 'th', 'es']);
-    expect(situationSprachenFuerBruecke('ar')).toEqual(SITUATION_SPRACHEN);
-  });
+describe('SITUATION_SPRACHEN — Sprache und Dialogrichtung', () => {
   it('ordnet jeder Sprache die Menge zu, in der SIE die Dialogseite ist', () => {
     const mapping = new Map(SITUATION_SPRACHEN.map((eintrag) => [eintrag.sprache, eintrag.direction]));
     expect(mapping.get('de')).toBe('th_to_de'); // die deutschsprachigen Dialoge
@@ -39,8 +31,8 @@ describe('SITUATION_SPRACHEN — die Sprachliste des Gesprächs-Reiters', () => 
     }
   });
 
-  it('baut dieselben IDs wie der Bauplan — Reiter und Lauf bleiben kompatibel', () => {
-    // Die Mengen des Reiters sind genau die Richtungen des Generators; der
+  it('baut dieselben IDs wie der Bauplan — gespeicherte Dialoge bleiben auffindbar', () => {
+    // Die Mengen sind genau die Richtungen des Generators; der
     // ID-Schlüssel muss unverändert bleiben, sonst findet der Exists-Check
     // laufende Situationen nicht wieder.
     expect(situationId('market', 'A1', 'th_to_de', 7)).toBe('market-A1-th_to_de-007');

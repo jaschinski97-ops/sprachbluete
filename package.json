@@ -80,7 +80,8 @@
     "pipeline:release": "node scripts/release-pipeline.cjs",
     "content:tone-tool": "node scripts/build-tone-tool.cjs --check",
     "audit:structure": "node scripts/audit-structure.cjs",
-    "web:content": "node scripts/sync-web-content.cjs"
+    "web:content": "node scripts/sync-web-content.cjs",
+    "e2e:android": "node scripts/e2e/lauf.cjs"
   },
   "private": true,
   "license": "PolyForm-Noncommercial-1.0.0",

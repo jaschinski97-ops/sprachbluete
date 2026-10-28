@@ -60,6 +60,7 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 - Nach einer Session-Grenze sterben die Server oft: Ports 8081/8082 prüfen.
 - Linux Mint (seit 16.10.): Node 24 über nvm, JDK 17 unter `~/.local/jdks/temurin-17`, Android SDK `~/Android/Sdk` (AVD `ThaiSpeaker_API36`), Pfade in `~/.bashrc`. Kein sudo für Claude. Textdateien sind LF (`.gitattributes`).
 - Verifikation gehört zum Auftrag: tsc, jest, bei UI-Änderungen der Browser.
+- Klick-Tests am Emulator (28.10.2026): `npm run e2e:android` (schonend) bzw. `-- --frisch` (Schnappschuss, App-Daten leer, alles, Schnappschuss zurück). Emulator mit `-memory 4096 -gpu swiftshader_indirect` starten. Anleitung `docs/klick-tests.md`. Nach Änderungen an Geräte-Code (Pakete, Navigation, Übungen) laufen lassen.
 
 ## Inhalts-Pipeline (Studio)
 

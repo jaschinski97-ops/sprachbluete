@@ -1,6 +1,6 @@
 import type { Tone } from '@/constants/tones';
 import { TONE_KEYS } from '@/constants/tones';
-import { isLatinLanguage, isSpellable, type LatinLanguage } from '@/data/latin-alphabet';
+import { isSpellable, type LatinLanguage } from '@/data/latin-alphabet';
 import { isTeachableNumber } from '@/data/numbers';
 import { TONE_RULES, VOWEL_PATTERNS, type ThaiConsonant, type VowelPattern } from '@/data/thai-script';
 import type { VocabEntry } from '@/data/vocab-types';
@@ -138,10 +138,6 @@ export function spellingQuestions(words: readonly VocabEntry[], random: Random, 
     const options = shuffled([answer, ...distractors], random);
     return { answer, options, correctIndex: options.indexOf(answer) };
   });
-}
-
-export function hasAlphabet(language: LanguageCode): language is LatinLanguage {
-  return isLatinLanguage(language);
 }
 
 /* ------------------------------------------------------------------ *

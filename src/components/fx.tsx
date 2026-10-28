@@ -1,6 +1,7 @@
 import * as ExpoRouter from 'expo-router';
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import {
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -89,12 +90,28 @@ export function BrushStroke({ width = 78 }: { width?: number }) {
 export function GradientFill({ radius = 0, from, to }: { radius?: number; from?: string; to?: string }) {
   const theme = useTheme();
   const id = useSvgId('grad');
+  const start = from ?? theme.gradientStart;
+  const ende = to ?? theme.gradientEnd;
+  // iPhone (28.10.2026): Das SVG mit 100 % Größe malte den Verlauf nur als
+  // Streifen oben, das Glanzlicht blieb als weißer Block stehen. Auf dem
+  // Gerät zeichnet ihn deshalb die View selbst; das Web behält das SVG.
+  if (Platform.OS !== 'web') {
+    return (
+      <View
+        pointerEvents="none"
+        style={[
+          StyleSheet.absoluteFill,
+          { borderRadius: radius, experimental_backgroundImage: `linear-gradient(to bottom right, ${start}, ${ende})` },
+        ]}
+      />
+    );
+  }
   return (
     <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
       <Defs>
         <LinearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={from ?? theme.gradientStart} />
-          <Stop offset="1" stopColor={to ?? theme.gradientEnd} />
+          <Stop offset="0" stopColor={start} />
+          <Stop offset="1" stopColor={ende} />
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width="100%" height="100%" rx={radius} ry={radius} fill={`url(#${id})`} />

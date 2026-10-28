@@ -273,8 +273,12 @@ const styles = StyleSheet.create({
   list: {
     gap: Spacing.two,
   },
+  /** Bricht um (28.10.2026): Auf dem iPhone drückte der breite Download-
+      Knopf Name und Wortzahl auf null Breite; jetzt rutschen die Knöpfe
+      in eine eigene Zeile, sobald die Auswahl-Fläche zu schmal würde. */
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: Spacing.three,
     minHeight: 44,
@@ -299,8 +303,10 @@ const styles = StyleSheet.create({
   },
   /** Die Auswahl-Fläche: füllt die Zeile links vom „Lernen"-Knopf. */
   lead: {
-    flex: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 150,
+    minWidth: 150,
     justifyContent: 'center',
     gap: Spacing.one,
     minHeight: 44,
@@ -318,7 +324,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
     gap: Spacing.two,
-    flexShrink: 1,
+    marginLeft: 'auto',
+    paddingBottom: Spacing.one,
   },
   /** Direkter Einstieg in die Sitzung — gleiche Zielhöhe wie die Zeile. */
   startPill: {

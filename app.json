@@ -23,7 +23,11 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.sprachbluete.app"
+      "package": "com.sprachbluete.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "output": "static",
@@ -85,7 +89,12 @@
       "pack": {
         "repo": "jaschinski97-ops/sprachbluete",
         "baseUrlOverride": null
+      },
+      "router": {},
+      "eas": {
+        "projectId": "24687298-1665-422a-bf86-b5e46e6bf430"
       }
-    }
+    },
+    "owner": "nicoo97"
   }
 }

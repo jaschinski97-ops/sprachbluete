@@ -1,0 +1,9 @@
+No account or login is needed.
+
+Media: audio clips and pictures are not bundled. On the Overview tab, tap "Download" next to a language (about 100-180 MB each) to fetch its language pack from our public GitHub releases (github.com/jaschinski97-ops/sprachbluete). Without a pack the app still works and uses the device voice. After the download everything runs offline.
+
+Microphone and speech recognition: used only in the speaking exercises (Learn tab > a language > Speaking, e.g. Shadowing or Repeat the sentence) after the user taps the record button. The app compares the recording's melody and tempo with the model recording on the device and recognises the spoken words with Apple's on-device speech recognition (requiresOnDeviceRecognition). No audio or text is sent to us or any provider.
+
+Photo library: the app never accesses photos. The purpose string is present only because system frameworks bundled by Expo (ExpoFileSystem, ExpoImage) reference the API.
+
+The app collects no data: no account, no ads, no analytics, no tracking. Learning progress is stored only on the device.

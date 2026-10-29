@@ -14,7 +14,8 @@ lädst du selbst hoch (Apple und Google bieten dafür keinen Weg ohne deine Anme
 | `google-play/icon-512.png` | Play-Symbol 512 × 512 |
 | `google-play/feature-graphic.png` | Play-Kopfgrafik 1024 × 500 |
 | `google-play/<sprache>/title.txt`, `short-description.txt`, `full-description.txt` | Play-Eintrag (de-DE, en-US, es-ES, th) |
-| `../store.config.json` | Apple: Texte in de/en/es/th, Kategorie Bildung, Altersfreigabe, Hinweise für die Prüfer |
+| `../store.config.json` | Apple: Texte in de/en/es/th, Kategorie Bildung, Altersfreigabe |
+| `app-review-notes.txt` | Hinweise für Apples Prüfer (englisch), zum Einfügen in App Store Connect |
 
 Screenshots zeigen die echte App (Android-Emulator in iPhone-Größe, Statusleiste bereinigt).
 Den Shadowing-Vergleich nach einer Aufnahme zeigen sie noch nicht; ein echter iPhone-Screenshot
@@ -22,12 +23,15 @@ davon kann später als siebtes Bild dazu.
 
 ## App Store (iPhone)
 
-1. Texte übertragen: `npx eas metadata:push` (fragt evtl. nach der Apple-Anmeldung).
+1. Texte übertragen: im Projektordner `npx eas metadata:push` ausführen. Es fragt nach deiner Apple-ID,
+   dem Passwort und dem Code auf dem iPhone (das kann nur du eingeben).
 2. App Store Connect → Sprachblüte → Version 1.0:
    - Screenshots „iPhone 6,9″“: Bilder aus `screenshots/ios/de-DE` (Deutsch) und `en-US` (Englisch) hineinziehen.
      Spanisch und Thai übernehmen sonst die deutschen.
    - Build: **9** auswählen (enthält Shadowing und Worterkennung).
-   - Kontakt für die Prüfung: **Telefonnummer** ergänzen (Name, E-Mail und Hinweise sind schon drin).
+   - Informationen zur App-Prüfung: Vorname Nico, Nachname Jaschinski, E-Mail jaschinski97@gmail.com,
+     deine **Telefonnummer**, „Anmeldung erforderlich“ aus. Den Text aus `app-review-notes.txt` ins Feld
+     „Anmerkungen“ kopieren. (`eas metadata` überträgt diesen Block nur mit Telefonnummer.)
 3. App-Datenschutz: „Daten werden nicht erfasst“. Datenschutz-URL ist gesetzt.
 4. Preise und Verfügbarkeit: kostenlos, alle Länder.
 5. Altersfreigabe: Fragebogen kurz ansehen; alles „Nein/Keine“ (wird von `metadata:push` vorbefüllt).

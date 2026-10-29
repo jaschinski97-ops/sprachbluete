@@ -7,25 +7,6 @@
       "EDUCATION",
       "REFERENCE"
     ],
-    "advisory": {
-      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
-      "contests": "NONE",
-      "gamblingSimulated": "NONE",
-      "horrorOrFearThemes": "NONE",
-      "matureOrSuggestiveThemes": "NONE",
-      "medicalOrTreatmentInformation": "NONE",
-      "profanityOrCrudeHumor": "NONE",
-      "sexualContentGraphicAndNudity": "NONE",
-      "sexualContentOrNudity": "NONE",
-      "violenceCartoonOrFantasy": "NONE",
-      "violenceRealistic": "NONE",
-      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
-      "gambling": false,
-      "unrestrictedWebAccess": false,
-      "kidsAgeBand": null,
-      "ageRatingOverride": "NONE",
-      "koreaAgeRatingOverride": "NONE"
-    },
     "release": {
       "automaticRelease": false,
       "phasedRelease": false

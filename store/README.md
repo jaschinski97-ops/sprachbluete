@@ -34,7 +34,8 @@ davon kann später als siebtes Bild dazu.
      „Anmerkungen“ kopieren. (`eas metadata` überträgt diesen Block nur mit Telefonnummer.)
 3. App-Datenschutz: „Daten werden nicht erfasst“. Datenschutz-URL ist gesetzt.
 4. Preise und Verfügbarkeit: kostenlos, alle Länder.
-5. Altersfreigabe: Fragebogen kurz ansehen; alles „Nein/Keine“ (wird von `metadata:push` vorbefüllt).
+5. Altersfreigabe: Fragebogen in App Store Connect ausfüllen, überall „Nein/Keine“ (auch „Soziale Medien“,
+   Nutzerinhalte, Chat). `eas metadata` kann ihn nicht mehr setzen, Apple hat neue Pflichtfragen.
 6. EU (Digital Services Act): Händlerstatus angeben. Ohne Einnahmen und als Privatperson in der Regel
    „kein Händler“; als Händler würden Adresse und Telefon öffentlich angezeigt. Deine Entscheidung.
 7. „Zur Prüfung einreichen“. Veröffentlichung nach der Freigabe ist auf „manuell“ gestellt.

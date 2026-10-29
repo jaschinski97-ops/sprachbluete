@@ -8,7 +8,7 @@
       "REFERENCE"
     ],
     "release": {
-      "automaticRelease": false,
+      "automaticRelease": true,
       "phasedRelease": false
     },
     "info": {

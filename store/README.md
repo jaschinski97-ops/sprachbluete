@@ -39,7 +39,7 @@ davon kann später als siebtes Bild dazu.
    Nutzerinhalte, Chat). `eas metadata` kann ihn nicht mehr setzen, Apple hat neue Pflichtfragen.
 6. EU (Digital Services Act): Händlerstatus angeben. Ohne Einnahmen und als Privatperson in der Regel
    „kein Händler“; als Händler würden Adresse und Telefon öffentlich angezeigt. Deine Entscheidung.
-7. „Zur Prüfung einreichen“. Veröffentlichung nach der Freigabe ist auf „manuell“ gestellt.
+7. „Zur Prüfung einreichen“. Veröffentlichung: automatisch direkt nach der Freigabe (seit 29.10.2026).
 
 ## Google Play (Android)
 

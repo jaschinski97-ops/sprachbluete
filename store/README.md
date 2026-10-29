@@ -9,7 +9,7 @@ lädst du selbst hoch (Apple und Google bieten dafür keinen Weg ohne deine Anme
 
 | Datei / Ordner | Wofür |
 | --- | --- |
-| `screenshots/ios/de-DE`, `en-US` | iPhone 6,9″ (1290 × 2796), je 6 Bilder |
+| `screenshots/ios/de-DE`, `en-US` | iPhone 6,9″ (1290 × 2796, Dateien `…_iphone-1290x2796.jpg`), je 6 Bilder |
 | `screenshots/android/de-DE`, `en-US` | Google Play Telefon (1290 × 2580, Seitenverhältnis 2:1), je 6 Bilder |
 | `google-play/icon-512.png` | Play-Symbol 512 × 512 |
 | `google-play/feature-graphic.png` | Play-Kopfgrafik 1024 × 500 |

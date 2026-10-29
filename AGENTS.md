@@ -109,7 +109,7 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 - iOS am Gerät prüfen: Shadowing stellt die Audiokategorie während laufender Aufnahme um (`src/lib/audio-mode.ts`).
 - Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
 - Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
-- Offen (29.10.2026, Nutzer: später): Mikrofon-Hinweis in der App (`sentence.*`, 10 Wörterbücher) sagt „flüchtiger Gerätespeicher … verworfen“; die Aufnahme liegt aber bis zum Verlassen der Übung als WAV im Cache (Datenschutzseite ist schon angepasst). Mit dem nächsten Build angleichen. Store-Unterlagen und Checkliste: `store/README.md`.
+- Store-Unterlagen und Checkliste: `store/README.md`. Mikrofon-Hinweis in der App bleibt bewusst so (Nutzerentscheidung 29.10.2026), obwohl die Aufnahme bis zum Verlassen der Übung als WAV im Cache liegt.
 - Änderungen immer auch in `CHANGELOG.md` eintragen. Die offenen Punkte der Testrunde 26.09. sind seit 16.10. erledigt.
 - Offen (Nutzerentscheidung): „Töne hören“ nutzt nur tongeprüfte Clips; einsilbig mittel/tief besteht keiner das Ton-Gate, die Übung fragt diese Töne deshalb nie ab.
 - Offen: 55 Thai-Dialogwörter ohne Wortschatzeintrag (Zahlen, บาท, คะ, ชื่อ, ประเทศ …). Studio → Wortschatz → „Dialogwörter ohne Eintrag übernehmen“, Liste prüfen, Lauf starten (Nutzer). Pluralblöcke: `{{count, plural, one {…} other {…}}}`.

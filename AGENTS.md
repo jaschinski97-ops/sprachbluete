@@ -108,7 +108,7 @@ Jest ohne Worker-Grenze (15 Worker) brauchte neben Emulator und Gradle-Daemon ü
 - Katalog (`docs/katalog-je-lernsprache-konzept.md`): Schritt 1 und 1b sind gebaut (18.10.2026); der VOLLE Studio-Dialoglauf ist damit frei. Danach Schritt 2a (Stufen-Teile), 2b nur nach Nutzerentscheidung.
 - iOS am Gerät prüfen: Shadowing stellt die Audiokategorie während laufender Aufnahme um (`src/lib/audio-mode.ts`).
 - Offen: 724 de-Vokabeln ohne echte IPA (Pseudo-Umschrift wird ausgeblendet, `active-vocabulary.ts`); Clips คว้าน, สวัสดีค่ะ, เหนื่อยมาก, คนเยอะมาก fehlen nach Ton-Gate-Verwurf (korrigierte Solltöne).
-- Offen: 498 es-Vokabeln bis 2.000 fehlen; vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
+- Spanisch ist vollständig (geprüft 29.10.2026): 1.934 von 2.000 Begriffen; die 66 übrigen sind gewollt leer, weil dasselbe spanische Wort schon unter einem anderen Begriff steht (esperar, tarde, seguro, muñeca …) oder weil es Thai-Begriffe ohne Entsprechung sind (Partikel, Zählwörter, kreng jai, Verdienst). Vorhandene en-Beispielsatz-Roman-Felder bleiben im Datenbestand, werden in lateinischen Dialog-/Satzansichten ausgeblendet.
 - Store-Unterlagen und Checkliste: `store/README.md`. Mikrofon-Hinweis in der App bleibt bewusst so (Nutzerentscheidung 29.10.2026), obwohl die Aufnahme bis zum Verlassen der Übung als WAV im Cache liegt.
 - Änderungen immer auch in `CHANGELOG.md` eintragen. Die offenen Punkte der Testrunde 26.09. sind seit 16.10. erledigt.
 - Offen (Nutzerentscheidung): „Töne hören“ nutzt nur tongeprüfte Clips; einsilbig mittel/tief besteht keiner das Ton-Gate, die Übung fragt diese Töne deshalb nie ab.

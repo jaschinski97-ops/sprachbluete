@@ -1,0 +1,79 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "copyright": "2026 Nico Jaschinski",
+    "categories": ["EDUCATION", "REFERENCE"],
+    "advisory": {
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "gambling": false,
+      "unrestrictedWebAccess": false,
+      "kidsAgeBand": null,
+      "ageRatingOverride": "NONE",
+      "koreaAgeRatingOverride": "NONE"
+    },
+    "release": {
+      "automaticRelease": false,
+      "phasedRelease": false
+    },
+    "review": {
+      "firstName": "Nico",
+      "lastName": "Jaschinski",
+      "email": "jaschinski97@gmail.com",
+      "demoRequired": false,
+      "notes": "No account or login is needed.\n\nMedia: audio clips and pictures are not bundled. On the Overview tab, tap \"Download\" next to a language (about 100-180 MB each) to fetch its language pack from our public GitHub releases (github.com/jaschinski97-ops/sprachbluete). Without a pack the app still works and uses the device voice. After the download everything runs offline.\n\nMicrophone and speech recognition: used only in the speaking exercises (Learn tab > a language > Speaking, e.g. Shadowing or Repeat the sentence) after the user taps the record button. The app compares the recording's melody and tempo with the model recording on the device and recognises the spoken words with Apple's on-device speech recognition (requiresOnDeviceRecognition). No audio or text is sent to us or any provider.\n\nPhoto library: the app never accesses photos. The purpose string is present only because system frameworks bundled by Expo (ExpoFileSystem, ExpoImage) reference the API.\n\nThe app collects no data: no account, no ads, no analytics, no tracking. Learning progress is stored only on the device."
+    },
+    "info": {
+      "de-DE": {
+        "title": "Sprachblüte",
+        "subtitle": "Thai, Spanisch & mehr lernen",
+        "promoText": "Thai, Englisch, Spanisch und Deutsch lernen: mit Alltagsdialogen, Karteikarten, Hörclips und Sprechübungen. Kostenlos, ohne Konto, ohne Werbung.",
+        "description": "Sprachblüte hilft dir, Thai, Englisch, Spanisch oder Deutsch zu lernen – kostenlos, ohne Konto und ohne Werbung.\n\nKAPITEL MIT ECHTEN DIALOGEN\nJedes Kapitel beginnt mit einem Alltagsgespräch: im Restaurant, beim Einkaufen, unterwegs. Du hörst und liest den Dialog, lernst die Wörter daraus, übst die Regel dahinter und schreibst und sprichst am Ende selbst.\n\nWÖRTER, DIE BLEIBEN\nRund 2.000 Wörter je Sprache in drei Stufen: Anfänger, Fortgeschritten und Profi. Karteikarten fragen jedes Wort im richtigen Moment wieder ab, bevor du es vergisst. Zu den Wörtern gibt es Bilder und Hörclips.\n\nSPRECHEN MIT RÜCKMELDUNG\nBeim Shadowing sprichst du einen Satz nach und siehst deine Satzmelodie direkt neben der des Vorbilds. Die App zeigt dir die auffälligste Stelle mit einem konkreten Tipp, und du kannst Vorbild und eigene Aufnahme im Wechsel anhören. Die Worterkennung läuft auf deinem Gerät, deine Aufnahmen verlassen das Telefon nicht.\n\nTHAI MIT TÖNEN\nThai-Wörter stehen in Thai-Schrift mit Umschrift. Grundlagen-Kapitel führen in Schrift, Töne und Zahlen ein.\n\nÜBEN AUF VIELE ARTEN\nHören, Lesen & Schreiben, Sprechen, Grammatik und Wortschatz: Diktat, Satzbau, Lesetexte, Rollenspiel, Wortlisten und eine tägliche Runde.\n\nOFFLINE UND PRIVAT\nHörclips und Bilder lädst du je Lernsprache einmal als Sprachpaket herunter, danach funktioniert alles ohne Internet. Dein Lernfortschritt bleibt auf deinem Gerät. Die App sammelt keine Daten.\n\nDie Oberfläche gibt es in zehn Sprachen: Deutsch, Englisch, Spanisch, Thai, Arabisch, Chinesisch, Hindi, Französisch, Bengalisch und Portugiesisch.",
+        "keywords": ["Thai", "Sprachen lernen", "Vokabeln", "Spanisch", "Englisch", "Deutsch", "Karteikarten", "Aussprache", "Shadowing"],
+        "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/datenschutz.html"
+      },
+      "en-US": {
+        "title": "Sprachblüte",
+        "subtitle": "Learn Thai, Spanish & more",
+        "promoText": "Learn Thai, English, Spanish and German with everyday dialogues, flashcards, audio and speaking practice. Free, no account, no ads.",
+        "description": "Sprachblüte helps you learn Thai, English, Spanish or German – free, without an account and without ads.\n\nCHAPTERS BUILT ON REAL DIALOGUES\nEvery chapter starts with an everyday conversation: at a restaurant, shopping, getting around. You listen to and read the dialogue, learn its words, practise the rule behind it and finally write and speak yourself.\n\nWORDS THAT STICK\nAround 2,000 words per language in three levels: beginner, intermediate and advanced. Flashcards bring each word back at the right moment, before you forget it. Words come with pictures and audio clips.\n\nSPEAKING WITH FEEDBACK\nIn shadowing you repeat a sentence and see your sentence melody right next to the model's. The app points out the most noticeable spot with one concrete tip, and you can listen to the model and your own recording in turn. Word recognition runs on your device; your recordings never leave the phone.\n\nTHAI WITH TONES\nThai words are shown in Thai script with romanisation. Foundation chapters introduce the script, the tones and numbers.\n\nMANY WAYS TO PRACTISE\nListening, reading & writing, speaking, grammar and vocabulary: dictation, sentence building, reading texts, role play, word lists and a daily round.\n\nOFFLINE AND PRIVATE\nDownload audio and pictures once per language as a language pack; after that everything works without internet. Your progress stays on your device. The app collects no data.\n\nThe interface is available in ten languages: German, English, Spanish, Thai, Arabic, Chinese, Hindi, French, Bengali and Portuguese.",
+        "keywords": ["learn Thai", "language", "vocabulary", "Spanish", "German", "English", "flashcards", "pronunciation", "shadowing"],
+        "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+      },
+      "es-ES": {
+        "title": "Sprachblüte",
+        "subtitle": "Aprende tailandés y más",
+        "promoText": "Aprende tailandés, inglés, español y alemán con diálogos cotidianos, tarjetas, audios y práctica oral. Gratis, sin cuenta y sin anuncios.",
+        "description": "Sprachblüte te ayuda a aprender tailandés, inglés, español o alemán: gratis, sin cuenta y sin anuncios.\n\nCAPÍTULOS CON DIÁLOGOS REALES\nCada capítulo empieza con una conversación cotidiana: en el restaurante, de compras, de viaje. Escuchas y lees el diálogo, aprendes sus palabras, practicas la regla y al final escribes y hablas tú.\n\nPALABRAS QUE SE QUEDAN\nUnas 2.000 palabras por idioma en tres niveles: principiante, intermedio y avanzado. Las tarjetas te preguntan cada palabra en el momento justo, antes de que la olvides. Las palabras tienen imágenes y audios.\n\nHABLAR CON RESPUESTA\nCon el shadowing repites una frase y ves tu entonación junto a la del modelo. La app te señala el punto más llamativo con un consejo concreto, y puedes escuchar el modelo y tu grabación alternándolos. El reconocimiento de palabras funciona en tu dispositivo; tus grabaciones no salen del teléfono.\n\nTAILANDÉS CON TONOS\nLas palabras tailandesas aparecen en escritura tailandesa con transcripción. Los capítulos básicos presentan la escritura, los tonos y los números.\n\nMUCHAS FORMAS DE PRACTICAR\nComprensión auditiva, lectura y escritura, expresión oral, gramática y vocabulario: dictado, construcción de frases, textos de lectura, juegos de rol, listas de palabras y una ronda diaria.\n\nSIN CONEXIÓN Y PRIVADA\nDescargas los audios y las imágenes una vez por idioma como paquete; después todo funciona sin internet. Tu progreso se queda en tu dispositivo. La app no recoge datos.\n\nLa interfaz está disponible en diez idiomas: alemán, inglés, español, tailandés, árabe, chino, hindi, francés, bengalí y portugués.",
+        "keywords": ["tailandés", "aprender idiomas", "vocabulario", "inglés", "alemán", "tarjetas", "pronunciación", "shadowing"],
+        "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+      },
+      "th": {
+        "title": "Sprachblüte",
+        "subtitle": "เรียนอังกฤษ สเปน เยอรมัน",
+        "promoText": "เรียนภาษาอังกฤษ สเปน และเยอรมันด้วยบทสนทนาในชีวิตประจำวัน บัตรคำ คลิปเสียง และการฝึกพูด ฟรี ไม่ต้องมีบัญชี ไม่มีโฆษณา",
+        "description": "Sprachblüte ช่วยให้คุณเรียนภาษาอังกฤษ สเปน หรือเยอรมัน ฟรี ไม่ต้องสมัครบัญชี และไม่มีโฆษณา\n\nบทเรียนจากบทสนทนาจริง\nแต่ละบทเริ่มด้วยบทสนทนาในชีวิตประจำวัน เช่น ที่ร้านอาหาร ตอนซื้อของ หรือระหว่างเดินทาง คุณจะได้ฟังและอ่านบทสนทนา เรียนคำศัพท์ ฝึกไวยากรณ์ แล้วลองเขียนและพูดด้วยตัวเอง\n\nคำศัพท์ที่จำได้นาน\nประมาณ 2,000 คำต่อภาษา แบ่งเป็นสามระดับ: เริ่มต้น กลาง และสูง บัตรคำจะถามซ้ำในเวลาที่เหมาะสมก่อนที่คุณจะลืม ทุกคำมีรูปภาพและคลิปเสียง\n\nฝึกพูดพร้อมคำแนะนำ\nในการฝึกพูดตาม (shadowing) คุณพูดประโยคตามแล้วเห็นทำนองเสียงของคุณเทียบกับต้นแบบ แอปจะชี้จุดที่ต่างที่สุดพร้อมคำแนะนำ และคุณฟังต้นแบบสลับกับเสียงของตัวเองได้ การจำคำพูดทำงานบนอุปกรณ์ของคุณ เสียงที่บันทึกไม่ถูกส่งออกจากโทรศัพท์\n\nฝึกได้หลายแบบ\nการฟัง การอ่านและเขียน การพูด ไวยากรณ์ และคำศัพท์: เขียนตามคำบอก เรียงประโยค บทอ่าน บทบาทสมมติ รายการคำ และรอบฝึกประจำวัน\n\nใช้งานออฟไลน์และเป็นส่วนตัว\nดาวน์โหลดคลิปเสียงและรูปภาพเป็นชุดภาษาเพียงครั้งเดียว หลังจากนั้นใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต ความคืบหน้าในการเรียนเก็บไว้บนอุปกรณ์ของคุณ แอปไม่เก็บข้อมูลใด ๆ\n\nหน้าจอแอปมีให้เลือกสิบภาษา: เยอรมัน อังกฤษ สเปน ไทย อาหรับ จีน ฮินดี ฝรั่งเศส เบงกาลี และโปรตุเกส",
+        "keywords": ["เรียนภาษาอังกฤษ", "ภาษาสเปน", "ภาษาเยอรมัน", "คำศัพท์", "บัตรคำ", "ฝึกพูด", "ออกเสียง"],
+        "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+      }
+    }
+  }
+}

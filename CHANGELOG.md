@@ -1,5 +1,9 @@
 # Changelog
 
+## 04.11.2026
+
+- Spanisch: 22 mehrteilige Nomen zeigten auf der Karte einen falschen Artikel („ambientes medio ambiente“ statt „el medio ambiente“), die Schreibübung verlangte ihn auch so. Ursache: Das Bauskript der Wortsession vom 24.10. teilte die Grammatikzeile `n m medios ambientes` am Leerzeichen und hielt das zweite Pluralwort für den Artikel. Korrigiert in den Quelldateien (`_Local/woerter/es/`) und über den Helper neu geliefert (gleiche IDs, Lernstände bleiben): Artikel el/la nach Genus, Plural als ganze Wendung (`medios ambientes`, `billetes de ida y vuelta`, `primeros ministros` …), „atención al cliente“ ohne Plural (—). „por ciento“ ist jetzt ein Adverb ohne Artikel (DLE: „loc. adv. De cada ciento“). `content-plan/pruefe-woerter.cjs` prüft spanische Nomen jetzt auf el/la passend zum Genus (el auch vor betontem a-: el agua) und auf einen vollständigen Plural; auf den alten Dateien meldet sie genau diese 22 Einträge. `liefere-woerter.cjs` erreicht über `STUDIO_HELPER` auch den Helper eines anderen Arbeitsbaums. Store-Nutzer bekommen die Korrektur mit dem nächsten App-Build; das Sprachpaket `pack-es-v1` bleibt gültig (es enthält nur Hörclips und Bilder).
+
 ## 28.10.2026
 
 - Sprachpaket-Download, letzte Ursache (im Android-Emulator nachgestellt): Der Entpacker lag als `extractor.native.ts` neben `extractor.ts`. Metro nimmt auf iOS/Android bei `./extractor` die `.native`-Datei, dort fehlte `createPackExtractor`, jedes Entpacken scheiterte mit „undefined is not a function“ (Jest löst anders auf, Tests waren grün). Umbenannt in `zip-extractor.ts`; Wächtertest `platform-files.test.ts` verlangt gleiche Exporte bei `.native`-Paaren. Unerwartete Fehler nennen jetzt den Schritt (`[extract] …`). Im Emulator lädt, entpackt und aktiviert der Release-Build jetzt das spanische Paket.

@@ -7,11 +7,12 @@
  *
  * Aufruf: node content-plan/liefere-woerter.cjs <ordner|datei> [...]
  * Voraussetzung: Helper läuft auf 127.0.0.1:8082 (`node scripts/content/studio.cjs`).
+ * Ein Helper eines anderen Arbeitsbaums auf anderem Port: STUDIO_HELPER=http://127.0.0.1:<port>.
  */
 const fs = require('node:fs');
 const path = require('node:path');
 
-const HELPER = 'http://127.0.0.1:8082';
+const HELPER = process.env.STUDIO_HELPER || 'http://127.0.0.1:8082';
 const ORIGIN = 'http://localhost:8081';
 
 async function post(route, body) {

@@ -25,6 +25,23 @@ function dateienAus(argumente) {
     : [arg]);
 }
 
+/**
+ * Spanische Nomen (04.11.2026): Ein Bauskript hatte mehrteilige Plurale am
+ * Leerzeichen geteilt („medios ambientes“ → Plural „medios“, Artikel
+ * „ambientes“). Artikel el/la passend zum Genus; „el“ auch vor betontem
+ * a-/ha- (el agua, el aula). Ein mehrteiliges Wort hat einen ebenso langen
+ * Plural, „—“ heißt ohne Plural.
+ */
+function spanischesNomenFehler({ term, spanishNoun: { gender, article, plural } }) {
+  const fehler = [];
+  if (!['m', 'f'].includes(gender)) fehler.push(`Genus „${gender}“ ist weder m noch f`);
+  if (!['el', 'la'].includes(article)) fehler.push(`Artikel „${article}“ ist weder el noch la`);
+  else if (gender === 'm' ? article !== 'el' : article !== 'la' && !/^h?[aá]/i.test(term)) fehler.push(`Artikel ${article} passt nicht zum Genus ${gender}`);
+  if (typeof plural !== 'string' || !plural.trim()) fehler.push('Plural fehlt („—“ für keinen Plural)');
+  else if (plural !== '—' && plural.trim().split(/\s+/).length < term.trim().split(/\s+/).length) fehler.push(`Plural „${plural}“ ist kürzer als das Wort`);
+  return fehler;
+}
+
 const fehler = [];
 const schluessel = new Map();
 const begriffJeSprache = new Map();
@@ -49,6 +66,7 @@ for (const datei of dateienAus(process.argv.slice(2))) {
       if (b.stage !== (w.learningStage ?? 'beginner')) fehler.push(`${wo}: Stufe ${w.learningStage} passt nicht zum Begriff (${b.stage})`);
       if (b.onlyLanguages && !b.onlyLanguages.includes(w.language)) fehler.push(`${wo}: Begriff gilt nur für ${b.onlyLanguages.join(', ')}`);
     }
+    if (w.language === 'es' && w.spanishNoun) for (const f of spanischesNomenFehler(w)) fehler.push(`${wo}: ${f}`);
     const k = vocabSchluessel(w.term, w.language);
     if (schluessel.has(k)) fehler.push(`${wo}: Wort doppelt (auch ${schluessel.get(k)})`);
     else schluessel.set(k, w.id);

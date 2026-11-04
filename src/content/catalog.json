@@ -342112,8 +342112,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "ambientes",
-          "plural": "medios"
+          "article": "el",
+          "plural": "medios ambientes"
         },
         "exampleTerm": "Usar la bicicleta es mejor para el medio ambiente.",
         "exampleRoman": "u-SAR la bi-ci-CLE-ta ES me-JOR PA-ra el ME-dio am-BIEN-te.",
@@ -342133,11 +342133,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "4b5dc984301829d3b6d92ce60a324fee1125eec1d65a3c75dda497ee41358486",
+      "digest": "8fd8ffa35c0ae0b63e8398ce6a03bf626ac9d79eb4bbdf6dc3fb4efe8180a34c",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.693Z",
+        "checkedAt": "2026-11-04T08:11:29.744Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -343461,14 +343461,9 @@
           "bn": "শতাংশ",
           "pt": "por cento"
         },
-        "partOfSpeech": "noun",
+        "partOfSpeech": "adverb",
         "register": "neutral",
         "isConcrete": false,
-        "spanishNoun": {
-          "gender": "m",
-          "article": "ciento",
-          "plural": "por"
-        },
         "exampleTerm": "El treinta por ciento de los alumnos viene en bicicleta.",
         "exampleRoman": "el TREIN-ta por CIEN-to de los a-LUM-nos VIE-ne en bi-ci-CLE-ta.",
         "exampleGerman": "Dreißig Prozent der Schüler kommen mit dem Fahrrad.",
@@ -343487,11 +343482,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "0d47b5371d3679013ce261c851e2f90e7116bbad0beecd580fe0e03784f04ec3",
+      "digest": "7f5ddc2b564644225ea8dc7c013141108ba612a8b6acf22ad70d1e7aae70ee52",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.718Z",
+        "checkedAt": "2026-11-04T08:11:29.753Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -344831,8 +344826,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "laborales",
-          "plural": "experiencias"
+          "article": "la",
+          "plural": "experiencias laborales"
         },
         "exampleTerm": "Para este puesto piden tres años de experiencia laboral.",
         "exampleRoman": "PA-ra ES-te PUES-to PI-den TRES A-ños de ex-pe-RIEN-cia la-bo-RAL.",
@@ -344852,11 +344847,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "8913dcdd19f97f00d24bec86652b39289c706fc128c8d94329696b772e7b822d",
+      "digest": "5cb40f3381bd12d87f188ab28bbf62b1b2cec1ccd41837e77f04872be4713f04",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.758Z",
+        "checkedAt": "2026-11-04T08:11:29.756Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -346029,8 +346024,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "extra",
-          "plural": "horas"
+          "article": "la",
+          "plural": "horas extra"
         },
         "exampleTerm": "Esta semana he hecho diez horas extra.",
         "exampleRoman": "ES-ta se-MA-na HE HE-cho DIEZ HO-ras EX-tra.",
@@ -346050,11 +346045,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "be8e2e878a2826dec58781317bdab4f92e2ae42b78b2c247f49d73d244df2b08",
+      "digest": "621550dfa2cf6be609fb2bd8f7ec7c3da91bf9292e8f7b75319858c38cb86944",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.784Z",
+        "checkedAt": "2026-11-04T08:11:29.759Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -346483,8 +346478,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "al",
-          "plural": "atenciones"
+          "article": "la",
+          "plural": "—"
         },
         "exampleTerm": "Llamé a atención al cliente, pero nadie contestó.",
         "exampleRoman": "lla-MÉ a a-ten-CIÓN al CLIEN-te, PE-ro NA-die con-tes-TÓ.",
@@ -346504,11 +346499,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "5a6c4b14e35da8862bcf500a247052cac3bc027759526f6078b82aff6e26e878",
+      "digest": "6d63c5b99d2c38df5aa44ef2e06038e5940b1d34f43cba983f8270b529efa335",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.791Z",
+        "checkedAt": "2026-11-04T08:11:29.762Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -346633,8 +346628,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "bancarias",
-          "plural": "cuentas"
+          "article": "la",
+          "plural": "cuentas bancarias"
         },
         "exampleTerm": "Para cobrar el sueldo necesitas una cuenta bancaria.",
         "exampleRoman": "PA-ra co-BRAR el SUEL-do ne-ce-SI-tas U-na CUEN-ta ban-CA-ria.",
@@ -346654,11 +346649,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "35956e2fa0efd26e18379f604b5f6b670d992133ff52de3fea4d5c3a04d9b134",
+      "digest": "1fbb8b3a5e5baba567fc23c00ab435d1cb202a8aca1cf08f68ad39c68c3459da",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.794Z",
+        "checkedAt": "2026-11-04T08:11:29.764Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -347456,8 +347451,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "carnés"
+          "article": "el",
+          "plural": "carnés de identidad"
         },
         "exampleTerm": "Para abrir la cuenta necesitas el carné de identidad.",
         "exampleRoman": "PA-ra a-BRIR la CUEN-ta ne-ce-SI-tas el car-NÉ de i-den-ti-DAD.",
@@ -347477,11 +347472,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Kreuzprüfung bestanden (Gemini erzeugt, ChatGPT geprüft; von Claude überarbeitet: Begriff, Stufe, neuer Beispielsatz)."
       },
-      "digest": "a7fc24d2e76b80883bb5cf5a248f7f5833ff2ae7435cabe66424859b07f3a2f2",
+      "digest": "00e42a123a31636181c692542ac06a7ef42d503aa45ad33431550b16859f6c02",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.813Z",
+        "checkedAt": "2026-11-04T08:11:29.766Z",
         "scope": "schema-language",
         "reason": "KI-Kreuzprüfung bestanden (Gemini erzeugt, ChatGPT geprüft; von Claude überarbeitet: Begriff, Stufe, neuer Beispielsatz)."
       }
@@ -347541,8 +347536,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "carnés"
+          "article": "el",
+          "plural": "carnés de conducir"
         },
         "exampleTerm": "Me saqué el carné de conducir a los dieciocho años.",
         "exampleRoman": "me sa-QUÉ el car-NÉ de con-du-CIR a los die-CIO-cho A-ños.",
@@ -347562,11 +347557,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "bfe275ad95e861a5d21216e44ab7208e4c7be589912c3ebddeb9dce0a17f83b2",
+      "digest": "99b4c784f11966a6b5571e741c2be3e901a48a646b51c453c609c0b2036560ba",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.815Z",
+        "checkedAt": "2026-11-04T08:11:29.768Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -347788,8 +347783,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "f",
-          "article": "de",
-          "plural": "oficinas"
+          "article": "la",
+          "plural": "oficinas de inmigración"
         },
         "exampleTerm": "Tengo que renovar el visado en la oficina de inmigración.",
         "exampleRoman": "TEN-go que re-no-VAR el vi-SA-do en la o-fi-CI-na de in-mi-gra-CIÓN.",
@@ -347809,11 +347804,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "7f21dfb1885213d3c9221350c36d71b4b089ddeaedbdb998a8f308bbabdf260a",
+      "digest": "e480d901aa550a000c961c020be562d6430f0e2a25a70699b007cc06b28ebfe5",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.826Z",
+        "checkedAt": "2026-11-04T08:11:29.770Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -347877,8 +347872,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "f",
-          "article": "públicas",
-          "plural": "oficinas"
+          "article": "la",
+          "plural": "oficinas públicas"
         },
         "exampleTerm": "Las oficinas públicas cierran a las dos de la tarde.",
         "exampleRoman": "las o-fi-CI-nas PÚ-bli-cas CIE-rran a las DOS de la TAR-de.",
@@ -347898,11 +347893,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "5cda237a86b9ad2fccbd1535cbc4da96ec6a99c12ace42af950d7bcaee06c0a5",
+      "digest": "fcdfa12893a6977bfe4c655a510de05249c0c9749d64cce02f4e79fd83a92699",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.829Z",
+        "checkedAt": "2026-11-04T08:11:29.773Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -348753,8 +348748,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "asientos"
+          "article": "el",
+          "plural": "asientos de ventanilla"
         },
         "exampleTerm": "¿Me puede dar un asiento de ventanilla, por favor?",
         "exampleRoman": "¿me PUE-de DAR un a-SIEN-to de ven-ta-NI-lla, por fa-VOR?",
@@ -348774,11 +348769,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "edb21f805339f361ce2e5cfb9e1355b510e14ad2619f18a18eee44620d6ef610",
+      "digest": "79cb23c1c2cc50d657a9b03676411de6f1ee8c5494db4b9707fa63d5e98b8cde",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.854Z",
+        "checkedAt": "2026-11-04T08:11:29.774Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -348850,8 +348845,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "billetes"
+          "article": "el",
+          "plural": "billetes de ida y vuelta"
         },
         "exampleTerm": "El billete de ida y vuelta sale más barato que dos sencillos.",
         "exampleRoman": "el bi-LLE-te de I-da y VUEL-ta SA-le MÁS ba-RA-to que DOS sen-CI-llos.",
@@ -348871,11 +348866,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "5f7b24476055504b5edae012190ea603d0ad37ac2890b2f6452268705237d257",
+      "digest": "e6a44611ad7884e4469c31dc7d97ebce1170939344f78863401af77690fb5555",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.855Z",
+        "checkedAt": "2026-11-04T08:11:29.776Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -348935,8 +348930,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "billetes"
+          "article": "el",
+          "plural": "billetes de ida"
         },
         "exampleTerm": "Compré un billete de ida porque todavía no sé cuándo vuelvo.",
         "exampleRoman": "com-PRÉ un bi-LLE-te de I-da POR-que to-da-VÍ-a NO SÉ CUÁN-do VUEL-vo.",
@@ -348956,11 +348951,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "82985d3ddfdf46d8b8b56b77b57fad3a1d2d4d8c9fceba1977337c2fd99475eb",
+      "digest": "d599fa04a2540615f5fcf4e75965a2fce45042af019ff755369c58c6901f8bb5",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.856Z",
+        "checkedAt": "2026-11-04T08:11:29.778Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -349393,8 +349388,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "turísticos",
-          "plural": "guías"
+          "article": "el",
+          "plural": "guías turísticos"
         },
         "exampleTerm": "El guía turístico nos contó la historia del castillo.",
         "exampleRoman": "el GUÍ-a tu-RÍS-ti-co nos con-TÓ la his-TO-ria del cas-TI-llo.",
@@ -349414,11 +349409,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "fa81d69dd7dc2f74543359976202f3bed7025394926fd45a49641e3f514263d0",
+      "digest": "5d78833a2a3e5e622683d638cf5c71d855a63eb8a6980f6b39ed9d3661f7b47c",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.864Z",
+        "checkedAt": "2026-11-04T08:11:29.779Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -349616,8 +349611,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "f",
-          "article": "rurales",
-          "plural": "zonas"
+          "article": "la",
+          "plural": "zonas rurales"
         },
         "exampleTerm": "Mucha gente joven se va de las zonas rurales a la ciudad.",
         "exampleRoman": "MU-cha GEN-te JO-ven se VA de las ZO-nas ru-RA-les a la ciu-DAD.",
@@ -349637,11 +349632,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "8b9312d0956575e7a55d39f6731aa99c230c42c8486e85776c757526bc638a39",
+      "digest": "ca8af2beb12b51ee066a12847cd0ee39858aec7b93b8a4acf634dfc4e4bd0325",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.869Z",
+        "checkedAt": "2026-11-04T08:11:29.781Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -350727,8 +350722,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "f",
-          "article": "médicas",
-          "plural": "recetas"
+          "article": "la",
+          "plural": "recetas médicas"
         },
         "exampleTerm": "Este medicamento solo se vende con receta médica.",
         "exampleRoman": "ES-te me-di-ca-MEN-to SO-lo se VEN-de con re-CE-ta MÉ-di-ca.",
@@ -350748,11 +350743,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "d69250d6c153588533e3229f9548b4e9dd29f59eeab61b5002d8eb2c50a476aa",
+      "digest": "85c6eafa66c1f966e27256c92adcdd4973bf576b9faf8d6b8bee8e11067827c0",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.890Z",
+        "checkedAt": "2026-11-04T08:11:29.783Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -350881,8 +350876,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "arteriales",
-          "plural": "presiones"
+          "article": "la",
+          "plural": "presiones arteriales"
         },
         "exampleTerm": "La enfermera me tomó la presión arterial.",
         "exampleRoman": "la en-fer-ME-ra me to-MÓ la pre-SIÓN ar-te-RIAL.",
@@ -350902,11 +350897,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "1a666a1ba1e86fa68013e27272786fc13295acefbf4831d98973b96e67da4e42",
+      "digest": "5e417493b94ec8430280acff029c7b33f2f222140c604497b16eb4052f49049f",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.893Z",
+        "checkedAt": "2026-11-04T08:11:29.784Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -351250,8 +351245,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "f",
-          "article": "de",
-          "plural": "salas"
+          "article": "la",
+          "plural": "salas de urgencias"
         },
         "exampleTerm": "Anoche tuvimos que llevar a mi hijo a la sala de urgencias.",
         "exampleRoman": "a-NO-che tu-VI-mos que lle-VAR a mi HI-jo a la SA-la de ur-GEN-cias.",
@@ -351271,11 +351266,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "75be34baa2796902e4ade057e1be3957acf0052d6805d7394b1add8301863ce0",
+      "digest": "ad150fa3669c8861a24e0933ce6d8ee1b44a22dc870fdedfdafcea112556b381",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.899Z",
+        "checkedAt": "2026-11-04T08:11:29.786Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -351335,8 +351330,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "m",
-          "article": "médicos",
-          "plural": "seguros"
+          "article": "el",
+          "plural": "seguros médicos"
         },
         "exampleTerm": "Mi empresa me paga el seguro médico.",
         "exampleRoman": "mi em-PRE-sa me PA-ga el se-GU-ro MÉ-di-co.",
@@ -351356,11 +351351,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "a68da4ef48e367fb7938c04b636d852b6944039656aa18301ae9b713e75857ce",
+      "digest": "2532ac2123542b0e7ddf678cccb8a8dea12507a12b9628feec61c86a6231f808",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:34.901Z",
+        "checkedAt": "2026-11-04T08:11:29.787Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -370984,8 +370979,8 @@
         "isConcrete": true,
         "spanishNoun": {
           "gender": "m",
-          "article": "ministros",
-          "plural": "primeros"
+          "article": "el",
+          "plural": "primeros ministros"
         },
         "exampleTerm": "La primera ministra se reunió ayer con los sindicatos.",
         "exampleRoman": "la pri-ME-ra mi-NIS-tra se reu-NIÓ a-YER con los sin-di-CA-tos.",
@@ -371005,11 +371000,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "283f225107fdcef47d085006be354ef75ddad5c8d3107b44057267a7ca48671f",
+      "digest": "75d37b9197a80c5b5e69c2cbc049c25846d840b5ce676b01c0e59d7584f51ab8",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:35.271Z",
+        "checkedAt": "2026-11-04T08:11:29.788Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -372302,8 +372297,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "m",
-          "article": "de",
-          "plural": "medios"
+          "article": "el",
+          "plural": "medios de comunicación"
         },
         "exampleTerm": "Los medios de comunicación hablan del tema todos los días.",
         "exampleRoman": "los ME-dios de co-mu-ni-ca-CIÓN HA-blan del TE-ma TO-dos los DÍ-as.",
@@ -372323,11 +372318,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "0114967622f2e73afccddd7f822ebe76ffe37ee21013085fce3ba77ba2317203",
+      "digest": "33830d515cf1471f58d216c3d898a2db5bf7353606b152e5926690c0ecc95cdd",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:35.307Z",
+        "checkedAt": "2026-11-04T08:11:29.790Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }
@@ -372667,8 +372662,8 @@
         "isConcrete": false,
         "spanishNoun": {
           "gender": "f",
-          "article": "sociales",
-          "plural": "redes"
+          "article": "la",
+          "plural": "redes sociales"
         },
         "exampleTerm": "Paso demasiado tiempo en las redes sociales.",
         "exampleRoman": "PA-so de-ma-SIA-do TIEM-po en las RE-des so-CIA-les.",
@@ -372688,11 +372683,11 @@
         "sourceVerified": false,
         "verificationNote": "KI-Erzeugung (Claude), regelgeprüft."
       },
-      "digest": "c10f00561a51949ddc46033028ebc19ff66d8f32405f49c192fab0675fa9130a",
+      "digest": "10d6733b4abf62d5aaf0851d42c8b9cda870322d23b09065df17b03830820ad3",
       "check": {
         "status": "unchecked",
         "label": "ungeprüft",
-        "checkedAt": "2026-10-24T19:33:35.315Z",
+        "checkedAt": "2026-11-04T08:11:29.791Z",
         "scope": "schema-language",
         "reason": "KI-Erzeugung (Claude), regelgeprüft."
       }

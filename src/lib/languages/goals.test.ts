@@ -1,4 +1,5 @@
-import { FIXTURE_GERMAN } from '@/test-fixtures/fixture-catalog';
+import { FIXTURE_CATALOG, FIXTURE_GERMAN } from '@/test-fixtures/fixture-catalog';
+import { setCurrentCatalog } from '@/lib/content/catalog-state';
 import { VOCABULARY_EN, VOCABULARY_ES, VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 import { UI_LANGUAGES } from '@/lib/i18n/types';
 
@@ -28,8 +29,8 @@ import {
 describe('Lernziele — eine Regel für jede App-Sprache', () => {
   it('deutsche Oberfläche: Thai, Englisch, Spanisch — Deutsch ausgeblendet (Nutzerentscheidung 19.09.)', () => {
     const ziele = zieleFuerBruecke('de');
-    expect(ziele.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es']);
-    expect(ziele.map(goalLanguage)).toEqual(['th', 'en', 'es']);
+    expect(ziele.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es', 'de_to_fr']);
+    expect(ziele.map(goalLanguage)).toEqual(['th', 'en', 'es', 'fr']);
   });
 
   it('Thai-Oberfläche: Englisch, Spanisch, Deutsch — Thai ausgeblendet (Testlauf 08.10.)', () => {
@@ -37,16 +38,36 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
       { direction: 'th_to_en', language: 'en' },
       { direction: 'th_to_es', language: 'es' },
       { direction: 'th_to_de', language: 'de' },
+      { direction: 'th_to_fr', language: 'fr' },
     ]);
   });
 
   it('englische und spanische Oberfläche: alle anderen Lernsprachen inklusive Deutsch', () => {
-    expect(zieleFuerBruecke('en').map((ziel) => ziel.direction)).toEqual(['en_to_th', 'en_to_es', 'en_to_de']);
-    expect(zieleFuerBruecke('es').map((ziel) => ziel.direction)).toEqual(['es_to_th', 'es_to_en', 'es_to_de']);
+    expect(zieleFuerBruecke('en').map((ziel) => ziel.direction)).toEqual(['en_to_th', 'en_to_es', 'en_to_de', 'en_to_fr']);
+    expect(zieleFuerBruecke('es').map((ziel) => ziel.direction)).toEqual(['es_to_th', 'es_to_en', 'es_to_de', 'es_to_fr']);
+  });
+
+  it('französische Oberfläche (seit 04.11.2026 Lernsprache): alle anderen, Französisch ausgeblendet', () => {
+    expect(zieleFuerBruecke('fr').map((ziel) => ziel.direction)).toEqual(['fr_to_th', 'fr_to_en', 'fr_to_es', 'fr_to_de']);
+  });
+
+  it('zeigt eine Lernsprache ohne Wortschatz nicht als Ziel (Französisch vor dem ersten Wortlauf)', () => {
+    setCurrentCatalog({
+      ...FIXTURE_CATALOG,
+      entries: FIXTURE_CATALOG.entries.filter((entry) => (entry.document as { language?: string }).language !== 'fr'),
+    });
+    try {
+      expect(zieleFuerBruecke('de').map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es']);
+      // Leerer Katalog (frischer Neuaufbau): alle Ziele bleiben sichtbar.
+      setCurrentCatalog({ ...FIXTURE_CATALOG, entries: [] });
+      expect(zieleFuerBruecke('de')).toHaveLength(LANGUAGE_CODES.length - 1);
+    } finally {
+      setCurrentCatalog(FIXTURE_CATALOG);
+    }
   });
 
   it('Oberflächen ohne eigene Lernsprache: alle Lernsprachen, Deutsch zuerst (ar-Pilot 10.09.)', () => {
-    expect(zieleFuerBruecke('ar').map((ziel) => ziel.direction)).toEqual(['ar_to_de', 'ar_to_th', 'ar_to_en', 'ar_to_es']);
+    expect(zieleFuerBruecke('ar').map((ziel) => ziel.direction)).toEqual(['ar_to_de', 'ar_to_th', 'ar_to_en', 'ar_to_es', 'ar_to_fr']);
     for (const ui of UI_LANGUAGES.filter((code) => !(LANGUAGE_CODES as readonly string[]).includes(code))) {
       expect(zieleFuerBruecke(ui as ForeignBridge)).toHaveLength(LANGUAGE_CODES.length);
     }

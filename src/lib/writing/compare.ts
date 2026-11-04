@@ -86,9 +86,14 @@ export type WritingVerdict = {
 const THAI_TONE_MARKS = /[่-๋]/g;
 const GERMAN_ARTICLES = ['der', 'die', 'das'] as const;
 
-/** Leerraum vereinheitlichen. Mehr passiert bei einem exakten Vergleich nicht. */
+/**
+ * Leerraum und Apostroph vereinheitlichen. Mehr passiert bei einem exakten
+ * Vergleich nicht. Der Apostroph zählt nie als Fehler: Handytastaturen setzen
+ * „’“, Desktop-Tastaturen „'“ — für „aujourd’hui“ oder „don’t“ ist beides
+ * dasselbe (Französisch, 04.11.2026).
+ */
 export function tidy(text: string): string {
-  return text.replace(/\s+/g, ' ').trim();
+  return text.replace(/[’‘ʼ]/g, "'").replace(/\s+/g, ' ').trim();
 }
 
 /**

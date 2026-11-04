@@ -4,7 +4,7 @@ import { ThaiWord } from './thai-word';
 import { ThemedText, displayLineHeight } from './themed-text';
 
 import { Spacing } from '@/constants/theme';
-import { syllablesOf } from '@/data/vocab-helpers';
+import { nounOf, syllablesOf, termWithArticle } from '@/data/vocab-helpers';
 import { VocabEntry } from '@/data/vocab-types';
 import { useLocale } from '@/lib/i18n';
 import { learningLanguage } from '@/lib/languages/definitions';
@@ -53,7 +53,7 @@ export function TermWord({
   const cap = size === 'large' ? 1.4 : 2;
   // Artikel und Plural gehören zum Wort: Die Schreibübung wertet „Haus“ ohne
   // Artikel als Fehler, also muss die Karte ihn zeigen (Testlauf 04.10.2026).
-  const noun = entry.language === 'de' ? entry.germanNoun : entry.language === 'es' ? entry.spanishNoun : undefined;
+  const noun = nounOf(entry);
 
   return (
     <View style={styles.wrapper}>
@@ -63,7 +63,7 @@ export function TermWord({
           size === 'large' ? styles.termLarge : styles.termMedium,
           { lineHeight: displayLineHeight(base, cap, size === 'large' ? 1.4 : 1.42) },
         ]}>
-        {noun && !entry.term.toLowerCase().startsWith(`${noun.article} `) ? `${noun.article} ${entry.term}` : entry.term}
+        {termWithArticle(entry)}
       </ThemedText>
       {noun?.plural && noun.plural !== '—' ? (
         <ThemedText type="small" themeColor="textSecondary">
@@ -95,7 +95,7 @@ export function TermWord({
           {entry.ipa ?? entry.romanization}
         </ThemedText>
       ) : null}
-      {entry.language === 'de' || entry.language === 'en' ? <ThemedText type="small" themeColor="textSecondary">
+      {entry.language === 'de' || entry.language === 'en' || entry.language === 'fr' ? <ThemedText type="small" themeColor="textSecondary">
         {t('learning.pronunciation')}
       </ThemedText> : null}
 

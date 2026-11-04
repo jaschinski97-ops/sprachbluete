@@ -119,3 +119,44 @@ test('Thai tones: uncertain readings are hints, not errors', () => {
   expect(mai.ok).toBe(true);
   expect(mai.hinweise?.join(' ')).toContain('ไหม');
 });
+
+/** Ein französisches Nomen (04.11.2026): Genus über `frenchNoun`. */
+const franzWort = (extra: Partial<VocabEntry> = {}): VocabEntry => neuesWort({
+  id: 'ki-fr-water',
+  language: 'fr',
+  concept: 'c:water',
+  term: 'eau',
+  romanization: '/o/',
+  syllables: [{ roman: '/o/' }] as unknown as VocabEntry['syllables'],
+  exampleTerm: 'Je bois de l’eau.',
+  exampleRoman: 'Je bois de l’eau.',
+  exampleTranslations: { ...satz, fr: 'Je bois de l’eau.' },
+  frenchNoun: { gender: 'f', article: 'l’', plural: 'eaux' },
+  ...extra,
+});
+
+test('French nouns need genus; plural-only words carry the article in the word', () => {
+  expect(pruefeVocabDoc(franzWort())).toEqual({ ok: true, fehler: [] });
+  expect(pruefeVocabDoc(franzWort({ frenchNoun: undefined })).fehler).toContain('Französisches Substantiv ohne Genus/Artikel.');
+  expect(pruefeVocabDoc(franzWort({ term: 'les gens', frenchNoun: undefined })).ok).toBe(true);
+  // Nur Nomen: Verben und Wendungen kommen ohne Genus aus.
+  expect(pruefeVocabDoc(franzWort({ term: 'à la maison', partOfSpeech: 'adverb', frenchNoun: undefined })).ok).toBe(true);
+});
+
+test('French article must match genus and the first letter', () => {
+  const fehler = (term: string, frenchNoun: VocabEntry['frenchNoun']) => pruefeVocabDoc(franzWort({ term, frenchNoun })).fehler;
+  expect(fehler('maison', { gender: 'm', article: 'la', plural: 'maisons' }).join(' ')).toContain('„la“ bei männlichem');
+  expect(fehler('chat', { gender: 'f', article: 'le', plural: 'chats' }).join(' ')).toContain('„le“ bei weiblichem');
+  expect(fehler('chat', { gender: 'm', article: 'l’', plural: 'chats' }).join(' ')).toContain('vor Konsonant');
+  expect(fehler('école', { gender: 'f', article: 'la', plural: 'écoles' }).join(' ')).toContain('vor Vokal');
+  // h aspiré („la hanche“) und stummes h („l’heure“) sind beide richtig.
+  expect(fehler('hanche', { gender: 'f', article: 'la', plural: 'hanches' })).toEqual([]);
+  expect(fehler('heure', { gender: 'f', article: 'l’', plural: 'heures' })).toEqual([]);
+});
+
+test('French genus field must have the right shape', () => {
+  expect(isValidVocabEntry(franzWort())).toBe(true);
+  expect(isValidVocabEntry(franzWort({ frenchNoun: { gender: 'n', article: 'le', plural: 'x' } as never }))).toBe(false);
+  expect(isValidVocabEntry(franzWort({ frenchNoun: { gender: 'm', article: 'les', plural: 'x' } as never }))).toBe(false);
+  expect(isValidVocabEntry(franzWort({ frenchNoun: 'm' as never }))).toBe(false);
+});

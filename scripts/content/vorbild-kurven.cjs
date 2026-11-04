@@ -29,7 +29,8 @@ const { Worker, isMainThread, parentPort, workerData } = require('node:worker_th
 
 const root = path.resolve(__dirname, '../..');
 const ZIEL = path.join(root, 'assets/kurven');
-const SPRACHEN = ['th', 'en', 'es', 'de'];
+// Die EINE Lernsprachen-Liste der App (src/lib/languages/types.ts).
+const SPRACHEN = require('./domain.cjs').load('src/lib/languages/types').LANGUAGE_CODES;
 const VERSION = 1;
 
 /** Umschrift → Silben-Tokens: dieselbe Funktion wie in der App (`romanSilben`). */

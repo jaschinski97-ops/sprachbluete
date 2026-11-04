@@ -383,10 +383,10 @@ export type ClipLanguageCounts = Record<Lang, number>;
 export async function countAudioClipsByLanguage(
   store?: DataStore
 ): Promise<ClipLanguageCounts> {
-  const zaehler: ClipLanguageCounts = { th: 0, en: 0, es: 0, de: 0 };
+  const zaehler: ClipLanguageCounts = { th: 0, en: 0, es: 0, de: 0, fr: 0 };
   for (const clip of await loadAudioClips(store)) {
     // `loadAudioClips` sortiert Fremdes aus (`isValidAudioClip`) — der
-    // Schlüssel `ClipLanguage` deckt genau die vier Generator-Sprachen ab.
+    // Schlüssel `ClipLanguage` deckt genau die Generator-Sprachen ab.
     zaehler[clip.language] += 1;
   }
   return zaehler;

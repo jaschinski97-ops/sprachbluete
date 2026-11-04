@@ -1,4 +1,5 @@
 import type { VocabEntry } from '@/data/vocab-types';
+import { termWithArticle } from '@/data/vocab-helpers';
 
 import { seededRandom, shuffled } from './drills/random';
 import type { FSRSCardState, Rating } from './fsrs/types';
@@ -89,8 +90,7 @@ export function selectWordListWords<T>(
 }
 
 function wordOf(entry: VocabEntry, language: string): string {
-  const noun = language === 'de' ? entry.germanNoun : language === 'es' ? entry.spanishNoun : undefined;
-  return noun && !entry.term.toLowerCase().startsWith(`${noun.article} `) ? `${noun.article} ${entry.term}` : entry.term;
+  return entry.language === language ? termWithArticle(entry) : entry.term;
 }
 
 function romanOf(entry: VocabEntry): string | null {

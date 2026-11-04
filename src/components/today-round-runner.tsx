@@ -93,6 +93,7 @@ const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   konsonantenklasse: 'drill.prompt.konsonantenklasse',
   praesensEndung: 'drill.prompt.praesensEndung',
   partizip: 'drill.prompt.partizip',
+  genre: 'drill.prompt.genre',
 };
 
 // Diktat-Aufforderung je Lernsprache.
@@ -101,6 +102,7 @@ const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
   en: 'dictation.promptEn',
   es: 'dictation.promptEs',
   de: 'dictation.promptDe',
+  fr: 'dictation.promptFr',
 };
 
 // Anzeigenamen der Segmentarten für die Fortschrittszeile und den „übersprungen“-Hinweis.

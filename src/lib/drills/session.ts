@@ -12,6 +12,7 @@ import {
   buildArticleQuestion,
   buildDeutschLesenQuestion,
   buildIrregularPastQuestion,
+  buildGenreQuestion,
   buildPartizipQuestion,
   buildPraesensEndungQuestion,
   buildSoundSpellingQuestion,
@@ -24,6 +25,7 @@ import {
   canBuildArticleQuestion,
   canBuildDeutschLesenQuestion,
   canBuildIrregularPastQuestion,
+  canBuildGenreQuestion,
   canBuildPartizipQuestion,
   canBuildPraesensEndungQuestion,
   canBuildSoundSpellingQuestion,
@@ -131,6 +133,8 @@ function canBuild(drill: DrillId, entry: VocabEntry): boolean {
       return canBuildPraesensEndungQuestion(entry);
     case 'partizip':
       return canBuildPartizipQuestion(entry);
+    case 'genre':
+      return canBuildGenreQuestion(entry);
     case 'polite':
     case 'serEstar':
     case 'zaehlerwort':
@@ -175,6 +179,8 @@ function buildQuestion(
       return buildPraesensEndungQuestion(entry, pool, random, anchor, ui);
     case 'partizip':
       return buildPartizipQuestion(entry, pool, random, anchor, ui);
+    case 'genre':
+      return buildGenreQuestion(entry, anchor, ui);
     case 'polite':
     case 'serEstar':
     case 'zaehlerwort':

@@ -34,14 +34,15 @@ function modesOf(groups: Group[]): Mode[] {
   return groups.flatMap((group) => group.modes);
 }
 
-describe('Kategorien-Gleichstand der vier Lernziele (Brücke Deutsch)', () => {
+describe('Kategorien-Gleichstand der Lernziele (Brücke Deutsch)', () => {
   const ziele = zieleFuerBruecke('de');
 
-  it('sind genau die vier Bestandsziele', () => {
+  it('sind genau die Bestandsziele', () => {
     expect(ziele.map((ziel) => ziel.direction)).toEqual([
       'de_to_th',
       'de_to_en',
       'de_to_es',
+      'de_to_fr',
     ]);
   });
 

@@ -36,7 +36,7 @@ export type LearningLanguageDefinition = {
   /** Schrift der Zielsprache — steuert Leerzeichen-Regeln, Lesehilfen, Schema-Prüfung. */
   script: 'thai' | 'latin';
   /** Welche Zeichenleiste Diktat und Schreiben einblenden (null = keine). */
-  palette: 'thai' | 'german' | 'spanish' | null;
+  palette: 'thai' | 'german' | 'spanish' | 'french' | null;
   /**
    * Welche kleine Abweichung beim Schreiben als „fast richtig“ zählt:
    * fehlende Tonzeichen (Thai), Akzente (Spanisch), Umlaute/ß (Deutsch),
@@ -228,6 +228,46 @@ export const LEARNING_LANGUAGES: Record<LanguageCode, LearningLanguageDefinition
       '- "term" ist das deutsche Wort; ALLE Verben mit "germanVerb" { "thirdPerson": "er/sie/es-Form Präsens", "praeteritum": "3. Person Präteritum", "perfekt": "hat/ist + Partizip II", "irregular": true|false }; Nomen mit "germanNoun" { "article": "der"|"die"|"das", "plural": "…" } (Pflichtfeld des Schemas); "german" ist die kurze deutsche Bedeutung (Synonym oder Klarstellung), niemals Thai-Schrift.',
     checkPoint3: 'ist die Lautschrift plausibel?',
     dialogRules: 'Natürliches Deutsch, korrekte Artikel, Kasus und Wortstellung. roman ist eine Lesehilfe.',
+  },
+  // Französisch (04.11.2026, fünfte Lernsprache): Französisch aus Frankreich,
+  // Preise in Euro. Wie Englisch wird die Aussprache je Wort gelernt
+  // (`per-word`), dazu Genus und Artikel wie im Spanischen (`frenchNoun`).
+  fr: {
+    code: 'fr',
+    label: 'Französisch',
+    endonym: 'français',
+    speechLocale: 'fr-FR',
+    speechRate: 0.95,
+    script: 'latin',
+    palette: 'french',
+    nearMiss: 'accent',
+    legend: null,
+    dictation: { foldCase: true, eszettEquivalence: false, strictDiacritics: true },
+    prompts: { writing: 'writing.promptFr', dictation: 'dictation.promptFr' },
+    placeholders: { word: 'ta réponse', sentence: 'ta phrase' },
+    wordSpeaking: 'repeat',
+    drills: ['genre'],
+    greeting: { word: 'bonjour', hint: '/bɔ̃.ʒuʁ/' },
+    challenge: 'language.fr.description',
+    feature: {
+      label: 'language.fr.feature',
+      description: 'language.fr.description',
+      // Stumme Buchstaben stehen nicht als Regel in der Schrift — die
+      // Aussprache hängt am einzelnen Wort (Lautschrift je Eintrag).
+      kind: 'per-word',
+      implemented: true,
+      source: {
+        title: 'French orthography',
+        url: 'https://en.wikipedia.org/wiki/French_orthography',
+        retrieved: '2026-11-04',
+        quote:
+          'The spelling of words is largely based on the pronunciation of Old French c. 1100–1200 AD, and has stayed more or less the same since then, despite enormous changes to the pronunciation of the language in the intervening years. … This has resulted in a complicated relationship between spelling and sound, especially for vowels; a multitude of silent letters; and many homophones',
+      },
+    },
+    generatorRules:
+      '- "term" ist das französische Wort ohne Artikel; "syllables" mit JEDER gesprochenen Silbe als { "roman": "Silbe" }; "romanization" ist die IPA-Lautschrift des ganzen Wortes ohne Schrägstriche; Nomen mit "frenchNoun" { "gender": "m"|"f", "article": "le"|"la"|"l’", "plural": "…" } („l’“ vor Vokal und stummem h); Rechtschreibung nach den Rectifications von 1990 nur, wo sie üblich ist (sonst traditionell).',
+    checkPoint3: 'ist die IPA-Lautschrift plausibel, und stimmen Genus und Artikel des Nomens?',
+    dialogRules: 'Natürliches Französisch aus Frankreich mit korrekten Akzenten, Elisionen (l’, j’, qu’) und einheitlicher Anrede (tu oder vous passend zur Situation). roman ist eine Lesehilfe.',
   },
 };
 

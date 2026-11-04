@@ -29,7 +29,11 @@ const KINDS = ['situations', 'images', 'audio', 'vocabulary'];
 // wandern pro Sprache in Download-Pakete (GitHub Releases); Play erlaubt
 // 500 MB Basismodul — 512 MiB gibt neben dem vollen vier-Sprachen-Bestand
 // Luft für Bildpakete, ohne dass ein Sprachlauf am Budget scheitert.
-const BUDGET = 512 * 1024 * 1024;
+// 768 MiB seit 04.11.2026 (Nutzerfreigabe für Französisch als fünfte
+// Lernsprache): Der Bestand lag bei 476 MiB, französische Clips bringen rund
+// 100 MiB dazu. Der Store-Build (`production`) lädt die Medien je Sprache als
+// Paket, die Gesamtgrenze bremst den App-Download also nicht mehr.
+const BUDGET = 768 * 1024 * 1024;
 const sha = (data) => crypto.createHash('sha256').update(data).digest('hex');
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical);
@@ -92,7 +96,7 @@ function assertDocument(kind, doc, vocabulary = []) {
     situations: 'id level topic direction title setting scriptTurns corrections generatedAt modelUsed translations vocabIds',
     images: 'id vocabId concept language format byteSize blobKey prompt model generatedAt',
     audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice instructionsId generatedAt synthetic',
-    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman exampleTranslations sourceVerified source verificationNote note',
+    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun frenchNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman exampleTranslations sourceVerified source verificationNote note',
   }[kind].split(' ');
   if (Object.keys(doc).some((key) => !fields.includes(key))) throw Error('Unbekannte Metadatenfelder; Export verweigert.');
 }

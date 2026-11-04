@@ -86,6 +86,23 @@ describe('Kapitel 0: Zahlen aus geprüften Quellen', () => {
     expect(priceText('th', 50).label).toBe('50 ฿');
   });
 
+  it('Französisch folgt „Nombres en français“: 70 und 90 zählen 11–19 weiter, „et“ nur bei 21–71', () => {
+    expect([0, 16, 17, 21, 22, 31, 61, 70, 71, 72, 79, 80, 81, 90, 91, 99, 100, 1000].map((value) => numberWord('fr', value).text))
+      .toEqual(['zéro', 'seize', 'dix-sept', 'vingt-et-un', 'vingt-deux', 'trente-et-un', 'soixante-et-un', 'soixante-dix',
+        'soixante-et-onze', 'soixante-douze', 'soixante-dix-neuf', 'quatre-vingts', 'quatre-vingt-un', 'quatre-vingt-dix',
+        'quatre-vingt-onze', 'quatre-vingt-dix-neuf', 'cent', 'mille']);
+    // Jede Zahl 0–100 hat ein eigenes Wort (keine Lücke, kein Rückfall auf eine andere Sprache).
+    const words = ALL.map((value) => numberWord('fr', value).text);
+    expect(new Set(words).size).toBe(words.length);
+    expect(words.every((word) => /^[a-zé-]+$/.test(word))).toBe(true);
+  });
+
+  it('zählt Französisch „un euro“, ab zwei „euros“', () => {
+    expect([1, 2, 21, 80].map((value) => priceText('fr', value).text))
+      .toEqual(['un euro', 'deux euros', 'vingt-et-un euros', 'quatre-vingts euros']);
+    expect(priceText('fr', 5).label).toBe('5 €');
+  });
+
   it('lehrt nur 0–100 und 1000 und deckt damit alle Gruppen ab', () => {
     for (const group of NUMBER_GROUPS) expect(group.values.every(isTeachableNumber)).toBe(true);
     expect(() => numberWord('de', 101)).toThrow(RangeError);

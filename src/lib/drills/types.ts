@@ -56,6 +56,8 @@ export const DRILLS = [
   'konsonantenklasse',
   'praesensEndung',
   'partizip',
+  /** Französisch (04.11.2026): Genus am unbestimmten Artikel — „un“ oder „une“. */
+  'genre',
 ] as const;
 export type DrillId = (typeof DRILLS)[number];
 
@@ -271,6 +273,17 @@ export const DRILL_META: Record<DrillId, DrillMeta> = {
       'Mittel-, Hoch- oder Tiefklasse? Die Klasse jedes der 44 Konsonanten ist der erste ' +
       'Eingang der Ton-Herleitung — die Übung nutzt dieselbe quellengeprüfte Schrifttabelle.',
     prompt: 'Zu welcher Klasse gehört dieser Konsonant?',
+  },
+  genre: {
+    id: 'genre',
+    side: 'toTarget',
+    feature: 'fr',
+    skill: 'grammatik',
+    label: 'un oder une?',
+    description:
+      'Das Genus des französischen Nomens. Es steht nicht in der Schrift und gehört zum Wort; ' +
+      '„l’“ verrät es nicht, der unbestimmte Artikel „un“ oder „une“ schon.',
+    prompt: 'Welcher Artikel gehört zum Wort?',
   },
   praesensEndung: {
     id: 'praesensEndung',

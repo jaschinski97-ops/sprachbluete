@@ -79,12 +79,13 @@ describe('Inhalts-Richtungen (seit dem Sprach-Umbau 23.09.2026)', () => {
 });
 
 describe('Das Verzeichnis', () => {
-  it('führt vier Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
-    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de']);
+  it('führt fünf Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
+    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de', 'fr']);
     expect(languagesWithContent().map((language) => language.code).sort()).toEqual([
       'de',
       'en',
       'es',
+      'fr',
       'th',
     ]);
     for (const code of LANGUAGE_CODES) expect(hasContent(code)).toBe(true);
@@ -111,7 +112,7 @@ describe('Das Verzeichnis', () => {
     for (const code of LANGUAGE_CODES) {
       const feature = LANGUAGES[code].feature;
       expect(feature.source).toBeTruthy();
-      expect(feature.source!.retrieved).toMatch(/^2026-09-\d\d$/);
+      expect(feature.source!.retrieved).toMatch(/^2026-\d\d-\d\d$/);
       expect(feature.source!.url).toContain('wikipedia.org');
       // Das Zitat traegt die Entscheidung - eine Behauptung ohne Beleg waere
       // genau das, was seit Phase 2 nicht vorkommen soll.

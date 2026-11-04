@@ -110,4 +110,20 @@ export const ADVANCED_LESSONS: Record<LanguageCode, AdvancedLesson> = {
     speakingPrompt: 'Erkläre einer anderen Person Minas Problem. Wie würdest du dich entscheiden und warum?',
     modelAnswer: 'Liebe Frau Berger, ich möchte den Kurs gern fortsetzen. Wegen einer Besprechung bei der Arbeit komme ich dienstags jedoch zu spät. Könnte ich in die Samstagsgruppe wechseln? Dann könnte ich wieder am ganzen Unterricht teilnehmen. Vielen Dank für Ihre Hilfe.',
   },
+  fr: {
+    id: 'course-time-fr-001', language: 'fr', title: 'Changer l’horaire d’un cours de langue',
+    paragraphs: [
+      'Depuis trois mois, Mina suit un cours de langue le soir. Elle aime travailler avec la professeure et avec les autres participants, parce que tout le monde s’entraide pour pratiquer. Mais son entreprise a changé l’heure d’une réunion hebdomadaire. Du coup, elle arrive en retard en cours tous les mardis.',
+      'La semaine dernière, elle a manqué une activité de groupe importante. Mina a écrit à la professeure pour lui expliquer qu’elle voulait quand même continuer le cours. Elle lui a demandé si elle pouvait passer dans le groupe du samedi. S’il n’y avait plus de place, elle aimerait recevoir les exercices du mardi pour les faire à la maison.',
+      'La professeure a répondu qu’il restait une place le samedi, mais que ce cours commençait une heure plus tôt que celui du mardi. Mina doit se décider avant vendredi. Elle sait que se lever tôt ne sera pas facile, mais cela lui semble mieux que de manquer une partie du cours chaque semaine.',
+    ],
+    questions: [
+      { prompt: 'Pourquoi Mina arrive-t-elle en retard le mardi ?', options: ['Les trains ne circulent pas.', 'Son entreprise a changé l’heure d’une réunion.', 'La professeure a changé de salle.'], correctIndex: 1, explanation: 'Son entreprise a changé l’heure d’une réunion hebdomadaire.' },
+      { prompt: 'Que demande Mina si elle ne peut pas changer de groupe ?', options: ['Le remboursement du cours', 'Une autre professeure', 'Des exercices à faire à la maison'], correctIndex: 2, explanation: 'Elle aimerait recevoir les exercices du mardi pour les faire à la maison.' },
+      { prompt: 'Pourquoi Mina pense-t-elle au cours du samedi ?', options: ['Elle ne manquerait plus une partie du cours chaque semaine.', 'Elle adore se lever tôt.', 'Tous ses amis ont déjà changé de groupe.'], correctIndex: 0, explanation: 'Elle préfère se lever tôt plutôt que de manquer une partie du cours chaque semaine.' },
+    ],
+    writingPrompt: 'Écris un e-mail à la professeure. Explique ton problème, propose une solution et dis pourquoi elle te convient.',
+    speakingPrompt: 'Explique à quelqu’un le problème de Mina. Que déciderais-tu, et pourquoi ?',
+    modelAnswer: 'Bonjour Madame Berger, je voudrais continuer le cours, mais à cause d’une réunion de travail, j’arrive en retard le mardi. Est-ce que je pourrais passer dans le groupe du samedi ? Comme ça, je pourrais suivre tout le cours. Merci beaucoup pour votre aide.',
+  },
 };

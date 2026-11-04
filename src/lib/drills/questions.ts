@@ -2,7 +2,7 @@ import { TONE_KEYS, TONES } from '@/constants/tones';
 import { VocabEntry } from '@/data/vocab-types';
 
 import { Direction } from '../fsrs/types';
-import { syllablesOf } from '@/data/vocab-helpers';
+import { syllablesOf, termWithArticle } from '@/data/vocab-helpers';
 import type { PairDirection } from '../languages/types';
 import type { UiLanguage } from '../i18n/types';
 import { HUB_LANGUAGE } from '../languages/types';
@@ -283,6 +283,42 @@ export function buildArticleQuestion(entry: VocabEntry, anchor: UiLanguage = 'de
     options,
     correctIndex: ARTICLES.indexOf(noun.article),
     solution: `${noun.article} ${word}`,
+    explanation: parts.join(' · '),
+  };
+}
+
+/* ---------- Genus (Französisch, 04.11.2026) ---------- */
+
+/** Feste Reihenfolge un/une, wie der/die/das bei der deutschen Artikelübung. */
+const FRENCH_INDEFINITE = ['un', 'une'] as const;
+
+/**
+ * Taugt das französische Nomen für „un oder une?“ — gefragt wird der
+ * unbestimmte Artikel, weil „l’“ vor Vokal das Genus verschluckt. Stichwörter
+ * mit mehreren Formen („acteur, actrice“) fallen weg.
+ */
+export function canBuildGenreQuestion(entry: VocabEntry): boolean {
+  return entry.language === 'fr' && Boolean(entry.frenchNoun) && entry.term.trim().length > 0 && !/[,;/]/.test(entry.term);
+}
+
+export function buildGenreQuestion(entry: VocabEntry, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
+  const noun = entry.frenchNoun;
+  if (!noun) throw new Error(`"${entry.id}" ist kein französisches Nomen — kein Genus zu üben.`);
+  const correctIndex = noun.gender === 'm' ? 0 : 1;
+  const parts = [termWithArticle(entry)];
+  if (noun.plural && noun.plural !== '—') parts.push(translate(ui, 'flashcard.plural', { plural: noun.plural }));
+  if (entry.note) parts.push(entry.note);
+  return {
+    id: `genre:${entry.id}`,
+    drill: 'genre',
+    direction: toTarget(entry),
+    vocabId: entry.id,
+    visible: `___ ${entry.term}`,
+    visibleHint: kontextFuer(entry, anchor),
+    speak: null,
+    options: FRENCH_INDEFINITE.map((label) => ({ label })),
+    correctIndex,
+    solution: `${FRENCH_INDEFINITE[correctIndex]} ${entry.term}`,
     explanation: parts.join(' · '),
   };
 }

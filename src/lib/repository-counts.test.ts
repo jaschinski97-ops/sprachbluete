@@ -65,7 +65,7 @@ describe('countAudioClipsByLanguage', () => {
 
     // Deutsch ist Generator-Zielsprache (X_to_de-Rückseiten) — de-Clips
     // erscheinen in der eigenen Zeile, sobald sie abgelegt sind.
-    expect(await countAudioClipsByLanguage(store)).toEqual({ th: 2, en: 1, es: 0, de: 1 });
+    expect(await countAudioClipsByLanguage(store)).toEqual({ th: 2, en: 1, es: 0, de: 1, fr: 0 });
   });
 });
 
@@ -82,7 +82,7 @@ describe('countImagesByLanguage', () => {
 
     // Seit dem Sprach-Umbau zählt jedes Bild genau in der Sprache seiner
     // Vokabel — Deutsch hat eigene Wörter und damit eigene Bilder.
-    expect(await countImagesByLanguage(store)).toEqual({ th: 1, en: 1, es: 0, de: 0 });
+    expect(await countImagesByLanguage(store)).toEqual({ th: 1, en: 1, es: 0, de: 0, fr: 0 });
   });
 });
 

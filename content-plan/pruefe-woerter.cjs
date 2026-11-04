@@ -16,6 +16,7 @@ const domain = require('../scripts/content/domain.cjs');
 const { isValidVocabEntry, pruefeVocabDoc, vocabSchluessel } = domain.load('src/lib/content/vocab-schema');
 const { UI_LANGUAGES } = domain.load('src/lib/i18n/types');
 const { isSharedConcept } = domain.load('src/lib/concepts');
+const { LANGUAGE_CODES } = domain.load('src/lib/languages/types');
 
 const begriffe = new Map(JSON.parse(fs.readFileSync(path.join(__dirname, 'begriffe.json'), 'utf8')).begriffe.map((b) => [b.id, b]));
 
@@ -38,7 +39,7 @@ for (const datei of dateienAus(process.argv.slice(2))) {
     if (!isValidVocabEntry(w)) { fehler.push(`${wo}: verletzt das Schema (isValidVocabEntry)`); continue; }
     const pruefung = pruefeVocabDoc(w);
     for (const f of pruefung.fehler) fehler.push(`${wo}: ${f}`);
-    if (!/^ki-(th|en|es|de)-[a-z0-9-]+$/.test(w.id) || !w.id.startsWith(`ki-${w.language}-`)) fehler.push(`${wo}: ID muss ki-${w.language}-… sein`);
+    if (!LANGUAGE_CODES.includes(w.language) || !new RegExp(`^ki-${w.language}-[a-z0-9-]+$`).test(w.id)) fehler.push(`${wo}: ID muss ki-${w.language}-… sein`);
     if (!String(w.verificationNote ?? '').startsWith('KI-')) fehler.push(`${wo}: verificationNote muss mit „KI-“ beginnen (sonst sehen Lernende ihn)`);
     const fehlend = UI_LANGUAGES.filter((l) => typeof w.translations?.[l] !== 'string' || !w.translations[l].trim());
     if (fehlend.length) fehler.push(`${wo}: Bedeutung fehlt für ${fehlend.join(', ')}`);

@@ -69,4 +69,19 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       pt: require('../../assets/catalog/de-pt.catalog'),
     },
   },
+  fr: {
+    base: require('../../assets/catalog/fr.catalog'),
+    translations: {
+      de: require('../../assets/catalog/fr-de.catalog'),
+      en: require('../../assets/catalog/fr-en.catalog'),
+      es: require('../../assets/catalog/fr-es.catalog'),
+      th: require('../../assets/catalog/fr-th.catalog'),
+      ar: require('../../assets/catalog/fr-ar.catalog'),
+      zh: require('../../assets/catalog/fr-zh.catalog'),
+      hi: require('../../assets/catalog/fr-hi.catalog'),
+      fr: require('../../assets/catalog/fr-fr.catalog'),
+      bn: require('../../assets/catalog/fr-bn.catalog'),
+      pt: require('../../assets/catalog/fr-pt.catalog'),
+    },
+  },
 };

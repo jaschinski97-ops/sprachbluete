@@ -36,6 +36,7 @@ const DRILL_LABEL_KEYS: Record<DrillId, TranslationKey> = {
   konsonantenklasse: 'drill.konsonantenklasse',
   praesensEndung: 'drill.praesensEndung',
   partizip: 'drill.partizip',
+  genre: 'drill.genre',
 };
 
 const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
@@ -56,6 +57,7 @@ const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   konsonantenklasse: 'drill.prompt.konsonantenklasse',
   praesensEndung: 'drill.prompt.praesensEndung',
   partizip: 'drill.prompt.partizip',
+  genre: 'drill.prompt.genre',
 };
 
 /**

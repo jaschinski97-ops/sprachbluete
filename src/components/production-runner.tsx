@@ -15,7 +15,7 @@ import {
 } from '@/lib/audio';
 import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale } from '@/lib/i18n';
-import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
+import { targetLanguageOf, type LanguageCode, type PairDirection } from '@/lib/languages/types';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import type { LearningStage } from '@/lib/learning-stages';
 import { recordDrill } from '@/lib/review-log';
@@ -51,11 +51,12 @@ import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler } from '
  */
 
 // Sprachcode der Lernsprache → Locale für die Spracherkennung des Geräts.
-const SR_LOCALE: Record<'th' | 'en' | 'es' | 'de', string> = {
+const SR_LOCALE: Record<LanguageCode, string> = {
   th: 'th-TH',
   en: 'en-US',
   es: 'es-ES',
   de: 'de-DE',
+  fr: 'fr-FR',
 };
 
 // Selbstbewertung (Gut/Schwer/Nochmal) nach der Musterlösung; „Leicht“ wird hier bewusst nicht angeboten.

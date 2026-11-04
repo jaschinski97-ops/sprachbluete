@@ -7,7 +7,7 @@ jest.mock('@/lib/api-key', () => ({
   clearApiKey: jest.fn(), looksLikeApiKey: () => true, saveApiKey: jest.fn(),
 }));
 
-test('conversation starts directly and its deletion applies to the selected target or all four', async () => {
+test('conversation starts directly and its deletion applies to the selected target or all of them', async () => {
   const provider = jest.fn(async () => {});
   const remove = jest.fn(async () => {});
   let tree!: ReactTestRenderer;
@@ -30,7 +30,7 @@ test('conversation starts directly and its deletion applies to the selected targ
   await act(async () => { await press('Alle Sprachen'); });
   await act(async () => { await press('Erzeugte Situationen löschen'); });
   await act(async () => { await press('Wirklich löschen: Alle Sprachen?'); });
-  expect(remove).toHaveBeenLastCalledWith(['th', 'en', 'es', 'de']);
+  expect(remove).toHaveBeenLastCalledWith(['th', 'en', 'es', 'de', 'fr']);
   await act(async () => { tree.unmount(); });
 });
 

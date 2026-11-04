@@ -49,3 +49,24 @@ export function uniformTone(entry: VocabEntry): Tone | null {
 export function isMultiSyllable(entry: VocabEntry): boolean {
   return syllablesOf(entry).length > 1;
 }
+
+/** Genus-Block des Nomens in seiner Lernsprache (Deutsch, Spanisch, Französisch). */
+export function nounOf(entry: VocabEntry): { article: string; plural: string } | undefined {
+  if (entry.language === 'de') return entry.germanNoun;
+  if (entry.language === 'es') return entry.spanishNoun;
+  if (entry.language === 'fr') return entry.frenchNoun;
+  return undefined;
+}
+
+/**
+ * Das Wort mit seinem Artikel, wie Karte und Wortliste es zeigen („der Hund“,
+ * „la casa“, „l’arbre“). Steht der Artikel schon im Wort, bleibt es, wie es ist.
+ */
+export function termWithArticle(entry: VocabEntry): string {
+  const noun = nounOf(entry);
+  if (!noun) return entry.term;
+  const lower = entry.term.toLowerCase();
+  // „l’“ hängt ohne Leerzeichen am Wort; die anderen Artikel stehen davor.
+  if (noun.article === 'l’') return lower.startsWith('l’') || lower.startsWith("l'") ? entry.term : `l’${entry.term}`;
+  return lower.startsWith(`${noun.article} `) ? entry.term : `${noun.article} ${entry.term}`;
+}

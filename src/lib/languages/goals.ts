@@ -49,8 +49,13 @@ export function zieleFuerBruecke(bridge: Lang | ForeignBridge): Lernziel[] {
   // Die App-Sprache selbst ist nie Ziel — auch nicht „Thai (von Deutsch)“
   // auf Thai-Oberfläche: Dort war die Bedeutung identisch mit dem Thai-Text
   // (Testlauf 08.10.2026, Nutzerentscheidung).
-  return reihenfolge
-    .filter((code) => code !== bridge)
+  const ziele = reihenfolge.filter((code) => code !== bridge);
+  // Eine Lernsprache ohne Wortschatz ist (noch) kein Ziel (04.11.2026): So
+  // erscheint eine neue Sprache wie Französisch erst, wenn ihre Wörter im
+  // Katalog liegen, und ein Zwischen-Release zeigt keine leere Sprache. Ist
+  // der ganze Katalog leer (frischer Neuaufbau), bleiben alle sichtbar.
+  const mitWortschatz = ziele.filter((code) => vocabularyCountFor(code) > 0);
+  return (mitWortschatz.length ? mitWortschatz : ziele)
     .map((code) => ({ direction: `${bridge}_to_${code}` as PairDirection, language: code }));
 }
 

@@ -15,7 +15,7 @@ import {
  *
  * DREI AUSSAGEN TRAGEN DIESE DATEI:
  *
- * 1. **Der Kanon ist vollständig, aber ohne Selbstpaare.** 4 × 3 = 12 Paare,
+ * 1. **Der Kanon ist vollständig, aber ohne Selbstpaare.** 5 × 4 = 20 Paare,
  *    jede Richtung genau einmal (Kern 4 seit 09.09.2026 — Französisch entfernt).
  * 2. **Die sechs klassischen Richtungen bleiben wörtlich gültig.** Sie sind
  *    Paar-IDs, und gespeicherte
@@ -25,10 +25,10 @@ import {
  */
 
 describe('Die Paarmatrix', () => {
-  it('führt genau 12 Paare — 4 Zielsprachen, keine Selbstpaare', () => {
+  it('führt genau 20 Paare — 5 Zielsprachen, keine Selbstpaare', () => {
     // Seit dem Sprach-Umbau dieselbe Liste wie LANGUAGE_CODES (Reihenfolge der App).
-    expect(SUPPORTED_TARGETS).toEqual(['th', 'en', 'es', 'de']);
-    expect(PAIRS).toHaveLength(4 * 3);
+    expect(SUPPORTED_TARGETS).toEqual(['th', 'en', 'es', 'de', 'fr']);
+    expect(PAIRS).toHaveLength(5 * 4);
     for (const pair of PAIRS) {
       expect(pair.source).not.toBe(pair.target);
     }

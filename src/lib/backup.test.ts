@@ -247,9 +247,10 @@ describe('validateBackupDocument', () => {
     // SEIT STUFE 1 GÜLTIG, NICHT MEHR UNBEKANNT: `th_to_en` ist eine der
     // sechs Kreuzrichtungen und trägt eigene Karten — der Import muss sie
     // akzeptieren, sonst verlöre eine Sicherung den Kreuz-Lernstand. Abge-
-    // lehnt wird weiter, was kein Kanon-Paar ist (hier: Französisch, seit
-    // dem Kern-4-Entscheid entfernt, und das Selbstpaar).
-    doc.data.cards[0].direction = 'th_to_fr';
+    // lehnt wird weiter, was kein Kanon-Paar ist (hier: Russisch, keine
+    // Lern- und seit 24.10.2026 auch keine App-Sprache, und das Selbstpaar).
+    // Französisch ist seit 04.11.2026 wieder Lernsprache, `th_to_fr` gültig.
+    doc.data.cards[0].direction = 'th_to_ru';
     expect(validateBackupDocument(doc).ok).toBe(false);
     doc.data.cards[0].direction = 'en_to_es';
     expect(validateBackupDocument(doc).ok).toBe(true);

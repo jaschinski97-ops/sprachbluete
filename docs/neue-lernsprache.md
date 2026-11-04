@@ -4,7 +4,7 @@ Stand: Sprach-Umbau vom 23.09.2026. Seitdem steht alles, was die App über eine
 Lernsprache wissen muss, an **einer** Stelle. Deutsch ist dabei eine Lernsprache
 wie jede andere, ohne Sonderregeln.
 
-Beispiel: Französisch (`fr`). Der Code muss eine der 20 App-Sprachen sein
+Beispiel: Französisch (`fr`, seit 04.11.2026 so eingebaut). Der Code muss eine der 10 App-Sprachen sein
 (`src/lib/i18n/types.ts`), weil der Sprachname und die Bedeutungen dort herkommen.
 
 ## 1. Code eintragen
@@ -47,7 +47,7 @@ prüft das.
 
 ## 3. Zwei Texte übersetzen
 
-In allen 20 Wörterbüchern (`src/lib/i18n/dictionaries/*.ts`):
+In allen 10 Wörterbüchern (`src/lib/i18n/dictionaries/*.ts`):
 
 - `language.fr.feature`: Kurzname des Merkmals
 - `language.fr.description`: ein Satz, was die Sprache besonders macht
@@ -63,7 +63,7 @@ node --test scripts/content/pipeline.test.cjs
 ```
 
 `definitions.test.ts` ist die Checkliste als Test. Er prüft für jede Sprache
-die Definition, alle Texte in den 20 App-Sprachen, die Inhalts-Richtung und die
+die Definition, alle Texte in den 10 App-Sprachen, die Inhalts-Richtung und die
 Quelle.
 
 ## 5. Inhalte erzeugen
@@ -106,3 +106,38 @@ Inhalte einer Sprache liegen unter `contentDirectionOf(code)`:
 
 Karten liegen je Lernziel unter `vocabId:anker_to_ziel`. Diese Schlüssel sind
 gespeicherte Daten und dürfen sich nicht ändern.
+
+## Was der Französisch-Einbau (04.11.2026) zusätzlich gebraucht hat
+
+Die Schritte oben reichen nicht ganz. Beim echten Einbau kamen dazu:
+
+- **Kompilierfehler (13):** Sprachkarten mit allen Lernsprachen in
+  `language-picker.tsx` (Abzeichen), `production-runner.tsx` und
+  `roleplay-runner.tsx` (Locale der Worterkennung), `today-round-runner.tsx`
+  (Diktat-Text), `repository.ts` (Clip-Zähler), `advanced-lessons.ts`
+  (B1-Einheit schreiben), `numbers.ts` und `latin-alphabet.ts` (Kapitel 0).
+- **Geschützte Dateien, nur mit Freigabe:** Zahlen und ABC aus einer
+  Wikipedia-Quelle eintragen, das Medienbudget in `pipeline.cjs` prüfen
+  (rund 100 MiB Clips je lateinische Sprache, Thai 173 MiB), danach
+  `node scripts/schutz.cjs freigeben <datei>`. Achtung: `numberWord` und
+  `priceText` fallen ohne eigenen Zweig still auf Deutsch zurück.
+- **Erzeugte Dateien:** `node scripts/app-catalog-files.cjs --write-map`
+  (`catalog-files.ts`) und `node scripts/content/vorbild-kurven.cjs`
+  (legt `assets/kurven/<code>.kurven.yml` an, `kurven-dateien.ts` von Hand).
+- **Kategorie Grammatik:** `exercise-catalog.test.ts` verlangt in jeder
+  Kategorie eine Übung. Ohne sprachspezifische Grammatikübung bleibt
+  „Grammatik“ leer, deshalb gibt es für Französisch `genre` („un oder une?“).
+- **Zeichenleiste:** neue `palette` in `definitions.ts` und
+  `character-palette.tsx`, Tastennamen in allen Wörterbüchern.
+- **Genus:** `frenchNoun` in `vocab-types.ts`; Karte und Wortliste zeigen
+  den Artikel über `termWithArticle` (`vocab-helpers.ts`).
+- **Testdaten:** ein kleiner Wortsatz in `src/test-fixtures/` (hier
+  `vocabulary-fr.ts`), sonst scheitern die Tests, die jede Sprache mit Stoff
+  erwarten. Dazu alle Tests, die die Liste der Lernsprachen wörtlich prüfen.
+- **App-Sprache wird Lernsprache:** Ist der Code schon App-Sprache (wie
+  `fr`), wechselt er von der Fremd-Brücke zum Lernpaar. Gespeicherte
+  Richtungen (`fr_to_th`) bleiben gleich; nur die Zielreihenfolge folgt jetzt
+  `LANGUAGE_CODES` statt „Deutsch zuerst“.
+- **Sichtbarkeit:** Eine Lernsprache ohne Wortschatz erscheint nicht als
+  Lernziel (`zieleFuerBruecke`). Code und Inhalte können also getrennt
+  ausgeliefert werden.

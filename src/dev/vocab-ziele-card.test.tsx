@@ -78,7 +78,7 @@ test('one click starts word generation and deletion follows the selected languag
   await act(async () => { await press('Alle Sprachen'); });
   await act(async () => { await press('Erzeugte Wörter löschen'); });
   await act(async () => { await press('Ausgewählte Wörter wirklich löschen?'); });
-  expect(clearContentSelection).toHaveBeenLastCalledWith('vocabulary', ['th', 'en', 'es', 'de']);
+  expect(clearContentSelection).toHaveBeenLastCalledWith('vocabulary', ['th', 'en', 'es', 'de', 'fr']);
   await act(async () => { tree.unmount(); });
 });
 

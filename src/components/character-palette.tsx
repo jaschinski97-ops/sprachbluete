@@ -259,6 +259,54 @@ export function SpanishPalette({ onInsert, disabled }: PaletteProps) {
   );
 }
 
+/**
+ * Französische Sonderzeichen (04.11.2026).
+ *
+ * Gleicher Grund wie bei Spanisch: Akzente zählen beim Schreiben („a“ gegen
+ * „à“, „ou“ gegen „où“ sind andere Wörter). Die Leiste enthält alle Zeichen
+ * des französischen Alphabets mit Diakritikum aus der Quelle von
+ * `latin-alphabet.ts` außer den seltenen æ und ÿ. Großbuchstaben fehlen
+ * bewusst, wie bei Spanisch.
+ */
+const FRENCH_SPECIALS = [
+  { character: 'é', name: 'palette.acute', letter: 'e' },
+  { character: 'è', name: 'palette.grave', letter: 'e' },
+  { character: 'ê', name: 'palette.circumflex', letter: 'e' },
+  { character: 'ë', name: 'palette.trema', letter: 'e' },
+  { character: 'à', name: 'palette.grave', letter: 'a' },
+  { character: 'â', name: 'palette.circumflex', letter: 'a' },
+  { character: 'î', name: 'palette.circumflex', letter: 'i' },
+  { character: 'ï', name: 'palette.trema', letter: 'i' },
+  { character: 'ô', name: 'palette.circumflex', letter: 'o' },
+  { character: 'ù', name: 'palette.grave', letter: 'u' },
+  { character: 'û', name: 'palette.circumflex', letter: 'u' },
+  { character: 'ü', name: 'palette.trema', letter: 'u' },
+  { character: 'ç', name: 'palette.cedilla', letter: 'c' },
+  { character: 'œ', name: 'palette.ligature', letter: 'oe' },
+];
+
+export function FrenchPalette({ onInsert, disabled }: PaletteProps) {
+  const { t } = useLocale();
+  return (
+    <View style={styles.palette}>
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('palette.frenchHeading')}
+      </ThemedText>
+      <View style={styles.keys}>
+        {FRENCH_SPECIALS.map((special) => (
+          <Key
+            key={special.character}
+            label={special.character}
+            spokenLabel={t(special.name as TranslationKey, { letter: special.letter })}
+            onPress={() => onInsert(special.character)}
+            disabled={disabled}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   palette: {
     gap: Spacing.two,
@@ -321,5 +369,6 @@ export function LanguagePalette({
   if (palette === 'thai') return <ThaiPalette onInsert={onInsert} disabled={disabled} />;
   if (palette === 'german') return <GermanPalette onInsert={onInsert} disabled={disabled} />;
   if (palette === 'spanish') return <SpanishPalette onInsert={onInsert} disabled={disabled} />;
+  if (palette === 'french') return <FrenchPalette onInsert={onInsert} disabled={disabled} />;
   return null;
 }

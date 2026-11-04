@@ -135,6 +135,11 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
   }
   if (sprache === 'de' && d.germanVerb !== undefined && typeof d.germanVerb !== 'object') return false;
   if (sprache === 'es' && d.spanishNoun !== undefined && typeof d.spanishNoun !== 'object') return false;
+  if (sprache === 'fr' && d.frenchNoun !== undefined) {
+    const n = d.frenchNoun as Record<string, unknown>;
+    if (typeof n !== 'object' || n === null || !['m', 'f'].includes(String(n.gender))) return false;
+    if (!['le', 'la', 'l’'].includes(String(n.article)) || typeof n.plural !== 'string') return false;
+  }
   if (sprache === 'es' && d.spanishVerb !== undefined) {
     const v = d.spanishVerb as Record<string, unknown>;
     if (typeof v !== 'object' || !['ar', 'er', 'ir'].includes(String(v.conjugation))) return false;
@@ -149,6 +154,23 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
  * Thai-Ton-Prüfung — kein Fehler, aber vor dem Audio-Lauf ansehen.
  */
 export type VocabPruefung = { ok: boolean; fehler: string[]; hinweise?: string[] };
+
+/**
+ * Französischer Artikel (04.11.2026): „le“ gehört zu m, „la“ zu f; vor Vokal
+ * steht „l’“. Bei h und y entscheidet das Wort (h aspiré: „la hanche“, aber
+ * „l’heure“), deshalb ist dort beides erlaubt.
+ */
+function franzoesischerArtikel(term: string, nomen: NonNullable<VocabEntry['frenchNoun']>): string[] {
+  const fehler: string[] = [];
+  const anfang = term.normalize('NFC').toLowerCase().charAt(0);
+  const vokal = /[aeiouàâäéèêëîïôöùûüœæ]/.test(anfang);
+  const offen = anfang === 'h' || anfang === 'y';
+  if (nomen.article === 'le' && nomen.gender !== 'm') fehler.push('Französischer Artikel „le“ bei weiblichem Genus.');
+  if (nomen.article === 'la' && nomen.gender !== 'f') fehler.push('Französischer Artikel „la“ bei männlichem Genus.');
+  if (nomen.article === 'l’' && !vokal && !offen) fehler.push('Französischer Artikel „l’“ vor Konsonant.');
+  if (nomen.article !== 'l’' && vokal) fehler.push('Französischer Artikel vor Vokal muss „l’“ sein.');
+  return fehler;
+}
 
 /** Regelbasierte Prüfung eines Dokuments — die Basis unter der KI-Kreuzprüfung. */
 export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
@@ -200,6 +222,14 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
   }
   if (language === 'es' && doc.partOfSpeech === 'noun' && !doc.spanishNoun) {
     fehler.push('Spanisches Substantiv ohne Genus/Artikel.');
+  }
+  if (language === 'fr' && doc.partOfSpeech === 'noun') {
+    // Nur-Mehrzahl-Wörter tragen den Artikel im Wort („les gens“) und haben kein Genus-Feld.
+    if (!doc.frenchNoun) {
+      if (!/^les\s/.test(doc.term)) fehler.push('Französisches Substantiv ohne Genus/Artikel.');
+    } else {
+      fehler.push(...franzoesischerArtikel(doc.term, doc.frenchNoun));
+    }
   }
   if (language === 'de' && doc.partOfSpeech === 'noun' && !doc.germanNoun) {
     fehler.push('Deutsches Substantiv ohne Artikel/Plural.');

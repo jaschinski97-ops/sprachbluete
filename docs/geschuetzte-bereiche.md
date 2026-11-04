@@ -112,7 +112,7 @@ KI. Anzeige-Verbesserungen gehören in die Komponenten, nicht in die Daten.
 - Keine Kostenbestätigungs-Dialoge vor KI-Läufen.
 - Keine Motiv-Vorschau für Bilder durch den Admin.
 - Stufen heißen sichtbar Anfänger, Fortgeschritten, Profi; A1–C2 nie sichtbar.
-- Die App-Sprache ist nie Lernziel; 10 App-Sprachen, 4 Lernsprachen.
+- Die App-Sprache ist nie Lernziel; 10 App-Sprachen, 5 Lernsprachen (Französisch seit 04.11.2026).
 - Prüfvermerke beginnen mit „KI-…“, Lernende sehen nicht, welches Modell was erzeugt hat.
 - Optik „Kirschblüte“ mit Tag und Nacht; Farben immer über `@/hooks/use-color-scheme`.
 - Bilder je Begriff (ein Bild für alle Lernsprachen), keine alten Bilder oder Clips wiederverwenden.

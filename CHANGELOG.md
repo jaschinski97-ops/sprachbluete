@@ -1,5 +1,15 @@
 # Changelog
 
+## 04.11.2026
+
+- Französisch als fünfte Lernsprache (Nutzerentscheidung, Branch `feature/lernsprache-fr`): `LANGUAGE_CODES` mit `fr`, Definition in `definitions.ts` (fr-FR, Akzent-Toleranz, Lautschrift je Wort, Merkmal „Stumme Buchstaben“ mit Beleg aus en.wikipedia „French orthography“), Akzentleiste (é è ê ë à â î ï ô û ù ü ç œ), B1-Einheit, Genus über `frenchNoun` (Karte und Wortliste zeigen „le/la/l’“) und neue Grammatikübung „un oder une?“ (`genre`). Texte in allen 10 Wörterbüchern. Dialoge und Clips folgen.
+- Kapitel 0 für Französisch (geschützte Lerndaten, Freigabe des Nutzers): Zahlen nach fr.wikipedia „Nombres en français“ (soixante-dix, quatre-vingts, Bindestriche nach 1990: „vingt-et-un“), Preise in Euro, ABC mit Buchstabennamen nach fr.wikipedia „Alphabet du français“ (26 Buchstaben).
+- Französischer Wortschatz: 1.920 Wörter im Katalog (Anfänger 1.155, Fortgeschritten 577, Profi 188 von 1.986 Begriffen). Von Claude gewählt und mit Lautschrift, Genus und Plural versehen; Bedeutungen und Beispielsätze kommen aus den anderen Lernsprachen (`content-plan/franzoesisch.cjs`). 66 Begriffe bleiben wie im Spanischen gewollt leer, weil dasselbe Wort schon unter einem anderen Begriff steht (regarder, faire, attendre …). 13 Wörter ohne Beispielsatz.
+- Wortprüfung (geschützt, Freigabe des Nutzers): Französische Nomen brauchen Genus und Artikel (`frenchNoun`), außer Nur-Mehrzahl-Wörtern wie „les gens“. Der Artikel muss zum Genus und zum Anlaut passen („l’“ nur vor Vokal, bei h und y beides). Die Pipeline lässt das Feld `frenchNoun` durch.
+- Medienbudget 768 MiB statt 512 MiB (geschützte Pipeline, Freigabe des Nutzers): Der Bestand liegt bei 476 MiB, französische Clips bringen rund 100 MiB dazu. Der Store-Build lädt Medien je Sprache als Paket.
+- Schreiben: „’“ und „'“ gelten als derselbe Apostroph (Handy- gegen Desktop-Tastatur, wichtig für „aujourd’hui“, „don’t“).
+- Französische Testwörter (`src/test-fixtures/vocabulary-fr.ts`); Tests auf fünf Lernsprachen umgestellt. Anleitung `docs/neue-lernsprache.md` um die tatsächlich nötigen Schritte ergänzt.
+
 ## 29.10.2026
 
 - Store-Unterlagen für App Store und Google Play (`store/`, Anleitung `store/README.md`): Texte in de/en/es/th in `store.config.json` (für `eas metadata:push`, Kategorie Bildung, Altersfreigabe, Prüfer-Hinweise), je 6 Screenshots Deutsch/Englisch für iPhone 6,9″ und Google Play, Play-Symbol, Play-Kopfgrafik und Play-Texte. Android sperrt ungenutzte Berechtigungen aus Expo-Bausteinen (`blockedPermissions`: Overlay, externer Speicher, Fingerabdruck). Datenschutzseiten (gh-pages) nennen jetzt die kurzzeitig gespeicherte Aufnahme und die Worterkennung auf dem Gerät.

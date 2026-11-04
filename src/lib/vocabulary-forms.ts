@@ -5,9 +5,9 @@ import type { VocabEntry } from '@/data/vocab-types';
 export function vocabularyForms(entry: VocabEntry): string[] {
   const forms = [entry.term.toLocaleLowerCase()];
   if (entry.partOfSpeech !== 'noun') return forms;
-  const plural = entry.germanNoun?.plural ?? entry.spanishNoun?.plural;
+  const plural = entry.germanNoun?.plural ?? entry.spanishNoun?.plural ?? entry.frenchNoun?.plural;
   if (plural && plural !== '—' && !/[;,/()]/.test(plural)) {
-    forms.push(plural.toLocaleLowerCase().replace(/^(die|los|las)\s+/, ''));
+    forms.push(plural.toLocaleLowerCase().replace(/^(die|los|las|les)\s+/, ''));
   }
   if (entry.language === 'en' && /^[a-z]+$/i.test(entry.term)) {
     const term = forms[0];

@@ -140,6 +140,11 @@ export type VocabEntry = {
    * weiblich und steht trotzdem mit „el".
    */
   spanishNoun?: { gender: 'm' | 'f'; article: 'el' | 'la'; plural: string };
+  /**
+   * SPRACHSPEZIFISCH (Französisch, 04.11.2026): Genus und Artikel. „l’“ steht
+   * vor Vokal und stummem h und verrät das Genus nicht — deshalb beides.
+   */
+  frenchNoun?: { gender: 'm' | 'f'; article: 'le' | 'la' | 'l’'; plural: string };
   /** SPRACHSPEZIFISCH (Spanisch): Konjugationsklasse und Unregelmäßigkeit. */
   spanishVerb?: { conjugation: 'ar' | 'er' | 'ir'; irregular: boolean };
   /** SPRACHSPEZIFISCH (Englisch): Vergangenheit und Partizip. */

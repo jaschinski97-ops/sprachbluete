@@ -1,11 +1,15 @@
 import { ALPHABET_SOURCES, isSpellable, LATIN_ALPHABETS, spellOut } from './latin-alphabet';
 
 describe('Kapitel 0: das lateinische ABC', () => {
-  it('hat die Buchstabenzahl der Quellen: 26 englisch, 27 spanisch (ñ), 30 deutsch (ä ö ü ß)', () => {
+  it('hat die Buchstabenzahl der Quellen: 26 englisch, 27 spanisch (ñ), 30 deutsch (ä ö ü ß), 26 französisch', () => {
     expect(LATIN_ALPHABETS.en).toHaveLength(26);
     expect(LATIN_ALPHABETS.es).toHaveLength(27);
     expect(LATIN_ALPHABETS.de).toHaveLength(30);
-    for (const source of Object.values(ALPHABET_SOURCES)) expect(source.retrieved).toBe('2026-10-18');
+    // Französisch: die Buchstaben mit Akzent zählt die Quelle nicht eigens.
+    expect(LATIN_ALPHABETS.fr).toHaveLength(26);
+    for (const [language, source] of Object.entries(ALPHABET_SOURCES)) {
+      expect(source.retrieved).toBe(language === 'fr' ? '2026-11-04' : '2026-10-18');
+    }
   });
 
   it('führt jeden Buchstaben mit Lautschrift und einem sprechbaren Text', () => {

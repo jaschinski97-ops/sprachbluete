@@ -1,8 +1,8 @@
 import type { LanguageCode } from '@/lib/languages/types';
 
 /**
- * Die Grundzahlen der vier Lernsprachen für Kapitel 0 „Grundlagen“
- * (18.10.2026).
+ * Die Grundzahlen der Lernsprachen für Kapitel 0 „Grundlagen“
+ * (18.10.2026, Französisch seit 04.11.2026).
  *
  * WARUM FESTE DATEN STATT KATALOG: Zahlen sind eine geschlossene Menge. Im
  * erzeugten Wortschatz fehlten ausgerechnet die häufigsten (Thai หนึ่ง bis
@@ -21,6 +21,13 @@ import type { LanguageCode } from '@/lib/languages/types';
  *        Liste 10–99, Centenas, Millares).
  *   de — de.wikipedia „Zahlwort“ (Abschnitt „Bildung der Kardinalzahlen im
  *        Deutschen“, Tabelle Einer/Zehner/20 bis 90/ab 100).
+ *   fr — fr.wikipedia „Nombres en français“ (Tabelle „Adjectifs ou noms
+ *        numéraux“ und Abschnitt „Règles“), abgerufen am 2026-11-04. Zahlen
+ *        aus Frankreich (soixante-dix, quatre-vingts, quatre-vingt-dix, nicht
+ *        die belgisch-schweizerischen septante/huitante/nonante). Bindestriche
+ *        nach den Rectifications von 1990 („vingt-et-un“): Die Quelle nennt
+ *        sie in Frankreich die Referenz; die traditionelle Schreibung
+ *        „vingt et un“ sei „acceptée, mais ne doit plus être enseignée“.
  *
  * THAI-UMSCHRIFT: Paiboon-Stil wie im Katalog (`thai-romanization.test.ts`),
  * Ton aus der IPA-Spalte der Quelle. Einzige bewusste Abweichung von der
@@ -29,7 +36,7 @@ import type { LanguageCode } from '@/lib/languages/types';
  * Schreibung als im Dialog direkt danach).
  *
  * WÄHRUNGEN: so, wie die A1-Marktdialoge des Katalogs bezahlen — Baht (Thai),
- * Pfund (Englisch), Euro (Spanisch, Deutsch).
+ * Pfund (Englisch), Euro (Spanisch, Deutsch, Französisch).
  */
 
 export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; retrieved: string }> = {
@@ -41,6 +48,11 @@ export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; 
     retrieved: '2026-10-18',
   },
   de: { title: 'Zahlwort', url: 'https://de.wikipedia.org/wiki/Zahlwort', retrieved: '2026-10-18' },
+  fr: {
+    title: 'Nombres en français',
+    url: 'https://fr.wikipedia.org/wiki/Nombres_en_fran%C3%A7ais',
+    retrieved: '2026-11-04',
+  },
 };
 
 /** Ein Thai-Zahlbaustein: Schrift, Paiboon-Umschrift und IPA der Quelle. */
@@ -87,6 +99,12 @@ const ES_TENS = ['', '', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta'
 const DE_UNITS = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn',
   'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn', 'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn'] as const;
 const DE_TENS = ['', '', 'zwanzig', 'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig'] as const;
+
+/** 0–19 aus der Tabelle der Quelle (17–19 „dix-sept, dix-huit, dix-neuf“). */
+const FR_UNITS = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix',
+  'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'] as const;
+/** Zehner 20–60 der Tabelle; 70, 80 und 90 setzt `frenchWord` nach den Regeln der Quelle zusammen. */
+const FR_TENS = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante'] as const;
 
 /** Ein Zahlwort in der Lernsprache; `roman` nur für Thai. */
 export type NumberWord = { value: number; text: string; roman?: string };
@@ -137,6 +155,29 @@ function germanWord(value: number): string {
   return unit === 0 ? tens : `${unit === 1 ? 'ein' : DE_UNITS[unit]}und${tens}`;
 }
 
+/**
+ * Französisch nach der Quelle: „on ajoute les chiffres de 1 à 9 à la ou aux
+ * dizaines …, sauf pour soixante-dix et quatre-vingt-dix, où on ajoute les
+ * nombres de 11 à 19“; „et“ nur bei der 1 zwischen vingt und quatre-vingts
+ * (21–71, also auch „soixante-et-onze“, aber „quatre-vingt-un“); 80 heißt
+ * „quatre-vingts“, mit s nur ohne folgendes Zahlwort.
+ */
+function frenchWord(value: number): string {
+  if (value < 20) return FR_UNITS[value];
+  if (value === 100) return 'cent';
+  if (value === 1000) return 'mille';
+  const tens = Math.floor(value / 10);
+  const unit = value % 10;
+  if (tens === 7 || tens === 9) {
+    const base = tens === 7 ? 'soixante' : 'quatre-vingt';
+    return tens === 7 && unit === 1 ? 'soixante-et-onze' : `${base}-${FR_UNITS[10 + unit]}`;
+  }
+  if (tens === 8) return unit === 0 ? 'quatre-vingts' : `quatre-vingt-${FR_UNITS[unit]}`;
+  const base = FR_TENS[tens];
+  if (unit === 0) return base;
+  return unit === 1 ? `${base}-et-un` : `${base}-${FR_UNITS[unit]}`;
+}
+
 /** Das Zahlwort zu `value` (0–100 oder 1000) in der Lernsprache. */
 export function numberWord(language: LanguageCode, value: number): NumberWord {
   if (!isTeachableNumber(value)) throw new RangeError(`Zahl außerhalb von Kapitel 0: ${value}`);
@@ -146,6 +187,7 @@ export function numberWord(language: LanguageCode, value: number): NumberWord {
   }
   if (language === 'en') return { value, text: englishWord(value) };
   if (language === 'es') return { value, text: spanishWord(value) };
+  if (language === 'fr') return { value, text: frenchWord(value) };
   return { value, text: germanWord(value) };
 }
 
@@ -172,7 +214,9 @@ export type PriceText = { value: number; text: string; roman?: string; label: st
  * Preis als Satzteil. Thai wie im Obstmarkt-Dialog ohne Leerzeichen
  * („ห้าสิบบาท“, „hâa-sìp bàat“); Spanisch kürzt uno vor dem männlichen
  * „euro“ zu un (Quelle: „apocopan el uno en un … si la palabra que sigue es
- * un sustantivo masculino“); Deutsch zählt „ein Euro, zwei Euro“.
+ * un sustantivo masculino“); Deutsch zählt „ein Euro, zwei Euro“. Französisch:
+ * „euro“ ist männlich, also „un euro“ (Quelle: 1 „écrit un au masculin et une
+ * au féminin“), ab zwei „euros“.
  */
 export function priceText(language: LanguageCode, value: number): PriceText {
   const word = numberWord(language, value);
@@ -185,6 +229,9 @@ export function priceText(language: LanguageCode, value: number): PriceText {
   if (language === 'es') {
     const counted = word.text.endsWith('veintiuno') ? word.text.replace(/veintiuno$/, 'veintiún') : word.text.replace(/uno$/, 'un');
     return { value, text: `${counted} ${value === 1 ? 'euro' : 'euros'}`, label: `${value} €` };
+  }
+  if (language === 'fr') {
+    return { value, text: `${word.text} ${value === 1 ? 'euro' : 'euros'}`, label: `${value} €` };
   }
   return { value, text: `${value === 1 ? 'ein' : word.text} Euro`, label: `${value} €` };
 }

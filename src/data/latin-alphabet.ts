@@ -1,7 +1,7 @@
 import type { LanguageCode } from '@/lib/languages/types';
 
 /**
- * Das lateinische ABC der drei lateinisch geschriebenen Lernsprachen mit den
+ * Das lateinische ABC der lateinisch geschriebenen Lernsprachen mit den
  * Buchstabennamen — für Kapitel 0 „Grundlagen“ (18.10.2026). Besonders für
  * Lernende mit Thai-Oberfläche ist das der eigentliche Einstieg: Sie kennen
  * die Buchstaben nicht, und beim Buchstabieren („Wie schreibt man das?“)
@@ -19,12 +19,19 @@ import type { LanguageCode } from '@/lib/languages/types';
  *        Buchstaben“ (IPA). Ausgeschriebene Namen nennt die Quelle nur für
  *        J (Jot), Y (Ypsilon), Z (Zet/Zett) und ß (Eszett); die übrigen
  *        stehen deshalb ohne ausgeschriebenen Namen, nur mit Lautschrift.
+ *   fr — fr.wikipedia „Alphabet du français“, Tabelle „Prononciation“ (Spalte
+ *        „Nom“ und IPA), abgerufen am 2026-11-04. Nur die 26 Grundbuchstaben:
+ *        Die Buchstaben mit Diakritikum und die Ligaturen sind laut Quelle
+ *        „non comptées séparément dans l’alphabet“. Wörter mit Akzent lassen
+ *        sich deshalb nicht buchstabieren (`isSpellable`) und fehlen in der
+ *        Buchstabier-Übung.
  */
 
 export const ALPHABET_SOURCES: Record<LatinLanguage, { title: string; url: string; retrieved: string }> = {
   en: { title: 'English alphabet', url: 'https://en.wikipedia.org/wiki/English_alphabet', retrieved: '2026-10-18' },
   es: { title: 'Ortografía del español', url: 'https://es.wikipedia.org/wiki/Alfabeto_espa%C3%B1ol', retrieved: '2026-10-18' },
   de: { title: 'Deutsches Alphabet', url: 'https://de.wikipedia.org/wiki/Deutsches_Alphabet', retrieved: '2026-10-18' },
+  fr: { title: 'Alphabet du français', url: 'https://fr.wikipedia.org/wiki/Alphabet_du_fran%C3%A7ais', retrieved: '2026-11-04' },
 };
 
 export type LatinLanguage = Exclude<LanguageCode, 'th'>;
@@ -55,6 +62,8 @@ const letter = (upper: string, name: string | null, ipa: string, spoken: string,
 const en = (upper: string, name: string, ipa: string, variant?: string) => letter(upper, name, ipa, upper, variant);
 const es = (upper: string, name: string, ipa: string) => letter(upper, name, ipa, name);
 const de = (upper: string, ipa: string, name: string | null = null) => letter(upper, name, ipa, name ?? upper);
+/** Französisch: Die Systemstimme liest den Namen der Quelle („bé“, „ache“), wie bei Spanisch. */
+const fr = (upper: string, name: string, ipa: string) => letter(upper, name, ipa, name);
 
 export const LATIN_ALPHABETS: Record<LatinLanguage, readonly LatinLetter[]> = {
   en: [
@@ -82,6 +91,15 @@ export const LATIN_ALPHABETS: Record<LatinLanguage, readonly LatinLetter[]> = {
     de('S', '/ɛs/'), de('T', '/teː/'), de('U', '/uː/'), de('V', '/faʊ/'), de('W', '/veː/'), de('X', '/ɪks/'),
     de('Y', '/ˈʏpsilɔn/', 'Ypsilon'), de('Z', '/t͡sɛt/', 'Zett'),
     de('Ä', '/ɛː/'), de('Ö', '/øː/'), de('Ü', '/yː/'), de('ẞ', '/ɛsˈt͡sɛt/', 'Eszett'),
+  ],
+  fr: [
+    fr('A', 'a', '/ɑ/'), fr('B', 'bé', '/be/'), fr('C', 'cé', '/se/'), fr('D', 'dé', '/de/'),
+    fr('E', 'e', '/ə/'), fr('F', 'effe', '/ɛf/'), fr('G', 'gé', '/ʒe/'), fr('H', 'ache', '/aʃ/'),
+    fr('I', 'i', '/i/'), fr('J', 'ji', '/ʒi/'), fr('K', 'ka', '/kɑ/'), fr('L', 'elle', '/ɛl/'),
+    fr('M', 'emme', '/ɛm/'), fr('N', 'enne', '/ɛn/'), fr('O', 'o', '/o/'), fr('P', 'pé', '/pe/'),
+    fr('Q', 'ku', '/ky/'), fr('R', 'erre', '/ɛʁ/'), fr('S', 'esse', '/ɛs/'), fr('T', 'té', '/te/'),
+    fr('U', 'u', '/y/'), fr('V', 'vé', '/ve/'), fr('W', 'double vé', '/dublə ve/'), fr('X', 'ics', '/iks/'),
+    fr('Y', 'i grec', '/igʁɛk/'), fr('Z', 'zède', '/zɛd/'),
   ],
 };
 

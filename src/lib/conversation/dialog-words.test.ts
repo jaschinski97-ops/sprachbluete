@@ -123,6 +123,12 @@ describe('zielwortImText — kommt das Zielwort im Dialog vor?', () => {
     expect(zielwortImText(wort('a', { language: 'en', term: 'to buy', partOfSpeech: 'verb', englishVerb: { past: 'bought', participle: 'bought', irregular: true } }), 'I bought bread.')).toBe(true);
     expect(zielwortImText(wort('a', { language: 'en', term: 'good morning', partOfSpeech: 'interjection' }), 'Good morning, Tom!')).toBe(true);
     expect(zielwortImText(wort('a', { language: 'en', term: 'apple' }), 'I like pears.')).toBe(false);
+    // Französisch: konjugierte Verben über den Stamm, Reflexivpronomen und Artikel ab.
+    expect(zielwortImText(wort('a', { language: 'fr', term: 'manger', partOfSpeech: 'verb' }), 'Je mange une pomme.')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'fr', term: 'se lever', partOfSpeech: 'verb' }), 'Nous nous levons tôt.')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'fr', term: 's’asseoir', partOfSpeech: 'verb' }), 'Tu veux t’asseoir ici ?')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'fr', term: 'les gens' }), 'Il y a beaucoup de gens.')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'fr', term: 'avoir', partOfSpeech: 'verb' }), 'Je viens avec toi.')).toBe(false);
   });
 
   it('meldet fehlende Zielwörter statt den Dialog zu verwerfen', () => {

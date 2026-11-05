@@ -184,7 +184,7 @@ export function stufenAbdeckung(optionen: DialogPlanOptionen): StufenAbdeckung {
 // Wort als fehlend.
 // ---------------------------------------------------------------------------
 
-const ARTIKEL = /^(?:der|die|das|ein|eine|el|la|los|las|un|una|the|a|an|to)\s+/;
+const ARTIKEL = /^(?:der|die|das|ein|eine|el|la|los|las|un|una|le|les|une|des|the|a|an|to)\s+/;
 
 function klein(text: string): string {
   return text.normalize('NFC').toLocaleLowerCase();
@@ -214,10 +214,15 @@ function formen(entry: VocabEntry): string[] {
 /** Wortanfänge für gebeugte Formen — kürzer als 3 Zeichen nur exakt. */
 function staemme(entry: VocabEntry): string[] {
   const language = String(entry.language);
-  return grundformen(entry.term).filter((form) => !form.includes(' ')).map((form) => {
-    if (entry.partOfSpeech === 'verb') {
+  const verb = entry.partOfSpeech === 'verb';
+  // Französisch (04.11.2026): „se lever“, „s’asseoir“ ohne Reflexivpronomen, damit der Stamm greift.
+  const ohneSe = (form: string) => (verb && language === 'fr' ? form.replace(/^(?:se|s)\s+/, '') : form);
+  return grundformen(entry.term).map(ohneSe).filter((form) => !form.includes(' ')).map((form) => {
+    if (verb) {
       if (language === 'de') return /(?:el|er)n$/.test(form) ? form.slice(0, -1) : form.replace(/e?n$/, '');
       if (language === 'es') return form.replace(/se$/, '').replace(/(?:ar|er|ir)$/, '');
+      // „manger“ → „mang“ trifft „je mange“; kurze Stämme (être, avoir, dire) zählen nur exakt.
+      if (language === 'fr') return form.replace(/(?:er|ir|re|oir)$/, '');
       return form.replace(/e$/, '');
     }
     if (entry.partOfSpeech === 'adjective' && language === 'es') return form.replace(/[oae]$/, '');

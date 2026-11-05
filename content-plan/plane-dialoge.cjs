@@ -4,8 +4,10 @@
  * Planung wie das Studio (`planeWortDialoge`): je Dialog die nächsten 20 noch
  * nicht abgedeckten Wörter der Stufe plus 4 zum Wiederholen.
  *
- * Aufruf: node content-plan/plane-dialoge.cjs [anfaenger fortgeschritten profi]
- * Vorgabe 25 / 15 / 10. Ausgabe: `_Local/dialoge/<sprache>/plan.json`.
+ * Aufruf: node content-plan/plane-dialoge.cjs [anfaenger fortgeschritten profi] [sprache …]
+ * Vorgabe 25 / 15 / 10, alle Lernsprachen. Mit Sprachcodes („fr“) nur diese —
+ * sonst überschreibt der Lauf die Pläne fertiger Sprachen (04.11.2026).
+ * Ausgabe: `_Local/dialoge/<sprache>/plan.json`.
  */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -14,7 +16,9 @@ const domain = require('../scripts/content/domain.cjs');
 const { planeWortDialoge } = domain.load('src/lib/conversation/dialog-words');
 const { LANGUAGE_CODES } = domain.load('src/lib/languages/types');
 
-const [a = 25, f = 15, p = 10] = process.argv.slice(2).map(Number);
+const argumente = process.argv.slice(2);
+const [a = 25, f = 15, p = 10] = argumente.filter((x) => /^\d+$/.test(x)).map(Number);
+const nur = argumente.filter((x) => LANGUAGE_CODES.includes(x));
 const ANZAHL = { beginner: a, experienced: f, pro: p };
 const root = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8'));
@@ -22,7 +26,7 @@ const vocabulary = catalog.entries.filter((e) => e.kind === 'vocabulary').map((e
 const situations = catalog.entries.filter((e) => e.kind === 'situations').map((e) => e.document);
 
 const kurz = (w) => ({ id: w.id, term: w.term, german: w.german, ...(w.romanization ? { romanization: w.romanization } : {}) });
-for (const language of LANGUAGE_CODES) {
+for (const language of nur.length ? nur : LANGUAGE_CODES) {
   const plan = [];
   for (const stage of ['beginner', 'experienced', 'pro']) {
     for (const spec of planeWortDialoge({ language, stage, anzahl: ANZAHL[stage], vocabulary, situations })) {

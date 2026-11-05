@@ -1,5 +1,11 @@
 # Changelog
 
+## 05.11.2026
+
+- 50 französische Dialoge im Katalog (25 Anfänger, 15 Fortgeschritten, 10 Profi, je 11–20 Züge und zwei Korrektur-Hinweise), von Claude geschrieben, mit Lautschrift je Zug und Übersetzungen in allen 10 App-Sprachen (Anrede und Geschlechtsformen je Sprecherin bzw. Sprecher). Jeder Dialog enthält die geplanten Zielwörter seiner Stufe (20, im letzten Profi-Dialog die übrigen 8; am Dialog als `vocabIds`) plus 4 Wörter zum Wiederholen. Die Dialoge sind länger als in den anderen Sprachen (8–14 Züge), weil alle 20 Zielwörter vorkommen. Hörclips fehlen noch, bis dahin spricht die Systemstimme.
+- `content-plan/baue-dialoge.cjs`: baut Dialog-JSON aus einer kompakten Textquelle (`_Local/dialoge/<sprache>/quelle/<id>.txt`), `zeige` listet die Zielwörter eines Plans. `plane-dialoge.cjs` nimmt Sprachcodes als Argument, damit ein Lauf für eine neue Sprache die Pläne fertiger Sprachen nicht überschreibt.
+- Wortabgleich der Dialoge (`dialog-words.ts`) kennt Französisch: Verbstämme ohne -er/-ir/-re/-oir („je mange“ trifft „manger“), Reflexivverben ohne „se/s’“, Artikel le/les/une/des werden wie el/der/the abgetrennt.
+
 ## 04.11.2026
 
 - Französisch als fünfte Lernsprache (Nutzerentscheidung, Branch `feature/lernsprache-fr`): `LANGUAGE_CODES` mit `fr`, Definition in `definitions.ts` (fr-FR, Akzent-Toleranz, Lautschrift je Wort, Merkmal „Stumme Buchstaben“ mit Beleg aus en.wikipedia „French orthography“), Akzentleiste (é è ê ë à â î ï ô û ù ü ç œ), B1-Einheit, Genus über `frenchNoun` (Karte und Wortliste zeigen „le/la/l’“) und neue Grammatikübung „un oder une?“ (`genre`). Texte in allen 10 Wörterbüchern. Dialoge und Clips folgen.

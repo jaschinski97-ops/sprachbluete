@@ -193,12 +193,13 @@ export async function countSituations(store?: DataStore): Promise<number> {
 }
 
 /**
- * Die beiden Richtungen, die gespeicherte Situationen kennen können —
- * `isValidSituation` lässt nur diese beiden zu; der Typ steht bewusst hier
- * als eigenes Bündel, damit das Studio nicht die breite `Direction`-Union
- * als Schlüssel braucht.
+ * Die Richtungen, die gespeicherte Situationen kennen können — eine je
+ * Lernsprache (`SITUATION_SPRACHEN`, `isValidSituation`); der Typ steht
+ * bewusst hier als eigenes Bündel, damit das Studio nicht die breite
+ * `Direction`-Union als Schlüssel braucht. Neue Lernsprache: hier und im
+ * Zähler unten ergänzen (Test in `repository-counts.test.ts`).
  */
-export type SituationDirection = Extract<Direction, 'de_to_th' | 'th_to_de' | 'de_to_en' | 'de_to_es'>;
+export type SituationDirection = Extract<Direction, 'de_to_th' | 'th_to_de' | 'de_to_en' | 'de_to_es' | 'de_to_fr'>;
 export type SituationDirectionCounts = Record<SituationDirection, number>;
 
 /**
@@ -211,7 +212,7 @@ export type SituationDirectionCounts = Record<SituationDirection, number>;
 export async function countSituationsByDirection(
   store?: DataStore
 ): Promise<SituationDirectionCounts> {
-  const zaehler: SituationDirectionCounts = { de_to_th: 0, th_to_de: 0, de_to_en: 0, de_to_es: 0 };
+  const zaehler: SituationDirectionCounts = { de_to_th: 0, th_to_de: 0, de_to_en: 0, de_to_es: 0, de_to_fr: 0 };
   for (const situation of await loadSituations(store)) {
     if (situation.direction in zaehler) {
       zaehler[situation.direction as SituationDirection] += 1;

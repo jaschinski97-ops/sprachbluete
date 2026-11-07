@@ -36,6 +36,19 @@ const STANDARD_VERSUCHE = 8;
 const STANDARD_MAX_WARTE_MS = 60_000;
 const ERSTE_WARTE_MS = 2_000;
 
+/**
+ * Ist das Guthaben beim Anbieter aufgebraucht (07.11.2026)? Gemini-Prepay
+ * antwortet dann mit HTTP 402 „Your prepayment credits are depleted …
+ * RESOURCE_EXHAUSTED“, OpenAI mit `insufficient_quota`. Warten hilft nicht,
+ * erst Aufladen.
+ */
+export function istGuthabenLeer(fehler: unknown): boolean {
+  const status = (fehler as { status?: unknown } | null)?.status;
+  if (status === 402) return true;
+  const text = fehler instanceof Error ? fehler.message : String(fehler);
+  return /HTTP 402\b|credits are depleted|insufficient_quota/i.test(text);
+}
+
 /** Ist das ein Ratenlimit oder eine vorübergehende Überlastung? */
 export function istRatenlimit(fehler: unknown): boolean {
   const text = fehler instanceof Error ? fehler.message : String(fehler);
@@ -43,6 +56,9 @@ export function istRatenlimit(fehler: unknown): boolean {
   // auch als 429 — Warten hilft dort nicht bis morgen. Sofort melden statt
   // je Eintrag minutenlang zu wiederholen.
   if (/PerDay|per.?day|daily/i.test(text)) return false;
+  // Leeres Guthaben trägt ebenfalls „RESOURCE_EXHAUSTED“; der Lauf hing
+  // sonst minutenlang je Eintrag in Wiederholungen (07.11.2026).
+  if (istGuthabenLeer(fehler)) return false;
   const status = (fehler as { status?: unknown } | null)?.status;
   if (status === 429 || status === 503) return true;
   return /HTTP (429|503)\b|RESOURCE_EXHAUSTED|rate.?limit|too many requests|overloaded|überlastet/i.test(text);

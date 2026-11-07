@@ -1,7 +1,7 @@
 import { HttpStatusError, warteHinweisMs } from '../providers/http';
 
 import { runBatch } from './batch';
-import { Drossel, gedrosselt, istRatenlimit, parallelFuer, standardParallel } from './drossel';
+import { Drossel, gedrosselt, istGuthabenLeer, istRatenlimit, parallelFuer, standardParallel } from './drossel';
 
 /** Eine Uhr, die nur vorrückt, wenn die Drossel wartet. */
 function uhr() {
@@ -18,6 +18,10 @@ function uhr() {
 }
 
 const ratenlimit = (retryAfter?: string) => new HttpStatusError(429, '{"error":{"message":"Too many requests"}}', retryAfter);
+
+/** Geminis Antwort bei leerem Prepay-Guthaben (Lauf vom 07.11.2026). */
+const GUTHABEN_LEER = '{"error":{"code":402,"message":"Your prepayment credits are depleted. Please go to AI Studio at '
+  + 'https://ai.studio/projects to manage your project and billing.","status":"RESOURCE_EXHAUSTED"}}';
 
 describe('Drossel (Turbo, 23.10.2026)', () => {
   it('lässt höchstens so viele Aufrufe gleichzeitig laufen wie erlaubt', async () => {
@@ -114,6 +118,27 @@ describe('Drossel (Turbo, 23.10.2026)', () => {
     expect(istRatenlimit(new Error('HTTP 429: Rate-Limit: maximal 30 Aufrufe pro Minute. In 12s wiederholen.'))).toBe(true);
     expect(istRatenlimit(new Error('HTTP 429: Quota exceeded … GenerateRequestsPerDayPerProjectPerModel'))).toBe(false);
     expect(istRatenlimit(new Error('HTTP 400: Bad request'))).toBe(false);
+  });
+
+  it('wiederholt nicht, wenn das Guthaben aufgebraucht ist (402, 07.11.2026)', async () => {
+    const leer = new HttpStatusError(402, GUTHABEN_LEER);
+    expect(leer.message).toMatch(/RESOURCE_EXHAUSTED/);
+    expect(istGuthabenLeer(leer)).toBe(true);
+    expect(istRatenlimit(leer)).toBe(false);
+    expect(istRatenlimit(new Error(leer.message))).toBe(false);
+    expect(istGuthabenLeer(new Error('HTTP 429: You exceeded your current quota … — insufficient_quota'))).toBe(true);
+    expect(istGuthabenLeer(ratenlimit())).toBe(false);
+
+    const zeit = uhr();
+    const drossel = new Drossel({ max: 4, ...zeit });
+    let versuche = 0;
+    await expect(drossel.lauf(async () => {
+      versuche += 1;
+      throw leer;
+    })).rejects.toThrow('HTTP 402');
+    expect(versuche).toBe(1);
+    expect(zeit.wartezeiten).toEqual([]);
+    expect(drossel.erlaubt).toBe(4);
   });
 
   it('liest die Wartezeit aus Retry-After und aus Geminis retryDelay', () => {

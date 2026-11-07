@@ -5,6 +5,7 @@ import {
   countImagesByLanguage,
   countSituationsByDirection,
 } from './repository';
+import { SITUATION_SPRACHEN } from './conversation/types';
 import { vocabularyFor } from '@/test-fixtures/legacy-vocabulary';
 
 /**
@@ -93,7 +94,12 @@ describe('countSituationsByDirection', () => {
     await store.put('situations', 'b', situation('b', 'de_to_th'));
     await store.put('situations', 'c', situation('c', 'th_to_de'));
 
-    expect(await countSituationsByDirection(store)).toEqual({ de_to_th: 2, th_to_de: 1, de_to_en: 0, de_to_es: 0 });
+    expect(await countSituationsByDirection(store)).toEqual({ de_to_th: 2, th_to_de: 1, de_to_en: 0, de_to_es: 0, de_to_fr: 0 });
+  });
+
+  it('kennt jede Lernsprache (sonst fehlt sie in der Studio-Übersicht, 07.11.2026)', async () => {
+    const richtungen = Object.keys(await countSituationsByDirection(await freshStore())).sort();
+    expect(richtungen).toEqual(SITUATION_SPRACHEN.map(({ direction }) => direction).sort());
   });
 });
 

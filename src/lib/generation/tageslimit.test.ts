@@ -21,8 +21,20 @@ describe('Tageslimit', () => {
     const stand = neuerTageslimitStand();
     const client = mitTageslimit({ generate: async () => { throw new Error(GEMINI); } }, stand, () => 1_000);
     await expect(client.generate('x')).rejects.toThrow('RESOURCE_EXHAUSTED');
-    expect(stand).toEqual({ erreicht: true, wiederAbMs: 1_000 + (19 * 3600 + 25 * 60) * 1000 + 25 });
+    expect(stand).toEqual({ erreicht: true, wiederAbMs: 1_000 + (19 * 3600 + 25 * 60) * 1000 + 25, grund: 'tag' });
     expect(tageslimitMeldung(stand)).toMatch(/^Tageslimit des Anbieters erreicht/);
+  });
+
+  it('stoppt auch bei leerem Guthaben (402) und sagt „aufladen“', async () => {
+    const stand = neuerTageslimitStand();
+    const leer = 'HTTP 402: Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects '
+      + 'to manage your project and billing. — RESOURCE_EXHAUSTED';
+    const client = mitTageslimit({ generate: async () => { throw new Error(leer); } }, stand);
+    await expect(client.generate('x')).rejects.toThrow('HTTP 402');
+    expect(stand).toEqual({ erreicht: true, wiederAbMs: null, grund: 'guthaben' });
+    expect(istTageslimit(new Error(leer))).toBe(false);
+    expect(tageslimitMeldung(stand)).toMatch(/^Guthaben beim Anbieter aufgebraucht/);
+    expect(tageslimitMeldung(stand)).toMatch(/aufladen/);
   });
 
   it('lässt andere Fehler und Erfolge unberührt', async () => {

@@ -48,7 +48,7 @@ import { ImageOwnConceptsCard } from './image-own-concepts-card';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { VocabEntry } from '@/data/vocab-types';
 import { LANGUAGE_ORDER, LANGUAGE_LABELS } from '@/lib/languages/registry';
-import { Lang, type LanguageCode } from '@/lib/languages/types';
+import { contentDirectionOf, Lang, type LanguageCode } from '@/lib/languages/types';
 import { loadProfile } from '@/lib/profile';
 import { ProviderId } from '@/lib/providers/types';
 import {
@@ -72,6 +72,7 @@ import {
   sumAudioClipBytes,
   ClipLanguageCounts,
   ImageLanguageCounts,
+  SituationDirection,
   SituationDirectionCounts,
 } from '@/lib/repository';
 
@@ -191,20 +192,6 @@ function clipRunOptions(
 // sprachneutrale Registry/Planung und die Zähler-Helfer des Repositorys.
 // ---------------------------------------------------------------------------
 
-const RICHTUNGEN = ['de_to_th', 'de_to_en', 'de_to_es', 'th_to_de'] as const;
-
-/**
- * Die GESPROCHENE Seite eines Dialogs — dieselbe Sicht, mit der auch der
- * Gesprächs-Reiter die Sprachen listet (Thai = de_to_th, Deutsch = th_to_de;
- * Nutzerwunsch 15.09.: Sprachnamen statt Richtungs-Pfeile im Grundstock).
- */
-const GESPROCHENE_SEITE: Record<(typeof RICHTUNGEN)[number], string> = {
-  de_to_th: LANGUAGE_LABELS.th,
-  th_to_de: LANGUAGE_LABELS.de,
-  de_to_en: LANGUAGE_LABELS.en,
-  de_to_es: LANGUAGE_LABELS.es,
-};
-
 /**
  * Die Generier-Sprachen in Kettenreihenfolge, Deutsch zuletzt
  * (Nutzerentscheidung 10.09.). Seit dem Sprach-Umbau (23.09.) steht Deutsch
@@ -212,6 +199,18 @@ const GESPROCHENE_SEITE: Record<(typeof RICHTUNGEN)[number], string> = {
  * geführt (doppelter React-Schlüssel, Kettenlauf zweimal über Deutsch).
  */
 const GENERIER_SPRACHEN: Lang[] = [...LANGUAGE_ORDER.filter((code) => code !== 'de'), 'de'];
+
+/**
+ * Die Dialog-Richtungen, benannt nach der GESPROCHENEN Seite — dieselbe
+ * Sicht, mit der auch der Gesprächs-Reiter die Sprachen listet (Thai =
+ * de_to_th, Deutsch = th_to_de; Nutzerwunsch 15.09.: Sprachnamen statt
+ * Richtungs-Pfeile im Grundstock). Aus den Lernsprachen abgeleitet, damit
+ * eine neue Sprache nicht fehlt (Französisch, 07.11.2026).
+ */
+const DIALOG_RICHTUNGEN = GENERIER_SPRACHEN.map((code) => ({
+  richtung: contentDirectionOf(code) as SituationDirection,
+  label: LANGUAGE_LABELS[code],
+}));
 
 /** „Alle Sprachen“ der Bilder-/Audio-Kette: Thai → Englisch → Spanisch → Deutsch. */
 const ALLE_SPRACHEN: ChainStep[] = GENERIER_SPRACHEN.map((code) => ({
@@ -244,9 +243,9 @@ function sprachZaehler(
 }
 
 function richtungsZaehler(counts: SituationDirectionCounts | null): CountItem[] {
-  return RICHTUNGEN.map((richtung) => ({
+  return DIALOG_RICHTUNGEN.map(({ richtung, label }) => ({
     key: richtung,
-    label: GESPROCHENE_SEITE[richtung],
+    label,
     count: counts ? counts[richtung] : null,
   }));
 }
@@ -622,8 +621,8 @@ export default function ContentStudio() {
           <ThemedText type="small" themeColor="textSecondary">Hörclips: {jeSprache(clipsByLanguage)}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">Bilder: {jeSprache(imagesByLanguage)}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Dialog-Situationen: {RICHTUNGEN.map((richtung) =>
-              `${GESPROCHENE_SEITE[richtung]} ${situationsByDirection ? situationsByDirection[richtung] : '…'}`
+            Dialog-Situationen: {DIALOG_RICHTUNGEN.map(({ richtung, label }) =>
+              `${label} ${situationsByDirection ? situationsByDirection[richtung] : '…'}`
             ).join(' · ')}
           </ThemedText>
         </ThemedView>

@@ -9,12 +9,22 @@
  * restlichen Eintrag einzeln und sammelte tausendfach denselben Fehler.
  * `mitTageslimit` merkt sich den ersten Treffer; die Studio-Läufe brechen
  * dann sofort ab und nennen, ab wann es weitergeht.
+ *
+ * Ein aufgebrauchtes Guthaben (HTTP 402, `istGuthabenLeer`) stoppt den Lauf
+ * genauso (07.11.2026); die Meldung sagt dann „aufladen“ statt „morgen“.
  */
 
-export type TageslimitStand = { erreicht: boolean; wiederAbMs: number | null };
+import { istGuthabenLeer } from './drossel';
+
+export type TageslimitStand = {
+  erreicht: boolean;
+  wiederAbMs: number | null;
+  /** Warum gestoppt: Tageskontingent oder leeres Guthaben. */
+  grund: 'tag' | 'guthaben' | null;
+};
 
 export function neuerTageslimitStand(): TageslimitStand {
-  return { erreicht: false, wiederAbMs: null };
+  return { erreicht: false, wiederAbMs: null, grund: null };
 }
 
 /** Ist dieser Fehler ein aufgebrauchtes Tageskontingent (nicht nur eine kurze Bremse)? */
@@ -33,7 +43,7 @@ export function genannteWartezeitMs(text: string): number | null {
   return d ? Math.round(Number(d[1]) * 1000) : null;
 }
 
-/** Hüllt einen Erzeuger ein: Der erste Tageslimit-Fehler setzt `stand.erreicht`. */
+/** Hüllt einen Erzeuger ein: Der erste Tageslimit- oder Guthaben-Fehler setzt `stand.erreicht`. */
 export function mitTageslimit<S, E>(
   client: { generate(spec: S): Promise<E> },
   stand: TageslimitStand,
@@ -44,10 +54,16 @@ export function mitTageslimit<S, E>(
       try {
         return await client.generate(spec);
       } catch (fehler) {
-        if (istTageslimit(fehler) && !stand.erreicht) {
-          stand.erreicht = true;
-          const warten = genannteWartezeitMs(fehler instanceof Error ? fehler.message : String(fehler));
-          stand.wiederAbMs = warten === null ? null : jetzt() + warten;
+        if (!stand.erreicht) {
+          if (istTageslimit(fehler)) {
+            stand.erreicht = true;
+            stand.grund = 'tag';
+            const warten = genannteWartezeitMs(fehler instanceof Error ? fehler.message : String(fehler));
+            stand.wiederAbMs = warten === null ? null : jetzt() + warten;
+          } else if (istGuthabenLeer(fehler)) {
+            stand.erreicht = true;
+            stand.grund = 'guthaben';
+          }
         }
         throw fehler;
       }
@@ -57,6 +73,9 @@ export function mitTageslimit<S, E>(
 
 /** Die Zeile für die Endmeldung des Laufs. */
 export function tageslimitMeldung(stand: TageslimitStand): string {
+  if (stand.grund === 'guthaben') {
+    return 'Guthaben beim Anbieter aufgebraucht — Lauf gestoppt. Guthaben aufladen (Gemini: ai.studio/projects), dann neu starten. Fertiges bleibt, der nächste Lauf macht dort weiter.';
+  }
   const ab = stand.wiederAbMs === null
     ? 'morgen'
     : `ab etwa ${new Date(stand.wiederAbMs).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' })} Uhr`;

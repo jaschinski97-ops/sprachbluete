@@ -43,6 +43,8 @@ const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt'];
 const QUELLEN = ['en', 'es', 'fr', 'de', 'th', 'pt', 'it'];
 const VERMERK = 'KI-Erzeugung (Claude) aus den Bedeutungen und Beispielsätzen der anderen Lernsprachen; Wortwahl, Pinyin und Zählwort von Claude.';
 const HAN = /\p{Script=Han}/gu;
+// Erst beim Bauen laden: pinyin-woerterbuch.cjs braucht selbst `zerlege` von hier.
+const pinyinBuch = () => require('./pinyin-woerterbuch.cjs');
 
 /* ---------- Pinyin ---------- */
 
@@ -105,6 +107,9 @@ function zerlege(wort) {
       if (ab === basis.length - 1 && basis[ab] === 'r' && ab > 0) return ['r'];
       for (let laenge = Math.min(6, basis.length - ab); laenge >= 1; laenge -= 1) {
         if (!SILBEN.has(basis.slice(ab, ab + laenge))) continue;
+        // Mitten im Wort beginnt keine Silbe mit a/o/e — dort stünde ein
+        // Apostroph (kěnéng = kě+néng, nicht kěn+éng; Xī'ān).
+        if (ab > 0 && /^[aoe]/.test(basis[ab])) continue;
         const rest = weg(ab + laenge);
         if (rest) return [Array.from(teil).slice(ab, ab + laenge).join(''), ...rest];
       }
@@ -263,6 +268,10 @@ function baue(nur = []) {
       if (problem) { offen.push(`${wo} ${problem}`); continue; }
       const erhua = silben.filter((s) => /r$/.test(ohneTon(s)) && !SILBEN.has(ohneTon(s))).length;
       if (silben.length + erhua !== zeichen) { offen.push(`${wo} „${wort}“ hat ${zeichen} Zeichen, aber ${silben.length} Silben`); continue; }
+      // Lesung je Zeichen gegen CC-CEDICT, wenn das Wörterbuch geladen ist (pinyin-woerterbuch.cjs).
+      const buch = pinyinBuch().woerterbuch();
+      const wortFehler = buch ? pinyinBuch().fehlerText(buch, wort, pinyinBuch().mitErhua(silben)) : [];
+      if (wortFehler.length) { offen.push(`${wo} Pinyin laut Wörterbuch: ${wortFehler.join('; ')}`); continue; }
       const docs = je.get(begriff) ?? [];
       const en = docs.find((d) => d.language === 'en');
       const doc = {
@@ -317,6 +326,9 @@ function baue(nur = []) {
           offen.push(`${wo} Satz „${texte.zh}“ hat ${satzZeichen} Zeichen, aber ${gezaehlt.anzahl} Pinyin-Silben`);
           continue;
         }
+        const satzSilbenListe = buch && pinyinBuch().satzSilbenListe(satzPinyinRoh);
+        const satzFehler = satzSilbenListe ? pinyinBuch().fehlerText(buch, texte.zh, satzSilbenListe) : [];
+        if (satzFehler.length) { offen.push(`${wo} Satz-Pinyin laut Wörterbuch: ${satzFehler.join('; ')}`); continue; }
         if (!texte.zh.includes(wort)) offen.push(`${wo} Satz enthält „${wort}“ nicht: ${texte.zh}`);
         doc.exampleTerm = texte.zh;
         doc.exampleRoman = satzPinyinRoh.normalize('NFC');
@@ -337,6 +349,9 @@ function baue(nur = []) {
   if (offen.length) process.exitCode = 1;
 }
 
+// Vor dem Aufruf-Block: pinyin-woerterbuch.cjs lädt diese Datei beim Bauen nach.
+module.exports = { silbenProblem, zerlege, satzSilben, wortPinyin, ohneTon, SILBEN };
+
 if (require.main === module) {
   const [befehl, argument] = process.argv.slice(2);
   if (befehl === 'zeige' && argument) zeige(argument);
@@ -348,4 +363,3 @@ if (require.main === module) {
   }
 }
 
-module.exports = { silbenProblem, zerlege, satzSilben, wortPinyin };

@@ -20,6 +20,7 @@ const { parseSituation, mitZielwoertern } = domain.load('src/lib/conversation/ge
 const { sollAusSchriftUndUmschrift } = domain.load('src/lib/content/soll-toene-schrift');
 const { romanSyllableProblem } = domain.load('src/lib/content/thai-romanization');
 const { satzSilben } = require('./chinesische-woerter.cjs');
+const pinyinBuch = require('./pinyin-woerterbuch.cjs');
 
 const root = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8'));
@@ -68,6 +69,16 @@ function pruefeDatei(sprache, spec) {
       const zeichen = (turn.targetText.match(/\p{Script=Han}/gu) ?? []).length;
       if (!/[0-9A-Za-z]/.test(turn.targetText) && gezaehlt.anzahl !== zeichen) {
         fehler.push(`${spec.id} Zeile ${i + 1}: ${zeichen} Schriftzeichen, aber ${gezaehlt.anzahl} Pinyin-Silben`);
+        return;
+      }
+      // Lesung je Zeichen gegen CC-CEDICT (07.11.2026), wenn das Wörterbuch geladen ist.
+      const buch = pinyinBuch.woerterbuch();
+      const silben = buch && pinyinBuch.satzSilbenListe(turn.roman);
+      if (!silben) return;
+      const ergebnis = pinyinBuch.pruefe(buch, turn.targetText, silben);
+      for (const b of ergebnis.befunde ?? []) {
+        if (b.art === 'fehler') fehler.push(`${spec.id} Zeile ${i + 1}: ${b.stelle} als „${b.unser}“, Wörterbuch: ${b.buch}`);
+        if (b.art === 'verdacht') hinweise.push(`${spec.id} Zeile ${i + 1}: ${b.stelle} als „${b.unser}“ — Wörterbuchwort liest ${b.buch} (prüfen)`);
       }
     });
   }

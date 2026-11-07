@@ -161,6 +161,16 @@ Die Schritte oben reichen nicht ganz. Beim echten Einbau kamen dazu:
   Tonzeichen (`pruefePinyin` in `vocab-schema.ts`), Silben je Schriftzeichen.
   Wörter: `content-plan/chinesische-woerter.cjs` (prüft Silben, Tonzeichen
   und Silbenzahl); Dialoge: `dialoge.cjs pruefe zh` prüft das Pinyin je Zug.
+- **Lesung gegen ein Wörterbuch:** Anders als bei Thai lässt sich der Ton nicht
+  aus der Schrift berechnen. `content-plan/pinyin-woerterbuch.cjs` gleicht das
+  Pinyin jedes Zeichens mit CC-CEDICT ab (Laden steht im Dateikopf; nur unter
+  `_Local/`, nie in der App). Falsche Silben und Töne sind Fehler und halten
+  `baue` und `dialoge.cjs pruefe zh` an. Mehrfach-Lesungen im falschen Wort
+  (还有 huán yǒu) kommen als „Verdacht“ zum Ansehen. 一/不 mit Tonänderung und
+  das Erhua-r sind erlaubt. `… katalog` prüft den ganzen Bestand.
+  Ein Audio-Ton-Gate wie bei Thai gibt es für Chinesisch bewusst nicht. Gemini
+  spricht Mandarin sicher, die Töne ändern sich im Satz (Tonsandhi, neutraler
+  Ton), und jeder Verwurf kostet Geld.
 - **Grammatikübung je Sprache:** `genero` („um oder uma?“), `articolo`
   („un, uno, una?“), `liangci` („个, 本 oder 杯?“, Zählwort aus
   `chineseNoun.measureWord`, Liste `src/data/chinese-measure-words.ts`).
@@ -171,3 +181,27 @@ Die Schritte oben reichen nicht ganz. Beim echten Einbau kamen dazu:
   Übersetzungen und teilen 16–20 von 20 Zielwörtern mit dem Plan einer neuen
   Sprache. Eine Vorlage aus dem spanischen Dialog gleicher ID spart den
   größten Teil der Übersetzungsarbeit.
+
+## Japanisch vorbereiten (07.11.2026)
+
+Japanisch ist noch keine Lernsprache und seit dem 24.10.2026 auch keine
+App-Sprache. Dialogquellen bräuchten also wie bei Italienisch eine eigene
+Zeile je Zug. Das größte Risiko ist nicht der Tonhöhenakzent, sondern die
+Lesung der Kanji (今日 きょう/こんにち, 三本 さんぼん, 六本 ろっぽん). Dafür gibt es schon
+den Lesungsprüfer:
+
+- `content-plan/japanisch-lesung.cjs`, Tests in
+  `scripts/content/japanisch-lesung.test.cjs`. Er braucht einmalig JMdict und
+  KANJIDIC2 der EDRDG (CC BY-SA 4.0) unter `_Local/woerterbuch/`. Fehlen
+  sie, nennt das Werkzeug die Ladebefehle. Die Wörterbücher dienen nur zum Prüfen und kommen nie
+  in App oder Git. `… lade` baut daraus einen Zwischenspeicher.
+- Claude schreibt je Begriff eine TSV-Zeile `begriff|wort|kana|satz|satzkana`.
+  Die Satzlesung steht mit Leerzeichen zwischen den Wörtern, Partikeln wie
+  geschrieben (は, へ, を). `… pruefe <datei.tsv>` meldet falsche Lesungen mit
+  Stelle und den bekannten Lesungen.
+- Romaji wird nie von Hand geschrieben, sondern aus der Kana-Lesung gerechnet
+  (modifiziertes Hepburn: kyō, gakkō, kin'en, matcha; im Satz は/へ/を als
+  wa/e/o).
+- Erkennt nicht: Lesungen, die nur im Zusammenhang falsch sind (一日 いちにち statt
+  ついたち, 今日 こんにち), Namen ohne さん/様 o. ä., den Tonhöhenakzent. Diese
+  Fälle brauchen eine Durchsicht.

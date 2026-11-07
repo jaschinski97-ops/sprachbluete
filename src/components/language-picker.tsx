@@ -194,7 +194,7 @@ export function LanguagePicker({
 }
 
 /** Ein rundes Abzeichen je Sprache — ein typisches Zeichen auf dem Verlauf. */
-const MONOGRAMM: Record<LanguageCode, string> = { th: 'ก', en: 'Aa', es: 'Ñ', de: 'ß', fr: 'Ç' };
+const MONOGRAMM: Record<LanguageCode, string> = { th: 'ก', en: 'Aa', es: 'Ñ', de: 'ß', fr: 'Ç', pt: 'Ã', it: 'È', zh: '中' };
 
 function Monogramm({ language }: { language: LanguageCode }) {
   const theme = useTheme();

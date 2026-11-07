@@ -50,11 +50,13 @@ export function isMultiSyllable(entry: VocabEntry): boolean {
   return syllablesOf(entry).length > 1;
 }
 
-/** Genus-Block des Nomens in seiner Lernsprache (Deutsch, Spanisch, Französisch). */
+/** Genus-Block des Nomens in seiner Lernsprache (Deutsch, Spanisch, Französisch, Portugiesisch, Italienisch). */
 export function nounOf(entry: VocabEntry): { article: string; plural: string } | undefined {
   if (entry.language === 'de') return entry.germanNoun;
   if (entry.language === 'es') return entry.spanishNoun;
   if (entry.language === 'fr') return entry.frenchNoun;
+  if (entry.language === 'pt') return entry.portugueseNoun;
+  if (entry.language === 'it') return entry.italianNoun;
   return undefined;
 }
 
@@ -66,7 +68,7 @@ export function termWithArticle(entry: VocabEntry): string {
   const noun = nounOf(entry);
   if (!noun) return entry.term;
   const lower = entry.term.toLowerCase();
-  // „l’“ hängt ohne Leerzeichen am Wort; die anderen Artikel stehen davor.
+  // „l’“ (Französisch, Italienisch) hängt ohne Leerzeichen am Wort; die anderen Artikel stehen davor.
   if (noun.article === 'l’') return lower.startsWith('l’') || lower.startsWith("l'") ? entry.term : `l’${entry.term}`;
   return lower.startsWith(`${noun.article} `) ? entry.term : `${noun.article} ${entry.term}`;
 }

@@ -25,7 +25,7 @@ import { drillPracticesWords, type DrillId, type DrillQuestion } from '@/lib/dri
 import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale, type UiLanguage } from '@/lib/i18n';
 import { anchorOf, targetLanguageOf, type PairDirection } from '@/lib/languages/types';
-import { hoerDrillFuer } from '@/lib/languages/definitions';
+import { hoerDrillFuer, zeigtUmschrift } from '@/lib/languages/definitions';
 import { inStage, type LearningStage } from '@/lib/learning-stages';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
@@ -94,6 +94,9 @@ const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   praesensEndung: 'drill.prompt.praesensEndung',
   partizip: 'drill.prompt.partizip',
   genre: 'drill.prompt.genre',
+  genero: 'drill.prompt.genre',
+  articolo: 'drill.prompt.genre',
+  liangci: 'drill.prompt.zaehlerwort',
 };
 
 // Diktat-Aufforderung je Lernsprache.
@@ -103,6 +106,9 @@ const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
   es: 'dictation.promptEs',
   de: 'dictation.promptDe',
   fr: 'dictation.promptFr',
+  pt: 'dictation.promptPt',
+  it: 'dictation.promptIt',
+  zh: 'dictation.promptZh',
 };
 
 // Anzeigenamen der Segmentarten für die Fortschrittszeile und den „übersprungen“-Hinweis.
@@ -683,7 +689,7 @@ function SatzSegment({
               </ThemedText>
               {/* Die Umschrift in derselben Farbe wie der Satz: grau auf der
                   hervorgehobenen Fläche war kaum lesbar. */}
-              {sprache === 'th' && option.roman ? (
+              {zeigtUmschrift(sprache) && option.roman ? (
                 <ThemedText type="small" themeColor={chosen === null ? 'textSecondary' : optionSchrift(chosen, option.label, aufgabe.text)}>
                   {option.roman}
                 </ThemedText>
@@ -821,7 +827,7 @@ function DiktatSegment({
             {ergebnis === 'passed' ? t('dictation.passed') : t('dictation.failed')}
           </ThemedText>
           <ThemedText type="small">{task.text}</ThemedText>
-          {sprache === 'th' && task.roman ? (
+          {zeigtUmschrift(sprache) && task.roman ? (
             <ThemedText type="small" themeColor="textSecondary">{task.roman}</ThemedText>
           ) : null}
           {/* Die deutsche Bedeutung nur auf der de-Brücke, wie im Diktat. */}
@@ -916,7 +922,7 @@ function ShadowingSegment({
     <ThemedView type="backgroundElement" style={styles.card}>
       <ThemedText type="smallBold">{t('mode.shadowing')}</ThemedText>
       <ThemedText type="subtitle">{aufgabe.text}</ThemedText>
-      {sprache === 'th' && aufgabe.roman ? (
+      {zeigtUmschrift(sprache) && aufgabe.roman ? (
         <ThemedText type="small" themeColor="textSecondary">{aufgabe.roman}</ThemedText>
       ) : null}
       <ThemedText type="small" themeColor="textSecondary">

@@ -6,6 +6,7 @@ import {
   isValidVocabEntry,
   NEUES_WORTFORMAT_AB,
   pruefeVocabDoc,
+  vocabSchluessel,
 } from './vocab-schema';
 
 const satz = Object.fromEntries(UI_LANGUAGES.map((code) => [code, code === 'en' ? 'I eat an apple.' : `Satz (${code})`]));
@@ -159,4 +160,87 @@ test('French genus field must have the right shape', () => {
   expect(isValidVocabEntry(franzWort({ frenchNoun: { gender: 'n', article: 'le', plural: 'x' } as never }))).toBe(false);
   expect(isValidVocabEntry(franzWort({ frenchNoun: { gender: 'm', article: 'les', plural: 'x' } as never }))).toBe(false);
   expect(isValidVocabEntry(franzWort({ frenchNoun: 'm' as never }))).toBe(false);
+});
+
+/** Portugiesische und italienische Nomen (07.11.2026): Genus über `portugueseNoun` / `italianNoun`. */
+const portWort = (extra: Partial<VocabEntry> = {}): VocabEntry => neuesWort({
+  id: 'ki-pt-water',
+  language: 'pt',
+  concept: 'c:water',
+  term: 'água',
+  romanization: 'ˈaɡwa',
+  syllables: [{ roman: 'á' }, { roman: 'gua' }] as unknown as VocabEntry['syllables'],
+  exampleTerm: 'Eu bebo água.',
+  exampleRoman: 'Eu bebo água.',
+  exampleTranslations: { ...satz, pt: 'Eu bebo água.' },
+  portugueseNoun: { gender: 'f', article: 'a', plural: 'águas' },
+  ...extra,
+});
+
+const italWort = (extra: Partial<VocabEntry> = {}): VocabEntry => neuesWort({
+  id: 'ki-it-water',
+  language: 'it',
+  concept: 'c:water',
+  term: 'acqua',
+  romanization: 'ˈakkwa',
+  syllables: [{ roman: 'ac' }, { roman: 'qua' }] as unknown as VocabEntry['syllables'],
+  exampleTerm: 'Bevo acqua.',
+  exampleRoman: 'Bevo acqua.',
+  exampleTranslations: { ...satz },
+  italianNoun: { gender: 'f', article: 'l’', plural: 'acque' },
+  ...extra,
+});
+
+test('Portuguese nouns need genus, and o/a must match it', () => {
+  expect(pruefeVocabDoc(portWort())).toEqual({ ok: true, fehler: [] });
+  expect(pruefeVocabDoc(portWort({ portugueseNoun: undefined })).fehler).toContain('Portugiesisches Substantiv ohne Genus/Artikel.');
+  expect(pruefeVocabDoc(portWort({ term: 'os óculos', portugueseNoun: undefined })).ok).toBe(true);
+  expect(pruefeVocabDoc(portWort({ portugueseNoun: { gender: 'f', article: 'o', plural: 'águas' } })).ok).toBe(false);
+  expect(isValidVocabEntry(portWort({ portugueseNoun: { gender: 'f', article: 'la', plural: 'x' } as never }))).toBe(false);
+});
+
+test('Italian article follows genus and the first letters (il/lo/la/l’)', () => {
+  const fehler = (term: string, italianNoun: VocabEntry['italianNoun']) => pruefeVocabDoc(italWort({ term, italianNoun })).fehler;
+  expect(pruefeVocabDoc(italWort())).toEqual({ ok: true, fehler: [] });
+  expect(fehler('libro', { gender: 'm', article: 'il', plural: 'libri' })).toEqual([]);
+  expect(fehler('studente', { gender: 'm', article: 'lo', plural: 'studenti' })).toEqual([]);
+  expect(fehler('zaino', { gender: 'm', article: 'lo', plural: 'zaini' })).toEqual([]);
+  expect(fehler('albero', { gender: 'm', article: 'l’', plural: 'alberi' })).toEqual([]);
+  // i + Vokal ist kein Vokalanlaut: „lo iodio“.
+  expect(fehler('iodio', { gender: 'm', article: 'lo', plural: '—' })).toEqual([]);
+  expect(fehler('studente', { gender: 'm', article: 'il', plural: 'studenti' }).join(' ')).toContain('„lo“ statt „il“');
+  expect(fehler('libro', { gender: 'm', article: 'lo', plural: 'libri' }).join(' ')).toContain('„il“ statt „lo“');
+  expect(fehler('casa', { gender: 'm', article: 'la', plural: 'case' }).join(' ')).toContain('bei männlichem');
+  expect(fehler('amica', { gender: 'f', article: 'la', plural: 'amiche' }).join(' ')).toContain('vor Vokal');
+  expect(fehler('libro', { gender: 'm', article: 'l’', plural: 'libri' }).join(' ')).toContain('vor Konsonant');
+  expect(pruefeVocabDoc(italWort({ term: 'gli occhiali', italianNoun: undefined })).ok).toBe(true);
+  expect(isValidVocabEntry(italWort({ italianNoun: { gender: 'm', article: 'le', plural: 'x' } as never }))).toBe(false);
+});
+
+const chinWort = (extra: Partial<VocabEntry> = {}): VocabEntry => neuesWort({
+  id: 'ki-zh-book',
+  language: 'zh',
+  concept: 'c:book',
+  term: '书',
+  romanization: 'shū',
+  syllables: [{ roman: 'shū' }] as unknown as VocabEntry['syllables'],
+  exampleTerm: '我有一本书。',
+  exampleRoman: 'Wǒ yǒu yì běn shū.',
+  exampleTranslations: { ...satz },
+  chineseNoun: { measureWord: '本' },
+  ...extra,
+});
+
+test('Chinese words need characters, pinyin with tone marks and a known measure word', () => {
+  // Die zh-Satzübersetzung ist die App-Sprache Chinesisch und muss dem Beispielsatz gleichen.
+  const ok = chinWort({ exampleTranslations: { ...satz, zh: '我有一本书。' } });
+  expect(pruefeVocabDoc(ok)).toEqual({ ok: true, fehler: [] });
+  expect(pruefeVocabDoc(chinWort({ term: 'shu', exampleTranslations: { ...satz, zh: '我有一本书。' } })).fehler.join(' ')).toContain('ohne Schriftzeichen');
+  expect(pruefeVocabDoc({ ...ok, romanization: 'shu1' }).fehler.join(' ')).toContain('Tonziffern');
+  expect(pruefeVocabDoc({ ...ok, romanization: '' }).fehler).toContain('Chinesisches Wort ohne Pinyin.');
+  expect(pruefeVocabDoc({ ...ok, romanization: "xīngqī'èr" }).ok).toBe(true);
+  expect(pruefeVocabDoc({ ...ok, chineseNoun: { measureWord: '书' } }).fehler.join(' ')).toContain('Unbekanntes Zählwort');
+  expect(isValidVocabEntry({ ...ok, chineseNoun: { measureWord: 3 } as never })).toBe(false);
+  // Leerzeichen machen in eigener Schrift kein neues Wort.
+  expect(vocabSchluessel('你 好', 'zh')).toBe(vocabSchluessel('你好', 'zh'));
 });

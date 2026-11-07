@@ -20,7 +20,8 @@ const nfc = (text: string) => text.normalize('NFC');
 describe('Kapitel 0: Zahlen aus geprüften Quellen', () => {
   it('nennt für jede Lernsprache Quelle und Abrufdatum', () => {
     for (const source of Object.values(NUMBER_SOURCES)) {
-      expect(source.url).toMatch(/^https:\/\/[a-z]{2}\.wikipedia\.org\//);
+      // Italienisch: it.wikipedia hat keine Zahlenliste, die Quelle ist it.wiktionary.
+      expect(source.url).toMatch(/^https:\/\/[a-z]{2}\.(wikipedia|wiktionary)\.org\//);
       expect(source.retrieved).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });
@@ -101,6 +102,34 @@ describe('Kapitel 0: Zahlen aus geprüften Quellen', () => {
     expect([1, 2, 21, 80].map((value) => priceText('fr', value).text))
       .toEqual(['un euro', 'deux euros', 'vingt-et-un euros', 'quatre-vingts euros']);
     expect(priceText('fr', 5).label).toBe('5 €');
+  });
+
+  it('Portugiesisch (Brasilien) folgt „Numerais em língua portuguesa“: dezesseis, „vinte e um“, cem, mil', () => {
+    expect([0, 2, 14, 16, 17, 19, 20, 21, 22, 31, 45, 99, 100, 1000].map((value) => numberWord('pt', value).text))
+      .toEqual(['zero', 'dois', 'quatorze', 'dezesseis', 'dezessete', 'dezenove', 'vinte', 'vinte e um', 'vinte e dois',
+        'trinta e um', 'quarenta e cinco', 'noventa e nove', 'cem', 'mil']);
+    const words = ALL.map((value) => numberWord('pt', value).text);
+    expect(new Set(words).size).toBe(words.length);
+  });
+
+  it('zählt Portugiesisch „um real“, ab zwei „reais“, Preisschild R$', () => {
+    expect([1, 2, 21, 100].map((value) => priceText('pt', value).text))
+      .toEqual(['um real', 'dois reais', 'vinte e um reais', 'cem reais']);
+    expect(priceText('pt', 5).label).toBe('R$ 5');
+  });
+
+  it('Italienisch folgt dem Raster der Quelle: ventuno, ventotto, ventitré', () => {
+    expect([0, 1, 17, 19, 20, 21, 23, 28, 31, 33, 38, 41, 48, 81, 88, 91, 98, 99, 100, 1000].map((value) => numberWord('it', value).text))
+      .toEqual(['zero', 'uno', 'diciassette', 'diciannove', 'venti', 'ventuno', 'ventitré', 'ventotto', 'trentuno', 'trentatré',
+        'trentotto', 'quarantuno', 'quarantotto', 'ottantuno', 'ottantotto', 'novantuno', 'novantotto', 'novantanove', 'cento', 'mille']);
+    const words = ALL.map((value) => numberWord('it', value).text);
+    expect(new Set(words).size).toBe(words.length);
+    expect(words.every((word) => /^[a-zé]+$/.test(word))).toBe(true);
+  });
+
+  it('zählt Italienisch „un euro“, danach unverändert „euro“', () => {
+    expect([1, 2, 21, 100].map((value) => priceText('it', value).text)).toEqual(['un euro', 'due euro', 'ventuno euro', 'cento euro']);
+    expect(priceText('it', 5).label).toBe('5 €');
   });
 
   it('lehrt nur 0–100 und 1000 und deckt damit alle Gruppen ab', () => {

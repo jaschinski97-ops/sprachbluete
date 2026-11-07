@@ -93,7 +93,8 @@ reparierbar, ohne dass Nutzer neu laden.
 
 ### Feste, quellengeprüfte Lerndaten
 
-`src/data/numbers.ts`, `src/data/latin-alphabet.ts`, `src/data/thai-script.ts`
+`src/data/numbers.ts`, `src/data/latin-alphabet.ts`, `src/data/thai-script.ts`,
+`src/data/chinese-tones.ts`, `src/data/chinese-measure-words.ts` (seit 07.11.2026)
 
 Warum: Von Hand aus Quellen übernommen (Quelle steht in der Datei), nicht per
 KI. Anzeige-Verbesserungen gehören in die Komponenten, nicht in die Daten.

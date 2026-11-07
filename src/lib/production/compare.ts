@@ -1,5 +1,6 @@
 import { type Rating } from '../fsrs/types';
 import { type LanguageCode } from '../languages/types';
+import { ohneWortabstand } from '../languages/definitions';
 
 /**
  * Toleranter Vergleich für „Sag es auf …“ (Schritt 3, Lern-Reiter-Ausbau).
@@ -77,7 +78,7 @@ export function vergleicheProduktion(
 
   // Thai schreibt ohne Wortabstände; Leerzeichen in Sätzen sind optional,
   // und die Spracherkennung liefert keine. Wie beim Diktat zählen sie nicht.
-  const ohneAbstand = (text: string) => (language === 'th' ? text.replace(/\s+/g, '') : text);
+  const ohneAbstand = (text: string) => (ohneWortabstand(language) ? text.replace(/\s+/g, '') : text);
   const eingabe = ohneAbstand(normalisiere(input));
   const soll = ohneAbstand(normalisiere(ziel));
   if (eingabe.length === 0) return ergebnis('wrong');

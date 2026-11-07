@@ -34,7 +34,7 @@ export type DictationLanguage = LanguageCode;
 
 export type DictationLanguageConfig = {
   /** Thai vergleicht zeichenweise zweistufig, Latein wortweise. */
-  script: 'thai' | 'latin';
+  script: 'thai' | 'latin' | 'han';
   /** Groß-/Kleinschreibung vor dem Vergleich absenken (en, es). */
   foldCase: boolean;
   /** Den Großbuchstaben am Satzanfang tolerieren — man hört ihn nicht. */

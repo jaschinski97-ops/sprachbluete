@@ -37,6 +37,8 @@ function zeige(sprache, id) {
 
 /** Quelle lesen; wirft mit Zeilennummer bei jeder Lücke. */
 function lies(sprache, text) {
+  // Lernsprachen ohne App-Oberfläche (it) brauchen eine eigene Zeile je Zug.
+  const ZUG = UI.includes(sprache) ? UI : [...UI, sprache];
   const titel = {};
   const zuege = [];
   const hinweise = [];
@@ -64,9 +66,10 @@ function lies(sprache, text) {
     }
     const code = zeile.slice(0, 2);
     const inhalt = zeile.slice(3).trim();
-    if (!UI.includes(code) || zeile[2] !== ' ' || !inhalt) throw Error(`${wo}: unbekannte Zeile „${zeile.slice(0, 30)}“`);
+    if (!ZUG.includes(code) || zeile[2] !== ' ' || !inhalt) throw Error(`${wo}: unbekannte Zeile „${zeile.slice(0, 30)}“`);
     if (!aktuell) throw Error(`${wo}: Text vor dem ersten Zug`);
     if (aktuell.texte[code]) throw Error(`${wo}: ${code} doppelt`);
+    if (aktuell.art === 'hinweis' && !UI.includes(code)) throw Error(`${wo}: Hinweise nur in App-Sprachen`);
     if (aktuell.art === 'hinweis') {
       const [issue, explanation] = inhalt.split('||').map((t) => t.trim());
       if (!issue || !explanation) throw Error(`${wo}: Hinweis braucht „Problem || Erklärung“`);
@@ -75,12 +78,11 @@ function lies(sprache, text) {
       aktuell.texte[code] = inhalt;
     }
   });
-  const fehlt = (texte) => UI.filter((code) => !texte[code]);
+  const fehlt = (texte, codes = UI) => codes.filter((code) => !texte[code]);
   if (fehlt(titel).length) throw Error(`Titel fehlt für ${fehlt(titel).join(', ')}`);
-  zuege.forEach((zug, i) => { if (fehlt(zug.texte).length) throw Error(`Zug ${i + 1}: fehlt ${fehlt(zug.texte).join(', ')}`); });
+  zuege.forEach((zug, i) => { if (fehlt(zug.texte, ZUG).length) throw Error(`Zug ${i + 1}: fehlt ${fehlt(zug.texte, ZUG).join(', ')}`); });
   hinweise.forEach((h, i) => { if (fehlt(h.texte).length) throw Error(`Hinweis ${i + 1}: fehlt ${fehlt(h.texte).join(', ')}`); });
   if (!zuege.length || !hinweise.length) throw Error('Dialog braucht Züge und mindestens einen Hinweis');
-  if (!UI.includes(sprache)) throw Error(`${sprache} ist keine App-Sprache`);
   return {
     title: titel.de.title,
     setting: titel.de.setting,

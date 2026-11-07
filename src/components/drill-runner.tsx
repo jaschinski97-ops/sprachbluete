@@ -37,6 +37,9 @@ const DRILL_LABEL_KEYS: Record<DrillId, TranslationKey> = {
   praesensEndung: 'drill.praesensEndung',
   partizip: 'drill.partizip',
   genre: 'drill.genre',
+  genero: 'drill.genero',
+  articolo: 'drill.articolo',
+  liangci: 'drill.liangci',
 };
 
 const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
@@ -58,6 +61,9 @@ const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   praesensEndung: 'drill.prompt.praesensEndung',
   partizip: 'drill.prompt.partizip',
   genre: 'drill.prompt.genre',
+  genero: 'drill.prompt.genre',
+  articolo: 'drill.prompt.genre',
+  liangci: 'drill.prompt.zaehlerwort',
 };
 
 /**

@@ -25,6 +25,7 @@ import {
 } from '@/lib/production/compare';
 import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler, type ErkennungsNaht } from '@/lib/speaking/recognition';
 import { compareDialogue } from '@/lib/production/dialogue-compare';
+import { zeigtUmschrift } from '@/lib/languages/definitions';
 
 /**
  * Rollenspiel aus den vorhandenen Situationen (Schritt 3, Lern-Reiter-Ausbau).
@@ -298,7 +299,7 @@ function SzeneZeile({
     setErkennungsFehler(null);
     void (async () => {
       const text = await erkenne({
-        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR' }[sprache],
+        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', it: 'it-IT', zh: 'zh-CN' }[sprache],
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
         hinweise: [zeile.thai],
@@ -319,7 +320,7 @@ function SzeneZeile({
         <>
           <ThemedText type="subtitle">{zeile.thai}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {sprache === 'th' ? `${sprache === 'th' ? zeile.roman : ''} · ` : ''}{zeile.german}
+            {zeigtUmschrift(sprache) ? `${zeile.roman} · ` : ''}{zeile.german}
           </ThemedText>
           <View style={styles.actions}>
             <Pressable
@@ -399,7 +400,7 @@ function SzeneZeile({
               <ThemedText type="smallBold">{t('answer.modelTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {sprache === 'th' ? zeile.roman : ''}
+                {zeigtUmschrift(sprache) ? zeile.roman : ''}
               </ThemedText>
               <ThemedButton
                 label={t('common.next')}
@@ -418,7 +419,7 @@ function SzeneZeile({
               <ThemedText type="smallBold">{t('answer.modelTitle')}</ThemedText>
               <ThemedText type="subtitle">{zeile.thai}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {sprache === 'th' ? zeile.roman : ''}
+                {zeigtUmschrift(sprache) ? zeile.roman : ''}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {t('production.selfRatingTitle')}

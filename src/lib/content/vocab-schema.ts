@@ -3,6 +3,7 @@ import { isLanguageCode, LANGUAGE_CODES } from '../languages/types';
 import { isSharedConcept } from '../concepts';
 import { UI_LANGUAGES } from '../i18n/types';
 import { pruefeThaiWortToene } from '../thai/tone-check';
+import { isMeasureWord } from '@/data/chinese-measure-words';
 import type { VocabEntry } from '@/data/vocab-types';
 
 /**
@@ -58,10 +59,26 @@ export function istThaiSchrift(text: string): boolean {
   return /[\u0E01-\u0E5B]/.test(text);
 }
 
+/** Pinyin-Buchstaben: Grundbuchstaben, ü und die Tonzeichen. */
+const PINYIN = /^[a-zü\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc' -]+$/;
+
+/**
+ * Pinyin eines chinesischen Wortes: Pflicht, mit Tonzeichen statt Ziffern
+ * (nǐ hǎo, nicht ni3 hao3) und ohne fremde Zeichen.
+ */
+export function pruefePinyin(roman: string | undefined): string[] {
+  const text = (roman ?? '').normalize('NFC').trim();
+  if (!text) return ['Chinesisches Wort ohne Pinyin.'];
+  if (/\d/.test(text)) return [`Pinyin mit Tonziffern statt Tonzeichen: „${text}“.`];
+  if (!PINYIN.test(text.toLowerCase().replace(/[’]/g, "'"))) return [`Pinyin enthält fremde Zeichen: „${text}“.`];
+  return [];
+}
+
 /** Normalisierter Duplikat-Schlüssel eines Begriffs (je Sprache). */
 export function vocabSchluessel(term: string, language: string): string {
   let basis = term.normalize('NFC').trim();
-  if (language === 'th') {
+  if (language === 'th' || language === 'zh') {
+    // Eigene Schriften ohne Wortabstand: Leerzeichen machen kein neues Wort.
     basis = basis.replace(/\s+/g, '');
   } else {
     basis = basis.toLowerCase().replace(/[\p{P}\p{S}]/gu, '').replace(/\s+/g, ' ').trim();
@@ -140,6 +157,21 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
     if (typeof n !== 'object' || n === null || !['m', 'f'].includes(String(n.gender))) return false;
     if (!['le', 'la', 'l’'].includes(String(n.article)) || typeof n.plural !== 'string') return false;
   }
+  if (sprache === 'pt' && d.portugueseNoun !== undefined) {
+    const n = d.portugueseNoun as Record<string, unknown>;
+    if (typeof n !== 'object' || n === null || !['m', 'f'].includes(String(n.gender))) return false;
+    if (!['o', 'a'].includes(String(n.article)) || typeof n.plural !== 'string') return false;
+  }
+  if (sprache === 'it' && d.italianNoun !== undefined) {
+    const n = d.italianNoun as Record<string, unknown>;
+    if (typeof n !== 'object' || n === null || !['m', 'f'].includes(String(n.gender))) return false;
+    if (!['il', 'lo', 'la', 'l’'].includes(String(n.article)) || typeof n.plural !== 'string') return false;
+  }
+  if (sprache === 'zh' && d.chineseNoun !== undefined) {
+    const n = d.chineseNoun as Record<string, unknown>;
+    if (typeof n !== 'object' || n === null || typeof n.measureWord !== 'string') return false;
+    if (n.alternatives !== undefined && (!Array.isArray(n.alternatives) || n.alternatives.some((a) => typeof a !== 'string'))) return false;
+  }
   if (sprache === 'es' && d.spanishVerb !== undefined) {
     const v = d.spanishVerb as Record<string, unknown>;
     if (typeof v !== 'object' || !['ar', 'er', 'ir'].includes(String(v.conjugation))) return false;
@@ -154,6 +186,28 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
  * Thai-Ton-Prüfung — kein Fehler, aber vor dem Audio-Lauf ansehen.
  */
 export type VocabPruefung = { ok: boolean; fehler: string[]; hinweise?: string[] };
+
+/**
+ * Italienischer Artikel (07.11.2026): „il“ und „lo“ gehören zu m, „la“ zu f;
+ * vor Vokal steht „l’“ (aber „lo/la“ vor i + Vokal: „lo iodio“, „la iena“).
+ * „lo“ vor s + Konsonant, z, gn, ps, pn, x, y — dort ist „il“ ein Fehler.
+ * Vor h und w entscheidet das Wort („l’hotel“, „il whisky“), beides erlaubt.
+ */
+function italienischerArtikel(term: string, nomen: NonNullable<VocabEntry['italianNoun']>): string[] {
+  const fehler: string[] = [];
+  const wort = term.normalize('NFC').toLowerCase();
+  const vokal = /^[aeiouàèéìòù]/.test(wort) && !/^i[aeiouàèéìòù]/.test(wort);
+  const offen = /^[hw]/.test(wort);
+  const loPflicht = /^(?:s[^aeiouàèéìòù]|z|gn|ps|pn|x|y|i[aeiouàèéìòù])/.test(wort);
+  const { gender, article } = nomen;
+  if ((article === 'il' || article === 'lo') && gender !== 'm') fehler.push(`Italienischer Artikel „${article}“ bei weiblichem Genus.`);
+  if (article === 'la' && gender !== 'f') fehler.push('Italienischer Artikel „la“ bei männlichem Genus.');
+  if (article === 'l’' && !vokal && !offen) fehler.push('Italienischer Artikel „l’“ vor Konsonant.');
+  if (article !== 'l’' && vokal) fehler.push('Italienischer Artikel vor Vokal muss „l’“ sein.');
+  if (article === 'il' && loPflicht) fehler.push('Italienischer Artikel „lo“ statt „il“ (vor s+Konsonant, z, gn, ps, x, y).');
+  if (article === 'lo' && !loPflicht && !offen) fehler.push('Italienischer Artikel „il“ statt „lo“.');
+  return fehler;
+}
 
 /**
  * Französischer Artikel (04.11.2026): „le“ gehört zu m, „la“ zu f; vor Vokal
@@ -185,9 +239,12 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
 
   // Schrift passt zur Sprache.
   if (isLanguageCode(language) && !passtZurSchrift(language, doc.term)) {
-    fehler.push(learningLanguage(language).script === 'thai'
-      ? 'Thai-Begriff ohne thailändische Schrift.'
-      : 'Nicht-Thai-Begriff enthält thailändische Schrift.');
+    const schrift = learningLanguage(language).script;
+    fehler.push(schrift === 'thai'
+      ? 'Thai-Begriff ohne thailändische Schrift (oder mit Schriftzeichen).'
+      : schrift === 'han'
+        ? 'Chinesischer Begriff ohne Schriftzeichen (oder mit Thai-Schrift).'
+        : 'Begriff in lateinischer Schrift enthält Thai-Schrift oder Schriftzeichen.');
   }
 
   // Längen in vernünftigen Grenzen.
@@ -229,6 +286,31 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
       if (!/^les\s/.test(doc.term)) fehler.push('Französisches Substantiv ohne Genus/Artikel.');
     } else {
       fehler.push(...franzoesischerArtikel(doc.term, doc.frenchNoun));
+    }
+  }
+  if (language === 'pt' && doc.partOfSpeech === 'noun') {
+    // Nur-Mehrzahl-Wörter tragen den Artikel im Wort („os óculos“).
+    if (!doc.portugueseNoun) {
+      if (!/^(?:os|as)\s/.test(doc.term)) fehler.push('Portugiesisches Substantiv ohne Genus/Artikel.');
+    } else {
+      const { gender, article } = doc.portugueseNoun;
+      if ((article === 'o') !== (gender === 'm')) fehler.push(`Portugiesischer Artikel „${article}“ passt nicht zum Genus.`);
+    }
+  }
+  if (language === 'it' && doc.partOfSpeech === 'noun') {
+    if (!doc.italianNoun) {
+      if (!/^(?:i|gli|le)\s/.test(doc.term)) fehler.push('Italienisches Substantiv ohne Genus/Artikel.');
+    } else {
+      fehler.push(...italienischerArtikel(doc.term, doc.italianNoun));
+    }
+  }
+  if (language === 'zh') {
+    fehler.push(...pruefePinyin(doc.romanization));
+    if (doc.chineseNoun) {
+      const { measureWord, alternatives = [] } = doc.chineseNoun;
+      for (const wort of [measureWord, ...alternatives]) {
+        if (!isMeasureWord(wort)) fehler.push(`Unbekanntes Zählwort „${wort}“ (Liste in data/chinese-measure-words.ts).`);
+      }
     }
   }
   if (language === 'de' && doc.partOfSpeech === 'noun' && !doc.germanNoun) {

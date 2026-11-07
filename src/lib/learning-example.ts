@@ -5,6 +5,7 @@ import type { UiLanguage } from './i18n';
 import { exampleMeaning } from './example-meaning';
 import { poolWoerterDerSzene } from './reading-texts';
 import { targetLanguageOf } from './languages/types';
+import { ohneWortabstand } from './languages/definitions';
 
 export type LearningExample = { text: string; roman: string; meaning: string };
 
@@ -16,7 +17,7 @@ export function learningExample(entry: VocabEntry, anchor: UiLanguage, scene?: C
     const translation = situationTranslation(situation, anchor);
     for (let index = 0; index < situation.scriptTurns.length; index++) {
       const turn = situation.scriptTurns[index];
-      if (!translation.turns[index] || !poolWoerterDerSzene({ ...situation, scriptTurns: [turn] }, [entry], entry.language !== 'th').length) continue;
+      if (!translation.turns[index] || !poolWoerterDerSzene({ ...situation, scriptTurns: [turn] }, [entry], !ohneWortabstand(entry.language)).length) continue;
       return { text: spokenText(situation, turn), roman: turn.roman, meaning: translation.turns[index] };
     }
   }

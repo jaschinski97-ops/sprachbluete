@@ -129,6 +129,11 @@ describe('zielwortImText — kommt das Zielwort im Dialog vor?', () => {
     expect(zielwortImText(wort('a', { language: 'fr', term: 's’asseoir', partOfSpeech: 'verb' }), 'Tu veux t’asseoir ici ?')).toBe(true);
     expect(zielwortImText(wort('a', { language: 'fr', term: 'les gens' }), 'Il y a beaucoup de gens.')).toBe(true);
     expect(zielwortImText(wort('a', { language: 'fr', term: 'avoir', partOfSpeech: 'verb' }), 'Je viens avec toi.')).toBe(false);
+    // Portugiesisch (07.11.2026): Reflexivverben mit Bindestrich und Adjektive auf -vel/-l im Plural.
+    expect(zielwortImText(wort('a', { language: 'pt', term: 'levantar-se', partOfSpeech: 'verb' }), 'Eu me levanto cedo.')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'pt', term: 'opor-se', partOfSpeech: 'verb' }), 'Ela se opõe ao plano.')).toBe(false);
+    expect(zielwortImText(wort('a', { language: 'pt', term: 'vulnerável', partOfSpeech: 'adjective' }), 'Os grupos mais vulneráveis.')).toBe(true);
+    expect(zielwortImText(wort('a', { language: 'pt', term: 'rural', partOfSpeech: 'adjective' }), 'Nas áreas rurais.')).toBe(true);
   });
 
   it('meldet fehlende Zielwörter statt den Dialog zu verwerfen', () => {

@@ -5,6 +5,7 @@ import type { DrillId } from './drills/types';
 import { TOPICS, type ConversationSituation } from './conversation/types';
 import type { LanguageCode, PairDirection } from './languages/types';
 import { contentDirectionOf, targetLanguageOf } from './languages/types';
+import { ohneWortabstand } from './languages/definitions';
 import { isLearningStage, type LearningStage } from './learning-stages';
 import { poolWoerterDerSzene } from './reading-texts';
 import { readMeta, writeMeta } from './repository';
@@ -55,13 +56,13 @@ export function chaptersForDirection(
       const vocabulary = situation.vocabIds.flatMap((id) => byId.get(id) ?? []).slice(0, CHAPTER_WORDS);
       return { id: situation.id, situation, vocabulary };
     }
-    const sceneWords = poolWoerterDerSzene(situation, candidates, target !== 'th');
-    // Thai has no spaces between words. Prefer complete longer matches, so
+    const sceneWords = poolWoerterDerSzene(situation, candidates, !ohneWortabstand(target));
+    // Thai and Chinese have no spaces between words. Prefer complete longer matches, so
     // incidental one-character substrings do not push scene words out.
     sceneWords.sort((a, b) =>
       Number(b.isConcrete) - Number(a.isConcrete) ||
       Number(b.partOfSpeech === 'noun') - Number(a.partOfSpeech === 'noun') ||
-      (target === 'th' ? b.term.length - a.term.length : 0)
+      (ohneWortabstand(target) ? b.term.length - a.term.length : 0)
     );
     const vocabulary: VocabEntry[] = [];
     for (const word of sceneWords) {

@@ -34,7 +34,8 @@ export type FoundationStep = readonly [Mode, TranslationKey];
 /**
  * Die Schritte von Kapitel 0. Thai: Zahlen, Preise, dann die Schrift
  * (Konsonanten → ihre Klasse → Vokalzeichen) und zuletzt die fünf Töne mit
- * der vorhandenen Hörübung. Lateinisch geschriebene Sprachen: Zahlen,
+ * der vorhandenen Hörübung. Chinesisch (07.11.2026): Zahlen, Preise in 块
+ * und die vier Töne mit Pinyin. Lateinisch geschriebene Sprachen: Zahlen,
  * Preise, das ABC mit Buchstabennamen und Buchstabieren.
  */
 export function foundationSteps(direction: PairDirection): FoundationStep[] {
@@ -52,6 +53,7 @@ export function foundationSteps(direction: PairDirection): FoundationStep[] {
       ['tone', 'drill.tone'],
     ];
   }
+  if (targetLanguageOf(direction) === 'zh') return [...numbers, ['toene', 'foundations.tonesZh']];
   return [...numbers, ['abc', 'foundations.alphabet'], ['buchstabieren', 'foundations.spelling']];
 }
 

@@ -6,6 +6,7 @@ import { TONE_KEYS, type Tone } from '@/constants/tones';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { LATIN_ALPHABETS, spellOut, type LatinLanguage, type LatinLetter } from '@/data/latin-alphabet';
 import { NUMBER_EXAMPLES, NUMBER_GROUPS, numberWord, priceText, thaiDigits } from '@/data/numbers';
+import { CHINESE_TONES } from '@/data/chinese-tones';
 import { CONSONANT_MEANING_DE, THAI_CONSONANTS, type ConsonantClass, type ThaiConsonant } from '@/data/thai-script';
 import type { VocabEntry } from '@/data/vocab-types';
 import { useTheme } from '@/hooks/use-theme';
@@ -63,6 +64,7 @@ export function FoundationsRunner({ mode, direction, onExit }: {
     if (mode === 'toene') return <TonesStep />;
     return null;
   }
+  if (language === 'zh') return mode === 'toene' ? <ChineseTonesStep /> : null;
   if (mode === 'abc') return <AlphabetStep language={language} />;
   if (mode === 'buchstabieren') return <SpellingStep language={language} onExit={onExit} />;
   return null;
@@ -423,7 +425,7 @@ function AlphabetStep({ language }: { language: LatinLanguage }) {
               key={letter.upper}
               big={`${letter.upper} ${letter.lower}`}
               lines={letterLines(letter)}
-              a11y={`${letter.upper}: ${letter.name ?? letter.ipa}`}
+              a11y={`${letter.upper}: ${letter.name ?? letter.ipa ?? ''}`}
               onPress={() => player.play(letter.spoken, 'general')}
             />
           ))}
@@ -441,7 +443,8 @@ function AlphabetStep({ language }: { language: LatinLanguage }) {
  */
 function buchstabe(letter: LatinLetter): string {
   const name = letter.name && letter.name.toLowerCase() !== letter.lower ? letter.name : null;
-  return `${letter.upper} ${name ?? letter.ipa}`;
+  const hint = name ?? letter.ipa;
+  return hint ? `${letter.upper} ${hint}` : letter.upper;
 }
 
 /** Die Buchstabennamen eines Wortes — geschrieben und als Text für die Stimme. */
@@ -620,6 +623,35 @@ function VowelsStep() {
 const TONE_NAME_KEYS: Record<Tone, TranslationKey> = {
   mid: 'tone.mid', low: 'tone.low', falling: 'tone.falling', high: 'tone.high', rising: 'tone.rising',
 };
+
+/**
+ * Chinesisch: die vier Töne und der neutrale an den Beispielsilben der
+ * Quelle (巴 bā, 拔 bá, 把 bǎ, 爸 bà, 吧 ba; `data/chinese-tones.ts`).
+ * Gesprochen von der Gerätestimme — es gibt (noch) keine geprüften Clips.
+ */
+function ChineseTonesStep() {
+  const { t } = useLocale();
+  const player = usePlayer('zh');
+  return (
+    <View style={styles.root}>
+      <ThemedText type="small" themeColor="textSecondary">{t('foundations.tonesIntroZh')}</ThemedText>
+      <PlayerNote player={player} />
+      {CHINESE_TONES.map((tone) => (
+        <ThemedView key={tone.number} type="backgroundElement" style={styles.toneRow}>
+          <ThemedText type="smallBold">{t(tone.label)} · {tone.mark}</ThemedText>
+          <Pressable
+            onPress={() => player.play(tone.example.hanzi)}
+            accessibilityRole="button"
+            accessibilityLabel={`${tone.example.hanzi}, ${tone.example.pinyin}`}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <ThemedText type="subtitle">{tone.example.hanzi}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">{tone.example.pinyin}</ThemedText>
+          </Pressable>
+        </ThemedView>
+      ))}
+    </View>
+  );
+}
 
 function TonesStep() {
   const { t, uiLanguage } = useLocale();

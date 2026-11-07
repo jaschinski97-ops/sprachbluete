@@ -33,10 +33,14 @@ export type LearningLanguageDefinition = {
   speechLocale: string;
   /** Sprechtempo der Gerätestimme (1 = normal). */
   speechRate: number;
-  /** Schrift der Zielsprache — steuert Leerzeichen-Regeln, Lesehilfen, Schema-Prüfung. */
-  script: 'thai' | 'latin';
+  /**
+   * Schrift der Zielsprache — steuert Leerzeichen-Regeln, Lesehilfen,
+   * Schema-Prüfung. Eigene Schriften (thai, han) schreiben ohne Leerzeichen
+   * zwischen den Wörtern und zeigen die Umschrift daneben.
+   */
+  script: 'thai' | 'latin' | 'han';
   /** Welche Zeichenleiste Diktat und Schreiben einblenden (null = keine). */
-  palette: 'thai' | 'german' | 'spanish' | 'french' | null;
+  palette: 'thai' | 'german' | 'spanish' | 'french' | 'portuguese' | 'italian' | null;
   /**
    * Welche kleine Abweichung beim Schreiben als „fast richtig“ zählt:
    * fehlende Tonzeichen (Thai), Akzente (Spanisch), Umlaute/ß (Deutsch),
@@ -269,6 +273,124 @@ export const LEARNING_LANGUAGES: Record<LanguageCode, LearningLanguageDefinition
     checkPoint3: 'ist die IPA-Lautschrift plausibel, und stimmen Genus und Artikel des Nomens?',
     dialogRules: 'Natürliches Französisch aus Frankreich mit korrekten Akzenten, Elisionen (l’, j’, qu’) und einheitlicher Anrede (tu oder vous passend zur Situation). roman ist eine Lesehilfe.',
   },
+  // Portugiesisch (07.11.2026, Nutzerentscheidung): brasilianisches
+  // Portugiesisch, Preise in Real. Die Aussprache (offene/geschlossene und
+  // nasale Vokale) steht nicht eindeutig in der Schrift — Lautschrift je Wort
+  // wie bei Französisch, Genus und Artikel über `portugueseNoun`.
+  pt: {
+    code: 'pt',
+    label: 'Portugiesisch',
+    endonym: 'português',
+    speechLocale: 'pt-BR',
+    speechRate: 0.95,
+    script: 'latin',
+    palette: 'portuguese',
+    nearMiss: 'accent',
+    legend: null,
+    dictation: { foldCase: true, eszettEquivalence: false, strictDiacritics: true },
+    prompts: { writing: 'writing.promptPt', dictation: 'dictation.promptPt' },
+    placeholders: { word: 'sua resposta', sentence: 'sua frase' },
+    wordSpeaking: 'repeat',
+    drills: ['genero'],
+    greeting: { word: 'olá', hint: '/oˈla/' },
+    challenge: 'language.pt.description',
+    feature: {
+      label: 'language.pt.feature',
+      description: 'language.pt.description',
+      kind: 'per-word',
+      implemented: true,
+      source: {
+        title: 'Portuguese phonology',
+        url: 'https://en.wikipedia.org/wiki/Portuguese_phonology',
+        retrieved: '2026-11-07',
+        quote:
+          'Portuguese has one of the richest vowel phonologies of all Romance languages, having both oral and nasal vowels, diphthongs, and triphthongs.',
+      },
+    },
+    generatorRules:
+      '- Brasilianisches Portugiesisch (Schreibung nach dem Acordo Ortográfico de 1990). "term" ist das Wort ohne Artikel; "syllables" mit JEDER gesprochenen Silbe als { "roman": "Silbe" }; "romanization" ist die IPA-Lautschrift des ganzen Wortes (Aussprache Brasilien) ohne Schrägstriche; Nomen mit "portugueseNoun" { "gender": "m"|"f", "article": "o"|"a", "plural": "…" } (Plural ohne Artikel, wie bei Spanisch: "livros"; "—" ohne Plural).',
+    checkPoint3: 'ist die IPA-Lautschrift (Brasilien) plausibel, und stimmen Genus und Artikel des Nomens?',
+    dialogRules: 'Natürliches brasilianisches Portugiesisch mit korrekten Akzenten; Anrede „você“, Preise in Real. roman ist eine Lesehilfe.',
+  },
+  // Italienisch (07.11.2026, Nutzerentscheidung): Standarditalienisch, Preise
+  // in Euro. Doppelkonsonanten stehen in der Schrift; offene/geschlossene
+  // Vokale und die Betonung nicht immer — deshalb Lautschrift je Wort, Genus
+  // und Artikel über `italianNoun`.
+  it: {
+    code: 'it',
+    label: 'Italienisch',
+    endonym: 'italiano',
+    speechLocale: 'it-IT',
+    speechRate: 0.95,
+    script: 'latin',
+    palette: 'italian',
+    nearMiss: 'accent',
+    legend: null,
+    dictation: { foldCase: true, eszettEquivalence: false, strictDiacritics: true },
+    prompts: { writing: 'writing.promptIt', dictation: 'dictation.promptIt' },
+    placeholders: { word: 'la tua risposta', sentence: 'la tua frase' },
+    wordSpeaking: 'repeat',
+    drills: ['articolo'],
+    greeting: { word: 'ciao', hint: '/ˈtʃa.o/' },
+    challenge: 'language.it.description',
+    feature: {
+      label: 'language.it.feature',
+      description: 'language.it.description',
+      kind: 'derivable',
+      implemented: true,
+      source: {
+        title: 'Italian phonology',
+        url: 'https://en.wikipedia.org/wiki/Italian_phonology',
+        retrieved: '2026-11-07',
+        quote:
+          'Between two vowels, or between a vowel and an approximant (/j, w/) or a liquid (/l, r/), consonants can be both singleton or geminate. Geminate consonants shorten the preceding vowel (or block phonetic lengthening) and the first element of the geminate is unreleased. For example, compare /fato/ [ˈfaːto] (\'fate\') with /fatto/ [ˈfat̚to] (\'fact\' or \'did\'/\'done\').',
+      },
+    },
+    generatorRules:
+      '- Standarditalienisch. "term" ist das Wort ohne Artikel; "syllables" mit JEDER gesprochenen Silbe als { "roman": "Silbe" }; "romanization" ist die IPA-Lautschrift des ganzen Wortes mit Betonungszeichen ohne Schrägstriche; Nomen mit "italianNoun" { "gender": "m"|"f", "article": "il"|"lo"|"la"|"l’", "plural": "…" } („lo“ vor s+Konsonant, z, gn, ps, x, y; „l’“ vor Vokal; Plural ohne Artikel: "libri"; "—" ohne Plural).',
+    checkPoint3: 'ist die IPA-Lautschrift plausibel, und stimmen Genus und Artikel des Nomens?',
+    dialogRules: 'Natürliches Standarditalienisch mit korrekten Akzenten (è, perché, città), Elisionen (l’, un’) und einheitlicher Anrede (tu oder Lei passend zur Situation). roman ist eine Lesehilfe.',
+  },
+  // Chinesisch (Hochchinesisch, Kurzzeichen; 07.11.2026, Nutzerentscheidung).
+  // Wie Thai eine eigene Schrift ohne Leerzeichen, daneben Pinyin mit
+  // Tonzeichen. Die Töne stehen nicht im Schriftzeichen, nur im Pinyin —
+  // deshalb je Wort hinterlegt; Zählwörter über `chineseNoun`.
+  zh: {
+    code: 'zh',
+    label: 'Chinesisch',
+    endonym: '中文',
+    speechLocale: 'zh-CN',
+    // Etwas langsamer, damit die Töne hörbar bleiben (wie Thai).
+    speechRate: 0.85,
+    script: 'han',
+    // Schriftzeichen tippt man über die Pinyin-Tastatur des Geräts.
+    palette: null,
+    nearMiss: 'tone-mark',
+    legend: null,
+    dictation: { foldCase: false, eszettEquivalence: false, strictDiacritics: true },
+    prompts: { writing: 'writing.promptZh', dictation: 'dictation.promptZh' },
+    placeholders: { word: '中文', sentence: '中文' },
+    wordSpeaking: 'repeat',
+    drills: ['liangci'],
+    greeting: { word: '你好', hint: 'nǐ hǎo' },
+    challenge: 'language.zh.description',
+    feature: {
+      label: 'language.zh.feature',
+      description: 'language.zh.description',
+      kind: 'per-word',
+      implemented: true,
+      source: {
+        title: 'Standard Chinese phonology',
+        url: 'https://en.wikipedia.org/wiki/Standard_Chinese_phonology',
+        retrieved: '2026-11-07',
+        quote: 'In addition to the four main tones, there is a neutral tone that appears on weak syllables.',
+      },
+    },
+    generatorRules:
+      '- Hochchinesisch in Kurzzeichen (Volksrepublik). "term" in Schriftzeichen ohne Leerzeichen; "romanization" ist Hanyu Pinyin mit Tonzeichen (ā á ǎ à, neutraler Ton ohne Zeichen), Silben eines Wortes zusammengeschrieben wie im Wörterbuch ("péngyou", "xǐhuan"); "syllables" mit JEDER Silbe als { "roman": "Pinyin-Silbe" }; Nomen mit "chineseNoun" { "measureWord": "本" } (das übliche Zählwort, sonst 个).',
+    checkPoint3: 'stimmt das Pinyin mit Tonzeichen zu den Schriftzeichen, und passt das Zählwort zum Nomen?',
+    dialogRules: 'Natürliches Hochchinesisch in Kurzzeichen mit chinesischer Zeichensetzung (，。？！); Preise in 块. roman ist Hanyu Pinyin mit Tonzeichen, Wörter durch Leerzeichen getrennt.',
+  },
 };
 
 export function learningLanguage(code: LanguageCode): LearningLanguageDefinition {
@@ -287,14 +409,41 @@ export function dictationPromptKey(code: LanguageCode): TranslationKey {
 
 /** Thai-Schrift-Zeichen (Block U+0E00–U+0E7F). */
 const THAI_ZEICHEN = /[฀-๿]/;
+/** Chinesische Schriftzeichen. */
+const HAN_ZEICHEN = /\p{Script=Han}/u;
 
 /**
- * Passt ein Text zur Schrift der Sprache? Thai verlangt Thai-Zeichen, alle
- * anderen dürfen keine enthalten (häufigster Erzeugungsfehler: Thai-Anker
- * rutscht in den Zieltext).
+ * Passt ein Text zur Schrift der Sprache? Thai verlangt Thai-Zeichen,
+ * Chinesisch Schriftzeichen; keine Sprache darf die fremde eigene Schrift
+ * enthalten (häufigster Erzeugungsfehler: der Anker rutscht in den Zieltext).
  */
 export function passtZurSchrift(code: LanguageCode, text: string): boolean {
-  return LEARNING_LANGUAGES[code].script === 'thai' ? THAI_ZEICHEN.test(text) : !THAI_ZEICHEN.test(text);
+  const script = LEARNING_LANGUAGES[code].script;
+  if (script === 'thai') return THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text);
+  if (script === 'han') return HAN_ZEICHEN.test(text) && !THAI_ZEICHEN.test(text);
+  return !THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text);
+}
+
+/** Hat die Sprache eine eigene, nicht-lateinische Schrift (Thai, Chinesisch)? */
+export function eigeneSchrift(code: LanguageCode): boolean {
+  return LEARNING_LANGUAGES[code].script !== 'latin';
+}
+
+/**
+ * Schreibt die Sprache ohne Leerzeichen zwischen den Wörtern (Thai,
+ * Chinesisch)? Dann zählen Leerzeichen beim Vergleichen nicht, und Wörter
+ * werden als Teilstring statt als ganzes Wort gesucht.
+ */
+export function ohneWortabstand(code: LanguageCode): boolean {
+  return LEARNING_LANGUAGES[code].script !== 'latin';
+}
+
+/**
+ * Steht neben dem Zieltext eine Umschrift (Thai-Umschrift, Pinyin)? Bei
+ * lateinischer Schrift ist `roman` nur eine Lesehilfe und bleibt verborgen.
+ */
+export function zeigtUmschrift(code: LanguageCode): boolean {
+  return LEARNING_LANGUAGES[code].script !== 'latin';
 }
 
 /**

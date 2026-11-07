@@ -37,7 +37,7 @@ import { loadPracticeContext, recordWordPractice, type PracticeContext } from '@
 import { resolveClipUri } from '@/lib/clips/lookup';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
 import type { LearningStage } from '@/lib/learning-stages';
-import { dictationPromptKey, learningLanguage } from '@/lib/languages/definitions';
+import { dictationPromptKey, learningLanguage, zeigtUmschrift } from '@/lib/languages/definitions';
 
 import { ratingExplanation } from '@/lib/writing';
 
@@ -286,7 +286,7 @@ export function DictationRunner({
             {missed.map((entry) => (
               <View key={entry.id}>
                 <ThemedText type="small">{entry.text}</ThemedText>
-                {entry.language === 'th' && entry.roman ? (
+                {zeigtUmschrift(entry.language) && entry.roman ? (
                   <ThemedText type="small" themeColor="textSecondary">{entry.roman}</ThemedText>
                 ) : null}
               </View>

@@ -24,7 +24,7 @@ describe('SITUATION_SPRACHEN — Sprache und Dialogrichtung', () => {
   it('deckt jede Lernsprache genau einmal ab, alle Richtungen sind echt', () => {
     const sprachen = SITUATION_SPRACHEN.map((eintrag) => eintrag.sprache);
     expect(new Set(sprachen).size).toBe(sprachen.length);
-    expect([...sprachen].sort()).toEqual(['de', 'en', 'es', 'fr', 'th']);
+    expect([...sprachen].sort()).toEqual(['de', 'en', 'es', 'fr', 'it', 'pt', 'th', 'zh']);
     for (const { direction } of SITUATION_SPRACHEN) {
       expect(isPairDirection(direction)).toBe(true);
       expect(isDeAnchored(direction)).toBe(true);

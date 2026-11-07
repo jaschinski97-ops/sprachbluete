@@ -95,7 +95,7 @@ export function TermWord({
           {entry.ipa ?? entry.romanization}
         </ThemedText>
       ) : null}
-      {entry.language === 'de' || entry.language === 'en' || entry.language === 'fr' ? <ThemedText type="small" themeColor="textSecondary">
+      {entry.language === 'de' || entry.language === 'en' || entry.language === 'fr' || entry.language === 'pt' || entry.language === 'it' ? <ThemedText type="small" themeColor="textSecondary">
         {t('learning.pronunciation')}
       </ThemedText> : null}
 

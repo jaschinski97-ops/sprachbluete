@@ -1,6 +1,7 @@
 import type { VocabEntry } from '@/data/vocab-types';
 
-import { contentDirectionOf, type LanguageCode } from '../languages/types';
+import { ohneWortabstand } from '../languages/definitions';
+import { contentDirectionOf, isLanguageCode, type LanguageCode } from '../languages/types';
 import { STAGE_LEVELS, stageForLevel, stageOfEntry, type LearningStage } from '../learning-stages';
 import { vocabularyForms } from '../vocabulary-forms';
 
@@ -216,23 +217,36 @@ function staemme(entry: VocabEntry): string[] {
   const language = String(entry.language);
   const verb = entry.partOfSpeech === 'verb';
   // Französisch (04.11.2026): „se lever“, „s’asseoir“ ohne Reflexivpronomen, damit der Stamm greift.
-  const ohneSe = (form: string) => (verb && language === 'fr' ? form.replace(/^(?:se|s)\s+/, '') : form);
+  // Portugiesisch „levantar-se“: der Bindestrich ist in `grundformen` schon ein Leerzeichen.
+  const ohneSe = (form: string) => {
+    if (verb && language === 'fr') return form.replace(/^(?:se|s)\s+/, '');
+    if (verb && language === 'pt') return form.replace(/\s+se$/, '');
+    return form;
+  };
   return grundformen(entry.term).map(ohneSe).filter((form) => !form.includes(' ')).map((form) => {
     if (verb) {
       if (language === 'de') return /(?:el|er)n$/.test(form) ? form.slice(0, -1) : form.replace(/e?n$/, '');
       if (language === 'es') return form.replace(/se$/, '').replace(/(?:ar|er|ir)$/, '');
       // „manger“ → „mang“ trifft „je mange“; kurze Stämme (être, avoir, dire) zählen nur exakt.
       if (language === 'fr') return form.replace(/(?:er|ir|re|oir)$/, '');
+      // Portugiesisch „levantar-se“ → „levant“, „pôr“ zählt nur exakt (07.11.2026).
+      if (language === 'pt') return form.replace(/(?:ar|er|ir)$/, '');
+      // Italienisch „alzarsi“ → „alz“, „parlare“ → „parl“, „tradurre“ → „tradu“.
+      if (language === 'it') return form.replace(/rsi$/, 're').replace(/(?:are|ere|ire|rre)$/, '');
       return form.replace(/e$/, '');
     }
     if (entry.partOfSpeech === 'adjective' && language === 'es') return form.replace(/[oae]$/, '');
+    // Portugiesisch: „vulnerável“ → „vulneráveis“, „rural“ → „rurais“, „fácil“ → „fáceis“.
+    if (entry.partOfSpeech === 'adjective' && language === 'pt') return form.replace(/(?:il|l|[oae])$/, '');
+    if (entry.partOfSpeech === 'adjective' && language === 'it') return form.replace(/[oaie]$/, '');
     return form;
   }).filter((stamm) => stamm.length >= 3);
 }
 
 /** Ob das Wort in diesem Text (einer Dialogzeile) vorkommt. */
 export function zielwortImText(entry: VocabEntry, text: string): boolean {
-  if (String(entry.language) === 'th') {
+  // Thai und Chinesisch ohne Leerzeichen: das Wort als Teilstring.
+  if (isLanguageCode(entry.language) && ohneWortabstand(entry.language)) {
     const term = entry.term.replace(/\s+/g, '');
     return term !== '' && text.replace(/\s+/g, '').includes(term);
   }

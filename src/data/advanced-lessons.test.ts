@@ -1,3 +1,4 @@
+import { LEARNING_LANGUAGES } from '@/lib/languages/definitions';
 import { ADVANCED_LESSONS } from './advanced-lessons';
 import { LANGUAGE_CODES } from '@/lib/languages/types';
 
@@ -10,7 +11,10 @@ test('jede Lernsprache hat eine vollständige erste B1-Übung ohne erfundene Bew
     expect(ids.has(lesson.id)).toBe(false);
     ids.add(lesson.id);
     expect(lesson.paragraphs).toHaveLength(3);
-    expect(lesson.paragraphs.every((paragraph) => paragraph.length >= 110)).toBe(true);
+    // Chinesische Zeichen tragen je Zeichen ein ganzes Wort oder eine Silbe:
+    // 55 Zeichen entsprechen grob 110 Buchstaben einer Alphabetschrift.
+    const mindestens = LEARNING_LANGUAGES[language].script === 'han' ? 55 : 110;
+    expect(lesson.paragraphs.every((paragraph) => paragraph.length >= mindestens)).toBe(true);
     expect(lesson.questions).toHaveLength(3);
     expect(lesson.questions.every((question) =>
       question.options.length === 3 &&

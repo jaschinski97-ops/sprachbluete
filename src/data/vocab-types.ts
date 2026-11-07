@@ -145,6 +145,21 @@ export type VocabEntry = {
    * vor Vokal und stummem h und verrät das Genus nicht — deshalb beides.
    */
   frenchNoun?: { gender: 'm' | 'f'; article: 'le' | 'la' | 'l’'; plural: string };
+  /** SPRACHSPEZIFISCH (Portugiesisch, 07.11.2026): Genus, Artikel o/a, Plural ohne Artikel („livros“). */
+  portugueseNoun?: { gender: 'm' | 'f'; article: 'o' | 'a'; plural: string };
+  /**
+   * SPRACHSPEZIFISCH (Italienisch, 07.11.2026): Genus und Artikel. „lo“ steht
+   * vor s+Konsonant, z, gn, ps, x, y; „l’“ vor Vokal und verrät das Genus nicht.
+   */
+  italianNoun?: { gender: 'm' | 'f'; article: 'il' | 'lo' | 'la' | 'l’'; plural: string };
+  /**
+   * SPRACHSPEZIFISCH (Chinesisch, 07.11.2026): das übliche Zählwort des
+   * Nomens (一本书 → „本“). Nur Zählwörter aus `MEASURE_WORDS`
+   * (`data/chinese-measure-words.ts`), dort steht auch das Pinyin.
+   * `alternatives`: weitere übliche Zählwörter (狗: 只, auch 条) — die
+   * Übung bietet sie nie als falsche Antwort an.
+   */
+  chineseNoun?: { measureWord: string; alternatives?: string[] };
   /** SPRACHSPEZIFISCH (Spanisch): Konjugationsklasse und Unregelmäßigkeit. */
   spanishVerb?: { conjugation: 'ar' | 'er' | 'ir'; irregular: boolean };
   /** SPRACHSPEZIFISCH (Englisch): Vergangenheit und Partizip. */

@@ -6,7 +6,7 @@ export type AdvancedQuestion = {
   options: [string, string, string];
   correctIndex: 0 | 1 | 2;
   explanation: string;
-  // Umschrift (nur Thai) mit denselben Positionen wie `prompt`/`options`/`explanation`.
+  // Umschrift (Thai, Chinesisch) mit denselben Positionen wie `prompt`/`options`/`explanation`.
   roman?: { prompt: string; options: [string, string, string]; explanation: string };
 };
 
@@ -20,7 +20,7 @@ export type AdvancedLesson = {
   writingPrompt: string;
   speakingPrompt: string;
   modelAnswer: string;
-  // Umschrift zu allen Texten (nur Thai); Absätze stehen an denselben Indizes wie `paragraphs`.
+  // Umschrift zu allen Texten (Thai, Chinesisch); Absätze stehen an denselben Indizes wie `paragraphs`.
   roman?: {
     title: string;
     paragraphs: [string, string, string];
@@ -125,5 +125,64 @@ export const ADVANCED_LESSONS: Record<LanguageCode, AdvancedLesson> = {
     writingPrompt: 'Écris un e-mail à la professeure. Explique ton problème, propose une solution et dis pourquoi elle te convient.',
     speakingPrompt: 'Explique à quelqu’un le problème de Mina. Que déciderais-tu, et pourquoi ?',
     modelAnswer: 'Bonjour Madame Berger, je voudrais continuer le cours, mais à cause d’une réunion de travail, j’arrive en retard le mardi. Est-ce que je pourrais passer dans le groupe du samedi ? Comme ça, je pourrais suivre tout le cours. Merci beaucoup pour votre aide.',
+  },
+  pt: {
+    id: 'course-time-pt-001', language: 'pt', title: 'Mudar o horário de um curso de idiomas',
+    paragraphs: [
+      'Há três meses, Mina faz um curso de idiomas à noite. Ela gosta de trabalhar com a professora e com os outros alunos, porque todos se ajudam a praticar a conversação. Mas a empresa dela mudou o horário de uma reunião semanal. Por isso, toda terça-feira ela chega atrasada à aula.',
+      'Na semana passada, ela perdeu uma atividade em grupo importante. Mina escreveu para a professora dizendo que queria muito continuar o curso. Ela perguntou se podia mudar para a turma de sábado. Se não houvesse vaga, gostaria de receber os exercícios de terça para fazer em casa.',
+      'A professora respondeu que ainda havia uma vaga no sábado, mas que essa aula começava uma hora mais cedo do que a de terça. Mina precisa decidir até sexta-feira. Ela sabe que acordar cedo não vai ser fácil, mas acha isso melhor do que perder parte da aula toda semana.',
+    ],
+    questions: [
+      { prompt: 'Por que Mina chega atrasada às terças-feiras?', options: ['Os trens não estão funcionando.', 'A empresa dela mudou o horário de uma reunião.', 'A professora mudou de sala.'], correctIndex: 1, explanation: 'A empresa dela mudou o horário de uma reunião semanal.' },
+      { prompt: 'O que Mina pede se não puder mudar de turma?', options: ['O dinheiro de volta', 'Outra professora', 'Exercícios para fazer em casa'], correctIndex: 2, explanation: 'Ela gostaria de receber os exercícios de terça para fazer em casa.' },
+      { prompt: 'Por que Mina pensa na aula de sábado?', options: ['Assim ela não perderia parte da aula toda semana.', 'Ela adora acordar cedo.', 'Todos os amigos dela já mudaram de turma.'], correctIndex: 0, explanation: 'Ela prefere acordar cedo a perder parte da aula toda semana.' },
+    ],
+    writingPrompt: 'Escreva um e-mail para a professora. Explique o seu problema, proponha uma solução e diga por que ela é boa para você.',
+    speakingPrompt: 'Explique para outra pessoa o problema da Mina. O que você decidiria, e por quê?',
+    modelAnswer: 'Olá, professora Berger, eu gostaria de continuar o curso, mas por causa de uma reunião no trabalho chego atrasada às terças. Eu poderia mudar para a turma de sábado? Assim eu conseguiria acompanhar a aula inteira. Muito obrigada pela ajuda.',
+  },
+  it: {
+    id: 'course-time-it-001', language: 'it', title: 'Cambiare l’orario di un corso di lingua',
+    paragraphs: [
+      'Da tre mesi Mina frequenta un corso di lingua la sera. Le piace lavorare con l’insegnante e con gli altri partecipanti, perché tutti si aiutano a vicenda a parlare. Però la sua azienda ha spostato l’orario di una riunione settimanale. Per questo il martedì arriva sempre in ritardo a lezione.',
+      'La settimana scorsa ha perso un’attività di gruppo importante. Mina ha scritto all’insegnante che vuole assolutamente continuare il corso. Le ha chiesto se può passare al gruppo del sabato. Se non ci fosse posto, vorrebbe ricevere gli esercizi del martedì per farli a casa.',
+      'L’insegnante ha risposto che il sabato c’è ancora un posto libero, ma che quel corso comincia un’ora prima di quello del martedì. Mina deve decidere entro venerdì. Sa che alzarsi presto non sarà facile, ma le sembra meglio che perdere una parte della lezione ogni settimana.',
+    ],
+    questions: [
+      { prompt: 'Perché Mina arriva in ritardo il martedì?', options: ['I treni non funzionano.', 'La sua azienda ha spostato una riunione.', 'L’insegnante ha cambiato aula.'], correctIndex: 1, explanation: 'La sua azienda ha spostato l’orario di una riunione settimanale.' },
+      { prompt: 'Che cosa chiede Mina se non può cambiare gruppo?', options: ['I soldi indietro', 'Un’altra insegnante', 'Gli esercizi da fare a casa'], correctIndex: 2, explanation: 'Vorrebbe ricevere gli esercizi del martedì per farli a casa.' },
+      { prompt: 'Perché Mina pensa al corso del sabato?', options: ['Così non perderebbe una parte della lezione ogni settimana.', 'Le piace molto alzarsi presto.', 'Tutti i suoi amici hanno già cambiato gruppo.'], correctIndex: 0, explanation: 'Preferisce alzarsi presto piuttosto che perdere una parte della lezione ogni settimana.' },
+    ],
+    writingPrompt: 'Scrivi un’e-mail all’insegnante. Spiega il tuo problema, proponi una soluzione e di’ perché fa al caso tuo.',
+    speakingPrompt: 'Spiega a un’altra persona il problema di Mina. Tu che cosa decideresti, e perché?',
+    modelAnswer: 'Gentile professoressa Berger, vorrei continuare il corso, ma a causa di una riunione di lavoro il martedì arrivo in ritardo. Potrei passare al gruppo del sabato? Così potrei seguire tutta la lezione. Grazie mille per l’aiuto.',
+  },
+  zh: {
+    id: 'course-time-zh-001', language: 'zh', title: '更改语言课的时间',
+    paragraphs: [
+      '米娜晚上上语言课已经三个月了。她喜欢老师和同学，因为大家互相帮助练习说话。可是最近她的公司改了每周开会的时间，所以她每个星期二都迟到。',
+      '上个星期，米娜错过了一个重要的小组活动。她给老师写了一封电子邮件，说她还想继续上课，并问能不能换到星期六的班。如果没有位子，她希望老师把星期二的练习发给她，让她在家做。',
+      '老师回信说，星期六的班还有一个空位，可是比星期二的班早一个小时开始。米娜得在星期五以前做决定。她觉得早起不容易，但是比每个星期都错过一部分课好。',
+    ],
+    questions: [
+      { prompt: '米娜为什么星期二迟到？', options: ['火车停运了。', '她的公司改了开会的时间。', '老师换了教室。'], correctIndex: 1, explanation: '她的公司改了每周开会的时间。', roman: { prompt: "Mǐnà wèishénme xīngqī'èr chídào?", options: ['Huǒchē tíngyùn le.', 'Tā de gōngsī gǎile kāihuì de shíjiān.', 'Lǎoshī huànle jiàoshì.'], explanation: 'Tā de gōngsī gǎile měi zhōu kāihuì de shíjiān.' } },
+      { prompt: '如果不能换班，米娜想要什么？', options: ['退钱', '换一个老师', '在家做的练习'], correctIndex: 2, explanation: '她希望老师把星期二的练习发给她，让她在家做。', roman: { prompt: 'Rúguǒ bù néng huàn bān, Mǐnà xiǎng yào shénme?', options: ['Tuì qián', 'Huàn yí gè lǎoshī', 'Zài jiā zuò de liànxí'], explanation: "Tā xīwàng lǎoshī bǎ xīngqī'èr de liànxí fā gěi tā, ràng tā zài jiā zuò." } },
+      { prompt: '米娜为什么考虑星期六的班？', options: ['这样她就不会每个星期都错过一部分课。', '她很喜欢早起。', '她的朋友都已经换班了。'], correctIndex: 0, explanation: '她觉得早起比每个星期都错过一部分课好。', roman: { prompt: 'Mǐnà wèishénme kǎolǜ xīngqīliù de bān?', options: ['Zhèyàng tā jiù bú huì měi gè xīngqī dōu cuòguò yí bùfen kè.', 'Tā hěn xǐhuan zǎoqǐ.', 'Tā de péngyou dōu yǐjīng huàn bān le.'], explanation: 'Tā juéde zǎoqǐ bǐ měi gè xīngqī dōu cuòguò yí bùfen kè hǎo.' } },
+    ],
+    writingPrompt: '给老师写一封电子邮件：说明你的问题，提出一个办法，并说明为什么这个办法适合你。',
+    speakingPrompt: '跟朋友说说米娜有什么问题。你会怎么决定？为什么？',
+    modelAnswer: '王老师您好！我想继续上课，可是每个星期二公司都开会，所以我总是迟到。我可以换到星期六的班吗？这样我就能上完整的课。谢谢您的帮助！',
+    roman: {
+      title: 'Gēnggǎi yǔyánkè de shíjiān',
+      paragraphs: [
+        "Mǐnà wǎnshang shàng yǔyánkè yǐjīng sān gè yuè le. Tā xǐhuan lǎoshī hé tóngxué, yīnwèi dàjiā hùxiāng bāngzhù liànxí shuōhuà. Kěshì zuìjìn tā de gōngsī gǎile měi zhōu kāihuì de shíjiān, suǒyǐ tā měi gè xīngqī'èr dōu chídào.",
+        "Shàng gè xīngqī, Mǐnà cuòguòle yí gè zhòngyào de xiǎozǔ huódòng. Tā gěi lǎoshī xiěle yì fēng diànzǐ yóujiàn, shuō tā hái xiǎng jìxù shàngkè, bìng wèn néng bu néng huàn dào xīngqīliù de bān. Rúguǒ méiyǒu wèizi, tā xīwàng lǎoshī bǎ xīngqī'èr de liànxí fā gěi tā, ràng tā zài jiā zuò.",
+        "Lǎoshī huíxìn shuō, xīngqīliù de bān hái yǒu yí gè kòngwèi, kěshì bǐ xīngqī'èr de bān zǎo yí gè xiǎoshí kāishǐ. Mǐnà děi zài xīngqīwǔ yǐqián zuò juédìng. Tā juéde zǎoqǐ bù róngyì, dànshì bǐ měi gè xīngqī dōu cuòguò yí bùfen kè hǎo.",
+      ],
+      writingPrompt: 'Gěi lǎoshī xiě yì fēng diànzǐ yóujiàn: shuōmíng nǐ de wèntí, tíchū yí gè bànfǎ, bìng shuōmíng wèishénme zhège bànfǎ shìhé nǐ.',
+      speakingPrompt: 'Gēn péngyou shuōshuo Mǐnà yǒu shénme wèntí. Nǐ huì zěnme juédìng? Wèishénme?',
+      modelAnswer: "Wáng lǎoshī nín hǎo! Wǒ xiǎng jìxù shàngkè, kěshì měi gè xīngqī'èr gōngsī dōu kāihuì, suǒyǐ wǒ zǒngshì chídào. Wǒ kěyǐ huàn dào xīngqīliù de bān ma? Zhèyàng wǒ jiù néng shàng wánzhěng de kè. Xièxie nín de bāngzhù!",
+    },
   },
 };

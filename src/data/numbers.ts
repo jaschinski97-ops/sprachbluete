@@ -2,7 +2,8 @@ import type { LanguageCode } from '@/lib/languages/types';
 
 /**
  * Die Grundzahlen der Lernsprachen für Kapitel 0 „Grundlagen“
- * (18.10.2026, Französisch seit 04.11.2026).
+ * (18.10.2026, Französisch seit 04.11.2026, Portugiesisch, Italienisch und
+ * Chinesisch seit 07.11.2026).
  *
  * WARUM FESTE DATEN STATT KATALOG: Zahlen sind eine geschlossene Menge. Im
  * erzeugten Wortschatz fehlten ausgerechnet die häufigsten (Thai หนึ่ง bis
@@ -28,6 +29,33 @@ import type { LanguageCode } from '@/lib/languages/types';
  *        nach den Rectifications von 1990 („vingt-et-un“): Die Quelle nennt
  *        sie in Frankreich die Referenz; die traditionelle Schreibung
  *        „vingt et un“ sei „acceptée, mais ne doit plus être enseignée“.
+ *   pt — pt.wikipedia „Numerais em língua portuguesa“ (Tabelle, Spalte der
+ *        Kardinalzahlen: 0–20, Zehner, „Cem (cento, se o número aumentar …)“,
+ *        „Mil“), dazu en.wiktionary „Appendix:Portuguese numbers“ für die
+ *        Bildung 21–99 („vinte e um“, „vinte e dois“, „trinta e um“,
+ *        „quarenta e um“) und die Landesformen („Brazil: dezesseis /
+ *        Portugal: dezasseis“, ebenso dezessete, dezenove), abgerufen am
+ *        2026-11-07. Brasilianische Formen; bei 14 nennt die Tabelle
+ *        „Quatorze (ou catorze)“, die App nimmt die zuerst genannte.
+ *   it — en.wiktionary „Appendix:Italian numbers“ (0–20, Zehner, 100) und
+ *        it.wiktionary „Appendice:Tutti i numeri in lettere“ (Raster 0–9 ×
+ *        Zehner bis 99, „| 1.000 || mille“), abgerufen am 2026-11-07. Das
+ *        Raster zeigt jede zusammengesetzte Form: Vor uno und otto fällt der
+ *        Endvokal des Zehners („ventuno“, „ventotto“, „quarantuno“,
+ *        „novantotto“ — als Regel steht es in keiner der beiden Quellen, nur
+ *        als Form in jeder Zelle); „Numbers ending in "3" (starting with
+ *        twenty-) are stressed on the last syllable and written as -tré“.
+ *   zh — en.wikipedia „Chinese numerals“ (Tabelle „ordinary Chinese
+ *        numerals“: 零 líng … 十 shí, 百 bǎi, 千 qiān; Abschnitt „Whole
+ *        numbers“: „Multiple-digit numbers are constructed using a
+ *        multiplicative principle; first the digit itself (from 1 to 9), then
+ *        the place (such as 10 or 100); then the next digit.“ und „For the
+ *        numbers 11 through 19, the leading 'one' (一; yī) is usually
+ *        omitted.“; Zeile 两: „Used instead of 二 before a classifier.“),
+ *        abgerufen am 2026-11-07. Pinyin der Zahl zusammengeschrieben
+ *        („èrshíyī“), mit Trennzeichen vor a/o/e („shí'èr“). 一 vor 百/千
+ *        und vor 块 mit der üblichen Tonänderung (yìbǎi, yí kuài; en.wikipedia
+ *        „Standard Chinese phonology“, Abschnitt „Tone sandhi“).
  *
  * THAI-UMSCHRIFT: Paiboon-Stil wie im Katalog (`thai-romanization.test.ts`),
  * Ton aus der IPA-Spalte der Quelle. Einzige bewusste Abweichung von der
@@ -36,7 +64,12 @@ import type { LanguageCode } from '@/lib/languages/types';
  * Schreibung als im Dialog direkt danach).
  *
  * WÄHRUNGEN: so, wie die A1-Marktdialoge des Katalogs bezahlen — Baht (Thai),
- * Pfund (Englisch), Euro (Spanisch, Deutsch, Französisch).
+ * Pfund (Englisch), Euro (Spanisch, Deutsch, Französisch, Italienisch),
+ * Real (Portugiesisch aus Brasilien; pt.wikipedia „Real (moeda brasileira)“:
+ * „símbolo = R$“, „plural = Reais“, abgerufen am 2026-11-07), Yuan in der
+ * Alltagsform 块 (Chinesisch; en.wikipedia „Renminbi“: „In everyday Mandarin,
+ * kuai (Chinese: 块; pinyin: kuài; lit. 'piece') is usually used when
+ * discussing money“, abgerufen am 2026-11-07).
  */
 
 export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; retrieved: string }> = {
@@ -53,6 +86,17 @@ export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; 
     url: 'https://fr.wikipedia.org/wiki/Nombres_en_fran%C3%A7ais',
     retrieved: '2026-11-04',
   },
+  pt: {
+    title: 'Numerais em língua portuguesa',
+    url: 'https://pt.wikipedia.org/wiki/Numerais_em_l%C3%ADngua_portuguesa',
+    retrieved: '2026-11-07',
+  },
+  it: {
+    title: 'Appendice:Tutti i numeri in lettere',
+    url: 'https://it.wiktionary.org/wiki/Appendice:Tutti_i_numeri_in_lettere',
+    retrieved: '2026-11-07',
+  },
+  zh: { title: 'Chinese numerals', url: 'https://en.wikipedia.org/wiki/Chinese_numerals', retrieved: '2026-11-07' },
 };
 
 /** Ein Thai-Zahlbaustein: Schrift, Paiboon-Umschrift und IPA der Quelle. */
@@ -106,7 +150,22 @@ const FR_UNITS = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept
 /** Zehner 20–60 der Tabelle; 70, 80 und 90 setzt `frenchWord` nach den Regeln der Quelle zusammen. */
 const FR_TENS = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante'] as const;
 
-/** Ein Zahlwort in der Lernsprache; `roman` nur für Thai. */
+/** 0–20 der Tabelle, brasilianische Formen (dezesseis, dezessete, dezenove). */
+const PT_UNITS = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez',
+  'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'] as const;
+const PT_TENS = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'] as const;
+
+const IT_UNITS = ['zero', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove', 'dieci',
+  'undici', 'dodici', 'tredici', 'quattordici', 'quindici', 'sedici', 'diciassette', 'diciotto', 'diciannove'] as const;
+const IT_TENS = ['', '', 'venti', 'trenta', 'quaranta', 'cinquanta', 'sessanta', 'settanta', 'ottanta', 'novanta'] as const;
+
+/** Chinesisch 0–10: Schriftzeichen und Pinyin der Quelle. */
+const ZH_UNITS: readonly (readonly [string, string])[] = [
+  ['零', 'líng'], ['一', 'yī'], ['二', 'èr'], ['三', 'sān'], ['四', 'sì'], ['五', 'wǔ'],
+  ['六', 'liù'], ['七', 'qī'], ['八', 'bā'], ['九', 'jiǔ'], ['十', 'shí'],
+].map(([zeichen, pinyin]) => [zeichen, pinyin.normalize('NFC')] as const);
+
+/** Ein Zahlwort in der Lernsprache; `roman` nur für eigene Schriften (Thai-Umschrift, Pinyin). */
 export type NumberWord = { value: number; text: string; roman?: string };
 
 /** Bis wohin zusammengesetzt wird: 0–100 und 1000 — mehr braucht kein Marktdialog. */
@@ -178,6 +237,51 @@ function frenchWord(value: number): string {
   return unit === 1 ? `${base}-et-un` : `${base}-${FR_UNITS[unit]}`;
 }
 
+/** Portugiesisch: Zehner „e“ Einer („vinte e um“); 100 „cem“, 1000 „mil“. */
+function portugueseWord(value: number): string {
+  if (value < 20) return PT_UNITS[value];
+  if (value === 100) return 'cem';
+  if (value === 1000) return 'mil';
+  const unit = value % 10;
+  const tens = PT_TENS[Math.floor(value / 10)];
+  return unit === 0 ? tens : `${tens} e ${PT_UNITS[unit]}`;
+}
+
+/**
+ * Italienisch nach dem Raster der Quelle: Zehner und Einer in einem Wort, vor
+ * uno und otto ohne Endvokal des Zehners (ventuno, trentotto), die 3 als
+ * „-tré“ (ventitré).
+ */
+function italianWord(value: number): string {
+  if (value < 20) return IT_UNITS[value];
+  if (value === 100) return 'cento';
+  if (value === 1000) return 'mille';
+  const unit = value % 10;
+  const tens = IT_TENS[Math.floor(value / 10)];
+  if (unit === 0) return tens;
+  if (unit === 1 || unit === 8) return `${tens.slice(0, -1)}${IT_UNITS[unit]}`;
+  return `${tens}${unit === 3 ? 'tré' : IT_UNITS[unit]}`;
+}
+
+/** Pinyin-Silben zusammenschreiben, mit Trennzeichen vor a/o/e („shí'èr“). */
+function pinyinJoin(silben: readonly string[]): string {
+  return silben.reduce((wort, silbe) =>
+    (wort && /^[aoeāáǎàōóǒòēéěè]/.test(silbe) ? `${wort}'${silbe}` : wort + silbe), '');
+}
+
+function chineseParts(value: number): (readonly [string, string])[] {
+  if (value <= 10) return [ZH_UNITS[value]];
+  // 一 vor 百 und 千 im vierten Ton (Tonänderung vor dem dritten/ersten Ton).
+  if (value === 100) return [['一', 'yì'], ['百', 'bǎi']];
+  if (value === 1000) return [['一', 'yì'], ['千', 'qiān']];
+  const tens = Math.floor(value / 10);
+  const unit = value % 10;
+  // 11–19 ohne führendes 一 (Quelle), ab 20 Ziffer + 十 + Einer.
+  const parts: (readonly [string, string])[] = tens === 1 ? [ZH_UNITS[10]] : [ZH_UNITS[tens], ZH_UNITS[10]];
+  if (unit) parts.push(ZH_UNITS[unit]);
+  return parts;
+}
+
 /** Das Zahlwort zu `value` (0–100 oder 1000) in der Lernsprache. */
 export function numberWord(language: LanguageCode, value: number): NumberWord {
   if (!isTeachableNumber(value)) throw new RangeError(`Zahl außerhalb von Kapitel 0: ${value}`);
@@ -188,6 +292,12 @@ export function numberWord(language: LanguageCode, value: number): NumberWord {
   if (language === 'en') return { value, text: englishWord(value) };
   if (language === 'es') return { value, text: spanishWord(value) };
   if (language === 'fr') return { value, text: frenchWord(value) };
+  if (language === 'pt') return { value, text: portugueseWord(value) };
+  if (language === 'it') return { value, text: italianWord(value) };
+  if (language === 'zh') {
+    const parts = chineseParts(value);
+    return { value, text: parts.map(([zeichen]) => zeichen).join(''), roman: pinyinJoin(parts.map(([, pinyin]) => pinyin)) };
+  }
   return { value, text: germanWord(value) };
 }
 
@@ -216,7 +326,12 @@ export type PriceText = { value: number; text: string; roman?: string; label: st
  * „euro“ zu un (Quelle: „apocopan el uno en un … si la palabra que sigue es
  * un sustantivo masculino“); Deutsch zählt „ein Euro, zwei Euro“. Französisch:
  * „euro“ ist männlich, also „un euro“ (Quelle: 1 „écrit un au masculin et une
- * au féminin“), ab zwei „euros“.
+ * au féminin“), ab zwei „euros“. Portugiesisch: „real“ ist männlich (um
+ * real, dois reais), Plural „reais“, Preisschild „R$ 5“. Italienisch: „un
+ * euro“ (Quelle 1 = „uno, un“), danach unverändert — „il plurale di euro è
+ * invariabile“ (it.wikipedia „Euro“, abgerufen am 2026-11-07). Chinesisch:
+ * Zahl + 块 ohne Leerzeichen, 两 statt 二 vor dem Zählwort (Quelle: „Used
+ * instead of 二 before a classifier“), 一块 als „yí kuài“ (一 vor viertem Ton).
  */
 export function priceText(language: LanguageCode, value: number): PriceText {
   const word = numberWord(language, value);
@@ -232,6 +347,16 @@ export function priceText(language: LanguageCode, value: number): PriceText {
   }
   if (language === 'fr') {
     return { value, text: `${word.text} ${value === 1 ? 'euro' : 'euros'}`, label: `${value} €` };
+  }
+  if (language === 'pt') {
+    return { value, text: `${word.text} ${value === 1 ? 'real' : 'reais'}`, label: `R$ ${value}` };
+  }
+  if (language === 'it') {
+    return { value, text: `${value === 1 ? 'un' : word.text} euro`, label: `${value} €` };
+  }
+  if (language === 'zh') {
+    const [zahl, pinyin] = value === 1 ? ['一', 'yí'] : value === 2 ? ['两', 'liǎng'] : [word.text, word.roman ?? ''];
+    return { value, text: `${zahl}块`, roman: `${pinyin} kuài`.normalize('NFC'), label: `¥${value}` };
   }
   return { value, text: `${value === 1 ? 'ein' : word.text} Euro`, label: `${value} €` };
 }

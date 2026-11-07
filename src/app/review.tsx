@@ -32,7 +32,7 @@ import {
   zieleFuerBruecke,
   type Lernziel,
 } from '@/lib/languages/goals';
-import { learningLanguage } from '@/lib/languages/definitions';
+import { learningLanguage, zeigtUmschrift } from '@/lib/languages/definitions';
 import {
   anchorOf,
   isDeAnchored,
@@ -716,7 +716,8 @@ function LearnPath({
   const foundationsDone = finished.includes(FOUNDATIONS_ID);
   const foundationsActive = foundationsShown && (selectedChapterId === FOUNDATIONS_ID
     || (!foundationsDone && !stageChapters.some((item) => item.id === selectedChapterId)));
-  const foundationsIntro = t(targetLanguageOf(direction) === 'th' ? 'foundations.introThai' : 'foundations.introLatin');
+  const zielSprache = targetLanguageOf(direction);
+  const foundationsIntro = t(zielSprache === 'th' ? 'foundations.introThai' : zielSprache === 'zh' ? 'foundations.introChinese' : 'foundations.introLatin');
   const stepRow = ([candidate, key]: readonly [Mode, TranslationKey], index: number, chapterId: string, open: () => void) => {
     const geuebt = (practised[chapterId] ?? []).includes(candidate);
     const label = `${index + 1}. ${t(key)}`;
@@ -769,7 +770,7 @@ function LearnPath({
           <ThemedText type="small" themeColor="textSecondary">{translated.setting}</ThemedText>
           {turn ? <ThemedView type="background" style={styles.chapterExample}>
             <ThemedText type="smallBold">{spokenText(chapter.situation, turn)}</ThemedText>
-            {targetLanguageOf(direction) === 'th' && turn.roman ? (
+            {zeigtUmschrift(targetLanguageOf(direction)) && turn.roman ? (
               <ThemedText type="small" themeColor="textSecondary">{turn.roman}</ThemedText>
             ) : null}
             <ThemedText type="small" themeColor="textSecondary">{translated.turns[turnIndex]}</ThemedText>

@@ -156,7 +156,8 @@ export function editDistance(a: string, b: string): number {
  * Ausrutscher; bei „Höflichkeitspartikel" wäre Nulltoleranz Schikane.
  */
 export function typoTolerance(target: string, language: WritingLanguage): number {
-  if (thaiScript(language)) return 0;
+  // Eigene Schriften (Thai, Chinesisch): ein anderes Zeichen ist ein anderes Wort.
+  if (learningLanguage(language).script !== 'latin') return 0;
   return target.length >= 5 ? 1 : 0;
 }
 

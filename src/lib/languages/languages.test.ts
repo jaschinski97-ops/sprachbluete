@@ -1,4 +1,5 @@
 import { FIXTURE_VOCABULARY } from '@/test-fixtures/fixture-catalog';
+import { LANGUAGE_DISPLAY_NAMES, UI_LANGUAGES } from '@/lib/i18n';
 import { VOCABULARY, VOCABULARY_EN, VOCABULARY_ES, VOCABULARY_TH } from '@/test-fixtures/legacy-vocabulary';
 import { syllablesOf, uniformTone } from '@/data/vocab-helpers';
 
@@ -76,17 +77,29 @@ describe('Inhalts-Richtungen (seit dem Sprach-Umbau 23.09.2026)', () => {
     expect(directionLabel('th_to_de', 'th')).toBe('ภาษาไทย → ภาษาเยอรมัน');
     expect(directionLabel('de_to_es')).toBe('Deutsch → Spanisch');
   });
+
+  it('kennt jede Lernsprache in jeder App-Sprache beim Namen', () => {
+    // Ohne Eintrag fällt die Übersicht still auf das Endonym zurück — so stand
+    // Chinesisch am 07.11.2026 nur als „中文“ in der deutschen Übersicht.
+    for (const code of LANGUAGE_CODES) {
+      for (const ui of UI_LANGUAGES) expect([code, ui, LANGUAGE_DISPLAY_NAMES[code]?.[ui]]).toEqual([code, ui, expect.any(String)]);
+    }
+    expect(directionLabel('de_to_zh')).toBe('Deutsch → Chinesisch');
+  });
 });
 
 describe('Das Verzeichnis', () => {
-  it('führt fünf Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
-    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de', 'fr']);
+  it('führt acht Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
+    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh']);
     expect(languagesWithContent().map((language) => language.code).sort()).toEqual([
       'de',
       'en',
       'es',
       'fr',
+      'it',
+      'pt',
       'th',
+      'zh',
     ]);
     for (const code of LANGUAGE_CODES) expect(hasContent(code)).toBe(true);
   });

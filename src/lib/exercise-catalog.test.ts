@@ -43,6 +43,9 @@ describe('Kategorien-Gleichstand der Lernziele (Brücke Deutsch)', () => {
       'de_to_en',
       'de_to_es',
       'de_to_fr',
+      'de_to_pt',
+      'de_to_it',
+      'de_to_zh',
     ]);
   });
 

@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 import { Platform } from 'react-native';
+import type { LanguageCode } from '../languages/types';
 
 import ar from './dictionaries/ar';
 import bn from './dictionaries/bn';
@@ -180,7 +181,13 @@ export function translate(language: UiLanguage, key: TranslationKey, params?: TP
  * Zellen wären eine Fehlerquelle ohne Gegenwert; wer Zellen nachtragen will,
  * erweitert die Tabelle hier zeilenweise.
  */
-export const LANGUAGE_DISPLAY_NAMES: Partial<Record<UiLanguage, Partial<Record<UiLanguage, string>>>> = {
+/**
+ * Sprachen mit Namen: alle App-Sprachen und alle Lernsprachen. Italienisch ist
+ * nur Lernsprache, keine App-Sprache (07.11.2026).
+ */
+export type NamedLanguage = UiLanguage | LanguageCode;
+
+export const LANGUAGE_DISPLAY_NAMES: Partial<Record<NamedLanguage, Partial<Record<UiLanguage, string>>>> = {
   ar: { ar: 'العربية', de: 'Arabisch', en: 'Arabic', es: 'árabe', th: 'ภาษาอาหรับ' },
   de: {
     ar: 'الألمانية', bn: 'জার্মান', de: 'Deutsch', en: 'German', es: 'alemán',
@@ -212,10 +219,28 @@ export const LANGUAGE_DISPLAY_NAMES: Partial<Record<UiLanguage, Partial<Record<U
     pt: 'tailandês',
     th: 'ภาษาไทย', zh: '泰语',
   },
+  pt: {
+    ar: 'البرتغالية', bn: 'পর্তুগিজ', de: 'Portugiesisch', en: 'Portuguese', es: 'portugués',
+    fr: 'portugais', hi: 'पुर्तगाली',
+    pt: 'português',
+    th: 'ภาษาโปรตุเกส', zh: '葡萄牙语',
+  },
+  it: {
+    ar: 'الإيطالية', bn: 'ইতালীয়', de: 'Italienisch', en: 'Italian', es: 'italiano',
+    fr: 'italien', hi: 'इतालवी',
+    pt: 'italiano',
+    th: 'ภาษาอิตาลี', zh: '意大利语',
+  },
+  zh: {
+    ar: 'الصينية', bn: 'চীনা', de: 'Chinesisch', en: 'Chinese', es: 'chino',
+    fr: 'chinois', hi: 'चीनी',
+    pt: 'chinês',
+    th: 'ภาษาจีน', zh: '中文',
+  },
 };
 
-/** Endonyme der App-Sprachen — die Fallback- und Auswahl-Form. */
-export const LANGUAGE_ENDONYME: Record<UiLanguage, string> = {
+/** Endonyme der App- und Lernsprachen — die Fallback- und Auswahl-Form. */
+export const LANGUAGE_ENDONYME: Record<NamedLanguage, string> = {
   ar: 'العربية',
   bn: 'বাংলা',
   de: 'Deutsch',
@@ -223,6 +248,7 @@ export const LANGUAGE_ENDONYME: Record<UiLanguage, string> = {
   es: 'español',
   fr: 'français',
   hi: 'हिन्दी',
+  it: 'italiano',
   pt: 'português',
   th: 'ภาษาไทย',
   zh: '中文',
@@ -232,7 +258,7 @@ export const LANGUAGE_ENDONYME: Record<UiLanguage, string> = {
  * Anzeigename einer Lernsprache in der aktuellen UI-Sprache — ohne Eintrag in
  * der geprüften Matrix das Endonym (die Selbstbezeichnung, die überall geht).
  */
-export function languageDisplayName(target: UiLanguage, ui: UiLanguage): string {
+export function languageDisplayName(target: NamedLanguage, ui: UiLanguage): string {
   return LANGUAGE_DISPLAY_NAMES[target]?.[ui] ?? LANGUAGE_ENDONYME[target];
 }
 
@@ -275,7 +301,7 @@ export type I18nValue = {
   /** Übersetzen mit Interpolation — nur bekannte Schlüssel. */
   t: (key: TranslationKey, params?: TParams) => string;
   /** Anzeigename einer Lernsprache in der aktuellen UI-Sprache. */
-  languageName: (target: UiLanguage) => string;
+  languageName: (target: NamedLanguage) => string;
   /** Einstellung ändern (wird sofort persistiert). */
   setSetting: (setting: LanguageSetting) => void;
 };

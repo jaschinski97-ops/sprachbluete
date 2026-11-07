@@ -1,3 +1,4 @@
+import { ohneWortabstand } from '../languages/definitions';
 import type { LanguageCode } from '../languages/types';
 import { vergleichsForm } from './recognition';
 
@@ -13,12 +14,12 @@ export type WortBefund = { wort: string; erkannt: boolean };
 
 const ohneAkzente = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').normalize('NFC');
 
-/** Thai: Wörter per Segmenter, sonst Leerzeichen-Abschnitte; andere: Leerzeichen. */
+/** Thai/Chinesisch: Wörter per Segmenter, sonst Leerzeichen-Abschnitte; andere: Leerzeichen. */
 export function satzWoerter(satz: string, sprache: LanguageCode): string[] {
-  const sauber = satz.replace(/[.,!?;:¿¡"“”„()…–—]/g, ' ').trim();
-  if (sprache === 'th' && typeof Intl !== 'undefined' && typeof (Intl as { Segmenter?: unknown }).Segmenter === 'function') {
+  const sauber = satz.replace(/[.,!?;:¿¡"“”„()…–—，。？！：；、]/g, ' ').trim();
+  if (ohneWortabstand(sprache) && typeof Intl !== 'undefined' && typeof (Intl as { Segmenter?: unknown }).Segmenter === 'function') {
     const woerter: string[] = [];
-    for (const teil of new Intl.Segmenter('th', { granularity: 'word' }).segment(sauber)) {
+    for (const teil of new Intl.Segmenter(sprache, { granularity: 'word' }).segment(sauber)) {
       if (teil.isWordLike) woerter.push(teil.segment);
     }
     if (woerter.length) return woerter;
@@ -28,8 +29,8 @@ export function satzWoerter(satz: string, sprache: LanguageCode): string[] {
 
 export function pruefeWoerter(satz: string, varianten: readonly string[], sprache: LanguageCode): WortBefund[] {
   const woerter = satzWoerter(satz, sprache);
-  if (sprache === 'th') {
-    // Thai ohne Leerzeichen vergleichen: Teilstring in irgendeiner Variante.
+  if (ohneWortabstand(sprache)) {
+    // Thai/Chinesisch ohne Leerzeichen vergleichen: Teilstring in irgendeiner Variante.
     const gehoert = varianten.map((v) => vergleichsForm(v).replace(/ /g, ''));
     return woerter.map((wort) => ({
       wort,

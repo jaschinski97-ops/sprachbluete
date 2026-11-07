@@ -9,6 +9,7 @@ import { HUB_LANGUAGE } from '../languages/types';
 import { analyzeSyllable } from '../reading/syllable';
 import { type DerivationStep } from '../reading/syllable';
 import { ACUTE_TO_PLAIN } from '@/data/spanish-stress';
+import { MEASURE_WORDS, isMeasureWord, yiVor } from '@/data/chinese-measure-words';
 
 import { GraphemeGroup, graphemeGroups, groupFor } from '../spelling/graphemes';
 import { analyzeStress } from '../stress/syllables';
@@ -320,6 +321,119 @@ export function buildGenreQuestion(entry: VocabEntry, anchor: UiLanguage = 'de',
     correctIndex,
     solution: `${FRENCH_INDEFINITE[correctIndex]} ${entry.term}`,
     explanation: parts.join(' · '),
+  };
+}
+
+/* ---------- Genus (Portugiesisch) und Artikel (Italienisch), 07.11.2026 ---------- */
+
+const PORTUGUESE_INDEFINITE = ['um', 'uma'] as const;
+const ITALIAN_INDEFINITE = ['un', 'uno', 'una', 'un’'] as const;
+
+/** Taugt das Nomen für die Artikelfrage — ohne Mehrfachformen („ator, atriz“). */
+function einfachesNomen(entry: VocabEntry): boolean {
+  return entry.term.trim().length > 0 && !/[,;/]/.test(entry.term);
+}
+
+export function canBuildGeneroQuestion(entry: VocabEntry): boolean {
+  return entry.language === 'pt' && Boolean(entry.portugueseNoun) && einfachesNomen(entry);
+}
+
+export function canBuildArticoloQuestion(entry: VocabEntry): boolean {
+  return entry.language === 'it' && Boolean(entry.italianNoun) && einfachesNomen(entry);
+}
+
+/**
+ * Der unbestimmte Artikel aus dem bestimmten: il → un, lo → uno, la → una;
+ * „l’“ wird bei m zu „un“ („l’albero“ → „un albero“), bei f zu „un’“.
+ */
+export function italianIndefinite(noun: NonNullable<VocabEntry['italianNoun']>): (typeof ITALIAN_INDEFINITE)[number] {
+  if (noun.article === 'lo') return 'uno';
+  if (noun.article === 'la') return 'una';
+  if (noun.article === 'l’') return noun.gender === 'f' ? 'un’' : 'un';
+  return 'un';
+}
+
+function articleQuestion(
+  drill: 'genero' | 'articolo',
+  entry: VocabEntry,
+  options: readonly string[],
+  correctIndex: number,
+  plural: string | undefined,
+  anchor: UiLanguage,
+  ui: UiLanguage
+): DrillQuestion {
+  const parts = [termWithArticle(entry)];
+  if (plural && plural !== '—') parts.push(translate(ui, 'flashcard.plural', { plural }));
+  if (entry.note) parts.push(entry.note);
+  const article = options[correctIndex];
+  return {
+    id: `${drill}:${entry.id}`,
+    drill,
+    direction: toTarget(entry),
+    vocabId: entry.id,
+    visible: `___ ${entry.term}`,
+    visibleHint: kontextFuer(entry, anchor),
+    speak: null,
+    options: options.map((label) => ({ label })),
+    correctIndex,
+    // „un’amica“ ohne Leerzeichen, sonst Artikel und Wort getrennt.
+    solution: article.endsWith('’') ? `${article}${entry.term}` : `${article} ${entry.term}`,
+    explanation: parts.join(' · '),
+  };
+}
+
+export function buildGeneroQuestion(entry: VocabEntry, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
+  const noun = entry.portugueseNoun;
+  if (!noun) throw new Error(`"${entry.id}" ist kein portugiesisches Nomen — kein Genus zu üben.`);
+  return articleQuestion('genero', entry, PORTUGUESE_INDEFINITE, noun.gender === 'm' ? 0 : 1, noun.plural, anchor, ui);
+}
+
+export function buildArticoloQuestion(entry: VocabEntry, anchor: UiLanguage = 'de', ui: UiLanguage = 'de'): DrillQuestion {
+  const noun = entry.italianNoun;
+  if (!noun) throw new Error(`"${entry.id}" ist kein italienisches Nomen — kein Artikel zu üben.`);
+  return articleQuestion('articolo', entry, ITALIAN_INDEFINITE, ITALIAN_INDEFINITE.indexOf(italianIndefinite(noun)), noun.plural, anchor, ui);
+}
+
+/* ---------- Zählwörter (Chinesisch, 07.11.2026) ---------- */
+
+/**
+ * Ablenker: häufige, deutlich verschiedene Zählwörter. 个 nie — es geht
+ * umgangssprachlich fast überall und wäre als „falsch“ unfair.
+ */
+const LIANGCI_ABLENKER = ['本', '张', '杯', '只', '条', '件', '辆', '位', '把', '双', '瓶', '台', '家', '碗'] as const;
+
+export function canBuildLiangciQuestion(entry: VocabEntry): boolean {
+  return entry.language === 'zh' && entry.partOfSpeech === 'noun' && isMeasureWord(entry.chineseNoun?.measureWord);
+}
+
+export function buildLiangciQuestion(
+  entry: VocabEntry,
+  random: Random,
+  anchor: UiLanguage = 'de',
+  ui: UiLanguage = 'de'
+): DrillQuestion {
+  const noun = entry.chineseNoun;
+  if (!noun || !isMeasureWord(noun.measureWord)) throw new Error(`"${entry.id}" hat kein chinesisches Zählwort.`);
+  const richtig = noun.measureWord;
+  const auch = new Set([richtig, ...(noun.alternatives ?? [])]);
+  const ablenker = shuffled(LIANGCI_ABLENKER.filter((wort) => !auch.has(wort)), random).slice(0, 3);
+  const options = shuffled([richtig, ...ablenker], random);
+  const loesung = `一${richtig}${entry.term}`;
+  return {
+    id: `liangci:${entry.id}`,
+    drill: 'liangci',
+    direction: toTarget(entry),
+    vocabId: entry.id,
+    visible: `一 ___ ${entry.term}`,
+    // 一 in der Grundform: Die Tonänderung (yí/yì) verriete das Zählwort.
+    visibleRoman: `yī ___ ${entry.romanization}`,
+    visibleHint: kontextFuer(entry, anchor),
+    speak: null,
+    options: options.map((label) => ({ label, roman: MEASURE_WORDS[label] })),
+    correctIndex: options.indexOf(richtig),
+    solution: loesung,
+    solutionRoman: `${yiVor(MEASURE_WORDS[richtig])} ${MEASURE_WORDS[richtig]} ${entry.romanization}`,
+    explanation: translate(ui, 'grammar.measureWordZh', { example: loesung }),
   };
 }
 

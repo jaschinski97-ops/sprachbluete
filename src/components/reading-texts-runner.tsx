@@ -26,6 +26,7 @@ import {
   type VerstaendnisFrage,
 } from '@/lib/reading-texts';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
+import { ohneWortabstand, zeigtUmschrift } from '@/lib/languages/definitions';
 
 /**
  * Längere Hör- und Lesetexte (Schritt 4, Lern-Reiter-Ausbau): Die
@@ -74,7 +75,7 @@ export function ReadingTextsRunner({
             situationen: situationen.map(s => localizedSituation(s, uiLanguage)),
             pool: activeVocabularyFor(targetLanguageOf(direction)),
             cards,
-            latin: targetLanguageOf(direction) !== 'th',
+            latin: !ohneWortabstand(targetLanguageOf(direction)),
           });
         // Feste Szene aus einem Kapitel: immer offen, unabhängig vom Wortschatzstand.
         const selected = situationId ? all.filter((entry) => entry.situation.id === situationId).map(entry => ({ ...entry, offen: true })) : all;
@@ -199,7 +200,7 @@ function TextAnsicht({
   const zeilenTokens = useMemo(() => {
     const pool = activeVocabularyFor(sprache);
     return situation.scriptTurns.map((zeile) =>
-      tokenisiereFuerAntippen(zeile.thai, pool, sprache !== 'th', uiLanguage)
+      tokenisiereFuerAntippen(zeile.thai, pool, !ohneWortabstand(sprache), uiLanguage)
     );
   }, [situation, sprache, uiLanguage]);
   // `woerter`: zuletzt angetippte Wörter (höchstens 3, neuestes vorn) für die Bedeutungsleiste unter der Zeile;
@@ -260,7 +261,7 @@ function TextAnsicht({
         </>
       );
     }
-    return <FrageAnsicht key={frage.id} showRoman={sprache === 'th'} frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
+    return <FrageAnsicht key={frage.id} showRoman={zeigtUmschrift(sprache)} frage={frage} weiter={() => setFragenStufe((v) => (v ?? 0) + 1)} />;
   }
 
   return (
@@ -327,7 +328,7 @@ function TextAnsicht({
                 )
               )}
             </View>
-            {sprache === 'th' ? <ThemedText type="small" themeColor="textSecondary">
+            {zeigtUmschrift(sprache) ? <ThemedText type="small" themeColor="textSecondary">
               {zeile.roman}
             </ThemedText> : null}
 
@@ -337,7 +338,7 @@ function TextAnsicht({
                   .filter((w) => zeile.thai.includes(w.text))
                   .map((w) => (
                     <ThemedText key={w.text} type="small">
-                      {w.text}{sprache === 'th' && w.roman ? ` · ${w.roman}` : ''} — {w.german}
+                      {w.text}{zeigtUmschrift(sprache) && w.roman ? ` · ${w.roman}` : ''} — {w.german}
                     </ThemedText>
                   ))}
               </View>

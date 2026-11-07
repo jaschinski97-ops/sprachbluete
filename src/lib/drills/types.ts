@@ -58,6 +58,12 @@ export const DRILLS = [
   'partizip',
   /** Französisch (04.11.2026): Genus am unbestimmten Artikel — „un“ oder „une“. */
   'genre',
+  /** Portugiesisch (07.11.2026): Genus am unbestimmten Artikel — „um“ oder „uma“. */
+  'genero',
+  /** Italienisch (07.11.2026): der unbestimmte Artikel — „un“, „uno“, „una“ oder „un’“. */
+  'articolo',
+  /** Chinesisch (07.11.2026): das Zählwort zwischen Zahl und Nomen — 一本书, 一杯茶. */
+  'liangci',
 ] as const;
 export type DrillId = (typeof DRILLS)[number];
 
@@ -284,6 +290,39 @@ export const DRILL_META: Record<DrillId, DrillMeta> = {
       'Das Genus des französischen Nomens. Es steht nicht in der Schrift und gehört zum Wort; ' +
       '„l’“ verrät es nicht, der unbestimmte Artikel „un“ oder „une“ schon.',
     prompt: 'Welcher Artikel gehört zum Wort?',
+  },
+  genero: {
+    id: 'genero',
+    side: 'toTarget',
+    feature: 'pt',
+    skill: 'grammatik',
+    label: 'um oder uma?',
+    description:
+      'Das Genus des portugiesischen Nomens am unbestimmten Artikel. Die Endung verrät es oft, ' +
+      'aber nicht immer („o dia“, „a mão“).',
+    prompt: 'Welcher Artikel gehört zum Wort?',
+  },
+  articolo: {
+    id: 'articolo',
+    side: 'toTarget',
+    feature: 'it',
+    skill: 'grammatik',
+    label: 'un, uno, una?',
+    description:
+      'Der unbestimmte Artikel des italienischen Nomens: Er hängt am Genus und am Wortanfang ' +
+      '(„uno studente“, „un’amica“). Der bestimmte Artikel „l’“ verrät das Genus nicht, der unbestimmte schon.',
+    prompt: 'Welcher Artikel gehört zum Wort?',
+  },
+  liangci: {
+    id: 'liangci',
+    side: 'toTarget',
+    feature: 'zh',
+    skill: 'grammatik',
+    label: '个, 本 oder 杯?',
+    description:
+      'Das Zählwort des chinesischen Nomens: Zwischen Zahl und Nomen steht immer ein Zählwort ' +
+      '(一本书 ein Buch, 一杯茶 eine Tasse Tee). 个 ist das allgemeinste, viele Nomen haben ein eigenes.',
+    prompt: 'Welches Zählwort passt zu diesem Nomen?',
   },
   praesensEndung: {
     id: 'praesensEndung',

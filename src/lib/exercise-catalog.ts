@@ -72,6 +72,9 @@ export const DRILL_KEYS: Record<DrillId, TranslationKey> = {
   praesensEndung: 'drill.praesensEndung',
   partizip: 'drill.partizip',
   genre: 'drill.genre',
+  genero: 'drill.genero',
+  articolo: 'drill.articolo',
+  liangci: 'drill.liangci',
 };
 
 /**

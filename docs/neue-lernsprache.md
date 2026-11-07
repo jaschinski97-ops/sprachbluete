@@ -4,8 +4,10 @@ Stand: Sprach-Umbau vom 23.09.2026. Seitdem steht alles, was die App über eine
 Lernsprache wissen muss, an **einer** Stelle. Deutsch ist dabei eine Lernsprache
 wie jede andere, ohne Sonderregeln.
 
-Beispiel: Französisch (`fr`, seit 04.11.2026 so eingebaut). Der Code muss eine der 10 App-Sprachen sein
-(`src/lib/i18n/types.ts`), weil der Sprachname und die Bedeutungen dort herkommen.
+Beispiel: Französisch (`fr`, seit 04.11.2026 so eingebaut). Seit Italienisch
+(07.11.2026) muss eine Lernsprache keine App-Sprache mehr sein; dann braucht
+jeder Beispielsatz und jeder Dialogzug eine eigene Zeile in der Lernsprache
+(siehe unten).
 
 ## 1. Code eintragen
 
@@ -141,3 +143,31 @@ Die Schritte oben reichen nicht ganz. Beim echten Einbau kamen dazu:
 - **Sichtbarkeit:** Eine Lernsprache ohne Wortschatz erscheint nicht als
   Lernziel (`zieleFuerBruecke`). Code und Inhalte können also getrennt
   ausgeliefert werden.
+
+## Was Portugiesisch, Italienisch und Chinesisch (07.11.2026) gebraucht haben
+
+- **Lernsprache ohne App-Oberfläche (Italienisch):** Bedeutungen und
+  Satzübersetzungen kommen aus den 10 App-Sprachen; den Satz in der
+  Lernsprache übersetzt Claude aus einem vorhandenen Beispielsatz
+  (`content-plan/romanische-woerter.cjs`, Spalte „#n Satz“). Dialogquellen
+  brauchen je Zug eine Zeile in der Lernsprache plus alle 10 App-Sprachen;
+  Titel und Hinweise nur in App-Sprachen (`baue-dialoge.cjs`).
+- **Eigene Schrift ohne Wortabstand (Chinesisch):** `script: 'han'` in
+  `definitions.ts`. Fragen nach der Schrift gehen über `eigeneSchrift`,
+  `ohneWortabstand`, `zeigtUmschrift` und `passtZurSchrift`, nie über
+  `=== 'th'`. Diktat wertet je Schriftzeichen, Schreiben ohne
+  Tippfehler-Fenster, Clip-Schlüssel ohne Leerzeichen.
+- **Pinyin statt Lautschrift:** `romanization` in Wörterbuchform mit
+  Tonzeichen (`pruefePinyin` in `vocab-schema.ts`), Silben je Schriftzeichen.
+  Wörter: `content-plan/chinesische-woerter.cjs` (prüft Silben, Tonzeichen
+  und Silbenzahl); Dialoge: `dialoge.cjs pruefe zh` prüft das Pinyin je Zug.
+- **Grammatikübung je Sprache:** `genero` („um oder uma?“), `articolo`
+  („un, uno, una?“), `liangci` („个, 本 oder 杯?“, Zählwort aus
+  `chineseNoun.measureWord`, Liste `src/data/chinese-measure-words.ts`).
+- **Kapitel 0:** Zahlen und Preise je Sprache in `numbers.ts`; Chinesisch hat
+  statt ABC die Töne (`src/data/chinese-tones.ts`, geschützt wie
+  `thai-script.ts`).
+- **Dialoge schneller:** Die spanischen Dialoge haben schon alle 10
+  Übersetzungen und teilen 16–20 von 20 Zielwörtern mit dem Plan einer neuen
+  Sprache. Eine Vorlage aus dem spanischen Dialog gleicher ID spart den
+  größten Teil der Übersetzungsarbeit.

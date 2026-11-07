@@ -11,4 +11,7 @@ export const KURVEN_DATEIEN: Record<LanguageCode, number> = {
   es: require('../../assets/kurven/es.kurven.yml'),
   de: require('../../assets/kurven/de.kurven.yml'),
   fr: require('../../assets/kurven/fr.kurven.yml'),
+  pt: require('../../assets/kurven/pt.kurven.yml'),
+  it: require('../../assets/kurven/it.kurven.yml'),
+  zh: require('../../assets/kurven/zh.kurven.yml'),
 };

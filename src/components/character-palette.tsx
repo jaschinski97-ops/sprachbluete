@@ -307,6 +307,64 @@ export function FrenchPalette({ onInsert, disabled }: PaletteProps) {
   );
 }
 
+/**
+ * Portugiesische und italienische Sonderzeichen (07.11.2026): dieselbe
+ * Begründung wie bei Spanisch und Französisch — Akzente zählen beim Schreiben
+ * („e“ gegen „é“, „avo“ gegen „avó“; italienisch „e“ gegen „è“).
+ * Portugiesisch: Akut, Zirkumflex, Tilde, Gravis (nur „à“) und ç.
+ * Italienisch: Gravis auf allen Vokalen, Akut auf e (perché).
+ */
+const PORTUGUESE_SPECIALS = [
+  { character: 'á', name: 'palette.acute', letter: 'a' },
+  { character: 'â', name: 'palette.circumflex', letter: 'a' },
+  { character: 'ã', name: 'palette.tilde', letter: 'a' },
+  { character: 'à', name: 'palette.grave', letter: 'a' },
+  { character: 'é', name: 'palette.acute', letter: 'e' },
+  { character: 'ê', name: 'palette.circumflex', letter: 'e' },
+  { character: 'í', name: 'palette.acute', letter: 'i' },
+  { character: 'ó', name: 'palette.acute', letter: 'o' },
+  { character: 'ô', name: 'palette.circumflex', letter: 'o' },
+  { character: 'õ', name: 'palette.tilde', letter: 'o' },
+  { character: 'ú', name: 'palette.acute', letter: 'u' },
+  { character: 'ç', name: 'palette.cedilla', letter: 'c' },
+];
+
+const ITALIAN_SPECIALS = [
+  { character: 'à', name: 'palette.grave', letter: 'a' },
+  { character: 'è', name: 'palette.grave', letter: 'e' },
+  { character: 'é', name: 'palette.acute', letter: 'e' },
+  { character: 'ì', name: 'palette.grave', letter: 'i' },
+  { character: 'ò', name: 'palette.grave', letter: 'o' },
+  { character: 'ù', name: 'palette.grave', letter: 'u' },
+];
+
+function SpecialsPalette({
+  heading,
+  specials,
+  onInsert,
+  disabled,
+}: PaletteProps & { heading: TranslationKey; specials: readonly { character: string; name: string; letter: string }[] }) {
+  const { t } = useLocale();
+  return (
+    <View style={styles.palette}>
+      <ThemedText type="small" themeColor="textSecondary">
+        {t(heading)}
+      </ThemedText>
+      <View style={styles.keys}>
+        {specials.map((special) => (
+          <Key
+            key={special.character}
+            label={special.character}
+            spokenLabel={t(special.name as TranslationKey, { letter: special.letter })}
+            onPress={() => onInsert(special.character)}
+            disabled={disabled}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   palette: {
     gap: Spacing.two,
@@ -370,5 +428,11 @@ export function LanguagePalette({
   if (palette === 'german') return <GermanPalette onInsert={onInsert} disabled={disabled} />;
   if (palette === 'spanish') return <SpanishPalette onInsert={onInsert} disabled={disabled} />;
   if (palette === 'french') return <FrenchPalette onInsert={onInsert} disabled={disabled} />;
+  if (palette === 'portuguese') {
+    return <SpecialsPalette heading="palette.portugueseHeading" specials={PORTUGUESE_SPECIALS} onInsert={onInsert} disabled={disabled} />;
+  }
+  if (palette === 'italian') {
+    return <SpecialsPalette heading="palette.italianHeading" specials={ITALIAN_SPECIALS} onInsert={onInsert} disabled={disabled} />;
+  }
   return null;
 }

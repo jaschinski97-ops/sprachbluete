@@ -82,7 +82,8 @@ export function tidyDictation(text: string): string {
  * „don't" für „dont" ist kein Diktatfehler. Thai ๆ (U+0E46, Wiederholung)
  * steht absichtlich NICHT hier — es ist Schrift, keine Satzzeichen.
  */
-const PUNCTUATION = /[.,!?;:"„“”‚‘’«»‹›()[\]{}…–—‽¡¿']/gu;
+// Dazu die chinesischen Vollbreiten-Satzzeichen (，。？！：；、《》（）「」).
+const PUNCTUATION = /[.,!?;:"„“”‚‘’«»‹›()[\]{}…–—‽¡¿'，。？！：；、《》（）「」『』]/gu;
 
 const THAI_DIACRITIC = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/u;
 
@@ -107,7 +108,11 @@ type Token = { raw: string; norm: string };
  * `raw` für die Anzeige aber erhalten).
  */
 function tokenize(text: string, config: DictationLanguageConfig): Token[] {
-  const rawTokens = tidyDictation(text).split(/\s+/).filter(Boolean);
+  // Chinesisch hat keine Leerzeichen: jedes Schriftzeichen ist ein Token,
+  // sonst wäre ein Satz ein einziges Alles-oder-nichts-Wort.
+  const rawTokens = config.script === 'han'
+    ? Array.from(tidyDictation(text).replace(/\s+/gu, ''))
+    : tidyDictation(text).split(/\s+/).filter(Boolean);
   const tokens: Token[] = [];
   // Nur der ERSTE behaltene Token bekommt den Satz-Anfangs-Toleranz-Faltung —
   // auf jeden Token angewandt, würde sie Groß-/Kleinschreibung im Satzinneren
@@ -138,7 +143,7 @@ function foldInitial(norm: string, config: DictationLanguageConfig): string {
 
 /** Der ganzer Satz normiert — für `exact`. */
 function normalizedWhole(tokens: Token[], config: DictationLanguageConfig): string {
-  return tokens.map((token) => token.norm).join(config.script === 'thai' ? '' : ' ');
+  return tokens.map((token) => token.norm).join(config.script === 'latin' ? ' ' : '');
 }
 
 /* ---------- Alignment ---------- */

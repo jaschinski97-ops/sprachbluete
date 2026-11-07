@@ -8,7 +8,7 @@ import { ThemedView } from './themed-view';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
 import { useLocale, type TranslationKey } from '@/lib/i18n';
-import { writingPromptKey } from '@/lib/languages/definitions';
+import { eigeneSchrift, writingPromptKey } from '@/lib/languages/definitions';
 import type { VocabEntry } from '@/data/vocab-types';
 
 import { type Rating } from '@/lib/fsrs/types';
@@ -241,7 +241,7 @@ export function WritingRunner({
           </Pressable>
           {assisted ? <>
             <ThemedText type="subtitle">{prompt.solution}</ThemedText>
-            {prompt.language === 'th' ? <View style={styles.row}>
+            {eigeneSchrift(prompt.language) ? <View style={styles.row}>
               {[...new Set(Array.from(prompt.targets[0] ?? ''))].filter(character => character.trim()).map(character => (
                 <Pressable key={character} accessibilityRole="button" accessibilityLabel={`${t('writing.inputA11y')}: ${character}`}
                   onPress={() => setDraft(value => value + character)} style={styles.copyKey}>

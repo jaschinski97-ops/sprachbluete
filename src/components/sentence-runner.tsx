@@ -18,6 +18,7 @@ import type { CapturedPcm } from '@/lib/speaking';
 import { MIC_ERROR_KEYS } from '@/lib/speaking/mic-error-keys';
 import { measureSentence, preparationRemaining, sentenceAnswers, sentenceSession,
   SENTENCE_WINDOWS_MS, type SentenceMeasurement, type SentenceMode } from '@/lib/speaking/sentence-session';
+import { zeigtUmschrift } from '@/lib/languages/definitions';
 
 export function SentenceAction({ label, onPress, disabled = false }: {
   label: string; onPress: () => void; disabled?: boolean;
@@ -256,7 +257,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
       {task.meaning ? <ThemedText type="smallBold">{task.meaning}</ThemedText> : null}
       {/* Der Thai-Satz in Displaygröße: Skalierungsdeckel wie überall, sonst
           schneiden Zeilenhöhe und Tonzeichen einander (UI-Review 2026-09-07). */}
-      {(stage !== 'record' || mode === 'shadowing') && <><ThemedText type="subtitle" maxFontSizeMultiplier={2} style={{ lineHeight: displayLineHeight(32, 2) }}>{task.text}</ThemedText>{language === 'th' && task.roman && task.roman !== task.text && <ThemedText>{task.roman}</ThemedText>}</>}
+      {(stage !== 'record' || mode === 'shadowing') && <><ThemedText type="subtitle" maxFontSizeMultiplier={2} style={{ lineHeight: displayLineHeight(32, 2) }}>{task.text}</ThemedText>{zeigtUmschrift(language) && task.roman && task.roman !== task.text && <ThemedText>{task.roman}</ThemedText>}</>}
       {stage === 'prepare' && <>
         <ThemedText type="smallBold">{t('sentence.prepare', { seconds: Math.ceil(remaining / 1000) })}</ThemedText>
         <ThemedText type="small">{t('sentence.prepareBody', { focus: task.focus })}</ThemedText>
@@ -294,7 +295,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
           deutsche Bedeutung, auf anderen Brücken der gehörte Zielsatz
           (Erkennungsmodus, 21.09.2026). */}
       {sentenceAnswers(task, seed + index).map(option => <SentenceAction key={option}
-        label={language === 'th' && task.answersRoman?.[task.answers.indexOf(option)]
+        label={zeigtUmschrift(language) && task.answersRoman?.[task.answers.indexOf(option)]
           ? `${option}\n${task.answersRoman[task.answers.indexOf(option)]}` : option}
         disabled={!heard || answer !== null || busy}
         onPress={() => { if (!heard || answer !== null) return; setAnswer(option); if (option === task.answers[0]) setCorrect(value => value + 1); void stopPronunciation(); }} />)}
@@ -302,7 +303,7 @@ export function SentenceRunner({ mode, language, anchor = 'de', direction, words
         {/* Das Urteil steht auch als Text da, nicht nur als Farbe (Testrunde 25.10.). */}
         <ThemedText accessibilityLiveRegion="polite">{answer === task.answers[0] ? t('sentence.correct') : `${t('drill.wrong')} · ${t('sentence.meant', { answer: task.answers[0] })}`}</ThemedText>
         <ThemedText>{task.text}</ThemedText>
-        {language === 'th' && task.roman && task.roman !== task.text ? <ThemedText>{task.roman}</ThemedText> : null}
+        {zeigtUmschrift(language) && task.roman && task.roman !== task.text ? <ThemedText>{task.roman}</ThemedText> : null}
         <ThemedText type="small">{task.focus}</ThemedText>
         <SentenceAction label={t('sentence.nextSentence')} onPress={() => reset(index + 1)} />
       </>}

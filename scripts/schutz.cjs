@@ -66,7 +66,7 @@ const BEREICHE = [
   },
   {
     name: 'Feste, quellengeprüfte Lerndaten',
-    dateien: ['src/data/numbers.ts', 'src/data/latin-alphabet.ts', 'src/data/thai-script.ts'],
+    dateien: ['src/data/numbers.ts', 'src/data/latin-alphabet.ts', 'src/data/thai-script.ts', 'src/data/chinese-tones.ts', 'src/data/chinese-measure-words.ts'],
   },
 ];
 

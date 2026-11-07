@@ -9,7 +9,7 @@ import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme, useToneColor } from '@/hooks/use-theme';
 import { useLocale } from '@/lib/i18n';
-import { learningLanguage } from '@/lib/languages/definitions';
+import { eigeneSchrift, learningLanguage } from '@/lib/languages/definitions';
 import { type PairDirection, targetLanguageOf } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
 import {
@@ -228,7 +228,7 @@ function WordListRound({
         const ok = answer ? answer.correct || answer.accepted : false;
         const wordCell = (
           <View style={styles.cell}>
-            <ThemedText style={language === 'th' ? styles.thaiWord : styles.word}>{item.word}</ThemedText>
+            <ThemedText style={eigeneSchrift(language) ? styles.thaiWord : styles.word}>{item.word}</ThemedText>
             {item.roman ? <ThemedText type="small" themeColor="textSecondary">{item.roman}</ThemedText> : null}
           </View>
         );
@@ -246,7 +246,7 @@ function WordListRound({
             autoCorrect={false}
             spellCheck={false}
             accessibilityLabel={t('wordList.inputA11y', { index: index + 1 })}
-            style={[styles.cell, styles.input, !hidesMeaning && language === 'th' && styles.thaiInput, { color: theme.text, borderColor: theme.cardBorder }]}
+            style={[styles.cell, styles.input, !hidesMeaning && eigeneSchrift(language) && styles.thaiInput, { color: theme.text, borderColor: theme.cardBorder }]}
           />
         );
         // Je Phase: study zeigt beide Seiten, quiz ersetzt die verdeckte Seite durch ein Eingabefeld, checked durch

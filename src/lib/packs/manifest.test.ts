@@ -26,11 +26,11 @@ function validManifest(overrides: Partial<PackManifest> = {}): PackManifest {
 }
 
 describe('isPackLanguage', () => {
-  test('accepts the core five languages only', () => {
-    for (const language of ['th', 'en', 'es', 'de']) {
+  test('accepts the learning languages only', () => {
+    for (const language of ['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh']) {
       expect(isPackLanguage(language)).toBe(true);
     }
-    expect(isPackLanguage('zh')).toBe(false);
+    expect(isPackLanguage('ar')).toBe(false);
     expect(isPackLanguage('TH')).toBe(false);
     expect(isPackLanguage(1)).toBe(false);
   });
@@ -43,7 +43,7 @@ describe('manifestProblem', () => {
 
   test.each([
     ['schemaVersion', { schemaVersion: 2 }],
-    ['language', { language: 'zh' }],
+    ['language', { language: 'ar' }],
     ['version', { version: 0 }],
     ['createdAt', { createdAt: 'neulich' }],
     ['sourceCatalogSha256', { sourceCatalogSha256: 'kurz' }],

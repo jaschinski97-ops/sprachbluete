@@ -25,6 +25,22 @@ import type { LanguageCode } from '@/lib/languages/types';
  *        „non comptées séparément dans l’alphabet“. Wörter mit Akzent lassen
  *        sich deshalb nicht buchstabieren (`isSpellable`) und fehlen in der
  *        Buchstabier-Übung.
+ *   pt — pt.wikipedia „Alfabeto português“, Abschnitt „Nomes das letras e
+ *        representações fonéticas“ (26 Buchstaben nach dem Acordo Ortográfico
+ *        de 1990), abgerufen am 2026-11-07. Wo die Tabelle mehrere Namen
+ *        nennt („ê / é“, „gê / guê“), steht der zuerst genannte als Name, der
+ *        nächste als Variante (bei W aus fünf Formen „duplo vê“, weil die
+ *        zweite nur eine Schreibvariante ist); eine Landeszuordnung gibt die
+ *        Quelle nicht.
+ *        Die Spalte „AFI“ der Quelle gibt den LAUT des Buchstabens, nicht die
+ *        Aussprache des Namens — deshalb steht hier keine Lautschrift.
+ *   it — it.wikipedia „Alfabeto italiano“ (Tabelle der 21 Buchstaben, Spalte
+ *        „Nome“, und „Le lettere J (i lunga), K (cappa), W (vi/vu doppia o
+ *        doppia vi/vu), X (ics) e Y (ipsilon o i greca) sono dette ‚lettere
+ *        straniere‘“), abgerufen am 2026-11-07. Die fünf Fremdbuchstaben
+ *        stehen an ihrer Stelle im ABC, sonst ließen sich Wörter wie „taxi“
+ *        nicht buchstabieren. Lautschrift wie bei Portugiesisch: keine, die
+ *        IPA-Spalte der Quelle gibt Laute, keine Namen.
  */
 
 export const ALPHABET_SOURCES: Record<LatinLanguage, { title: string; url: string; retrieved: string }> = {
@@ -32,16 +48,19 @@ export const ALPHABET_SOURCES: Record<LatinLanguage, { title: string; url: strin
   es: { title: 'Ortografía del español', url: 'https://es.wikipedia.org/wiki/Alfabeto_espa%C3%B1ol', retrieved: '2026-10-18' },
   de: { title: 'Deutsches Alphabet', url: 'https://de.wikipedia.org/wiki/Deutsches_Alphabet', retrieved: '2026-10-18' },
   fr: { title: 'Alphabet du français', url: 'https://fr.wikipedia.org/wiki/Alphabet_du_fran%C3%A7ais', retrieved: '2026-11-04' },
+  pt: { title: 'Alfabeto português', url: 'https://pt.wikipedia.org/wiki/Alfabeto_portugu%C3%AAs', retrieved: '2026-11-07' },
+  it: { title: 'Alfabeto italiano', url: 'https://it.wikipedia.org/wiki/Alfabeto_italiano', retrieved: '2026-11-07' },
 };
 
-export type LatinLanguage = Exclude<LanguageCode, 'th'>;
+export type LatinLanguage = Exclude<LanguageCode, 'th' | 'zh'>;
 
 export type LatinLetter = {
   upper: string;
   lower: string;
   /** Ausgeschriebener Name laut Quelle — `null`, wo die Quelle nur IPA nennt. */
   name: string | null;
-  ipa: string;
+  /** Lautschrift des Namens — `null`, wo die Quelle keine nennt (Portugiesisch, Italienisch). */
+  ipa: string | null;
   /** Was die Systemstimme liest. Englisch/Deutsch: der Buchstabe selbst
    * (Stimmen lesen Einzelbuchstaben mit ihrem Namen; „a“ als Wort klänge
    * falsch). Spanisch: der ASALE-Name, der sich lautgetreu liest. */
@@ -50,7 +69,7 @@ export type LatinLetter = {
   variant?: string;
 };
 
-const letter = (upper: string, name: string | null, ipa: string, spoken: string, variant?: string): LatinLetter => ({
+const letter = (upper: string, name: string | null, ipa: string | null, spoken: string, variant?: string): LatinLetter => ({
   upper,
   lower: upper === 'ẞ' ? 'ß' : upper.toLowerCase(),
   name,
@@ -64,6 +83,8 @@ const es = (upper: string, name: string, ipa: string) => letter(upper, name, ipa
 const de = (upper: string, ipa: string, name: string | null = null) => letter(upper, name, ipa, name ?? upper);
 /** Französisch: Die Systemstimme liest den Namen der Quelle („bé“, „ache“), wie bei Spanisch. */
 const fr = (upper: string, name: string, ipa: string) => letter(upper, name, ipa, name);
+/** Portugiesisch und Italienisch: Name der Quelle, ohne Lautschrift; die Stimme liest den Namen. */
+const named = (upper: string, name: string, variant?: string) => letter(upper, name, null, name, variant);
 
 export const LATIN_ALPHABETS: Record<LatinLanguage, readonly LatinLetter[]> = {
   en: [
@@ -100,6 +121,21 @@ export const LATIN_ALPHABETS: Record<LatinLanguage, readonly LatinLetter[]> = {
     fr('Q', 'ku', '/ky/'), fr('R', 'erre', '/ɛʁ/'), fr('S', 'esse', '/ɛs/'), fr('T', 'té', '/te/'),
     fr('U', 'u', '/y/'), fr('V', 'vé', '/ve/'), fr('W', 'double vé', '/dublə ve/'), fr('X', 'ics', '/iks/'),
     fr('Y', 'i grec', '/igʁɛk/'), fr('Z', 'zède', '/zɛd/'),
+  ],
+  pt: [
+    named('A', 'á'), named('B', 'bê'), named('C', 'cê'), named('D', 'dê'), named('E', 'ê', 'é'),
+    named('F', 'efe', 'éf'), named('G', 'gê', 'guê'), named('H', 'agá'), named('I', 'i'), named('J', 'jota'),
+    named('K', 'cá', 'capa'), named('L', 'ele', 'él'), named('M', 'eme', 'ém'), named('N', 'ene', 'én'),
+    named('O', 'ô', 'ó'), named('P', 'pê'), named('Q', 'quê'), named('R', 'erre', 'ér'), named('S', 'esse', 'és'),
+    named('T', 'tê'), named('U', 'u'), named('V', 'vê'), named('W', 'dáblio', 'duplo vê'), named('X', 'xis'),
+    named('Y', 'ípsilon', 'i grego'), named('Z', 'zê'),
+  ],
+  it: [
+    named('A', 'a'), named('B', 'bi'), named('C', 'ci'), named('D', 'di'), named('E', 'e'), named('F', 'effe'),
+    named('G', 'gi'), named('H', 'acca'), named('I', 'i'), named('J', 'i lunga'), named('K', 'cappa'),
+    named('L', 'elle'), named('M', 'emme'), named('N', 'enne'), named('O', 'o'), named('P', 'pi'), named('Q', 'cu'),
+    named('R', 'erre'), named('S', 'esse'), named('T', 'ti'), named('U', 'u'), named('V', 'vu', 'vi'),
+    named('W', 'vu doppia', 'doppia vu'), named('X', 'ics'), named('Y', 'ipsilon', 'i greca'), named('Z', 'zeta'),
   ],
 };
 

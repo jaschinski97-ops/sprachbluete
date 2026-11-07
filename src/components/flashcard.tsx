@@ -22,6 +22,7 @@ import { PairDirection } from '@/lib/fsrs/types';
 import { anchorOf } from '@/lib/languages/types';
 import { useLocale, type TranslationKey, type UiLanguage } from '@/lib/i18n';
 import { useTheme } from '@/hooks/use-theme';
+import { zeigtUmschrift } from '@/lib/languages/definitions';
 
 /**
  * Karteikarte.
@@ -132,7 +133,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
                 style={{ lineHeight: displayLineHeight(56, 1.4) }}>
                 {entry.term}
               </ThemedText>
-              {entry.language === 'th' && entry.romanization && entry.romanization !== entry.term ? (
+              {zeigtUmschrift(entry.language) && entry.romanization && entry.romanization !== entry.term ? (
                 <ThemedText type="small" themeColor="textSecondary">{entry.romanization}</ThemedText>
               ) : null}
             </View>
@@ -250,7 +251,7 @@ function ExampleBlock({ entry, anchor, situation }: { entry: VocabEntry; anchor:
     <View style={styles.exampleRow}>
       <View style={styles.exampleText}>
         <ThemedText type="small">{example.text}</ThemedText>
-        {entry.language === 'th' && example.roman ? <ThemedText type="small">{example.roman}</ThemedText> : null}
+        {zeigtUmschrift(entry.language) && example.roman ? <ThemedText type="small">{example.roman}</ThemedText> : null}
         {example.meaning !== example.text ? <ThemedText type="small" themeColor="textSecondary">{example.meaning}</ThemedText> : null}
       </View>
       <SpeakButton label="▶" spokenLabel={t('flashcard.listenExampleA11y')} text={example.text} language={entry.language} compact />

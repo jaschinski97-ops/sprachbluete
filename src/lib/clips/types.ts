@@ -145,7 +145,8 @@ export function normalizeClipText(text: string): string {
  */
 export function clipKeyText(language: ClipLanguage, text: string): string {
   const collapsed = normalizeClipText(text);
-  return LEARNING_LANGUAGES[language].script === 'thai' ? collapsed.replace(/\s/g, '') : collapsed;
+  // Chinesisch seit 07.11.2026 wie Thai (es gab davor keine zh-Clips).
+  return LEARNING_LANGUAGES[language].script === 'latin' ? collapsed : collapsed.replace(/\s/g, '');
 }
 
 /**

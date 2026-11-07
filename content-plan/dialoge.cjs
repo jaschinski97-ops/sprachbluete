@@ -19,6 +19,7 @@ const domain = require('../scripts/content/domain.cjs');
 const { parseSituation, mitZielwoertern } = domain.load('src/lib/conversation/generator');
 const { sollAusSchriftUndUmschrift } = domain.load('src/lib/content/soll-toene-schrift');
 const { romanSyllableProblem } = domain.load('src/lib/content/thai-romanization');
+const { satzSilben } = require('./chinesische-woerter.cjs');
 
 const root = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8'));
@@ -56,6 +57,17 @@ function pruefeDatei(sprache, spec) {
       for (const silbe of turn.roman.split(/[-\s]+/).map((s) => s.replace(/[.,!?;:"“”()…]/g, '')).filter(Boolean)) {
         const problem = romanSyllableProblem(silbe);
         if (problem) fehler.push(`${spec.id} Zeile ${i + 1}: Umschrift „${silbe}“: ${problem}`);
+      }
+    });
+  }
+  if (sprache === 'zh') {
+    // Pinyin je Zug: gültige Silben mit richtig gesetzten Tonzeichen, eine Silbe je Schriftzeichen.
+    situation.scriptTurns.forEach((turn, i) => {
+      const gezaehlt = satzSilben(turn.roman);
+      if (gezaehlt.fehler) { fehler.push(`${spec.id} Zeile ${i + 1}: Pinyin: ${gezaehlt.fehler}`); return; }
+      const zeichen = (turn.targetText.match(/\p{Script=Han}/gu) ?? []).length;
+      if (!/[0-9A-Za-z]/.test(turn.targetText) && gezaehlt.anzahl !== zeichen) {
+        fehler.push(`${spec.id} Zeile ${i + 1}: ${zeichen} Schriftzeichen, aber ${gezaehlt.anzahl} Pinyin-Silben`);
       }
     });
   }

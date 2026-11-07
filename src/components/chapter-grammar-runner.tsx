@@ -9,6 +9,7 @@ import { ThemedButton } from './themed-button';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
+import { zeigtUmschrift } from '@/lib/languages/definitions';
 
 /**
  * Teach the rules that actually occur in this chapter, then practise the
@@ -31,8 +32,8 @@ export function ChapterGrammarRunner({ situation, direction, drill, onExit }: {
     <ThemedText type="small">{t('learning.example')}</ThemedText>
     {situation.scriptTurns.slice(0, 2).map((turn, index) => <ThemedView key={index}>
       <ThemedText>{spokenText(situation, turn)}</ThemedText>
-      {/* Thai-Zieltexte immer mit Umschrift, wie überall (Testlauf 08.10.2026). */}
-      {targetLanguageOf(direction) === 'th' && turn.roman ? <ThemedText type="small" themeColor="textSecondary">{turn.roman}</ThemedText> : null}
+      {/* Zieltexte eigener Schriften (Thai, Chinesisch) immer mit Umschrift (Testlauf 08.10.2026). */}
+      {zeigtUmschrift(targetLanguageOf(direction)) && turn.roman ? <ThemedText type="small" themeColor="textSecondary">{turn.roman}</ThemedText> : null}
       <ThemedText type="small">{translation.turns[index]}</ThemedText>
     </ThemedView>)}
     <ThemedButton label={t('common.next')} onPress={() => setPractising(true)} variant="primary" />

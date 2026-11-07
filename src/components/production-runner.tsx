@@ -57,6 +57,9 @@ const SR_LOCALE: Record<LanguageCode, string> = {
   es: 'es-ES',
   de: 'de-DE',
   fr: 'fr-FR',
+  pt: 'pt-BR',
+  it: 'it-IT',
+  zh: 'zh-CN',
 };
 
 // Selbstbewertung (Gut/Schwer/Nochmal) nach der Musterlösung; „Leicht“ wird hier bewusst nicht angeboten.

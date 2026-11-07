@@ -1,5 +1,11 @@
 # Changelog
 
+## 07.11.2026
+
+- Studio: Ein aufgebrauchtes Guthaben beim Anbieter (Gemini-Prepay HTTP 402 „Your prepayment credits are depleted … RESOURCE_EXHAUSTED“, OpenAI `insufficient_quota`) stoppt den Lauf jetzt sofort mit der Meldung „Guthaben beim Anbieter aufgebraucht … aufladen, dann neu starten“. Vorher hielt die Drossel es wegen „RESOURCE_EXHAUSTED“ für ein Ratenlimit und wiederholte jeden Eintrag bis zu 8-mal mit wachsenden Pausen, der Lauf wirkte minutenlang hängend (französischer Clip-Lauf nach 2.748 Clips). Drossel geschützt, Freigabe des Nutzers; `istGuthabenLeer` in `drossel.ts`, Stopp und Meldung über `mitTageslimit`.
+- Studio-Übersicht: „Dialog-Situationen“ zählt Französisch mit. Die Richtungen kommen jetzt aus den Lernsprachen statt aus einer festen Liste; ein Test meldet, wenn der Zähler eine Lernsprache nicht kennt.
+- Französisch komplett vertont (gemini-3.8-flash-tts, Kore): alle 1.920 Wörter, alle 1.903 verschiedenen Beispielsätze (1.907 Wörter mit Satz, vier teilen sich einen) und alle 869 Dialogzeilen, zusammen 4.692 Clips und 101,5 MiB. Vorbild-Kurven für Shadowing neu gerechnet (`assets/kurven/fr.kurven.yml`, 2.772 Kurven).
+
 ## 05.11.2026
 
 - 50 französische Dialoge im Katalog (25 Anfänger, 15 Fortgeschritten, 10 Profi, je 11–20 Züge und zwei Korrektur-Hinweise), von Claude geschrieben, mit Lautschrift je Zug und Übersetzungen in allen 10 App-Sprachen (Anrede und Geschlechtsformen je Sprecherin bzw. Sprecher). Jeder Dialog enthält die geplanten Zielwörter seiner Stufe (20, im letzten Profi-Dialog die übrigen 8; am Dialog als `vocabIds`) plus 4 Wörter zum Wiederholen. Die Dialoge sind länger als in den anderen Sprachen (8–14 Züge), weil alle 20 Zielwörter vorkommen. Hörclips fehlen noch, bis dahin spricht die Systemstimme.

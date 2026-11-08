@@ -3,7 +3,7 @@
   "scripts/app-catalog-files.cjs": "65f68ae1cde5af3333a045076c1b953d9aff07c5e565e13d88e5a50674725c6e",
   "scripts/content/automatic-delivery.cjs": "64c4817e74a9b426325b9551b2862ff7dfe0df37b8b7901fa4bd2606b321a3eb",
   "scripts/content/build-pack.cjs": "db42afb1c9816c286daac7db49b1bfe6730d8293c62cf6674071ea7a28eb05af",
-  "scripts/content/pipeline.cjs": "3231b8dc495105868dd630a4ff2749339decd473868067c8d83385a1d401fef4",
+  "scripts/content/pipeline.cjs": "19cb3f049152537105c4e0f2293ee72c37213d629fc37385a379372b04fe6be0",
   "scripts/metro-app-catalog.cjs": "7fedc69a953b1b3d3064a7fe91203d7ee52ae8aa8ccbd869aaca01e6008dadda",
   "src/components/catalog-gate.tsx": "a95594f0276e1915ae4dc9d44e6b753b631278fe3eb55df22a60467ec500f171",
   "src/data/chinese-measure-words.ts": "92d7461a71add3086a52ca3bb0babeb09016d135e785c5da29366a8329864757",

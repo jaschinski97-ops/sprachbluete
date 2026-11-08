@@ -27,7 +27,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { digestOf } = require('../scripts/content/pipeline.cjs');
+const { digestOf, katalogText } = require('../scripts/content/pipeline.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const KATALOG = path.join(ROOT, 'src/content/catalog.json');
@@ -279,7 +279,7 @@ function uebernimm(sprachen) {
     }
   }
   if (fehlt.length) throw Error(`${fehlt.length} Lücken, nichts geschrieben: ${fehlt.slice(0, 5).join('; ')}`);
-  fs.writeFileSync(KATALOG, `${JSON.stringify(katalog, null, 2)}\n`);
+  fs.writeFileSync(KATALOG, katalogText(katalog));
   console.log(`${geaendert} Einträge um ${sprachen.join(', ')} ergänzt.`);
 }
 

@@ -68,6 +68,22 @@ async function atomicJson(file, value) {
   await atomicFile(file, JSON.stringify(value, null, 2) + '\n');
 }
 /**
+ * Katalog als Text: ein Eintrag je Zeile statt eingerückt (08.11.2026).
+ * Eingerückt war er über 100 MiB groß, mehr nimmt GitHub je Datei nicht an;
+ * so ist er gut ein Viertel kleiner, und jede Änderung bleibt eine Zeile.
+ */
+function katalogText(katalog) {
+  const json = (wert) => JSON.stringify(wert) ?? 'null';
+  const zeilen = Object.entries(katalog).filter(([, wert]) => wert !== undefined).map(([schluessel, wert]) => {
+    const liste = Array.isArray(wert);
+    const teile = liste ? wert.map(json)
+      : wert && typeof wert === 'object' ? Object.entries(wert).filter(([, v]) => v !== undefined).map(([k, v]) => `${json(k)}: ${json(v)}`) : [];
+    const inhalt = teile.length ? `${liste ? '[' : '{'}\n    ${teile.join(',\n    ')}\n  ${liste ? ']' : '}'}` : json(wert);
+    return `  ${json(schluessel)}: ${inhalt}`;
+  });
+  return `{\n${zeilen.join(',\n')}\n}\n`;
+}
+/**
  * Woran ein Bild hängt. Alter Bestand: Bild-ID = Wort-ID eines konkreten
  * Worts. Begriffsbild: ID aus dem Begriff (`concept-…`, Ausnahme mit
  * `-<sprache>`), und mindestens ein konkretes Wort trägt den Begriff — bei
@@ -485,7 +501,7 @@ class ContentPipeline {
     await fs.mkdir(path.join(this.root, 'src/content'), { recursive: true });
     await atomicFile(path.join(this.root, 'src/content/assets.ts'), source);
     // Catalog is the last write: new entries only become visible after assets exist.
-    await atomicJson(this.catalogFile, catalog);
+    await atomicFile(this.catalogFile, katalogText(catalog));
   }
   async publish(options = {}) {
     const state = await this.state();
@@ -578,4 +594,4 @@ class ContentPipeline {
     return report;
   }
 }
-module.exports = { ContentPipeline, compressAudio, digestOf, assertDocument, BUDGET, keyOf, shippingBytes };
+module.exports = { ContentPipeline, compressAudio, digestOf, assertDocument, BUDGET, keyOf, shippingBytes, katalogText };

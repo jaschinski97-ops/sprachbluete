@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { ContentPipeline, BUDGET, shippingBytes } = require('./pipeline.cjs');
+const { ContentPipeline, BUDGET, shippingBytes, katalogText } = require('./pipeline.cjs');
 const { createStudio } = require('./studio.cjs');
 const { AutomaticDelivery } = require('./automatic-delivery.cjs');
 const { checkContent } = require('./check.cjs');
@@ -537,4 +537,29 @@ test('neue KI-Wörter brauchen Begriff und Satzübersetzungen; /vocabulary liefe
   t.after(() => new Promise(resolve => server.close(resolve)));
   const { woerter } = await (await fetch(`http://127.0.0.1:${server.address().port}/vocabulary`)).json();
   assert.deepEqual(woerter.find((w) => w.id === wort.id), { id: wort.id, language: 'en', term: 'lamp', german: 'Lampe', concept: 'c:lamp' });
+});
+
+test('katalogText schreibt einen Eintrag je Zeile und bleibt dasselbe JSON', () => {
+  const katalog = {
+    version: 2, leer: [], ohne: undefined,
+    entries: [{ id: 'a', tiefe: { liste: [1, 2] } }, { id: 'b', fehlt: undefined }],
+    deleted: { 'audio:x': 1, weg: undefined }, clearedBefore: {},
+  };
+  const text = katalogText(katalog);
+  assert.deepEqual(JSON.parse(text), JSON.parse(JSON.stringify(katalog)));
+  assert.equal(text, [
+    '{',
+    '  "version": 2,',
+    '  "leer": [],',
+    '  "entries": [',
+    '    {"id":"a","tiefe":{"liste":[1,2]}},',
+    '    {"id":"b"}',
+    '  ],',
+    '  "deleted": {',
+    '    "audio:x": 1',
+    '  },',
+    '  "clearedBefore": {}',
+    '}',
+    '',
+  ].join('\n'));
 });

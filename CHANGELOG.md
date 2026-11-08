@@ -1,5 +1,9 @@
 # Changelog
 
+## 08.11.2026 (Katalog passt zu GitHub)
+
+- `src/content/catalog.json` steht jetzt mit einem Eintrag je Zeile statt eingerückt (geschützte Pipeline, Nutzerfreigabe). Der Inhalt bleibt gleich, die Datei ist ein gutes Viertel kleiner: mit allen japanischen Inhalten 80,5 statt 109,4 MiB. GitHub lehnt Dateien über 100 MiB ab, deshalb ließ sich der Inhalts-Commit nicht pushen. Pipeline und `content-plan/uebersetzungen.cjs` schreiben über `katalogText` (`pipeline.cjs`), Test in `pipeline.test.cjs`. Mit den restlichen rund 16.000 Clips wächst der Katalog auf etwa 94 MiB; für weitere Inhalte muss er aufgeteilt werden.
+
 ## 08.11.2026 (Durchsicht)
 
 - Lesetexte schneller: Die Liste aller Lesetexte einer Sprache brauchte mit dem echten Katalog 420–670 ms (Thai, Chinesisch, Japanisch) bzw. 46 ms (Englisch), jetzt rund 30 bzw. 8 ms. Wortformen und Begriffe werden einmal je Wortschatz als Nachschlagetabelle gebaut (`entriesWithForm` in `vocabulary-forms.ts`, `begriffIndex` in `reading-texts.ts`), der längste Treffer wird nur noch zwischen Wortgrenzen gesucht statt über alle Wörter. Aus einem Kapitel heraus wird nur dessen Szene berechnet. Die Zerlegung ist in allen 9 Sprachen über alle Dialogzeilen dieselbe wie vorher (einmal verglichen).

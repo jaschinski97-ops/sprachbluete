@@ -40,7 +40,7 @@ const STUFEN = ['beginner', 'experienced', 'pro'];
 const JE_DATEI = 50;
 // generatedAt = Begriffsrang wie bei den anderen Sprachen (24.10.2026, 15:00 UTC + Rang in Sekunden).
 const RANG_BASIS = 1792854000000;
-const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt'];
+const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt', 'it', 'ja'];
 // Bedeutungen und Sätze zuerst aus Englisch, dann aus den romanischen Nachbarn.
 const QUELLEN = ['en', 'es', 'fr', 'de', 'th'];
 

@@ -66,7 +66,7 @@ describe('countAudioClipsByLanguage', () => {
 
     // Deutsch ist Generator-Zielsprache (X_to_de-Rückseiten) — de-Clips
     // erscheinen in der eigenen Zeile, sobald sie abgelegt sind.
-    expect(await countAudioClipsByLanguage(store)).toEqual({ th: 2, en: 1, es: 0, de: 1, fr: 0, pt: 0, it: 0, zh: 0 });
+    expect(await countAudioClipsByLanguage(store)).toEqual({ th: 2, en: 1, es: 0, de: 1, fr: 0, pt: 0, it: 0, zh: 0, ja: 0 });
   });
 });
 
@@ -83,7 +83,7 @@ describe('countImagesByLanguage', () => {
 
     // Seit dem Sprach-Umbau zählt jedes Bild genau in der Sprache seiner
     // Vokabel — Deutsch hat eigene Wörter und damit eigene Bilder.
-    expect(await countImagesByLanguage(store)).toEqual({ th: 1, en: 1, es: 0, de: 0, fr: 0, pt: 0, it: 0, zh: 0 });
+    expect(await countImagesByLanguage(store)).toEqual({ th: 1, en: 1, es: 0, de: 0, fr: 0, pt: 0, it: 0, zh: 0, ja: 0 });
   });
 });
 
@@ -94,7 +94,7 @@ describe('countSituationsByDirection', () => {
     await store.put('situations', 'b', situation('b', 'de_to_th'));
     await store.put('situations', 'c', situation('c', 'th_to_de'));
 
-    expect(await countSituationsByDirection(store)).toEqual({ de_to_th: 2, th_to_de: 1, de_to_en: 0, de_to_es: 0, de_to_fr: 0, de_to_pt: 0, de_to_it: 0, de_to_zh: 0 });
+    expect(await countSituationsByDirection(store)).toEqual({ de_to_th: 2, th_to_de: 1, de_to_en: 0, de_to_es: 0, de_to_fr: 0, de_to_pt: 0, de_to_it: 0, de_to_zh: 0, de_to_ja: 0 });
   });
 
   it('kennt jede Lernsprache (sonst fehlt sie in der Studio-Übersicht, 07.11.2026)', async () => {

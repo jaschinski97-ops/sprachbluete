@@ -25,10 +25,10 @@ import {
  */
 
 describe('Die Paarmatrix', () => {
-  it('führt genau 56 Paare — 8 Zielsprachen, keine Selbstpaare', () => {
+  it('führt genau 72 Paare — 9 Zielsprachen, keine Selbstpaare', () => {
     // Seit dem Sprach-Umbau dieselbe Liste wie LANGUAGE_CODES (Reihenfolge der App).
-    expect(SUPPORTED_TARGETS).toEqual(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh']);
-    expect(PAIRS).toHaveLength(8 * 7);
+    expect(SUPPORTED_TARGETS).toEqual(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh', 'ja']);
+    expect(PAIRS).toHaveLength(9 * 8);
     for (const pair of PAIRS) {
       expect(pair.source).not.toBe(pair.target);
     }

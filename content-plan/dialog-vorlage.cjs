@@ -15,8 +15,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt'];
-const ZEICHEN_OHNE_SCHRAEGSTRICH = ['th', 'zh'];
+const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt', 'it', 'ja'];
+const ZEICHEN_OHNE_SCHRAEGSTRICH = ['th', 'zh', 'ja'];
+
+let situationen = null;
+function katalog() {
+  if (!situationen) {
+    const c = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/content/catalog.json'), 'utf8'));
+    situationen = new Map(c.entries.filter((e) => e.kind === 'situations').map((e) => [e.id, e.document]));
+  }
+  return situationen;
+}
 
 function vorlagen(sprache) {
   const plan = JSON.parse(fs.readFileSync(path.join(ROOT, '_Local/dialoge', sprache, 'plan.json'), 'utf8'));
@@ -27,9 +36,10 @@ function vorlagen(sprache) {
   let n = 0;
   for (const spec of plan) {
     const esId = spec.id.replace(`de_to_${sprache}`, 'de_to_es');
-    const datei = path.join(ROOT, '_Local/dialoge/es', `${esId}.json`);
-    if (!fs.existsSync(datei)) { console.log(`fehlt: ${esId}`); continue; }
-    const d = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    // Aus dem Katalog statt aus `_Local/dialoge/es/`: Nur dort stehen die
+    // später ergänzten App-Sprachen (it, ja seit 07.11.2026).
+    const d = katalog().get(esId);
+    if (!d) { console.log(`fehlt: ${esId}`); continue; }
     const t = d.translations;
     const zeilen = [
       `# VORLAGE aus ${esId} (Spanisch). Zielwörter (${spec.targetWords.length}, höchstens 4 dürfen fehlen):`,

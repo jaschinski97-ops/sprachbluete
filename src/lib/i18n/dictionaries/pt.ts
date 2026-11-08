@@ -821,6 +821,15 @@ const pt = {
   "foundations.zhTone4": "4º tom · descendente",
   "foundations.zhTone5": "Tom neutro · leve e curto",
   "grammar.measureWordZh": "A ordem é número + classificador + substantivo: {{example}}. 个 é o classificador mais comum, mas muitos substantivos têm o seu.",
+  "drill.josushi": "つ, 本 ou 枚?",
+  "writing.promptJa": "Como se escreve isso em japonês? Em kana ou kanji.",
+  "dictation.promptJa": "Escreva a frase que você ouve, em japonês.",
+  "language.ja.feature": "Três escritas",
+  "language.ja.description": "O japonês mistura três escritas: kanji para os radicais, hiragana para terminações e partículas, katakana para palavras estrangeiras. Muitos kanji têm várias leituras, por isso a leitura aparece em kana ao lado da palavra.",
+  "grammar.counterJa": "Depois do número vem um classificador que depende do tipo de coisa: {{example}}. つ serve para muitas coisas, mas muitos substantivos têm o seu.",
+  "foundations.introJapanese": "Números, preços em ienes e os kana – para o primeiro diálogo não começar do zero.",
+  "foundations.kana": "Hiragana e katakana",
+  "foundations.kanaIntro": "Cada kana representa uma sílaba. O hiragana (grande) escreve palavras e terminações japonesas; o katakana (embaixo), principalmente palavras estrangeiras e nomes. Toque num caractere para ouvi-lo.",
 } as const;
 
 export default pt;

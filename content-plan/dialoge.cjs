@@ -21,6 +21,7 @@ const { sollAusSchriftUndUmschrift } = domain.load('src/lib/content/soll-toene-s
 const { romanSyllableProblem } = domain.load('src/lib/content/thai-romanization');
 const { satzSilben } = require('./chinesische-woerter.cjs');
 const pinyinBuch = require('./pinyin-woerterbuch.cjs');
+const japanisch = require('./japanisch-lesung.cjs');
 
 const root = path.join(__dirname, '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8'));
@@ -80,6 +81,18 @@ function pruefeDatei(sprache, spec) {
         if (b.art === 'fehler') fehler.push(`${spec.id} Zeile ${i + 1}: ${b.stelle} als „${b.unser}“, Wörterbuch: ${b.buch}`);
         if (b.art === 'verdacht') hinweise.push(`${spec.id} Zeile ${i + 1}: ${b.stelle} als „${b.unser}“ — Wörterbuchwort liest ${b.buch} (prüfen)`);
       }
+    });
+  }
+  if (sprache === 'ja') {
+    // Kana-Lesung je Zug gegen JMdict/KANJIDIC2 (07.11.2026); das Romaji ist daraus gerechnet.
+    const roh = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    roh.scriptTurns.forEach((turn, i) => {
+      if (!turn.kana) { fehler.push(`${spec.id} Zeile ${i + 1}: Kana-Lesung fehlt`); return; }
+      const ergebnis = japanisch.pruefeSatz(turn.targetText, turn.kana);
+      if (ergebnis.status === 'fehler') fehler.push(`${spec.id} Zeile ${i + 1}: ${ergebnis.meldungen.join('; ')}`);
+      if (ergebnis.status === 'nicht prüfbar') hinweise.push(`${spec.id} Zeile ${i + 1}: ${ergebnis.meldungen.join('; ')}`);
+      const romaji = japanisch.satzRomaji(turn.kana);
+      if (situation.scriptTurns[i] && situation.scriptTurns[i].roman !== romaji) fehler.push(`${spec.id} Zeile ${i + 1}: Romaji passt nicht zur Kana-Lesung`);
     });
   }
   return { situation, fehler, hinweise };

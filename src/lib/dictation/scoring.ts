@@ -108,9 +108,9 @@ type Token = { raw: string; norm: string };
  * `raw` für die Anzeige aber erhalten).
  */
 function tokenize(text: string, config: DictationLanguageConfig): Token[] {
-  // Chinesisch hat keine Leerzeichen: jedes Schriftzeichen ist ein Token,
-  // sonst wäre ein Satz ein einziges Alles-oder-nichts-Wort.
-  const rawTokens = config.script === 'han'
+  // Chinesisch und Japanisch haben keine Leerzeichen: jedes Schriftzeichen ist
+  // ein Token, sonst wäre ein Satz ein einziges Alles-oder-nichts-Wort.
+  const rawTokens = config.script === 'han' || config.script === 'japanese'
     ? Array.from(tidyDictation(text).replace(/\s+/gu, ''))
     : tidyDictation(text).split(/\s+/).filter(Boolean);
   const tokens: Token[] = [];

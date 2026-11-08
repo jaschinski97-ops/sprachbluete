@@ -22,6 +22,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/th-fr.catalog'),
       bn: require('../../assets/catalog/th-bn.catalog'),
       pt: require('../../assets/catalog/th-pt.catalog'),
+      it: require('../../assets/catalog/th-it.catalog'),
+      ja: require('../../assets/catalog/th-ja.catalog'),
     },
   },
   en: {
@@ -37,6 +39,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/en-fr.catalog'),
       bn: require('../../assets/catalog/en-bn.catalog'),
       pt: require('../../assets/catalog/en-pt.catalog'),
+      it: require('../../assets/catalog/en-it.catalog'),
+      ja: require('../../assets/catalog/en-ja.catalog'),
     },
   },
   es: {
@@ -52,6 +56,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/es-fr.catalog'),
       bn: require('../../assets/catalog/es-bn.catalog'),
       pt: require('../../assets/catalog/es-pt.catalog'),
+      it: require('../../assets/catalog/es-it.catalog'),
+      ja: require('../../assets/catalog/es-ja.catalog'),
     },
   },
   de: {
@@ -67,6 +73,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/de-fr.catalog'),
       bn: require('../../assets/catalog/de-bn.catalog'),
       pt: require('../../assets/catalog/de-pt.catalog'),
+      it: require('../../assets/catalog/de-it.catalog'),
+      ja: require('../../assets/catalog/de-ja.catalog'),
     },
   },
   fr: {
@@ -82,6 +90,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/fr-fr.catalog'),
       bn: require('../../assets/catalog/fr-bn.catalog'),
       pt: require('../../assets/catalog/fr-pt.catalog'),
+      it: require('../../assets/catalog/fr-it.catalog'),
+      ja: require('../../assets/catalog/fr-ja.catalog'),
     },
   },
   pt: {
@@ -97,6 +107,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/pt-fr.catalog'),
       bn: require('../../assets/catalog/pt-bn.catalog'),
       pt: require('../../assets/catalog/pt-pt.catalog'),
+      it: require('../../assets/catalog/pt-it.catalog'),
+      ja: require('../../assets/catalog/pt-ja.catalog'),
     },
   },
   it: {
@@ -112,6 +124,8 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/it-fr.catalog'),
       bn: require('../../assets/catalog/it-bn.catalog'),
       pt: require('../../assets/catalog/it-pt.catalog'),
+      it: require('../../assets/catalog/it-it.catalog'),
+      ja: require('../../assets/catalog/it-ja.catalog'),
     },
   },
   zh: {
@@ -127,6 +141,25 @@ export const CATALOG_FILES: Record<LanguageCode, CatalogFileSet> = {
       fr: require('../../assets/catalog/zh-fr.catalog'),
       bn: require('../../assets/catalog/zh-bn.catalog'),
       pt: require('../../assets/catalog/zh-pt.catalog'),
+      it: require('../../assets/catalog/zh-it.catalog'),
+      ja: require('../../assets/catalog/zh-ja.catalog'),
+    },
+  },
+  ja: {
+    base: require('../../assets/catalog/ja.catalog'),
+    translations: {
+      de: require('../../assets/catalog/ja-de.catalog'),
+      en: require('../../assets/catalog/ja-en.catalog'),
+      es: require('../../assets/catalog/ja-es.catalog'),
+      th: require('../../assets/catalog/ja-th.catalog'),
+      ar: require('../../assets/catalog/ja-ar.catalog'),
+      zh: require('../../assets/catalog/ja-zh.catalog'),
+      hi: require('../../assets/catalog/ja-hi.catalog'),
+      fr: require('../../assets/catalog/ja-fr.catalog'),
+      bn: require('../../assets/catalog/ja-bn.catalog'),
+      pt: require('../../assets/catalog/ja-pt.catalog'),
+      it: require('../../assets/catalog/ja-it.catalog'),
+      ja: require('../../assets/catalog/ja-ja.catalog'),
     },
   },
 };

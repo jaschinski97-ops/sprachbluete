@@ -10,6 +10,7 @@ import { analyzeSyllable } from '../reading/syllable';
 import { type DerivationStep } from '../reading/syllable';
 import { ACUTE_TO_PLAIN } from '@/data/spanish-stress';
 import { MEASURE_WORDS, isMeasureWord, yiVor } from '@/data/chinese-measure-words';
+import { JAPANESE_COUNTERS, isJapaneseCounter } from '@/data/japanese-counters';
 
 import { GraphemeGroup, graphemeGroups, groupFor } from '../spelling/graphemes';
 import { analyzeStress } from '../stress/syllables';
@@ -434,6 +435,47 @@ export function buildLiangciQuestion(
     solution: loesung,
     solutionRoman: `${yiVor(MEASURE_WORDS[richtig])} ${MEASURE_WORDS[richtig]} ${entry.romanization}`,
     explanation: translate(ui, 'grammar.measureWordZh', { example: loesung }),
+  };
+}
+
+/* ---------- Zählwörter (Japanisch, 07.11.2026) ---------- */
+
+/** Ablenker: häufige, deutlich verschiedene Zählwörter. つ und 個 nie — sie gehen für sehr viele Dinge. */
+const JOSUSHI_ABLENKER = ['本', '枚', '冊', '匹', '台', '杯', '人', '足', '着', '軒', '羽', '頭'] as const;
+
+export function canBuildJosushiQuestion(entry: VocabEntry): boolean {
+  return entry.language === 'ja' && entry.partOfSpeech === 'noun' && isJapaneseCounter(entry.japaneseNoun?.counter);
+}
+
+export function buildJosushiQuestion(
+  entry: VocabEntry,
+  random: Random,
+  anchor: UiLanguage = 'de',
+  ui: UiLanguage = 'de'
+): DrillQuestion {
+  const noun = entry.japaneseNoun;
+  if (!noun || !isJapaneseCounter(noun.counter)) throw new Error(`"${entry.id}" hat kein japanisches Zählwort.`);
+  const richtig = noun.counter;
+  const auch = new Set([richtig, ...(noun.alternatives ?? [])]);
+  const ablenker = shuffled(JOSUSHI_ABLENKER.filter((wort) => !auch.has(wort)), random).slice(0, 3);
+  const options = shuffled([richtig, ...ablenker], random);
+  const zaehler = JAPANESE_COUNTERS[richtig];
+  // Zwei statt eins: „一“ ändert die Lesung stärker (いっぽん, ひとつ, ひとり).
+  const loesung = `${entry.term}を二${richtig}`;
+  return {
+    id: `josushi:${entry.id}`,
+    drill: 'josushi',
+    direction: toTarget(entry),
+    vocabId: entry.id,
+    visible: `${entry.term}を 二 ___`,
+    visibleRoman: `${entry.romanization} o ni ___`,
+    visibleHint: kontextFuer(entry, anchor),
+    speak: null,
+    options: options.map((label) => ({ label, roman: JAPANESE_COUNTERS[label].romaji })),
+    correctIndex: options.indexOf(richtig),
+    solution: loesung,
+    solutionRoman: `${entry.romanization} o ${zaehler.zweiRomaji}`,
+    explanation: translate(ui, 'grammar.counterJa', { example: loesung }),
   };
 }
 

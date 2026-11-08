@@ -717,7 +717,7 @@ function LearnPath({
   const foundationsActive = foundationsShown && (selectedChapterId === FOUNDATIONS_ID
     || (!foundationsDone && !stageChapters.some((item) => item.id === selectedChapterId)));
   const zielSprache = targetLanguageOf(direction);
-  const foundationsIntro = t(zielSprache === 'th' ? 'foundations.introThai' : zielSprache === 'zh' ? 'foundations.introChinese' : 'foundations.introLatin');
+  const foundationsIntro = t(zielSprache === 'th' ? 'foundations.introThai' : zielSprache === 'zh' ? 'foundations.introChinese' : zielSprache === 'ja' ? 'foundations.introJapanese' : 'foundations.introLatin');
   const stepRow = ([candidate, key]: readonly [Mode, TranslationKey], index: number, chapterId: string, open: () => void) => {
     const geuebt = (practised[chapterId] ?? []).includes(candidate);
     const label = `${index + 1}. ${t(key)}`;

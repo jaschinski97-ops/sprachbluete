@@ -51,6 +51,7 @@ const FOUNDATION_KEYS: Record<FoundationMode, TranslationKey> = {
   konsonanten: 'foundations.consonants',
   vokale: 'foundations.vowels',
   toene: 'foundations.tones',
+  kana: 'foundations.kana',
 };
 
 /** Die Wort-Sprechübung und die Auswahlübungen als Übersetzungsschlüssel. */
@@ -75,6 +76,7 @@ export const DRILL_KEYS: Record<DrillId, TranslationKey> = {
   genero: 'drill.genero',
   articolo: 'drill.articolo',
   liangci: 'drill.liangci',
+  josushi: 'drill.josushi',
 };
 
 /**

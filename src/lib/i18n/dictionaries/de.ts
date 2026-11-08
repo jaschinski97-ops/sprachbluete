@@ -932,6 +932,15 @@ const de = {
   "foundations.zhTone4": "4. Ton · fallend",
   "foundations.zhTone5": "Neutraler Ton · leicht und kurz",
   "grammar.measureWordZh": "Die Reihenfolge ist Zahl + Zählwort + Nomen: {{example}}. 个 ist das häufigste Zählwort, viele Nomen haben aber ein eigenes.",
+  "drill.josushi": "つ, 本 oder 枚?",
+  "writing.promptJa": "Wie schreibt man das auf Japanisch? In Kana oder Kanji.",
+  "dictation.promptJa": "Schreib den Satz auf, den du hörst — auf Japanisch.",
+  "language.ja.feature": "Drei Schriften",
+  "language.ja.description": "Japanisch mischt drei Schriften: Kanji für Wortstämme, Hiragana für Endungen und Partikel, Katakana für Lehnwörter. Viele Kanji haben mehrere Lesungen – die Lesung steht deshalb als Kana am Wort.",
+  "grammar.counterJa": "Nach der Zahl steht ein Zählwort, das zur Art des Dings passt: {{example}}. つ geht für viele Dinge, viele Nomen haben aber ein eigenes.",
+  "foundations.introJapanese": "Zahlen, Preise in Yen und die Kana – damit der erste Dialog nicht bei null beginnt.",
+  "foundations.kana": "Hiragana und Katakana",
+  "foundations.kanaIntro": "Jedes Kana steht für eine Silbe. Hiragana (groß) schreibt japanische Wörter und Endungen, Katakana (darunter) vor allem Lehnwörter und Namen. Tippe ein Zeichen an, um es zu hören.",
 } as const;
 
 export default de;

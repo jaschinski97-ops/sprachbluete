@@ -1,5 +1,21 @@
 # Changelog
 
+## 07.11.2026 (Japanisch; Italienisch und Japanisch als App-Sprachen)
+
+- Japanisch ist die neunte Lernsprache (Nutzerentscheidung, Branch `feature/lernsprachen-pt-it-zh`). Italienisch und Japanisch sind außerdem App-Sprachen (jetzt 12) und in den Einstellungen wählbar („italiano · Italian“, „日本語 · Japanese“). Neue Wörterbücher `it.ts` und `ja.ts` mit allen Schlüsseln; Sprachnamen in allen 12 Sprachen.
+- Bedeutungen und Beispielsätze aller Wörter (alle Lernsprachen) sowie Titel, Szenen, Gesprächszeilen und Hinweise aller 400 Dialoge liegen jetzt auch auf Japanisch und Italienisch vor. Von Claude übersetzt, Werkzeug `content-plan/uebersetzungen.cjs exportiere|pruefe|uebernimm`.
+- Japanischer Wortschatz: 1.951 Wörter, von Claude gewählt. Kana-Lesung je Wort und Satz, gegen JMdict/KANJIDIC2 geprüft (`content-plan/japanische-woerter.cjs`). Romaji wird aus der Kana gerechnet, Teile stehen getrennt („shuppatsu suru“, „nodo ga kawaku“, „desu ka“). Begriffe ohne eigenes japanisches Wort bleiben gewollt leer (z. B. „not“, „wish“, „better“).
+- Karte und Schreibübung zeigen „Kana · Romaji“ unter Kanji-Wörtern (`readingOf`). Beim Schreiben zählt auch die Kana-Lesung als richtig.
+- Kapitel 0 Japanisch (geschützte Lerndaten, Freigabe des Nutzers): Zahlen nach en.wikipedia „Japanese numerals“ (Kanji, Kana, Romaji; 4 = よん, 7 = なな), Preise in Yen, dazu die Kana-Tabelle mit 46 Grundzeichen in Hiragana und Katakana (`src/data/japanese-kana.ts`, fünf Spalten wie in der Gojūon-Tabelle).
+- Grammatikübung „つ, 本 oder 枚?“ (`josushi`): Zählwort zu einem Nomen, gefragt mit „zwei“, weil sich dort die Lesung oft ändert (二人 ふたり, 二つ ふたつ). Liste mit Lesungen in `src/data/japanese-counters.ts`.
+- B1-Einheit auf Japanisch (Kurswechsel, mit Romaji).
+- 50 japanische Dialoge (25/15/10), von Claude geschrieben, Szenen nach Japan verlegt (Tokio, Osaka, Kyoto, Yen), je zwei eigene Hinweise zur japanischen Grammatik, Übersetzungen in allen 12 App-Sprachen. Quelle `_Local/dialoge/ja/quelle/<id>.txt` mit Kana-Lesung je Zug; `baue-dialoge.cjs` rechnet daraus das Romaji, `dialoge.cjs pruefe ja` prüft die Lesungen gegen JMdict und dass das Romaji zur Kana passt. Alle 50 ohne Fehler, höchstens 3 von 20 Zielwörtern fehlen. Hörclips fehlen noch (Systemstimme).
+- Romaji: Satzendpartikeln stehen getrennt („desu ka“), nach Satzpunkt groß.
+- Wortabgleich der Dialoge: Japanische Verben und い-Adjektive zählen auch gebeugt (食べる → 食べました, 対処する → 対処できて), aber nicht vor einer Partikel oder als Teil eines Kanji-Worts (銀行は ist nicht 行く).
+- Studio-Pipeline: Wortfelder `kana`, `exampleKana` und `japaneseNoun` sind erlaubt. Der Dialogzähler kennt Japanisch.
+- Medienbudget 1.280 MiB statt 1.024 MiB (geschützte Pipeline, Freigabe des Nutzers).
+- Tests auf 9 Lernsprachen und 12 App-Sprachen umgestellt; neue Tests `japanisch.test.ts`, Testwörter `vocabulary-ja.ts`.
+
 ## 07.11.2026
 
 - Lesungsprüfer für Japanisch vorbereitet (`content-plan/japanisch-lesung.cjs`), Japanisch selbst ist noch keine Lernsprache. Er prüft Kanji-Lesungen von Wörtern und Sätzen gegen JMdict und KANJIDIC2 (EDRDG, CC BY-SA 4.0, nur lokal unter `_Local/woerterbuch/`). Dazu kommen Lautänderungen (三本 さんぼん, 六本 ろっぽん), eine Zählwort-Tabelle für Zahl und Zählwort, die JMdict fehlen, sowie Namenslesungen vor さん/様. Das Romaji wird aus der Kana-Lesung gerechnet (modifiziertes Hepburn). In einer Probe fand er 8 von 8 erkennbaren falschen Lesungen ohne Fehlalarm bei 94 richtigen Wörtern und Sätzen. Lesungen, die nur im Zusammenhang falsch sind (一日 いちにち statt ついたち), erkennt er nicht. Anleitung in `docs/neue-lernsprache.md`.

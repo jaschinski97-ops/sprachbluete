@@ -64,6 +64,8 @@ export const DRILLS = [
   'articolo',
   /** Chinesisch (07.11.2026): das Zählwort zwischen Zahl und Nomen — 一本书, 一杯茶. */
   'liangci',
+  /** Japanisch (07.11.2026): das Zählwort nach der Zahl — 二本, 二枚, 二冊. */
+  'josushi',
 ] as const;
 export type DrillId = (typeof DRILLS)[number];
 
@@ -322,6 +324,17 @@ export const DRILL_META: Record<DrillId, DrillMeta> = {
     description:
       'Das Zählwort des chinesischen Nomens: Zwischen Zahl und Nomen steht immer ein Zählwort ' +
       '(一本书 ein Buch, 一杯茶 eine Tasse Tee). 个 ist das allgemeinste, viele Nomen haben ein eigenes.',
+    prompt: 'Welches Zählwort passt zu diesem Nomen?',
+  },
+  josushi: {
+    id: 'josushi',
+    side: 'toTarget',
+    feature: 'ja',
+    skill: 'grammatik',
+    label: 'つ, 本 oder 枚?',
+    description:
+      'Das Zählwort des japanischen Nomens: Nach der Zahl steht ein Zählwort, das zur Art des Dings passt ' +
+      '(ペンを二本 zwei Stifte, 紙を二枚 zwei Blatt Papier). つ geht für viele Dinge, viele Nomen haben ein eigenes.',
     prompt: 'Welches Zählwort passt zu diesem Nomen?',
   },
   praesensEndung: {

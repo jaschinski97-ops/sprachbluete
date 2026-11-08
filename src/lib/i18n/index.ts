@@ -19,6 +19,8 @@ import en from './dictionaries/en';
 import es from './dictionaries/es';
 import fr from './dictionaries/fr';
 import hi from './dictionaries/hi';
+import it from './dictionaries/it';
+import ja from './dictionaries/ja';
 import pt from './dictionaries/pt';
 import th from './dictionaries/th';
 import zh from './dictionaries/zh';
@@ -66,6 +68,8 @@ export const dictionaries: Record<UiLanguage, Partial<Record<TranslationKey, str
   es,
   fr,
   hi,
+  it,
+  ja,
   pt,
   th,
   zh,
@@ -182,60 +186,75 @@ export function translate(language: UiLanguage, key: TranslationKey, params?: TP
  * erweitert die Tabelle hier zeilenweise.
  */
 /**
- * Sprachen mit Namen: alle App-Sprachen und alle Lernsprachen. Italienisch ist
- * nur Lernsprache, keine App-Sprache (07.11.2026).
+ * Sprachen mit Namen: alle App-Sprachen und alle Lernsprachen (seit 07.11.2026
+ * sind Italienisch und Japanisch beides).
  */
 export type NamedLanguage = UiLanguage | LanguageCode;
 
 export const LANGUAGE_DISPLAY_NAMES: Partial<Record<NamedLanguage, Partial<Record<UiLanguage, string>>>> = {
-  ar: { ar: 'العربية', de: 'Arabisch', en: 'Arabic', es: 'árabe', th: 'ภาษาอาหรับ' },
+  ar: { ar: 'العربية', de: 'Arabisch', en: 'Arabic', es: 'árabe', it: 'arabo', ja: 'アラビア語', th: 'ภาษาอาหรับ' },
   de: {
     ar: 'الألمانية', bn: 'জার্মান', de: 'Deutsch', en: 'German', es: 'alemán',
     fr: 'allemand', hi: 'जर्मन',
     pt: 'alemão',
     th: 'ภาษาเยอรมัน', zh: '德语',
+    it: 'tedesco', ja: 'ドイツ語',
   },
   en: {
     ar: 'الإنجليزية', bn: 'ইংরেজি', de: 'Englisch', en: 'English', es: 'inglés',
     fr: 'anglais', hi: 'अंग्रेज़ी',
     pt: 'inglês',
     th: 'ภาษาอังกฤษ', zh: '英语',
+    it: 'inglese', ja: '英語',
   },
   es: {
     ar: 'الإسبانية', bn: 'স্প্যানিশ', de: 'Spanisch', en: 'Spanish', es: 'español',
     fr: 'espagnol', hi: 'स्पेनिश',
     pt: 'espanhol',
     th: 'ภาษาสเปน', zh: '西班牙语',
+    it: 'spagnolo', ja: 'スペイン語',
   },
   fr: {
     ar: 'الفرنسية', bn: 'ফরাসি', de: 'Französisch', en: 'French', es: 'francés',
     fr: 'français', hi: 'फ़्रेंच',
     pt: 'francês',
     th: 'ภาษาฝรั่งเศส', zh: '法语',
+    it: 'francese', ja: 'フランス語',
   },
   th: {
     ar: 'التايلاندية', bn: 'থাই', de: 'Thai', en: 'Thai', es: 'tailandés',
     fr: 'thaï', hi: 'थाई',
     pt: 'tailandês',
     th: 'ภาษาไทย', zh: '泰语',
+    it: 'tailandese', ja: 'タイ語',
   },
   pt: {
     ar: 'البرتغالية', bn: 'পর্তুগিজ', de: 'Portugiesisch', en: 'Portuguese', es: 'portugués',
     fr: 'portugais', hi: 'पुर्तगाली',
     pt: 'português',
     th: 'ภาษาโปรตุเกส', zh: '葡萄牙语',
+    it: 'portoghese', ja: 'ポルトガル語',
   },
   it: {
     ar: 'الإيطالية', bn: 'ইতালীয়', de: 'Italienisch', en: 'Italian', es: 'italiano',
     fr: 'italien', hi: 'इतालवी',
     pt: 'italiano',
     th: 'ภาษาอิตาลี', zh: '意大利语',
+    it: 'italiano', ja: 'イタリア語',
   },
   zh: {
     ar: 'الصينية', bn: 'চীনা', de: 'Chinesisch', en: 'Chinese', es: 'chino',
     fr: 'chinois', hi: 'चीनी',
     pt: 'chinês',
     th: 'ภาษาจีน', zh: '中文',
+    it: 'cinese', ja: '中国語',
+  },
+  ja: {
+    ar: 'اليابانية', bn: 'জাপানি', de: 'Japanisch', en: 'Japanese', es: 'japonés',
+    fr: 'japonais', hi: 'जापानी',
+    pt: 'japonês',
+    th: 'ภาษาญี่ปุ่น', zh: '日语',
+    it: 'giapponese', ja: '日本語',
   },
 };
 
@@ -249,6 +268,7 @@ export const LANGUAGE_ENDONYME: Record<NamedLanguage, string> = {
   fr: 'français',
   hi: 'हिन्दी',
   it: 'italiano',
+  ja: '日本語',
   pt: 'português',
   th: 'ภาษาไทย',
   zh: '中文',
@@ -280,6 +300,10 @@ export function localeTagFor(language: UiLanguage): string {
       return 'fr-FR';
     case 'hi':
       return 'hi-IN';
+    case 'it':
+      return 'it-IT';
+    case 'ja':
+      return 'ja-JP';
     case 'pt':
       return 'pt-BR';
     case 'th':

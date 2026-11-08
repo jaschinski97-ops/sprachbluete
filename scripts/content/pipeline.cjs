@@ -35,7 +35,9 @@ const KINDS = ['situations', 'images', 'audio', 'vocabulary'];
 // Paket, die Gesamtgrenze bremst den App-Download also nicht mehr.
 // 1.024 MiB seit 07.11.2026 (Nutzerfreigabe für Portugiesisch, Italienisch und
 // Chinesisch): Bestand ~588 MiB, je neue Sprache rund 100 MiB Clips.
-const BUDGET = 1024 * 1024 * 1024;
+// 1.280 MiB seit 07.11.2026 (Nutzerfreigabe für Japanisch als neunte
+// Lernsprache): vier neue Sprachen mit je rund 100 MiB Clips.
+const BUDGET = 1280 * 1024 * 1024;
 const sha = (data) => crypto.createHash('sha256').update(data).digest('hex');
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical);
@@ -98,7 +100,7 @@ function assertDocument(kind, doc, vocabulary = []) {
     situations: 'id level topic direction title setting scriptTurns corrections generatedAt modelUsed translations vocabIds',
     images: 'id vocabId concept language format byteSize blobKey prompt model generatedAt',
     audio: 'id language text kind sourceId format byteSize durationMs blobKey provider model voice instructionsId generatedAt synthetic',
-    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun frenchNoun portugueseNoun italianNoun chineseNoun spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman exampleTranslations sourceVerified source verificationNote note',
+    vocabulary: 'id generatedAt learningStage language concept term romanization syllables ipa ipaAccent ipaSyllables german germanNoun germanVerb germanAdjective spanishNoun frenchNoun portugueseNoun italianNoun chineseNoun japaneseNoun kana exampleKana spanishVerb englishVerb englishSpelling translations partOfSpeech register isConcrete exampleTerm exampleRoman exampleGerman exampleTranslations sourceVerified source verificationNote note',
   }[kind].split(' ');
   if (Object.keys(doc).some((key) => !fields.includes(key))) throw Error('Unbekannte Metadatenfelder; Export verweigert.');
 }

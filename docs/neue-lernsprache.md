@@ -182,11 +182,50 @@ Die Schritte oben reichen nicht ganz. Beim echten Einbau kamen dazu:
   Sprache. Eine Vorlage aus dem spanischen Dialog gleicher ID spart den
   größten Teil der Übersetzungsarbeit.
 
-## Japanisch vorbereiten (07.11.2026)
+## Was Japanisch (07.11.2026) gebraucht hat
 
-Japanisch ist noch keine Lernsprache und seit dem 24.10.2026 auch keine
-App-Sprache. Dialogquellen bräuchten also wie bei Italienisch eine eigene
-Zeile je Zug. Das größte Risiko ist nicht der Tonhöhenakzent, sondern die
+Japanisch ist die neunte Lernsprache und zugleich, wie Italienisch, eine neue
+App-Sprache (jetzt 12). Dialogquellen brauchen deshalb keine Extrazeile mehr:
+die ja-Zeile ist zugleich Dialogtext und Übersetzung.
+
+- **Neue App-Sprache:** Wörterbuch `src/lib/i18n/dictionaries/<code>.ts`
+  (alle Schlüssel, Paritätstest), `UI_LANGUAGES`, Namen in
+  `LANGUAGE_DISPLAY_NAMES` (neue Spalte in JEDER Zeile plus eigene Zeile),
+  `LANGUAGE_ENDONYME`, `localeTagFor`, `settings-language-names.ts`. Danach
+  brauchen alle Wörter Bedeutung und Satzübersetzung und alle Dialoge Titel,
+  Szene, Züge und Hinweise in der neuen Sprache:
+  `content-plan/uebersetzungen.cjs exportiere <ui>` schreibt Arbeitsdateien
+  unter `_Local/uebersetzung/`, Antworten stehen daneben als `*.antwort`
+  (`id|ja|it`), `pruefe`/`pruefe-datei` zeigen Lücken, `uebernimm` schreibt
+  sie in den Katalog (Helper vorher stoppen). Ohne diesen Schritt verwirft das
+  Schema neue Wörter (Übersetzungen in allen App-Sprachen sind Pflicht). Die
+  festen `UI`-Listen der `content-plan/*.cjs` mitziehen.
+- **Schrift:** `script: 'japanese'` (Kanji und Kana, kein Wortabstand).
+  `passtZurSchrift` trennt Kana von Chinesisch; Diktat wertet je Zeichen.
+- **Wort:** `term` in üblicher Schreibung, `kana` (Pflicht, nur Kana),
+  `romanization` aus der Kana gerechnet, `syllables: []`,
+  `japaneseNoun.counter` aus `src/data/japanese-counters.ts`, Satzlesung in
+  `exampleKana`. Neue Dokumentfelder in die Feldliste von
+  `assertDocument` (`scripts/content/pipeline.cjs`) eintragen, sonst lehnt der
+  Helper ab („Unbekannte Metadatenfelder“). Karte und Schreibübung zeigen
+  „Kana · Romaji“ (`readingOf`), Kana gilt beim Schreiben als richtig.
+- **Wortarten:** nur die aus `PartOfSpeech`; „phrase“ oder „suffix“ verletzen
+  das Schema.
+- **Werkzeuge:** `content-plan/japanische-woerter.cjs dateien|zeige|pruefe|baue`
+  (TSV `begriff|wort|kana|zaehler|#n satz|satzkana`, Lesung gegen
+  JMdict/KANJIDIC2). Dialoge: Kana-Lesung nach `P`/`L` in der Quelle,
+  `baue-dialoge.cjs` rechnet daraus das Romaji, `dialoge.cjs pruefe ja` prüft
+  die Lesung je Zug. `dialog-vorlage.cjs` liest die spanischen Dialoge aus dem
+  Katalog (nur dort stehen später ergänzte App-Sprachen).
+- **Wortabgleich in Dialogen:** Verben und い-Adjektive zählen über den Stamm,
+  wenn Kana folgen (食べる → 食べました, `japanischerStamm` in `dialog-words.ts`).
+- **Kapitel 0:** Zahlen und Preise in Yen (`numbers.ts`), statt ABC die
+  Kana-Tabelle (`src/data/japanese-kana.ts`, geschützt). Übung „つ, 本 oder 枚?“
+  (`josushi`).
+
+## Japanische Lesungen prüfen (07.11.2026)
+
+Das größte Risiko ist nicht der Tonhöhenakzent, sondern die
 Lesung der Kanji (今日 きょう/こんにち, 三本 さんぼん, 六本 ろっぽん). Dafür gibt es schon
 den Lesungsprüfer:
 

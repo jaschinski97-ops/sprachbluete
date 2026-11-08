@@ -821,6 +821,15 @@ const fr = {
   "foundations.zhTone4": "4e ton · descendant",
   "foundations.zhTone5": "Ton neutre · léger et bref",
   "grammar.measureWordZh": "L’ordre est nombre + classificateur + nom : {{example}}. 个 est le classificateur le plus courant, mais beaucoup de noms ont le leur.",
+  "drill.josushi": "つ, 本 ou 枚 ?",
+  "writing.promptJa": "Comment l’écrit-on en japonais ? En kana ou en kanji.",
+  "dictation.promptJa": "Écris la phrase que tu entends, en japonais.",
+  "language.ja.feature": "Trois écritures",
+  "language.ja.description": "Le japonais mélange trois écritures : les kanji pour les radicaux, les hiragana pour les terminaisons et les particules, les katakana pour les emprunts. Beaucoup de kanji ont plusieurs lectures ; la lecture est donc indiquée en kana à côté du mot.",
+  "grammar.counterJa": "Après le nombre vient un classificateur qui dépend du type de chose : {{example}}. つ convient à beaucoup de choses, mais de nombreux noms ont le leur.",
+  "foundations.introJapanese": "Les nombres, les prix en yens et les kana – pour que le premier dialogue ne parte pas de zéro.",
+  "foundations.kana": "Hiragana et katakana",
+  "foundations.kanaIntro": "Chaque kana note une syllabe. Les hiragana (en grand) écrivent les mots et terminaisons japonais, les katakana (en dessous) surtout les emprunts et les noms. Touche un caractère pour l’entendre.",
 } as const;
 
 export default fr;

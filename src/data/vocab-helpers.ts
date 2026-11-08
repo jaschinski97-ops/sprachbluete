@@ -72,3 +72,14 @@ export function termWithArticle(entry: VocabEntry): string {
   if (noun.article === 'l’') return lower.startsWith('l’') || lower.startsWith("l'") ? entry.term : `l’${entry.term}`;
   return lower.startsWith(`${noun.article} `) ? entry.term : `${noun.article} ${entry.term}`;
 }
+
+/**
+ * Lesehilfe unter dem Wort: Japanisch zeigt die Kana-Lesung vor dem Romaji
+ * („たべる · taberu“), weil Kanji allein nichts über die Aussprache sagen.
+ * Andere Sprachen behalten ihre Umschrift.
+ */
+export function readingOf(entry: VocabEntry): string | undefined {
+  const roman = entry.romanization || undefined;
+  if (entry.kana && entry.kana !== entry.term) return roman ? `${entry.kana} · ${roman}` : entry.kana;
+  return roman;
+}

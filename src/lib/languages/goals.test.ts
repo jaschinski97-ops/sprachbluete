@@ -29,8 +29,8 @@ import {
 describe('Lernziele — eine Regel für jede App-Sprache', () => {
   it('deutsche Oberfläche: Thai, Englisch, Spanisch — Deutsch ausgeblendet (Nutzerentscheidung 19.09.)', () => {
     const ziele = zieleFuerBruecke('de');
-    expect(ziele.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es', 'de_to_fr', 'de_to_pt', 'de_to_it', 'de_to_zh']);
-    expect(ziele.map(goalLanguage)).toEqual(['th', 'en', 'es', 'fr', 'pt', 'it', 'zh']);
+    expect(ziele.map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es', 'de_to_fr', 'de_to_pt', 'de_to_it', 'de_to_zh', 'de_to_ja']);
+    expect(ziele.map(goalLanguage)).toEqual(['th', 'en', 'es', 'fr', 'pt', 'it', 'zh', 'ja']);
   });
 
   it('Thai-Oberfläche: Englisch, Spanisch, Deutsch — Thai ausgeblendet (Testlauf 08.10.)', () => {
@@ -42,30 +42,36 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
       { direction: 'th_to_pt', language: 'pt' },
       { direction: 'th_to_it', language: 'it' },
       { direction: 'th_to_zh', language: 'zh' },
+      { direction: 'th_to_ja', language: 'ja' },
     ]);
   });
 
   it('englische und spanische Oberfläche: alle anderen Lernsprachen inklusive Deutsch', () => {
-    expect(zieleFuerBruecke('en').map((ziel) => ziel.direction)).toEqual(['en_to_th', 'en_to_es', 'en_to_de', 'en_to_fr', 'en_to_pt', 'en_to_it', 'en_to_zh']);
-    expect(zieleFuerBruecke('es').map((ziel) => ziel.direction)).toEqual(['es_to_th', 'es_to_en', 'es_to_de', 'es_to_fr', 'es_to_pt', 'es_to_it', 'es_to_zh']);
+    expect(zieleFuerBruecke('en').map((ziel) => ziel.direction)).toEqual(['en_to_th', 'en_to_es', 'en_to_de', 'en_to_fr', 'en_to_pt', 'en_to_it', 'en_to_zh', 'en_to_ja']);
+    expect(zieleFuerBruecke('es').map((ziel) => ziel.direction)).toEqual(['es_to_th', 'es_to_en', 'es_to_de', 'es_to_fr', 'es_to_pt', 'es_to_it', 'es_to_zh', 'es_to_ja']);
   });
 
   it('französische Oberfläche (seit 04.11.2026 Lernsprache): alle anderen, Französisch ausgeblendet', () => {
-    expect(zieleFuerBruecke('fr').map((ziel) => ziel.direction)).toEqual(['fr_to_th', 'fr_to_en', 'fr_to_es', 'fr_to_de', 'fr_to_pt', 'fr_to_it', 'fr_to_zh']);
+    expect(zieleFuerBruecke('fr').map((ziel) => ziel.direction)).toEqual(['fr_to_th', 'fr_to_en', 'fr_to_es', 'fr_to_de', 'fr_to_pt', 'fr_to_it', 'fr_to_zh', 'fr_to_ja']);
   });
 
   it('portugiesische Oberfläche (seit 07.11.2026 Lernsprache): alle anderen, Portugiesisch ausgeblendet', () => {
-    expect(zieleFuerBruecke('pt').map((ziel) => ziel.direction)).toEqual(['pt_to_th', 'pt_to_en', 'pt_to_es', 'pt_to_de', 'pt_to_fr', 'pt_to_it', 'pt_to_zh']);
+    expect(zieleFuerBruecke('pt').map((ziel) => ziel.direction)).toEqual(['pt_to_th', 'pt_to_en', 'pt_to_es', 'pt_to_de', 'pt_to_fr', 'pt_to_it', 'pt_to_zh', 'pt_to_ja']);
   });
 
   it('chinesische Oberfläche (seit 07.11.2026 Lernsprache): alle anderen, Chinesisch ausgeblendet', () => {
-    expect(zieleFuerBruecke('zh').map((ziel) => ziel.direction)).toEqual(['zh_to_th', 'zh_to_en', 'zh_to_es', 'zh_to_de', 'zh_to_fr', 'zh_to_pt', 'zh_to_it']);
+    expect(zieleFuerBruecke('zh').map((ziel) => ziel.direction)).toEqual(['zh_to_th', 'zh_to_en', 'zh_to_es', 'zh_to_de', 'zh_to_fr', 'zh_to_pt', 'zh_to_it', 'zh_to_ja']);
+  });
+
+  it('italienische und japanische Oberfläche (seit 07.11.2026): alle anderen, die eigene Sprache ausgeblendet', () => {
+    expect(zieleFuerBruecke('it').map((ziel) => ziel.direction)).toEqual(['it_to_th', 'it_to_en', 'it_to_es', 'it_to_de', 'it_to_fr', 'it_to_pt', 'it_to_zh', 'it_to_ja']);
+    expect(zieleFuerBruecke('ja').map((ziel) => ziel.direction)).toEqual(['ja_to_th', 'ja_to_en', 'ja_to_es', 'ja_to_de', 'ja_to_fr', 'ja_to_pt', 'ja_to_it', 'ja_to_zh']);
   });
 
   it('zeigt eine Lernsprache ohne Wortschatz nicht als Ziel (Französisch vor dem ersten Wortlauf)', () => {
     setCurrentCatalog({
       ...FIXTURE_CATALOG,
-      entries: FIXTURE_CATALOG.entries.filter((entry) => !['fr', 'pt', 'it', 'zh'].includes(String((entry.document as { language?: string }).language))),
+      entries: FIXTURE_CATALOG.entries.filter((entry) => !['fr', 'pt', 'it', 'zh', 'ja'].includes(String((entry.document as { language?: string }).language))),
     });
     try {
       expect(zieleFuerBruecke('de').map((ziel) => ziel.direction)).toEqual(['de_to_th', 'de_to_en', 'de_to_es']);
@@ -78,7 +84,7 @@ describe('Lernziele — eine Regel für jede App-Sprache', () => {
   });
 
   it('Oberflächen ohne eigene Lernsprache: alle Lernsprachen, Deutsch zuerst (ar-Pilot 10.09.)', () => {
-    expect(zieleFuerBruecke('ar').map((ziel) => ziel.direction)).toEqual(['ar_to_de', 'ar_to_th', 'ar_to_en', 'ar_to_es', 'ar_to_fr', 'ar_to_pt', 'ar_to_it', 'ar_to_zh']);
+    expect(zieleFuerBruecke('ar').map((ziel) => ziel.direction)).toEqual(['ar_to_de', 'ar_to_th', 'ar_to_en', 'ar_to_es', 'ar_to_fr', 'ar_to_pt', 'ar_to_it', 'ar_to_zh', 'ar_to_ja']);
     for (const ui of UI_LANGUAGES.filter((code) => !(LANGUAGE_CODES as readonly string[]).includes(code))) {
       expect(zieleFuerBruecke(ui as ForeignBridge)).toHaveLength(LANGUAGE_CODES.length);
     }

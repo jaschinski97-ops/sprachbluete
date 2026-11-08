@@ -914,6 +914,15 @@ const es: Partial<Record<TranslationKey, string>> = {
   "foundations.zhTone4": "4.º tono · descendente",
   "foundations.zhTone5": "Tono neutro · ligero y breve",
   "grammar.measureWordZh": "El orden es número + clasificador + sustantivo: {{example}}. 个 es el clasificador más común, pero muchos sustantivos tienen el suyo.",
+  "drill.josushi": "¿つ, 本 o 枚?",
+  "writing.promptJa": "¿Cómo se escribe en japonés? En kana o kanji.",
+  "dictation.promptJa": "Escribe la frase que oyes, en japonés.",
+  "language.ja.feature": "Tres escrituras",
+  "language.ja.description": "El japonés mezcla tres escrituras: kanji para las raíces, hiragana para terminaciones y partículas, katakana para préstamos. Muchos kanji tienen varias lecturas, por eso la lectura aparece en kana junto a la palabra.",
+  "grammar.counterJa": "Después del número va un contador que depende del tipo de cosa: {{example}}. つ sirve para muchas cosas, pero muchos sustantivos tienen el suyo.",
+  "foundations.introJapanese": "Números, precios en yenes y los kana, para que el primer diálogo no empiece de cero.",
+  "foundations.kana": "Hiragana y katakana",
+  "foundations.kanaIntro": "Cada kana representa una sílaba. El hiragana (grande) escribe palabras y terminaciones japonesas; el katakana (debajo), sobre todo préstamos y nombres. Toca un carácter para oírlo.",
 };
 
 export default es;

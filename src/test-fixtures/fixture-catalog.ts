@@ -19,6 +19,7 @@ import { VOCABULARY, VOCABULARY_TH } from './legacy-vocabulary';
 import { VOCABULARY_FR } from './vocabulary-fr';
 import { VOCABULARY_IT } from './vocabulary-it';
 import { VOCABULARY_ZH } from './vocabulary-zh';
+import { VOCABULARY_JA } from './vocabulary-ja';
 import { VOCABULARY_PT } from './vocabulary-pt';
 
 /** Deutsche Test-Wörter: die deutsche Seite der Thai-Einträge mit Thai als Anker. */
@@ -46,8 +47,8 @@ export const FIXTURE_GERMAN: VocabEntry[] = VOCABULARY_TH.filter((entry) => entr
   englishSpelling: undefined,
 }));
 
-/** Alle Test-Wörter: th/en/es aus dem früheren Grundstock plus Deutsch und kleine Sätze für fr, pt und it. */
-export const FIXTURE_VOCABULARY: VocabEntry[] = [...VOCABULARY, ...FIXTURE_GERMAN, ...VOCABULARY_FR, ...VOCABULARY_PT, ...VOCABULARY_IT, ...VOCABULARY_ZH];
+/** Alle Test-Wörter: th/en/es aus dem früheren Grundstock plus Deutsch und kleine Sätze für fr, pt, it, zh und ja. */
+export const FIXTURE_VOCABULARY: VocabEntry[] = [...VOCABULARY, ...FIXTURE_GERMAN, ...VOCABULARY_FR, ...VOCABULARY_PT, ...VOCABULARY_IT, ...VOCABULARY_ZH, ...VOCABULARY_JA];
 
 export function fixtureEntry(word: VocabEntry): ContentEntry {
   return {

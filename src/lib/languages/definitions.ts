@@ -35,10 +35,11 @@ export type LearningLanguageDefinition = {
   speechRate: number;
   /**
    * Schrift der Zielsprache — steuert Leerzeichen-Regeln, Lesehilfen,
-   * Schema-Prüfung. Eigene Schriften (thai, han) schreiben ohne Leerzeichen
-   * zwischen den Wörtern und zeigen die Umschrift daneben.
+   * Schema-Prüfung. Eigene Schriften (thai, han, japanese) schreiben ohne
+   * Leerzeichen zwischen den Wörtern und zeigen die Umschrift daneben.
+   * `japanese` mischt Kanji, Hiragana und Katakana.
    */
-  script: 'thai' | 'latin' | 'han';
+  script: 'thai' | 'latin' | 'han' | 'japanese';
   /** Welche Zeichenleiste Diktat und Schreiben einblenden (null = keine). */
   palette: 'thai' | 'german' | 'spanish' | 'french' | 'portuguese' | 'italian' | null;
   /**
@@ -391,6 +392,45 @@ export const LEARNING_LANGUAGES: Record<LanguageCode, LearningLanguageDefinition
     checkPoint3: 'stimmt das Pinyin mit Tonzeichen zu den Schriftzeichen, und passt das Zählwort zum Nomen?',
     dialogRules: 'Natürliches Hochchinesisch in Kurzzeichen mit chinesischer Zeichensetzung (，。？！); Preise in 块. roman ist Hanyu Pinyin mit Tonzeichen, Wörter durch Leerzeichen getrennt.',
   },
+  // Japanisch (Standardsprache; 07.11.2026, Nutzerentscheidung). Drei Schriften
+  // gemischt, ohne Leerzeichen. Die Lesung der Kanji steht je Wort als Kana
+  // (`kana`), das Romaji (modifiziertes Hepburn) ist daraus gerechnet;
+  // Zählwörter über `japaneseNoun`.
+  ja: {
+    code: 'ja',
+    label: 'Japanisch',
+    endonym: '日本語',
+    speechLocale: 'ja-JP',
+    speechRate: 0.9,
+    script: 'japanese',
+    // Kana und Kanji tippt man über die japanische Tastatur des Geräts.
+    palette: null,
+    nearMiss: 'case',
+    legend: null,
+    dictation: { foldCase: false, eszettEquivalence: false, strictDiacritics: true },
+    prompts: { writing: 'writing.promptJa', dictation: 'dictation.promptJa' },
+    placeholders: { word: '日本語', sentence: '日本語' },
+    wordSpeaking: 'repeat',
+    drills: ['josushi'],
+    greeting: { word: 'こんにちは', hint: 'konnichiwa' },
+    challenge: 'language.ja.description',
+    feature: {
+      label: 'language.ja.feature',
+      description: 'language.ja.description',
+      kind: 'per-word',
+      implemented: true,
+      source: {
+        title: 'Japanese writing system',
+        url: 'https://en.wikipedia.org/wiki/Japanese_writing_system',
+        retrieved: '2026-11-07',
+        quote: 'Almost all written Japanese sentences contain a mixture of kanji and kana.',
+      },
+    },
+    generatorRules:
+      '- Japanische Standardsprache. "term" in üblicher Schreibung (Kanji, wo im Alltag üblich, sonst Kana; Lehnwörter in Katakana), Verben in Wörterbuchform; "kana" ist die Lesung in Hiragana (Katakana-Wörter in Katakana); "romanization" ist Romaji im modifizierten Hepburn mit Längestrichen (gakkō, taberu); "syllables" leer lassen; Nomen mit "japaneseNoun" { "counter": "本" } (das übliche Zählwort, sonst つ oder 個).',
+    checkPoint3: 'stimmt die Kana-Lesung zu den Kanji (Sonderlesungen wie 今日 きょう), und passt das Zählwort zum Nomen?',
+    dialogRules: 'Natürliches Standardjapanisch mit japanischer Zeichensetzung (。、？！), höflich mit です/ます (unter Freunden Umgangsform); Preise in 円. roman ist Romaji im modifizierten Hepburn, Wörter durch Leerzeichen getrennt, Partikel は/へ/を als wa/e/o.',
+  },
 };
 
 export function learningLanguage(code: LanguageCode): LearningLanguageDefinition {
@@ -409,8 +449,10 @@ export function dictationPromptKey(code: LanguageCode): TranslationKey {
 
 /** Thai-Schrift-Zeichen (Block U+0E00–U+0E7F). */
 const THAI_ZEICHEN = /[฀-๿]/;
-/** Chinesische Schriftzeichen. */
+/** Chinesische Schriftzeichen (auch Kanji). */
 const HAN_ZEICHEN = /\p{Script=Han}/u;
+/** Hiragana und Katakana. */
+const KANA_ZEICHEN = /[\u3040-\u30ff]/u;
 
 /**
  * Passt ein Text zur Schrift der Sprache? Thai verlangt Thai-Zeichen,
@@ -419,12 +461,14 @@ const HAN_ZEICHEN = /\p{Script=Han}/u;
  */
 export function passtZurSchrift(code: LanguageCode, text: string): boolean {
   const script = LEARNING_LANGUAGES[code].script;
-  if (script === 'thai') return THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text);
-  if (script === 'han') return HAN_ZEICHEN.test(text) && !THAI_ZEICHEN.test(text);
-  return !THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text);
+  if (script === 'thai') return THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text) && !KANA_ZEICHEN.test(text);
+  // Kana im Chinesischen heißt: Japanisch ist hineingerutscht.
+  if (script === 'han') return HAN_ZEICHEN.test(text) && !THAI_ZEICHEN.test(text) && !KANA_ZEICHEN.test(text);
+  if (script === 'japanese') return (KANA_ZEICHEN.test(text) || HAN_ZEICHEN.test(text)) && !THAI_ZEICHEN.test(text);
+  return !THAI_ZEICHEN.test(text) && !HAN_ZEICHEN.test(text) && !KANA_ZEICHEN.test(text);
 }
 
-/** Hat die Sprache eine eigene, nicht-lateinische Schrift (Thai, Chinesisch)? */
+/** Hat die Sprache eine eigene, nicht-lateinische Schrift (Thai, Chinesisch, Japanisch)? */
 export function eigeneSchrift(code: LanguageCode): boolean {
   return LEARNING_LANGUAGES[code].script !== 'latin';
 }

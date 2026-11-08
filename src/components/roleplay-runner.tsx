@@ -299,7 +299,7 @@ function SzeneZeile({
     setErkennungsFehler(null);
     void (async () => {
       const text = await erkenne({
-        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', it: 'it-IT', zh: 'zh-CN' }[sprache],
+        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', it: 'it-IT', zh: 'zh-CN', ja: 'ja-JP' }[sprache],
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
         hinweise: [zeile.thai],

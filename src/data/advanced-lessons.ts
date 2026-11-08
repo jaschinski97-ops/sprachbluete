@@ -6,7 +6,7 @@ export type AdvancedQuestion = {
   options: [string, string, string];
   correctIndex: 0 | 1 | 2;
   explanation: string;
-  // Umschrift (Thai, Chinesisch) mit denselben Positionen wie `prompt`/`options`/`explanation`.
+  // Umschrift (Thai, Chinesisch, Japanisch) mit denselben Positionen wie `prompt`/`options`/`explanation`.
   roman?: { prompt: string; options: [string, string, string]; explanation: string };
 };
 
@@ -183,6 +183,33 @@ export const ADVANCED_LESSONS: Record<LanguageCode, AdvancedLesson> = {
       writingPrompt: 'Gěi lǎoshī xiě yì fēng diànzǐ yóujiàn: shuōmíng nǐ de wèntí, tíchū yí gè bànfǎ, bìng shuōmíng wèishénme zhège bànfǎ shìhé nǐ.',
       speakingPrompt: 'Gēn péngyou shuōshuo Mǐnà yǒu shénme wèntí. Nǐ huì zěnme juédìng? Wèishénme?',
       modelAnswer: "Wáng lǎoshī nín hǎo! Wǒ xiǎng jìxù shàngkè, kěshì měi gè xīngqī'èr gōngsī dōu kāihuì, suǒyǐ wǒ zǒngshì chídào. Wǒ kěyǐ huàn dào xīngqīliù de bān ma? Zhèyàng wǒ jiù néng shàng wánzhěng de kè. Xièxie nín de bāngzhù!",
+    },
+  },
+  ja: {
+    id: 'course-time-ja-001', language: 'ja', title: "語学の授業の時間を変える",
+    paragraphs: [
+      "ミナさんは三か月前から、夜に語学教室に通っています。先生もクラスのみんなも親切で、お互いに会話の練習を手伝っています。でも最近、ミナさんの会社が毎週の会議の時間を変えたので、彼女は毎週火曜日に遅刻してしまいます。",
+      "先週、ミナさんは大切なグループ活動に出られませんでした。そこで先生にメールを書いて、授業を続けたいと伝え、土曜日のクラスに移れるかどうか聞きました。もし席がなければ、火曜日の練習問題を送ってもらって、家でやりたいと書きました。",
+      "先生から返事が来ました。土曜日のクラスにはまだ一つ空きがありますが、火曜日のクラスより一時間早く始まります。ミナさんは金曜日までに決めなければなりません。早起きは簡単ではありませんが、毎週授業の一部を逃すよりはいいと思っています。",
+    ],
+    questions: [
+      { prompt: "ミナさんはどうして火曜日に遅刻しますか。", options: ["電車が止まったからです。","会社が会議の時間を変えたからです。","先生が教室を変えたからです。"], correctIndex: 1, explanation: "会社が毎週の会議の時間を変えました。", roman: { prompt: "Mina-san wa dōshite kayōbi ni chikoku shimasu ka.", options: ["Densha ga tomatta kara desu.","Kaisha ga kaigi no jikan o kaeta kara desu.","Sensei ga kyōshitsu o kaeta kara desu."], explanation: "Kaisha ga maishū no kaigi no jikan o kaemashita." } },
+      { prompt: "クラスを変えられなければ、ミナさんは何が欲しいですか。", options: ["お金を返してほしい。","違う先生がいい。","家でやる練習問題。"], correctIndex: 2, explanation: "火曜日の練習問題を送ってもらって、家でやりたいのです。", roman: { prompt: "Kurasu o kaerarenakereba, Mina-san wa nani ga hoshii desu ka.", options: ["Okane o kaeshite hoshii.","Chigau sensei ga ii.","Ie de yaru renshū mondai."], explanation: "Kayōbi no renshū mondai o okutte moratte, ie de yaritai no desu." } },
+      { prompt: "ミナさんはどうして土曜日のクラスを考えていますか。", options: ["毎週授業の一部を逃さないからです。","早起きが大好きだからです。","友達がみんなクラスを変えたからです。"], correctIndex: 0, explanation: "早起きは大変ですが、毎週授業の一部を逃すよりはいいと思っています。", roman: { prompt: "Mina-san wa dōshite doyōbi no kurasu o kangaete imasu ka.", options: ["Maishū jugyō no ichibu o nogasanai kara desu.","Hayaoki ga daisuki da kara desu.","Tomodachi ga minna kurasu o kaeta kara desu."], explanation: "Hayaoki wa taihen desu ga, maishū jugyō no ichibu o nogasu yori wa ii to omotte imasu." } },
+    ],
+    writingPrompt: "先生にメールを書いてください。問題を説明して、解決策を一つ提案し、なぜそれがあなたに合っているかを書いてください。",
+    speakingPrompt: "ミナさんの問題について友達と話してください。あなたならどう決めますか。それはなぜですか。",
+    modelAnswer: "田中先生、こんにちは。授業を続けたいのですが、毎週火曜日に会社の会議があるので、いつも遅刻してしまいます。土曜日のクラスに移ってもいいですか。そうすれば授業を最後まで受けられます。よろしくお願いします。",
+    roman: {
+      title: "Gogaku no jugyō no jikan o kaeru",
+      paragraphs: [
+        "Mina-san wa sankagetsu mae kara, yoru ni gogaku kyōshitsu ni kayotte imasu. Sensei mo kurasu no minna mo shinsetsu de, otagai ni kaiwa no renshū o tetsudatte imasu. Demo saikin, Mina-san no kaisha ga maishū no kaigi no jikan o kaeta node, kanojo wa maishū kayōbi ni chikoku shite shimaimasu.",
+        "Senshū, Mina-san wa taisetsuna gurūpu katsudō ni deraremasen deshita. Sokode sensei ni mēru o kaite, jugyō o tsuzuketai to tsutae, doyōbi no kurasu ni utsureru ka dō ka kikimashita. Moshi seki ga nakereba, kayōbi no renshū mondai o okutte moratte, ie de yaritai to kakimashita.",
+        "Sensei kara henji ga kimashita. Doyōbi no kurasu ni wa mada hitotsu aki ga arimasu ga, kayōbi no kurasu yori ichijikan hayaku hajimarimasu. Mina-san wa kin'yōbi made ni kimenakereba narimasen. Hayaoki wa kantan de wa arimasen ga, maishū jugyō no ichibu o nogasu yori wa ii to omotte imasu.",
+      ],
+      writingPrompt: "Sensei ni mēru o kaite kudasai. Mondai o setsumei shite, kaiketsusaku o hitotsu teian shi, naze sore ga anata ni atte iru ka o kaite kudasai.",
+      speakingPrompt: "Mina-san no mondai ni tsuite tomodachi to hanashite kudasai. Anata nara dō kimemasu ka. Sore wa naze desu ka.",
+      modelAnswer: "Tanaka sensei, konnichiwa. Jugyō o tsuzuketai no desu ga, maishū kayōbi ni kaisha no kaigi ga aru node, itsumo chikoku shite shimaimasu. Doyōbi no kurasu ni utsutte mo ii desu ka. Sō sureba jugyō o saigo made ukeraremasu. Yoroshiku onegai shimasu.",
     },
   },
 };

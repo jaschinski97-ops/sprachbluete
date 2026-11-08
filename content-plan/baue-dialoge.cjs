@@ -16,12 +16,16 @@
  *   !                                          neuer Korrektur-Hinweis
  *   <app-sprache> Problem || Erklärung         der Hinweis in dieser Sprache
  * Die Zeile der Lernsprache ist der Dialogtext. Leere Zeilen und „#“ zählen nicht.
+ * Japanisch (07.11.2026): Nach P/L steht die Kana-Lesung mit Leerzeichen
+ * zwischen den Wörtern („きょう は いい てんき です ね。“); das Romaji rechnet
+ * `japanisch-lesung.cjs` daraus, die Lesung bleibt als `kana` am Zug.
  */
 const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt'];
+const { satzRomaji } = require('./japanisch-lesung.cjs');
+const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt', 'it', 'ja'];
 
 const ordner = (sprache) => path.join(ROOT, '_Local/dialoge', sprache);
 const plan = (sprache) => JSON.parse(fs.readFileSync(path.join(ordner(sprache), 'plan.json'), 'utf8'));
@@ -90,7 +94,8 @@ function lies(sprache, text) {
       speaker: zug.speaker,
       targetText: zug.texte[sprache],
       thai: zug.texte.th,
-      roman: zug.roman,
+      roman: sprache === 'ja' ? satzRomaji(zug.roman) : zug.roman,
+      ...(sprache === 'ja' ? { kana: zug.roman } : {}),
       german: zug.texte.de,
     })),
     corrections: hinweise.map((h) => h.texte.de),

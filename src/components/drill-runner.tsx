@@ -40,6 +40,7 @@ const DRILL_LABEL_KEYS: Record<DrillId, TranslationKey> = {
   genero: 'drill.genero',
   articolo: 'drill.articolo',
   liangci: 'drill.liangci',
+  josushi: 'drill.josushi',
 };
 
 const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
@@ -64,6 +65,7 @@ const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   genero: 'drill.prompt.genre',
   articolo: 'drill.prompt.genre',
   liangci: 'drill.prompt.zaehlerwort',
+  josushi: 'drill.prompt.zaehlerwort',
 };
 
 /**

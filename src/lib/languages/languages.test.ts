@@ -89,14 +89,15 @@ describe('Inhalts-Richtungen (seit dem Sprach-Umbau 23.09.2026)', () => {
 });
 
 describe('Das Verzeichnis', () => {
-  it('führt acht Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
-    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh']);
+  it('führt neun Lernsprachen — Deutsch gleichberechtigt —, alle mit Inhalten', () => {
+    expect(LANGUAGE_CODES).toEqual(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh', 'ja']);
     expect(languagesWithContent().map((language) => language.code).sort()).toEqual([
       'de',
       'en',
       'es',
       'fr',
       'it',
+      'ja',
       'pt',
       'th',
       'zh',

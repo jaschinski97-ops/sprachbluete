@@ -7,6 +7,7 @@ import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { LATIN_ALPHABETS, spellOut, type LatinLanguage, type LatinLetter } from '@/data/latin-alphabet';
 import { NUMBER_EXAMPLES, NUMBER_GROUPS, numberWord, priceText, thaiDigits } from '@/data/numbers';
 import { CHINESE_TONES } from '@/data/chinese-tones';
+import { KANA_ROWS } from '@/data/japanese-kana';
 import { CONSONANT_MEANING_DE, THAI_CONSONANTS, type ConsonantClass, type ThaiConsonant } from '@/data/thai-script';
 import type { VocabEntry } from '@/data/vocab-types';
 import { useTheme } from '@/hooks/use-theme';
@@ -65,6 +66,7 @@ export function FoundationsRunner({ mode, direction, onExit }: {
     return null;
   }
   if (language === 'zh') return mode === 'toene' ? <ChineseTonesStep /> : null;
+  if (language === 'ja') return mode === 'kana' ? <KanaStep /> : null;
   if (mode === 'abc') return <AlphabetStep language={language} />;
   if (mode === 'buchstabieren') return <SpellingStep language={language} onExit={onExit} />;
   return null;
@@ -110,19 +112,21 @@ function PlayerNote({ player }: { player: Player }) {
 }
 
 /** Eine antippbare Kachel: großes Zeichen, darunter kleine Zeilen. */
-function Tile({ big, lines, onPress, a11y, wide = false }: {
+function Tile({ big, lines, onPress, a11y, wide = false, kana = false }: {
   big: string;
   lines: (string | null | undefined)[];
   onPress: () => void;
   a11y: string;
   wide?: boolean;
+  /** Feld der Kana-Tabelle: teilt sich die Zeile mit vier anderen. */
+  kana?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={a11y}
-      style={({ pressed }) => [wide ? styles.tileWide : styles.tile, pressed && styles.pressed]}>
+      style={({ pressed }) => [kana ? styles.kanaCell : wide ? styles.tileWide : styles.tile, pressed && styles.pressed]}>
       <ThemedView type="background" style={styles.tileInner}>
         <ThemedText type="subtitle" style={styles.center}>{big}</ThemedText>
         {lines.filter((line): line is string => Boolean(line)).map((line, index) => (
@@ -629,6 +633,35 @@ const TONE_NAME_KEYS: Record<Tone, TranslationKey> = {
  * Quelle (巴 bā, 拔 bá, 把 bǎ, 爸 bà, 吧 ba; `data/chinese-tones.ts`).
  * Gesprochen von der Gerätestimme — es gibt (noch) keine geprüften Clips.
  */
+/** Die Kana-Tabelle: Hiragana groß, Katakana und Romaji darunter, antippen zum Anhören. */
+function KanaStep() {
+  const { t } = useLocale();
+  const player = usePlayer('ja');
+  return (
+    <View style={styles.root}>
+      <ThemedText type="small" themeColor="textSecondary">{t('foundations.kanaIntro')}</ThemedText>
+      <PlayerNote player={player} />
+      {/* Fünf Spalten wie in der Gojūon-Tabelle (あいうえお), leere Felder bleiben frei. */}
+      <View style={styles.kanaTable}>
+        {KANA_ROWS.map((row, rowIndex) => (
+          <View key={`reihe-${rowIndex}`} style={styles.kanaRow}>
+            {row.map((zeichen, index) => zeichen ? (
+              <Tile
+                key={zeichen.hiragana}
+                kana
+                big={zeichen.hiragana}
+                lines={[zeichen.katakana, zeichen.romaji]}
+                a11y={`${zeichen.hiragana} ${zeichen.katakana}, ${zeichen.romaji}`}
+                onPress={() => player.play(zeichen.hiragana)}
+              />
+            ) : <View key={`leer-${index}`} style={styles.kanaCell} />)}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ChineseTonesStep() {
   const { t } = useLocale();
   const player = usePlayer('zh');
@@ -734,6 +767,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 88,
     minWidth: 88,
+  },
+  kanaTable: {
+    gap: Spacing.two,
+  },
+  kanaRow: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  kanaCell: {
+    flex: 1,
+    minWidth: 0,
   },
   tileWide: {
     flexGrow: 1,

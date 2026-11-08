@@ -4,7 +4,7 @@ import { ThaiWord } from './thai-word';
 import { ThemedText, displayLineHeight } from './themed-text';
 
 import { Spacing } from '@/constants/theme';
-import { nounOf, syllablesOf, termWithArticle } from '@/data/vocab-helpers';
+import { nounOf, readingOf, syllablesOf, termWithArticle } from '@/data/vocab-helpers';
 import { VocabEntry } from '@/data/vocab-types';
 import { useLocale } from '@/lib/i18n';
 import { learningLanguage } from '@/lib/languages/definitions';
@@ -88,11 +88,12 @@ export function TermWord({
             </View>
           ))}
         </View>
-      ) : entry.language !== 'es' && (entry.ipa ?? entry.romanization) !== entry.term ? (
+      ) : entry.language !== 'es' && (entry.ipa ?? readingOf(entry)) !== entry.term ? (
         // Spanisch: Schreibung = Aussprache, gelernt wird die Betonung. Die
         // Pseudo-Umschriften einsilbiger Wörter („pyel“, „PLAN“) blieben weg.
+        // Japanisch: Kana-Lesung plus Romaji (`readingOf`).
         <ThemedText type="small" themeColor="textSecondary">
-          {entry.ipa ?? entry.romanization}
+          {entry.ipa ?? readingOf(entry)}
         </ThemedText>
       ) : null}
       {entry.language === 'de' || entry.language === 'en' || entry.language === 'fr' || entry.language === 'pt' || entry.language === 'it' ? <ThemedText type="small" themeColor="textSecondary">

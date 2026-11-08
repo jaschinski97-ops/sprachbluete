@@ -97,6 +97,7 @@ const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
   genero: 'drill.prompt.genre',
   articolo: 'drill.prompt.genre',
   liangci: 'drill.prompt.zaehlerwort',
+  josushi: 'drill.prompt.zaehlerwort',
 };
 
 // Diktat-Aufforderung je Lernsprache.
@@ -108,6 +109,7 @@ const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
   fr: 'dictation.promptFr',
   pt: 'dictation.promptPt',
   it: 'dictation.promptIt',
+  ja: 'dictation.promptJa',
   zh: 'dictation.promptZh',
 };
 

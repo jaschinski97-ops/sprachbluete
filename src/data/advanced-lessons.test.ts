@@ -12,8 +12,9 @@ test('jede Lernsprache hat eine vollständige erste B1-Übung ohne erfundene Bew
     ids.add(lesson.id);
     expect(lesson.paragraphs).toHaveLength(3);
     // Chinesische Zeichen tragen je Zeichen ein ganzes Wort oder eine Silbe:
-    // 55 Zeichen entsprechen grob 110 Buchstaben einer Alphabetschrift.
-    const mindestens = LEARNING_LANGUAGES[language].script === 'han' ? 55 : 110;
+    // 55 Zeichen entsprechen grob 110 Buchstaben einer Alphabetschrift (Japanisch mit Kanji ebenso).
+    const schrift = LEARNING_LANGUAGES[language].script;
+    const mindestens = schrift === 'han' || schrift === 'japanese' ? 55 : 110;
     expect(lesson.paragraphs.every((paragraph) => paragraph.length >= mindestens)).toBe(true);
     expect(lesson.questions).toHaveLength(3);
     expect(lesson.questions.every((question) =>

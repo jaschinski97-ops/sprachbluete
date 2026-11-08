@@ -52,7 +52,7 @@ export const ALPHABET_SOURCES: Record<LatinLanguage, { title: string; url: strin
   it: { title: 'Alfabeto italiano', url: 'https://it.wikipedia.org/wiki/Alfabeto_italiano', retrieved: '2026-11-07' },
 };
 
-export type LatinLanguage = Exclude<LanguageCode, 'th' | 'zh'>;
+export type LatinLanguage = Exclude<LanguageCode, 'th' | 'zh' | 'ja'>;
 
 export type LatinLetter = {
   upper: string;

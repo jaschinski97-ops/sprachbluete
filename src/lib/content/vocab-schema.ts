@@ -4,6 +4,7 @@ import { isSharedConcept } from '../concepts';
 import { UI_LANGUAGES } from '../i18n/types';
 import { pruefeThaiWortToene } from '../thai/tone-check';
 import { isMeasureWord } from '@/data/chinese-measure-words';
+import { isJapaneseCounter } from '@/data/japanese-counters';
 import type { VocabEntry } from '@/data/vocab-types';
 
 /**
@@ -77,7 +78,7 @@ export function pruefePinyin(roman: string | undefined): string[] {
 /** Normalisierter Duplikat-Schlüssel eines Begriffs (je Sprache). */
 export function vocabSchluessel(term: string, language: string): string {
   let basis = term.normalize('NFC').trim();
-  if (language === 'th' || language === 'zh') {
+  if (language === 'th' || language === 'zh' || language === 'ja') {
     // Eigene Schriften ohne Wortabstand: Leerzeichen machen kein neues Wort.
     basis = basis.replace(/\s+/g, '');
   } else {
@@ -172,6 +173,12 @@ export function isValidVocabEntry(value: unknown): value is VocabEntry {
     if (typeof n !== 'object' || n === null || typeof n.measureWord !== 'string') return false;
     if (n.alternatives !== undefined && (!Array.isArray(n.alternatives) || n.alternatives.some((a) => typeof a !== 'string'))) return false;
   }
+  if (sprache === 'ja' && d.japaneseNoun !== undefined) {
+    const n = d.japaneseNoun as Record<string, unknown>;
+    if (typeof n !== 'object' || n === null || typeof n.counter !== 'string') return false;
+    if (n.alternatives !== undefined && (!Array.isArray(n.alternatives) || n.alternatives.some((a) => typeof a !== 'string'))) return false;
+  }
+  if (d.kana !== undefined && typeof d.kana !== 'string') return false;
   if (sprache === 'es' && d.spanishVerb !== undefined) {
     const v = d.spanishVerb as Record<string, unknown>;
     if (typeof v !== 'object' || !['ar', 'er', 'ir'].includes(String(v.conjugation))) return false;
@@ -243,8 +250,10 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
     fehler.push(schrift === 'thai'
       ? 'Thai-Begriff ohne thailändische Schrift (oder mit Schriftzeichen).'
       : schrift === 'han'
-        ? 'Chinesischer Begriff ohne Schriftzeichen (oder mit Thai-Schrift).'
-        : 'Begriff in lateinischer Schrift enthält Thai-Schrift oder Schriftzeichen.');
+        ? 'Chinesischer Begriff ohne Schriftzeichen (oder mit Thai-Schrift oder Kana).'
+        : schrift === 'japanese'
+          ? 'Japanischer Begriff ohne Kana oder Kanji (oder mit Thai-Schrift).'
+          : 'Begriff in lateinischer Schrift enthält Thai-Schrift, Schriftzeichen oder Kana.');
   }
 
   // Längen in vernünftigen Grenzen.
@@ -310,6 +319,16 @@ export function pruefeVocabDoc(doc: VocabEntry): VocabPruefung {
       const { measureWord, alternatives = [] } = doc.chineseNoun;
       for (const wort of [measureWord, ...alternatives]) {
         if (!isMeasureWord(wort)) fehler.push(`Unbekanntes Zählwort „${wort}“ (Liste in data/chinese-measure-words.ts).`);
+      }
+    }
+  }
+  if (language === 'ja') {
+    if (!doc.kana?.trim()) fehler.push('Japanisches Wort ohne Kana-Lesung.');
+    else if (!/^[\u3040-\u30ffー・\s]+$/u.test(doc.kana)) fehler.push(`Kana-Lesung enthält andere Zeichen als Kana: „${doc.kana}“.`);
+    if (doc.japaneseNoun) {
+      const { counter, alternatives = [] } = doc.japaneseNoun;
+      for (const wort of [counter, ...alternatives]) {
+        if (!isJapaneseCounter(wort)) fehler.push(`Unbekanntes Zählwort „${wort}“ (Liste in data/japanese-counters.ts).`);
       }
     }
   }

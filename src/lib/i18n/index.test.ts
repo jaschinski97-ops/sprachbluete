@@ -69,9 +69,11 @@ describe('detectSystemLocale — Normierung der Systemsprache', () => {
     expect(detectFrom('fr')).toBe('fr');
     expect(detectFrom('zh')).toBe('zh');
     expect(detectFrom('pt')).toBe('pt');
+    // Seit 07.11.2026 App-Sprachen:
+    expect(detectFrom('it')).toBe('it');
+    expect(detectFrom('ja')).toBe('ja');
     // Seit 24.10.2026 entfernte App-Sprachen fallen auf Englisch zurück.
     expect(detectFrom('ko')).toBe('en');
-    expect(detectFrom('ja')).toBe('en');
   });
 
   it('normiert Region-Codes auf die Sprache (th-TH bleibt th, ar-EG wird ar)', () => {
@@ -88,8 +90,8 @@ describe('detectSystemLocale — Normierung der Systemsprache', () => {
   });
 
   it('fällt für unbekannte Sprachen auf Englisch zurück', () => {
-    expect(detectFrom('it')).toBe('en'); // Italienisch: kein Teil der 20 App-Sprachen
-    expect(detectFrom('pl')).toBe('en'); // Polnisch ebenso
+    expect(detectFrom('pl')).toBe('en'); // Polnisch: keine App-Sprache
+    expect(detectFrom('ru')).toBe('en'); // Russisch: seit 24.10.2026 entfernt
     expect(detectFrom(undefined)).toBe('en');
   });
 
@@ -105,7 +107,8 @@ describe('detectSystemLocale — Normierung der Systemsprache', () => {
 
   it('normiert rohe Codes auch ohne Erkennung', () => {
     expect(normalizeLanguageCode('FR')).toBe('en'); // bewusst strikt: Kleinschreibung ist der Vertrag von expo-localization
-    expect(normalizeLanguageCode('it')).toBe('en'); // Italienisch: nicht im Kanon → Fallback
+    expect(normalizeLanguageCode('pl')).toBe('en'); // Polnisch: nicht im Kanon → Fallback
+    expect(normalizeLanguageCode('it')).toBe('it'); // seit 07.11.2026 App-Sprache
     expect(normalizeLanguageCode('fr')).toBe('fr'); // seit dem 20-Sprachen-Ausbau im Kanon
     expect(normalizeLanguageCode(42)).toBe('en');
   });
@@ -118,7 +121,7 @@ describe('Spracheinstellung — nachsichtiges Lesen', () => {
   });
 
   it('verwirft alles andere zugunsten von "system"', () => {
-    expect(normalizeLanguageSetting('it')).toBe('system'); // Italienisch: nicht im Kanon der 20
+    expect(normalizeLanguageSetting('pl')).toBe('system'); // Polnisch: keine App-Sprache
     expect(normalizeLanguageSetting(null)).toBe('system');
     expect(normalizeLanguageSetting(undefined)).toBe('system');
   });
@@ -262,9 +265,11 @@ describe('Sprachnamen und Monate', () => {
   });
 
   it('fällt bei ungeprüften Zellen auf das Endonym zurück (Selbstbezeichnung geht immer)', () => {
-    // Chinesisch als Anzeige hat keine geprüfte Zeile — das Endonym muss kommen.
-    expect(languageDisplayName('zh', 'de')).toBe('中文');
-    expect(languageDisplayName('hi', 'zh')).toBe('हिन्दी');
+    // Seit 07.11.2026 ist jede Zelle gefüllt; eine unbekannte Oberfläche zeigt das Endonym.
+    expect(languageDisplayName('zh', 'xx' as never)).toBe('中文');
+    expect(languageDisplayName('ja', 'xx' as never)).toBe('日本語');
+    expect(languageDisplayName('ja', 'de')).toBe('Japanisch');
+    expect(languageDisplayName('it', 'ja')).toBe('イタリア語');
   });
 });
 

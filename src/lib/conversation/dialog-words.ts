@@ -243,12 +243,41 @@ function staemme(entry: VocabEntry): string[] {
   }).filter((stamm) => stamm.length >= 3);
 }
 
+/**
+ * Japanisch beugt Verben und い-Adjektive (07.11.2026): 食べる → 食べました,
+ * 行く → 行きます, 高い → 高かった, 勉強する → 勉強しています. Der Stamm zählt
+ * nur, wenn danach Hiragana folgen; reine Kana-Stämme brauchen zwei Zeichen,
+ * sonst träfe „い“ (いる) jeden Satz.
+ */
+function japanischerStamm(entry: VocabEntry): string | null {
+  const term = entry.term.replace(/\s+/g, '');
+  let stamm: string | null = null;
+  if (term.endsWith('する') && term.length > 2) stamm = term.slice(0, -2);
+  else if (entry.partOfSpeech === 'verb' && /[うくぐすつぬぶむる]$/u.test(term)) stamm = term.slice(0, -1);
+  else if (entry.partOfSpeech === 'adjective' && term.endsWith('い')) stamm = term.slice(0, -1);
+  if (!stamm) return null;
+  const nurKana = /^[\u3040-\u30ffー]+$/u.test(stamm);
+  if (stamm.length < (nurKana ? 2 : 1)) return null;
+  return stamm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /** Ob das Wort in diesem Text (einer Dialogzeile) vorkommt. */
 export function zielwortImText(entry: VocabEntry, text: string): boolean {
   // Thai und Chinesisch ohne Leerzeichen: das Wort als Teilstring.
   if (isLanguageCode(entry.language) && ohneWortabstand(entry.language)) {
     const term = entry.term.replace(/\s+/g, '');
-    return term !== '' && text.replace(/\s+/g, '').includes(term);
+    const zeile = text.replace(/\s+/g, '');
+    if (term !== '' && zeile.includes(term)) return true;
+    const stamm = entry.language === 'ja' ? japanischerStamm(entry) : null;
+    if (stamm === null) return false;
+    // Gebeugte Form: Stamm, danach Hiragana. Bei Verben/Adjektiven ohne する
+    // keine Partikel danach (銀行は ist nicht 行く) und kein Kanji davor (Teil
+    // eines anderen Worts); bei する-Verben passt jede Form (対処できる).
+    const suru = entry.term.replace(/\s+/g, '').endsWith('する');
+    const muster = suru
+      ? `${stamm}[぀-ゟ]`
+      : `(?<![一-鿿々])${stamm}(?![はがをのにでともへやか])[぀-ゟ]`;
+    return new RegExp(muster, 'u').test(zeile);
   }
   const satz = ` ${klein(text).replace(/[\p{P}\p{S}]/gu, ' ').replace(/\s+/g, ' ').trim()} `;
   const alle = formen(entry);

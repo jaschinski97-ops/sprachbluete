@@ -16,6 +16,10 @@
  * meistgesprochenen Sprachen der Welt. ru, ur, id, ja, mr, te, tr, ta, vi und
  * ko sind entfernt (Wörterbücher in der Git-Historie); deren Systemsprache
  * fällt auf Englisch zurück.
+ *
+ * SEIT 07.11.2026 ZWÖLF (Nutzerentscheidung): Italienisch und Japanisch sind
+ * Lern- UND App-Sprachen; Bedeutungen, Beispielsätze und Dialoge des Katalogs
+ * liegen in beiden vor.
  */
 export const UI_LANGUAGES = [
   'de',
@@ -28,6 +32,8 @@ export const UI_LANGUAGES = [
   'fr',
   'bn',
   'pt',
+  'it',
+  'ja',
 ] as const;
 
 export type UiLanguage = (typeof UI_LANGUAGES)[number];

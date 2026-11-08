@@ -908,6 +908,15 @@ const en: Partial<Record<TranslationKey, string>> = {
   "foundations.zhTone4": "4th tone · falling",
   "foundations.zhTone5": "Neutral tone · light and short",
   "grammar.measureWordZh": "The order is number + measure word + noun: {{example}}. 个 is the most common measure word, but many nouns have their own.",
+  "drill.josushi": "つ, 本 or 枚?",
+  "writing.promptJa": "How do you write this in Japanese? In kana or kanji.",
+  "dictation.promptJa": "Write down the sentence you hear — in Japanese.",
+  "language.ja.feature": "Three scripts",
+  "language.ja.description": "Japanese mixes three scripts: kanji for word stems, hiragana for endings and particles, katakana for loanwords. Many kanji have several readings, so the reading is shown in kana next to the word.",
+  "grammar.counterJa": "After the number comes a counter that fits the kind of thing: {{example}}. つ works for many things, but many nouns have their own.",
+  "foundations.introJapanese": "Numbers, prices in yen and the kana – so the first dialogue doesn't start from zero.",
+  "foundations.kana": "Hiragana and katakana",
+  "foundations.kanaIntro": "Each kana stands for a syllable. Hiragana (large) writes Japanese words and endings, katakana (below) mainly loanwords and names. Tap a character to hear it.",
 };
 
 export default en;

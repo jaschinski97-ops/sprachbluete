@@ -186,7 +186,8 @@ const italWort = (extra: Partial<VocabEntry> = {}): VocabEntry => neuesWort({
   syllables: [{ roman: 'ac' }, { roman: 'qua' }] as unknown as VocabEntry['syllables'],
   exampleTerm: 'Bevo acqua.',
   exampleRoman: 'Bevo acqua.',
-  exampleTranslations: { ...satz },
+  // Italienisch ist seit 07.11.2026 auch App-Sprache: die it-Zeile ist der Satz selbst.
+  exampleTranslations: { ...satz, it: 'Bevo acqua.' },
   italianNoun: { gender: 'f', article: 'l’', plural: 'acque' },
   ...extra,
 });

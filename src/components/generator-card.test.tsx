@@ -30,7 +30,7 @@ test('conversation starts directly and its deletion applies to the selected targ
   await act(async () => { await press('Alle Sprachen'); });
   await act(async () => { await press('Erzeugte Situationen löschen'); });
   await act(async () => { await press('Wirklich löschen: Alle Sprachen?'); });
-  expect(remove).toHaveBeenLastCalledWith(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh']);
+  expect(remove).toHaveBeenLastCalledWith(['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh', 'ja']);
   await act(async () => { tree.unmount(); });
 });
 

@@ -160,6 +160,17 @@ export type VocabEntry = {
    * Übung bietet sie nie als falsche Antwort an.
    */
   chineseNoun?: { measureWord: string; alternatives?: string[] };
+  /**
+   * SPRACHSPEZIFISCH (Japanisch, 07.11.2026): das übliche Zählwort des Nomens
+   * (ペンを二本 → „本“), nur aus `JAPANESE_COUNTERS`
+   * (`data/japanese-counters.ts`). `alternatives`: weitere übliche Zählwörter.
+   */
+  japaneseNoun?: { counter: string; alternatives?: string[] };
+  /**
+   * SPRACHSPEZIFISCH (Japanisch): die Lesung des Wortes in Kana (学校 →
+   * がっこう). `romanization` ist das daraus gerechnete Romaji.
+   */
+  kana?: string;
   /** SPRACHSPEZIFISCH (Spanisch): Konjugationsklasse und Unregelmäßigkeit. */
   spanishVerb?: { conjugation: 'ar' | 'er' | 'ir'; irregular: boolean };
   /** SPRACHSPEZIFISCH (Englisch): Vergangenheit und Partizip. */
@@ -180,6 +191,8 @@ export type VocabEntry = {
    */
   exampleTerm?: string;
   exampleRoman?: string;
+  /** Japanisch: Lesung des Beispielsatzes in Kana, Wörter mit Leerzeichen getrennt. */
+  exampleKana?: string;
   exampleGerman?: string;
   /**
    * Der Beispielsatz in jeder App-Sprache (24.10.2026). Ohne ihn hatten

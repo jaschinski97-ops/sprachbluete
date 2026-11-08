@@ -56,6 +56,14 @@ import type { LanguageCode } from '@/lib/languages/types';
  *        („èrshíyī“), mit Trennzeichen vor a/o/e („shí'èr“). 一 vor 百/千
  *        und vor 块 mit der üblichen Tonänderung (yìbǎi, yí kuài; en.wikipedia
  *        „Standard Chinese phonology“, Abschnitt „Tone sandhi“).
+ *   ja — en.wikipedia „Japanese numerals“ (Tabelle mit Spalte „Preferred
+ *        reading“: ゼロ zero, いち … じゅう, よんじゅう, ななじゅう,
+ *        きゅうじゅう, ひゃく, せん; Tabelle „11 十一 jū ichi · Ten and one“,
+ *        „151 百五十一 hyaku go-jū ichi“), abgerufen am 2026-11-07. Die
+ *        Zahl steht in Kanji-Ziffern, die Lesung als Kana und Romaji
+ *        (modifiziertes Hepburn wie im Katalog), zusammengeschrieben
+ *        („にじゅういち · nijūichi“). 4, 7 und 9 in der bevorzugten Lesung
+ *        (よん, なな, きゅう), 0 als ゼロ.
  *
  * THAI-UMSCHRIFT: Paiboon-Stil wie im Katalog (`thai-romanization.test.ts`),
  * Ton aus der IPA-Spalte der Quelle. Einzige bewusste Abweichung von der
@@ -69,7 +77,9 @@ import type { LanguageCode } from '@/lib/languages/types';
  * „símbolo = R$“, „plural = Reais“, abgerufen am 2026-11-07), Yuan in der
  * Alltagsform 块 (Chinesisch; en.wikipedia „Renminbi“: „In everyday Mandarin,
  * kuai (Chinese: 块; pinyin: kuài; lit. 'piece') is usually used when
- * discussing money“, abgerufen am 2026-11-07).
+ * discussing money“, abgerufen am 2026-11-07), Yen (Japanisch; en.wikipedia
+ * „Japanese yen“: „The yen (Japanese: 円; symbol: ¥; code: JPY)“, abgerufen
+ * am 2026-11-07).
  */
 
 export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; retrieved: string }> = {
@@ -97,6 +107,7 @@ export const NUMBER_SOURCES: Record<LanguageCode, { title: string; url: string; 
     retrieved: '2026-11-07',
   },
   zh: { title: 'Chinese numerals', url: 'https://en.wikipedia.org/wiki/Chinese_numerals', retrieved: '2026-11-07' },
+  ja: { title: 'Japanese numerals', url: 'https://en.wikipedia.org/wiki/Japanese_numerals', retrieved: '2026-11-07' },
 };
 
 /** Ein Thai-Zahlbaustein: Schrift, Paiboon-Umschrift und IPA der Quelle. */
@@ -165,7 +176,14 @@ const ZH_UNITS: readonly (readonly [string, string])[] = [
   ['六', 'liù'], ['七', 'qī'], ['八', 'bā'], ['九', 'jiǔ'], ['十', 'shí'],
 ].map(([zeichen, pinyin]) => [zeichen, pinyin.normalize('NFC')] as const);
 
-/** Ein Zahlwort in der Lernsprache; `roman` nur für eigene Schriften (Thai-Umschrift, Pinyin). */
+/** Japanisch: Kanji-Ziffer, Kana und Romaji der bevorzugten Lesung (Spalte „Preferred reading“). */
+const JA_UNITS: readonly (readonly [string, string, string])[] = [
+  ['ゼロ', 'ゼロ', 'zero'], ['一', 'いち', 'ichi'], ['二', 'に', 'ni'], ['三', 'さん', 'san'], ['四', 'よん', 'yon'],
+  ['五', 'ご', 'go'], ['六', 'ろく', 'roku'], ['七', 'なな', 'nana'], ['八', 'はち', 'hachi'], ['九', 'きゅう', 'kyū'],
+  ['十', 'じゅう', 'jū'],
+].map(([zeichen, kana, romaji]) => [zeichen, kana, romaji.normalize('NFC')] as const);
+
+/** Ein Zahlwort in der Lernsprache; `roman` nur für eigene Schriften (Thai-Umschrift, Pinyin, Kana + Romaji). */
 export type NumberWord = { value: number; text: string; roman?: string };
 
 /** Bis wohin zusammengesetzt wird: 0–100 und 1000 — mehr braucht kein Marktdialog. */
@@ -282,6 +300,18 @@ function chineseParts(value: number): (readonly [string, string])[] {
   return parts;
 }
 
+/** Japanisch: Zehner + 十 + Einer (十一, 二十一), 11–19 ohne Ziffer vor 十; 百 und 千 ohne 一. */
+function japaneseParts(value: number): (readonly [string, string, string])[] {
+  if (value <= 10) return [JA_UNITS[value]];
+  if (value === 100) return [['百', 'ひゃく', 'hyaku']];
+  if (value === 1000) return [['千', 'せん', 'sen']];
+  const tens = Math.floor(value / 10);
+  const unit = value % 10;
+  const parts: (readonly [string, string, string])[] = tens === 1 ? [JA_UNITS[10]] : [JA_UNITS[tens], JA_UNITS[10]];
+  if (unit) parts.push(JA_UNITS[unit]);
+  return parts;
+}
+
 /** Das Zahlwort zu `value` (0–100 oder 1000) in der Lernsprache. */
 export function numberWord(language: LanguageCode, value: number): NumberWord {
   if (!isTeachableNumber(value)) throw new RangeError(`Zahl außerhalb von Kapitel 0: ${value}`);
@@ -297,6 +327,11 @@ export function numberWord(language: LanguageCode, value: number): NumberWord {
   if (language === 'zh') {
     const parts = chineseParts(value);
     return { value, text: parts.map(([zeichen]) => zeichen).join(''), roman: pinyinJoin(parts.map(([, pinyin]) => pinyin)) };
+  }
+  if (language === 'ja') {
+    const parts = japaneseParts(value);
+    const kana = parts.map(([, k]) => k).join('');
+    return { value, text: parts.map(([zeichen]) => zeichen).join(''), roman: `${kana} · ${parts.map(([, , r]) => r).join('')}` };
   }
   return { value, text: germanWord(value) };
 }
@@ -332,6 +367,8 @@ export type PriceText = { value: number; text: string; roman?: string; label: st
  * invariabile“ (it.wikipedia „Euro“, abgerufen am 2026-11-07). Chinesisch:
  * Zahl + 块 ohne Leerzeichen, 两 statt 二 vor dem Zählwort (Quelle: „Used
  * instead of 二 before a classifier“), 一块 als „yí kuài“ (一 vor viertem Ton).
+ * Japanisch: Zahl + 円 ohne Leerzeichen („五十円“, „ごじゅうえん · gojū en“),
+ * Preisschild wie im Laden „50円“.
  */
 export function priceText(language: LanguageCode, value: number): PriceText {
   const word = numberWord(language, value);
@@ -357,6 +394,10 @@ export function priceText(language: LanguageCode, value: number): PriceText {
   if (language === 'zh') {
     const [zahl, pinyin] = value === 1 ? ['一', 'yí'] : value === 2 ? ['两', 'liǎng'] : [word.text, word.roman ?? ''];
     return { value, text: `${zahl}块`, roman: `${pinyin} kuài`.normalize('NFC'), label: `¥${value}` };
+  }
+  if (language === 'ja') {
+    const [kana, romaji] = (word.roman ?? '').split(' · ');
+    return { value, text: `${word.text}円`, roman: `${kana}えん · ${romaji} en`, label: `${value}円` };
   }
   return { value, text: `${value === 1 ? 'ein' : word.text} Euro`, label: `${value} €` };
 }

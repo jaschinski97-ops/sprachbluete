@@ -167,10 +167,15 @@ function kanaZuRomaji(kana, { satz = false, verbAufU = false } = {}) {
     if (teil === 'は') return 'wa';
     if (teil === 'へ') return 'e';
     if (PARTIKEL_WA.has(teil)) return `${romajiWort(teil.slice(0, -1), false)}wa`;
+    // Satzendpartikel nach höflicher Form als eigenes Wort: ですか → desu ka, ますね → masu ne.
+    const ende = teil.match(/^(.*(?:です|ます|でした|ました|ません|ましょう))([かねよ])$/u);
+    if (ende) return `${romajiWort(ende[1], false)} ${romajiWort(ende[2], false)}`;
     return romajiWort(teil, istVerb(teil));
   }).join('');
   return text.replace(/\s+/g, ' ').replace(/ ([,.!?”)])/g, '$1').replace(/([,.!?])(?=[^\s,.!?”)])/g, '$1 ').trim()
-    .replace(/^([“(]?)(\p{Ll})/u, (_, vor, b) => vor + b.toUpperCase());
+    .replace(/^([“(]?)(\p{Ll})/u, (_, vor, b) => vor + b.toUpperCase())
+    // Jeder Satz beginnt groß, auch der zweite in einer Zeile („… desu. Kono …“).
+    .replace(/([.?!] [“(]?)(\p{Ll})/gu, (_, vor, b) => vor + b.toUpperCase());
 }
 
 /** Romaji eines Wortes; Godan-Verben auf -u (思う) bleibt das う. */

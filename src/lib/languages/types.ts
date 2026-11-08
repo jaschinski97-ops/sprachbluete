@@ -43,7 +43,7 @@ export type HubLanguage = typeof HUB_LANGUAGE;
  * übrigen Stellen) meldet per Kompilierfehler jede Stelle, die noch etwas
  * wissen muss. Schritt-für-Schritt: `docs/neue-lernsprache.md`.
  */
-export const LANGUAGE_CODES = ['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh'] as const;
+export const LANGUAGE_CODES = ['th', 'en', 'es', 'de', 'fr', 'pt', 'it', 'zh', 'ja'] as const;
 export type LanguageCode = (typeof LANGUAGE_CODES)[number];
 
 export function isLanguageCode(value: unknown): value is LanguageCode {

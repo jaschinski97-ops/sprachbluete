@@ -15,6 +15,7 @@ import { VerificationBadge } from './verification-badge';
 import { VocabImageView } from './vocab-image';
 
 import { Spacing } from '@/constants/theme';
+import { readingOf } from '@/data/vocab-helpers';
 import type { VocabEntry } from '@/data/vocab-types';
 import { BridgeEntry } from '@/data/vocab-types';
 import { type PlaybackResult, playPronunciationWithStatus } from '@/lib/audio';
@@ -133,8 +134,8 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
                 style={{ lineHeight: displayLineHeight(56, 1.4) }}>
                 {entry.term}
               </ThemedText>
-              {zeigtUmschrift(entry.language) && entry.romanization && entry.romanization !== entry.term ? (
-                <ThemedText type="small" themeColor="textSecondary">{entry.romanization}</ThemedText>
+              {zeigtUmschrift(entry.language) && readingOf(entry) && readingOf(entry) !== entry.term ? (
+                <ThemedText type="small" themeColor="textSecondary">{readingOf(entry)}</ThemedText>
               ) : null}
             </View>
           )}

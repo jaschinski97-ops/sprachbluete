@@ -43,7 +43,7 @@ const STUFEN = ['beginner', 'experienced', 'pro'];
 const JE_DATEI = 50;
 // generatedAt = Begriffsrang wie bei den anderen Sprachen (24.10.2026, 15:00 UTC + Rang in Sekunden).
 const RANG_BASIS = 1792854000000;
-const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt'];
+const UI = ['de', 'en', 'es', 'th', 'ar', 'zh', 'hi', 'fr', 'bn', 'pt', 'it', 'ja'];
 // Bedeutungen und Sätze zuerst aus Englisch (gleiche Brücke wie die meisten Lernenden).
 const QUELLEN = ['en', 'es', 'de', 'th'];
 const VERMERK = 'KI-Erzeugung (Claude) aus den Bedeutungen und Beispielsätzen der anderen Lernsprachen; Wortwahl, Lautschrift, Genus und Plural von Claude.';

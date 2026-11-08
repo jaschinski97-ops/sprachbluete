@@ -16,6 +16,7 @@ import {
   buildGeneroQuestion,
   buildArticoloQuestion,
   buildLiangciQuestion,
+  buildJosushiQuestion,
   buildPartizipQuestion,
   buildPraesensEndungQuestion,
   buildSoundSpellingQuestion,
@@ -32,6 +33,7 @@ import {
   canBuildGeneroQuestion,
   canBuildArticoloQuestion,
   canBuildLiangciQuestion,
+  canBuildJosushiQuestion,
   canBuildPartizipQuestion,
   canBuildPraesensEndungQuestion,
   canBuildSoundSpellingQuestion,
@@ -147,6 +149,8 @@ function canBuild(drill: DrillId, entry: VocabEntry): boolean {
       return canBuildArticoloQuestion(entry);
     case 'liangci':
       return canBuildLiangciQuestion(entry);
+    case 'josushi':
+      return canBuildJosushiQuestion(entry);
     case 'polite':
     case 'serEstar':
     case 'zaehlerwort':
@@ -199,6 +203,8 @@ function buildQuestion(
       return buildArticoloQuestion(entry, anchor, ui);
     case 'liangci':
       return buildLiangciQuestion(entry, random, anchor, ui);
+    case 'josushi':
+      return buildJosushiQuestion(entry, random, anchor, ui);
     case 'polite':
     case 'serEstar':
     case 'zaehlerwort':

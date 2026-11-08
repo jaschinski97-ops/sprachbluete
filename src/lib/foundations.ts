@@ -22,7 +22,7 @@ import { targetLanguageOf, type LanguageCode, type PairDirection } from './langu
 export const FOUNDATIONS_ID = 'grundlagen';
 
 /** Die eigenen Übungsmodi von Kapitel 0. */
-export const FOUNDATION_MODES = ['zahlen', 'preise', 'abc', 'buchstabieren', 'konsonanten', 'vokale', 'toene'] as const;
+export const FOUNDATION_MODES = ['zahlen', 'preise', 'abc', 'buchstabieren', 'konsonanten', 'vokale', 'toene', 'kana'] as const;
 export type FoundationMode = (typeof FOUNDATION_MODES)[number];
 
 export function isFoundationMode(mode: string): mode is FoundationMode {
@@ -54,6 +54,8 @@ export function foundationSteps(direction: PairDirection): FoundationStep[] {
     ];
   }
   if (targetLanguageOf(direction) === 'zh') return [...numbers, ['toene', 'foundations.tonesZh']];
+  // Japanisch (07.11.2026): Zahlen, Preise in 円 und die Kana-Tabelle.
+  if (targetLanguageOf(direction) === 'ja') return [...numbers, ['kana', 'foundations.kana']];
   return [...numbers, ['abc', 'foundations.alphabet'], ['buchstabieren', 'foundations.spelling']];
 }
 

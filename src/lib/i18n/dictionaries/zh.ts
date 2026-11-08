@@ -821,6 +821,15 @@ const zh = {
   "foundations.zhTone4": "第四声 · 下降",
   "foundations.zhTone5": "轻声 · 又轻又短",
   "grammar.measureWordZh": "顺序是：数词 + 量词 + 名词：{{example}}。“个”是最常用的量词，但很多名词有自己的量词。",
+  "drill.josushi": "つ、本还是枚？",
+  "writing.promptJa": "用日语怎么写？用假名或汉字。",
+  "dictation.promptJa": "写下你听到的句子——用日语。",
+  "language.ja.feature": "三种文字",
+  "language.ja.description": "日语混用三种文字：汉字写词干，平假名写词尾和助词，片假名写外来词。很多汉字有多种读音，所以读音用假名标在词旁边。",
+  "grammar.counterJa": "数字后面是与事物种类相符的量词：{{example}}。つ适用于很多东西，但很多名词有自己的量词。",
+  "foundations.introJapanese": "数字、日元价格和假名——让第一段对话不从零开始。",
+  "foundations.kana": "平假名和片假名",
+  "foundations.kanaIntro": "每个假名代表一个音节。平假名（大字）写日语词和词尾，片假名（下方）主要写外来词和名字。点击字符即可收听。",
 } as const;
 
 export default zh;

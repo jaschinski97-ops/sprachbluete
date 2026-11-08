@@ -1,4 +1,5 @@
 import { VocabEntry } from '@/data/vocab-types';
+import { readingOf } from '@/data/vocab-helpers';
 import { activeVocabulary } from '@/data/active-vocabulary';
 
 import { anchorOf, type PairDirection, targetLanguageOf } from '../languages/types';
@@ -90,7 +91,10 @@ export function canBuildWritingPrompt(entry: VocabEntry, direction: PairDirectio
 
 /** Die tippbaren Zielformen: der Eintrag, bei Aufzählungen jede Form einzeln. */
 function zielFormen(entry: VocabEntry): string[] {
-  return entry.term.split(',').map((part) => typeableGerman(part)).filter(Boolean);
+  const formen = entry.term.split(',').map((part) => typeableGerman(part)).filter(Boolean);
+  // Japanisch: Wer die Kana-Lesung tippt („たべる“ statt „食べる“), hat das Wort
+  // gewusst — Kanji-Eingabe ist auf vielen Tastaturen ein Umweg.
+  return entry.kana && entry.kana !== entry.term ? [...formen, entry.kana] : formen;
 }
 
 export function ankerwortFuer(entry: VocabEntry, direction: PairDirection): string {
@@ -147,7 +151,8 @@ export function buildWritingPrompt(
   const artikel = language === 'de' && entry.germanNoun && !entry.term.toLowerCase().startsWith(`${entry.germanNoun.article} `)
     ? `${entry.germanNoun.article} ` : '';
   const loesung = `${artikel}${entry.term}`;
-  const umschrift = entry.romanization && entry.romanization !== entry.term ? entry.romanization : null;
+  const lesung = readingOf(entry);
+  const umschrift = lesung && lesung !== entry.term ? lesung : null;
   const eigene = language === 'de' ? mitArtikel(zielFormen(entry), entry) : zielFormen(entry);
 
   return {

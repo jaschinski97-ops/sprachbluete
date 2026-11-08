@@ -10,7 +10,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { findePronunciationClip } from '@/lib/audio';
 import { useLocale } from '@/lib/i18n';
 import type { TranslationKey } from '@/lib/i18n/keys';
-import { LEARNING_LANGUAGES } from '@/lib/languages/definitions';
+import { erkennungsLocale } from '@/lib/languages/definitions';
 import type { LanguageCode } from '@/lib/languages/types';
 import { tonfolgeAusRoman } from '@/lib/content/roman-tone';
 import { analyzeToneContour, type F0Frame } from '@/lib/speaking/analysis';
@@ -83,7 +83,7 @@ export function AufnahmeVergleich({
 }) {
   const { t, languageName } = useLocale();
   const theme = useTheme();
-  const locale = LEARNING_LANGUAGES[sprache].speechLocale;
+  const locale = erkennungsLocale(sprache);
 
   // Eine Datei für Anhören und Worterkennung; beim nächsten Satz freigegeben.
   const datei = useMemo(() => {

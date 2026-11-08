@@ -447,6 +447,12 @@ export function dictationPromptKey(code: LanguageCode): TranslationKey {
   return LEARNING_LANGUAGES[code].prompts.dictation ?? 'dictation.promptGeneric';
 }
 
+/** Gebietsschema der Spracherkennung. Englisch hört das Gerät als en-US; die
+ * Vorlesestimme bleibt britisch (`speechLocale`). */
+export function erkennungsLocale(code: LanguageCode): string {
+  return code === 'en' ? 'en-US' : LEARNING_LANGUAGES[code].speechLocale;
+}
+
 /** Thai-Schrift-Zeichen (Block U+0E00–U+0E7F). */
 const THAI_ZEICHEN = /[฀-๿]/;
 /** Chinesische Schriftzeichen (auch Kanji). */

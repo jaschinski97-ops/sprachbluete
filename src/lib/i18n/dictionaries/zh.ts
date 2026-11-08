@@ -531,7 +531,7 @@ const zh = {
   "writing.ratingHard": "算作正确，但不确定 — 这个词会比无错误答案更早出现。",
   "writing.ratingStable": "到下次复习的间隔在增加。",
   "derivation.stepInitial": "初始辅音",
-  "derivation.leadingHo": "ห 是哑音，将 {raised} 提升到 {to} — ห นำ。",
+  "derivation.leadingHo": "ห 是哑音，将 {raised}（{from}）提升到 {to} — ห นำ。",
   "derivation.leadingO": "อ 是哑音，将 {raised} 引入 {to} — อ นำ，来源仅在四个词中。",
   "derivation.cluster": "连接 {written}：类别来自第一个字母 {symbol} ({name})。",
   "derivation.initialPlain": "{name}, {ipa}.",

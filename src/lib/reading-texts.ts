@@ -5,7 +5,7 @@ import { bridgeText } from './languages/bridge';
 import { type PairDirection } from './languages/types';
 import { type UiLanguage } from './i18n';
 import { type VocabEntry } from '@/data/vocab-types';
-import { contextualWord, vocabularyForms } from './vocabulary-forms';
+import { contextualWord, entriesWithForm } from './vocabulary-forms';
 
 /**
  * Längere Hör- und Lesetexte (Schritt 4, Lern-Reiter-Ausbau 13.09.).
@@ -72,6 +72,48 @@ function begonnen(cards: FSRSCardState[], vocabIds: Set<string>): number {
   return n;
 }
 
+let segmenter: Intl.Segmenter | null | undefined;
+
+/**
+ * Wortgrenzen einer Zeile ohne Leerzeichen (Thai, Chinesisch, Japanisch),
+ * aufsteigend. Die Sprachsegmentierung verhindert, dass z. B. „ทอ“ im Namen
+ * „ทอม“ tippbar wird. Ohne Segmenter bleiben nur durch Leerzeichen und
+ * Satzzeichen abgegrenzte Treffer: eine fehlende Hilfe ist besser als eine falsche.
+ */
+function wortgrenzen(text: string): number[] {
+  if (segmenter === undefined) {
+    segmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter('th', { granularity: 'word' }) : null;
+  }
+  const grenzen = new Set<number>([0, text.length]);
+  if (segmenter) {
+    for (const teil of segmenter.segment(text)) {
+      grenzen.add(teil.index);
+      grenzen.add(teil.index + teil.segment.length);
+    }
+  } else {
+    for (const match of text.matchAll(/[\s\p{P}\p{S}]+/gu)) {
+      grenzen.add(match.index);
+      grenzen.add(match.index + match[0].length);
+    }
+  }
+  return [...grenzen].sort((a, b) => a - b);
+}
+
+const begriffCache = new WeakMap<readonly VocabEntry[], Map<string, VocabEntry>>();
+
+/** Begriff → erster Eintrag des Pools mit dieser Schreibung, einmal je Pool gebaut. */
+function begriffIndex(pool: readonly VocabEntry[]): Map<string, VocabEntry> {
+  let index = begriffCache.get(pool);
+  if (!index) {
+    index = new Map();
+    for (const entry of pool) {
+      if (entry.term && !index.has(entry.term)) index.set(entry.term, entry);
+    }
+    begriffCache.set(pool, index);
+  }
+  return index;
+}
+
 /**
  * Zerlegt eine Textzeile in tippbare Bestandswörter und Rest.
  *
@@ -104,24 +146,10 @@ export function tokenisiereFuerAntippen(
     return tokens;
   }
 
-  // Thai hat keine Leerzeichen zwischen Wörtern. Die Sprachsegmentierung
-  // liefert Grenzen, damit z. B. „ทอ“ nicht im Namen „ทอม“ tippbar wird.
-  // Ohne Segmenter bleiben nur durch Leerzeichen/Satzzeichen abgegrenzte
-  // Treffer tippbar: eine fehlende Hilfe ist besser als eine falsche.
-  const grenzen = new Set<number>([0, text.length]);
-  if (typeof Intl.Segmenter === 'function') {
-    for (const teil of new Intl.Segmenter('th', { granularity: 'word' }).segment(text)) {
-      grenzen.add(teil.index);
-      grenzen.add(teil.index + teil.segment.length);
-    }
-  } else {
-    for (const match of text.matchAll(/[\s\p{P}\p{S}]+/gu)) {
-      grenzen.add(match.index);
-      grenzen.add(match.index + match[0].length);
-    }
-  }
-  // Längste Übereinstimmung nur zwischen echten Wortgrenzen.
-  const sortiert = [...pool].sort((a, b) => b.term.length - a.term.length);
+  // Längste Übereinstimmung nur zwischen echten Wortgrenzen: von jeder Grenze
+  // aus die weiteste Grenze zuerst, deren Textstück ein Begriff ist.
+  const grenzen = wortgrenzen(text);
+  const begriffe = begriffIndex(pool);
   let i = 0;
   let rest = '';
   const flushRest = () => {
@@ -131,12 +159,10 @@ export function tokenisiereFuerAntippen(
     }
   };
   while (i < text.length) {
-    let gefunden: VocabEntry | null = null;
-    for (const entry of sortiert) {
-      if (entry.term.length > 0 && grenzen.has(i) &&
-          grenzen.has(i + entry.term.length) && text.startsWith(entry.term, i)) {
-        gefunden = entry;
-        break;
+    let gefunden: VocabEntry | undefined;
+    if (grenzen.includes(i)) {
+      for (let k = grenzen.length - 1; !gefunden && grenzen[k] > i; k -= 1) {
+        gefunden = begriffe.get(text.slice(i, grenzen[k]));
       }
     }
     if (gefunden) {
@@ -169,7 +195,8 @@ export function poolWoerterDerSzene(
         .replace(/[\p{P}\p{S}]/gu, ' ')
         .split(/\s+/)
     );
-    return pool.filter((e) => vocabularyForms(e).some(form => woerter.has(form)));
+    const treffer = new Set([...woerter].flatMap((wort) => entriesWithForm(wort, pool)));
+    return pool.filter((entry) => treffer.has(entry));
   }
   const ids = new Set(
     situation.scriptTurns.flatMap((turn) =>

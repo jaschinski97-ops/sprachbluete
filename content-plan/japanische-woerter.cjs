@@ -53,6 +53,10 @@ const UI = [...UI_ALT, 'it', 'ja'];
 const QUELLEN = ['en', 'es', 'fr', 'de', 'pt', 'it', 'zh', 'th'];
 const VERMERK = 'KI-Erzeugung (Claude) aus den Bedeutungen und Beispielsätzen der anderen Lernsprachen; Wortwahl, Kana-Lesung, Zählwort und Satz von Claude, Lesung gegen JMdict/KANJIDIC2 geprüft, Romaji gerechnet.';
 const ORDNER = path.join(ROOT, '_Local/woerter/ja');
+// Eigene Bedeutungen, wo das japanische Wort enger ist als das Wort der
+// Quellsprache (泊まる heißt „übernachten“, nicht „bleiben“; 疲れる „müde
+// werden“, nicht „müde“). Schlüssel = Begriff ohne „c:“, je App-Sprache außer ja.
+const EIGENE_BEDEUTUNGEN = JSON.parse(fs.readFileSync(path.join(__dirname, 'japanische-bedeutungen.json'), 'utf8'));
 
 /**
  * Zählwörter, die die Übung „つ, 本 oder 枚?“ kennt — dieselbe Liste wie
@@ -180,10 +184,10 @@ function zeige(name) {
   }
 }
 
-function bedeutungen(docs, wort) {
+function bedeutungen(docs, wort, eigene) {
   const translations = {};
   for (const ui of UI) {
-    const text = ui === 'ja' ? wort : docs.map((d) => d.translations?.[ui]).find((t) => typeof t === 'string' && t.trim());
+    const text = ui === 'ja' ? wort : eigene ? eigene[ui] : docs.map((d) => d.translations?.[ui]).find((t) => typeof t === 'string' && t.trim());
     if (text) translations[ui] = text;
   }
   return translations;
@@ -209,6 +213,7 @@ function verarbeite(nur, { schreiben }) {
   const hinweise = [];
   let anzahl = 0;
   let ohneSatz = 0;
+  const verwendet = new Set();
   fs.mkdirSync(ORDNER, { recursive: true });
   const alle = fs.readdirSync(tsv).filter((f) => f.endsWith('.tsv')).sort();
   for (const datei of nur.length ? alle.filter((f) => nur.includes(f.replace(/\.tsv$/, ''))) : alle) {
@@ -238,6 +243,12 @@ function verarbeite(nur, { schreiben }) {
       if (pruefung.status === 'hinweis') hinweise.push(`${wo} ${pruefung.meldungen.join('; ')}`);
       const docs = je.get(begriff) ?? [];
       const en = docs.find((d) => d.language === 'en');
+      const eigene = EIGENE_BEDEUTUNGEN[roh];
+      if (eigene) {
+        verwendet.add(roh);
+        const fehlt = UI.filter((ui) => ui !== 'ja' && !eigene[ui]?.trim());
+        if (fehlt.length) { offen.push(`${wo} eigene Bedeutung ohne ${fehlt.join(', ')}`); continue; }
+      }
       const doc = {
         id: `ki-ja-${roh.replace(/_/g, '-')}`,
         language: 'ja',
@@ -248,8 +259,8 @@ function verarbeite(nur, { schreiben }) {
         romanization: wortUmschrift(wort, kana, wb),
         kana,
         syllables: [],
-        german: en?.german ?? docs.find((d) => d.german)?.german ?? wort,
-        translations: bedeutungen(docs, wort),
+        german: eigene?.de ?? en?.german ?? docs.find((d) => d.german)?.german ?? wort,
+        translations: bedeutungen(docs, wort, eigene),
         partOfSpeech: b.partOfSpeech,
         register: en?.register ?? docs[0]?.register ?? 'neutral',
         isConcrete: b.isConcrete,
@@ -303,6 +314,9 @@ function verarbeite(nur, { schreiben }) {
     for (const b of erwartet) if (!gesehen.has(b.id)) offen.push(`${datei}: ${b.id.slice(2)} fehlt`);
     if (schreiben) fs.writeFileSync(path.join(ORDNER, `${name}.json`), `${JSON.stringify(eintraege, null, 1)}\n`);
     anzahl += eintraege.length;
+  }
+  if (!nur.length) {
+    for (const roh of Object.keys(EIGENE_BEDEUTUNGEN)) if (!verwendet.has(roh)) offen.push(`japanische-bedeutungen.json: ${roh} hat kein japanisches Wort`);
   }
   console.log(`${anzahl} Einträge ${schreiben ? 'geschrieben' : 'geprüft'} (${ohneSatz} ohne Beispielsatz), ${offen.length} offen, ${hinweise.length} Hinweise.`);
   for (const o of offen) console.log(`  ${o}`);

@@ -58,6 +58,10 @@ describe('Japanisch: Zahlen und Preise (Kapitel 0)', () => {
 
   it('nennt Preise in Yen', () => {
     expect(priceText('ja', 25)).toMatchObject({ text: '二十五円', roman: nfc('にじゅうごえん · nijūgo en'), label: '25円' });
+    // Eine 4 am Ende wird vor 円 zu よ, die Zehner bleiben よん.
+    expect(priceText('ja', 4)).toMatchObject({ text: '四円', roman: 'よえん · yo en' });
+    expect(priceText('ja', 14).roman).toBe(nfc('じゅうよえん · jūyo en'));
+    expect(priceText('ja', 40).roman).toBe(nfc('よんじゅうえん · yonjū en'));
   });
 });
 

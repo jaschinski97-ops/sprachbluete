@@ -79,6 +79,31 @@ export const DRILL_KEYS: Record<DrillId, TranslationKey> = {
   josushi: 'drill.josushi',
 };
 
+/** Die Aufgabe jeder Auswahlübung. Genus- und Zählwortübungen teilen sich eine Frage. */
+export const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
+  tone: 'drill.prompt.tone',
+  toneRule: 'drill.prompt.toneRule',
+  article: 'drill.prompt.article',
+  verbForms: 'drill.prompt.verbForms',
+  stressRule: 'drill.prompt.stressRule',
+  spelling: 'drill.prompt.spelling',
+  stressHear: 'drill.prompt.stressHear',
+  soundSpelling: 'drill.prompt.soundSpelling',
+  deutschLesen: 'drill.prompt.deutschLesen',
+  polite: 'drill.prompt.polite',
+  irregularPast: 'drill.prompt.irregularPast',
+  serEstar: 'drill.prompt.serEstar',
+  zaehlerwort: 'drill.prompt.zaehlerwort',
+  konsonantenklasse: 'drill.prompt.konsonantenklasse',
+  praesensEndung: 'drill.prompt.praesensEndung',
+  partizip: 'drill.prompt.partizip',
+  genre: 'drill.prompt.genre',
+  genero: 'drill.prompt.genre',
+  articolo: 'drill.prompt.genre',
+  liangci: 'drill.prompt.zaehlerwort',
+  josushi: 'drill.prompt.zaehlerwort',
+};
+
 /**
  * Die Übungsliste einer Richtung.
  *

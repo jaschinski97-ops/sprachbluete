@@ -25,7 +25,7 @@ import {
 } from '@/lib/production/compare';
 import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler, type ErkennungsNaht } from '@/lib/speaking/recognition';
 import { compareDialogue } from '@/lib/production/dialogue-compare';
-import { zeigtUmschrift } from '@/lib/languages/definitions';
+import { erkennungsLocale, zeigtUmschrift } from '@/lib/languages/definitions';
 
 /**
  * Rollenspiel aus den vorhandenen Situationen (Schritt 3, Lern-Reiter-Ausbau).
@@ -299,7 +299,7 @@ function SzeneZeile({
     setErkennungsFehler(null);
     void (async () => {
       const text = await erkenne({
-        language: { th: 'th-TH', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', it: 'it-IT', zh: 'zh-CN', ja: 'ja-JP' }[sprache],
+        language: erkennungsLocale(sprache),
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
         hinweise: [zeile.thai],

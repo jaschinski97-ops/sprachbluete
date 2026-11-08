@@ -368,7 +368,13 @@ export type PriceText = { value: number; text: string; roman?: string; label: st
  * Zahl + 块 ohne Leerzeichen, 两 statt 二 vor dem Zählwort (Quelle: „Used
  * instead of 二 before a classifier“), 一块 als „yí kuài“ (一 vor viertem Ton).
  * Japanisch: Zahl + 円 ohne Leerzeichen („五十円“, „ごじゅうえん · gojū en“),
- * Preisschild wie im Laden „50円“.
+ * Preisschild wie im Laden „50円“. Eine 4 am Ende wird vor 円 zu よ: 四円
+ * „よえん · yo en“, 十四円 „じゅうよえん“; 四十円 bleibt „よんじゅうえん“.
+ * Quellen (abgerufen am 2026-11-08): MIT-Kurs Japanisch, Kanji-Quiz L.3
+ * Frage 3 „四 yen“ (web.mit.edu/gleitz/Public/21fnew/kanji/kanji03-read/,
+ * よえん richtig, よんえん falsch), yomikatawa.com „「四円」の読み方は？“
+ * (よえん) und kan-sin.com „4円の読み方は「よえん」？“ (よえん, よんえん im
+ * Gespräch geduldet).
  */
 export function priceText(language: LanguageCode, value: number): PriceText {
   const word = numberWord(language, value);
@@ -397,7 +403,7 @@ export function priceText(language: LanguageCode, value: number): PriceText {
   }
   if (language === 'ja') {
     const [kana, romaji] = (word.roman ?? '').split(' · ');
-    return { value, text: `${word.text}円`, roman: `${kana}えん · ${romaji} en`, label: `${value}円` };
+    return { value, text: `${word.text}円`, roman: `${kana.replace(/よん$/, 'よ')}えん · ${romaji.replace(/yon$/, 'yo')} en`, label: `${value}円` };
   }
   return { value, text: `${value === 1 ? 'ein' : word.text} Euro`, label: `${value} €` };
 }

@@ -21,11 +21,12 @@ import { activeVocabularyFor } from '@/data/active-vocabulary';
 import { satzaufgabenFuer, type SatzSprache, type SentenceTask } from '@/data/sentence-tasks';
 import { buildDrillSession } from '@/lib/drills/session';
 import { seededRandom, shuffled } from '@/lib/drills/random';
-import { drillPracticesWords, type DrillId, type DrillQuestion } from '@/lib/drills/types';
+import { drillPracticesWords, type DrillQuestion } from '@/lib/drills/types';
 import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale, type UiLanguage } from '@/lib/i18n';
 import { anchorOf, targetLanguageOf, type PairDirection } from '@/lib/languages/types';
-import { hoerDrillFuer, zeigtUmschrift } from '@/lib/languages/definitions';
+import { dictationPromptKey, hoerDrillFuer, zeigtUmschrift } from '@/lib/languages/definitions';
+import { DRILL_PROMPT_KEYS } from '@/lib/exercise-catalog';
 import { inStage, type LearningStage } from '@/lib/learning-stages';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import { recordDrill } from '@/lib/review-log';
@@ -72,46 +73,6 @@ const RATING_COLORS: Record<Rating, { bg: ThemeColor; text: ThemeColor }> = {
 };
 
 const RATINGS: Rating[] = [1, 2, 3, 4];
-
-/** Der Hör-Drill je Sprache — derselbe Stoff wie in der Einzelübung. */
-
-// Aufgabentext je Hör-Drill (siehe `hoerDrillFuer`); jede Drill-ID braucht hier einen Eintrag.
-const PROMPT_KEYS: Record<DrillId, TranslationKey> = {
-  tone: 'drill.prompt.tone',
-  stressHear: 'drill.prompt.stressHear',
-  soundSpelling: 'drill.prompt.soundSpelling',
-  toneRule: 'drill.prompt.toneRule',
-  article: 'drill.prompt.article',
-  verbForms: 'drill.prompt.verbForms',
-  stressRule: 'drill.prompt.stressRule',
-  spelling: 'drill.prompt.spelling',
-  deutschLesen: 'drill.prompt.deutschLesen',
-  polite: 'drill.prompt.polite',
-  irregularPast: 'drill.prompt.irregularPast',
-  serEstar: 'drill.prompt.serEstar',
-  zaehlerwort: 'drill.prompt.zaehlerwort',
-  konsonantenklasse: 'drill.prompt.konsonantenklasse',
-  praesensEndung: 'drill.prompt.praesensEndung',
-  partizip: 'drill.prompt.partizip',
-  genre: 'drill.prompt.genre',
-  genero: 'drill.prompt.genre',
-  articolo: 'drill.prompt.genre',
-  liangci: 'drill.prompt.zaehlerwort',
-  josushi: 'drill.prompt.zaehlerwort',
-};
-
-// Diktat-Aufforderung je Lernsprache.
-const DIKTAT_PROMPT_KEYS: Record<SatzSprache, TranslationKey> = {
-  th: 'dictation.promptTh',
-  en: 'dictation.promptEn',
-  es: 'dictation.promptEs',
-  de: 'dictation.promptDe',
-  fr: 'dictation.promptFr',
-  pt: 'dictation.promptPt',
-  it: 'dictation.promptIt',
-  ja: 'dictation.promptJa',
-  zh: 'dictation.promptZh',
-};
 
 // Anzeigenamen der Segmentarten für die Fortschrittszeile und den „übersprungen“-Hinweis.
 const SEGMENT_NAMEN: Record<RoundKind, TranslationKey> = {
@@ -529,7 +490,7 @@ function HoerenSegment({
 
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
-      <ThemedText type="smallBold">{t(PROMPT_KEYS[frage.drill])}</ThemedText>
+      <ThemedText type="smallBold">{t(DRILL_PROMPT_KEYS[frage.drill])}</ThemedText>
       {/* Töne hört man selten beim ersten Mal (Nutzertest 17.10.2026: die
           Runde spielte das Wort nur einmal ab). */}
       {frage.speak ? (
@@ -790,7 +751,7 @@ function DiktatSegment({
 
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
-      <ThemedText type="smallBold">{t(DIKTAT_PROMPT_KEYS[sprache])}</ThemedText>
+      <ThemedText type="smallBold">{t(dictationPromptKey(sprache))}</ThemedText>
       <View style={styles.actions}>
         <Pressable
           accessibilityRole="button"

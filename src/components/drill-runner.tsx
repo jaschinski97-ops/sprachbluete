@@ -11,62 +11,13 @@ import { useTheme } from '@/hooks/use-theme';
 import { hasPronunciationClip, isLanguageAvailable, playPronunciationWithStatus } from '@/lib/audio';
 import { buildDrillSession, DrillSession, scoreAnswers } from '@/lib/drills/session';
 import { DRILL_META, DrillAnswer, DrillId, DrillQuestion, drillPracticesWords } from '@/lib/drills/types';
+import { DRILL_KEYS, DRILL_PROMPT_KEYS } from '@/lib/exercise-catalog';
 import { useLocale, type TranslationKey, type UiLanguage } from '@/lib/i18n';
 import { PairDirection, LanguageCode, anchorOf } from '@/lib/languages/types';
 import type { LearningStage } from '@/lib/learning-stages';
 import { DerivationStep } from '@/lib/reading/syllable';
 import { recordDrill } from '@/lib/review-log';
 import { recordWordPractice } from '@/lib/word-practice';
-
-/** Übungs-Namen und -Fragen als Übersetzungsschlüssel statt als deutsche Konstante. */
-const DRILL_LABEL_KEYS: Record<DrillId, TranslationKey> = {
-  tone: 'drill.tone',
-  toneRule: 'drill.toneRule',
-  article: 'drill.article',
-  verbForms: 'drill.verbForms',
-  stressRule: 'drill.stressRule',
-  spelling: 'drill.spelling',
-  stressHear: 'drill.stressHear',
-  soundSpelling: 'drill.soundSpelling',
-  deutschLesen: 'drill.deutschLesen',
-  polite: 'drill.polite',
-  irregularPast: 'drill.irregularPast',
-  serEstar: 'drill.serEstar',
-  zaehlerwort: 'drill.zaehlerwort',
-  konsonantenklasse: 'drill.konsonantenklasse',
-  praesensEndung: 'drill.praesensEndung',
-  partizip: 'drill.partizip',
-  genre: 'drill.genre',
-  genero: 'drill.genero',
-  articolo: 'drill.articolo',
-  liangci: 'drill.liangci',
-  josushi: 'drill.josushi',
-};
-
-const DRILL_PROMPT_KEYS: Record<DrillId, TranslationKey> = {
-  tone: 'drill.prompt.tone',
-  toneRule: 'drill.prompt.toneRule',
-  article: 'drill.prompt.article',
-  verbForms: 'drill.prompt.verbForms',
-  stressRule: 'drill.prompt.stressRule',
-  spelling: 'drill.prompt.spelling',
-  stressHear: 'drill.prompt.stressHear',
-  soundSpelling: 'drill.prompt.soundSpelling',
-  // Dieselbe Frage wie bei stressRule — ein Schlüssel, zwei Übungen.
-  deutschLesen: 'drill.prompt.deutschLesen',
-  polite: 'drill.prompt.polite',
-  irregularPast: 'drill.prompt.irregularPast',
-  serEstar: 'drill.prompt.serEstar',
-  zaehlerwort: 'drill.prompt.zaehlerwort',
-  konsonantenklasse: 'drill.prompt.konsonantenklasse',
-  praesensEndung: 'drill.prompt.praesensEndung',
-  partizip: 'drill.prompt.partizip',
-  genre: 'drill.prompt.genre',
-  genero: 'drill.prompt.genre',
-  articolo: 'drill.prompt.genre',
-  liangci: 'drill.prompt.zaehlerwort',
-  josushi: 'drill.prompt.zaehlerwort',
-};
 
 /**
  * Eine Übungsrunde.
@@ -214,7 +165,7 @@ export function DrillRunner({
         <ThemedText type="small" themeColor="textSecondary">
           {drill === 'tone'
             ? t('drill.toneEmpty')
-            : t('drill.noneFor', { drill: t(DRILL_LABEL_KEYS[drill]) })}
+            : t('drill.noneFor', { drill: t(DRILL_KEYS[drill]) })}
         </ThemedText>
         <Row>
           <ThemedButton label={t('common.back')} onPress={onExit} />
@@ -261,7 +212,7 @@ export function DrillRunner({
   };
   const intro = grammarIntro[drill];
   if (intro && !introduced) return <ThemedView type="backgroundElement" style={styles.card}>
-    <ThemedText type="smallBold">{t(DRILL_LABEL_KEYS[drill])}</ThemedText>
+    <ThemedText type="smallBold">{t(DRILL_KEYS[drill])}</ThemedText>
     <ThemedText>{t(intro)}</ThemedText>
     <ThemedText type="small">{t('learning.example')}</ThemedText>
     <ThemedText>{question.visible}</ThemedText>

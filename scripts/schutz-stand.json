@@ -9,7 +9,7 @@
   "src/data/chinese-measure-words.ts": "92d7461a71add3086a52ca3bb0babeb09016d135e785c5da29366a8329864757",
   "src/data/chinese-tones.ts": "c09ff18e686f53aab36c0b085bf7f47bad46f676014a4bd9173234e29b4492cc",
   "src/data/latin-alphabet.ts": "51a25550cb4af7db092907456ac2c6ba5db3838467c0667cb919d4a387e0508b",
-  "src/data/numbers.ts": "e7d7bd1d051d3bdbd3ed9e8d804b901c02cd57aee026ec8ed47a6ba122939a87",
+  "src/data/numbers.ts": "18fe9dcb89e342607fc61b722819e6404e184062ba999d3489f81b7d9fea5f26",
   "src/data/thai-script.ts": "e86b8dec615c63fec3412b3641e5a970b6780637ee3366bd4cc87134a22a8bf2",
   "src/lib/backup.ts": "f64083e13ff3b11eec2f1cdcb9d75304249a4039cb2c6098f01337b4f37f8edc",
   "src/lib/content/audio-policy.ts": "63353b82f9b5d5e4a5e4db2c11bda422da5623f3b2f70f96d90fbb9f1881c120",

@@ -39,11 +39,12 @@ export type FoundationStep = readonly [Mode, TranslationKey];
  * Preise, das ABC mit Buchstabennamen und Buchstabieren.
  */
 export function foundationSteps(direction: PairDirection): FoundationStep[] {
+  const sprache = targetLanguageOf(direction);
   const numbers: FoundationStep[] = [
     ['zahlen', 'foundations.numbers'],
     ['preise', 'foundations.prices'],
   ];
-  if (targetLanguageOf(direction) === 'th') {
+  if (sprache === 'th') {
     return [
       ...numbers,
       ['konsonanten', 'foundations.consonants'],
@@ -53,10 +54,21 @@ export function foundationSteps(direction: PairDirection): FoundationStep[] {
       ['tone', 'drill.tone'],
     ];
   }
-  if (targetLanguageOf(direction) === 'zh') return [...numbers, ['toene', 'foundations.tonesZh']];
+  if (sprache === 'zh') return [...numbers, ['toene', 'foundations.tonesZh']];
   // Japanisch (07.11.2026): Zahlen, Preise in 円 und die Kana-Tabelle.
-  if (targetLanguageOf(direction) === 'ja') return [...numbers, ['kana', 'foundations.kana']];
+  if (sprache === 'ja') return [...numbers, ['kana', 'foundations.kana']];
   return [...numbers, ['abc', 'foundations.alphabet'], ['buchstabieren', 'foundations.spelling']];
+}
+
+const INTRO_KEYS: Partial<Record<LanguageCode, TranslationKey>> = {
+  th: 'foundations.introThai',
+  zh: 'foundations.introChinese',
+  ja: 'foundations.introJapanese',
+};
+
+/** Einleitung zu Kapitel 0, passend zu den Schritten oben. */
+export function foundationsIntroKey(direction: PairDirection): TranslationKey {
+  return INTRO_KEYS[targetLanguageOf(direction)] ?? 'foundations.introLatin';
 }
 
 /** Die Kapitel-0-Modi einer Richtung — sie gelten auch als Adresse (`?mode=`). */

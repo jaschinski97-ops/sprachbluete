@@ -60,7 +60,7 @@ import { AdvancedLessonRunner } from '@/components/advanced-lesson-runner';
 import { ChapterGrammarRunner } from '@/components/chapter-grammar-runner';
 import { FoundationsRunner } from '@/components/foundations-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
-import { FOUNDATIONS_ID, foundationModesFor, foundationSteps, isFoundationMode } from '@/lib/foundations';
+import { FOUNDATIONS_ID, foundationModesFor, foundationSteps, foundationsIntroKey, isFoundationMode } from '@/lib/foundations';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import {
   chapterGrammarDrill,
@@ -716,8 +716,7 @@ function LearnPath({
   const foundationsDone = finished.includes(FOUNDATIONS_ID);
   const foundationsActive = foundationsShown && (selectedChapterId === FOUNDATIONS_ID
     || (!foundationsDone && !stageChapters.some((item) => item.id === selectedChapterId)));
-  const zielSprache = targetLanguageOf(direction);
-  const foundationsIntro = t(zielSprache === 'th' ? 'foundations.introThai' : zielSprache === 'zh' ? 'foundations.introChinese' : zielSprache === 'ja' ? 'foundations.introJapanese' : 'foundations.introLatin');
+  const foundationsIntro = t(foundationsIntroKey(direction));
   const stepRow = ([candidate, key]: readonly [Mode, TranslationKey], index: number, chapterId: string, open: () => void) => {
     const geuebt = (practised[chapterId] ?? []).includes(candidate);
     const label = `${index + 1}. ${t(key)}`;

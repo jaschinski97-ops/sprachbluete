@@ -263,7 +263,7 @@ function japanischerStamm(entry: VocabEntry): string | null {
 
 /** Ob das Wort in diesem Text (einer Dialogzeile) vorkommt. */
 export function zielwortImText(entry: VocabEntry, text: string): boolean {
-  // Thai und Chinesisch ohne Leerzeichen: das Wort als Teilstring.
+  // Thai, Chinesisch und Japanisch ohne Leerzeichen: das Wort als Teilstring.
   if (isLanguageCode(entry.language) && ohneWortabstand(entry.language)) {
     const term = entry.term.replace(/\s+/g, '');
     const zeile = text.replace(/\s+/g, '');
@@ -273,10 +273,9 @@ export function zielwortImText(entry: VocabEntry, text: string): boolean {
     // Gebeugte Form: Stamm, danach Hiragana. Bei Verben/Adjektiven ohne する
     // keine Partikel danach (銀行は ist nicht 行く) und kein Kanji davor (Teil
     // eines anderen Worts); bei する-Verben passt jede Form (対処できる).
-    const suru = entry.term.replace(/\s+/g, '').endsWith('する');
-    const muster = suru
-      ? `${stamm}[぀-ゟ]`
-      : `(?<![一-鿿々])${stamm}(?![はがをのにでともへやか])[぀-ゟ]`;
+    const muster = term.endsWith('する')
+      ? `${stamm}[\u3040-\u309f]`
+      : `(?<![\u4e00-\u9fff々])${stamm}(?![はがをのにでともへやか])[\u3040-\u309f]`;
     return new RegExp(muster, 'u').test(zeile);
   }
   const satz = ` ${klein(text).replace(/[\p{P}\p{S}]/gu, ' ').replace(/\s+/g, ' ').trim()} `;

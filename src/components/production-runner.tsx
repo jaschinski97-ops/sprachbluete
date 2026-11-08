@@ -15,7 +15,8 @@ import {
 } from '@/lib/audio';
 import { type Rating } from '@/lib/fsrs/types';
 import { TranslationKey, useLocale } from '@/lib/i18n';
-import { targetLanguageOf, type LanguageCode, type PairDirection } from '@/lib/languages/types';
+import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
+import { erkennungsLocale } from '@/lib/languages/definitions';
 import { loadOrCreateCardState, rateCard } from '@/lib/repository';
 import type { LearningStage } from '@/lib/learning-stages';
 import { recordDrill } from '@/lib/review-log';
@@ -49,19 +50,6 @@ import { ERKENNUNGS_FEHLER_KEYS, spracherkennung, type ErkennungsFehler } from '
  * (Akzent/Tonzeichen) → „Schwer"; falsch bewertet die lernende Person
  * selbst — „Nochmal" oder ohne Bewertung weiter.
  */
-
-// Sprachcode der Lernsprache → Locale für die Spracherkennung des Geräts.
-const SR_LOCALE: Record<LanguageCode, string> = {
-  th: 'th-TH',
-  en: 'en-US',
-  es: 'es-ES',
-  de: 'de-DE',
-  fr: 'fr-FR',
-  pt: 'pt-BR',
-  it: 'it-IT',
-  zh: 'zh-CN',
-  ja: 'ja-JP',
-};
 
 // Selbstbewertung (Gut/Schwer/Nochmal) nach der Musterlösung; „Leicht“ wird hier bewusst nicht angeboten.
 const SELBST_RATINGS: { rating: Rating; key: TranslationKey }[] = [
@@ -167,7 +155,7 @@ export function ProductionRunner({
     setErkennungsFehler(null);
     void (async () => {
       const text = await naht.erkennen!({
-        language: SR_LOCALE[sprache],
+        language: erkennungsLocale(sprache),
         onHoeren: setHoert,
         onFehler: setErkennungsFehler,
         ...(aufgabe ? { hinweise: [aufgabe.ziel] } : {}),

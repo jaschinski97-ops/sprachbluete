@@ -82,6 +82,7 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
   // dürfen (21.09.2026): Deutsch nur für de-geankerte Richtungen.
   const anchor = anchorOf(direction);
   const anhoeren = t('flashcard.listenA11y', { language: languageName(entry.language) });
+  const lesung = readingOf(entry);
 
   if (bridgeEntry) {
     // KREUZRICHTUNG: Vorderseite das Brückenwort — STUMM (Nutzerentscheidung
@@ -134,8 +135,8 @@ export function Flashcard({ entry, direction, revealed, bridgeEntry = null, situ
                 style={{ lineHeight: displayLineHeight(56, 1.4) }}>
                 {entry.term}
               </ThemedText>
-              {zeigtUmschrift(entry.language) && readingOf(entry) && readingOf(entry) !== entry.term ? (
-                <ThemedText type="small" themeColor="textSecondary">{readingOf(entry)}</ThemedText>
+              {zeigtUmschrift(entry.language) && lesung && lesung !== entry.term ? (
+                <ThemedText type="small" themeColor="textSecondary">{lesung}</ThemedText>
               ) : null}
             </View>
           )}

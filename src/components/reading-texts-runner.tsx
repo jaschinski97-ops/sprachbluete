@@ -70,15 +70,16 @@ export function ReadingTextsRunner({
           loadCardStatesForDirection(direction),
         ]);
         if (cancelled) return;
+        // Feste Szene aus einem Kapitel: nur sie berechnen, immer offen, unabhängig vom Wortschatzstand.
         const all = lesestoffeFuerRichtung({
-            direction,
-            situationen: situationen.map(s => localizedSituation(s, uiLanguage)),
-            pool: activeVocabularyFor(targetLanguageOf(direction)),
-            cards,
-            latin: !ohneWortabstand(targetLanguageOf(direction)),
-          });
-        // Feste Szene aus einem Kapitel: immer offen, unabhängig vom Wortschatzstand.
-        const selected = situationId ? all.filter((entry) => entry.situation.id === situationId).map(entry => ({ ...entry, offen: true })) : all;
+          direction,
+          situationen: (situationId ? situationen.filter((s) => s.id === situationId) : situationen)
+            .map((s) => localizedSituation(s, uiLanguage)),
+          pool: activeVocabularyFor(targetLanguageOf(direction)),
+          cards,
+          latin: !ohneWortabstand(targetLanguageOf(direction)),
+        });
+        const selected = situationId ? all.map((entry) => ({ ...entry, offen: true })) : all;
         setStoff(selected);
         if (situationId && selected[0]) setGewaehlt(selected[0].situation);
       } catch {

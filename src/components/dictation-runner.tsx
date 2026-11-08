@@ -233,7 +233,7 @@ export function DictationRunner({
     } finally {
       setBusy(false);
     }
-  }, [task, config, busy, answered, draft]);
+  }, [task, config, busy, answered, draft, direction]);
 
   const next = useCallback(() => {
     setScore(null);

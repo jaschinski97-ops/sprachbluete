@@ -30,6 +30,8 @@ export type Mode =
   | 'cards'
   /** Wortliste: 20 Wörter, eine Seite verdeckt selbst eintragen (24.10.2026). */
   | 'wortliste'
+  /** Tempo-Runde: eine Minute nur sichere Wörter, Flüssigkeit (08.11.2026). */
+  | 'tempo'
   | DrillId
   | 'speaking'
   | 'sagen'
@@ -39,6 +41,10 @@ export type Mode =
   | 'dictation'
   | SentenceMode
   | 'heute'
+  /** Abschluss eines Dialogkapitels (08.11.2026) — nur über den Lernpfad erreichbar. */
+  | 'kapitelCheck'
+  /** Alle Grammatikregeln der Dialoge nach Themen (08.11.2026). */
+  | 'grammatikRegeln'
   /** Kapitel 0 „Grundlagen“ (18.10.2026) — nur über den Lernpfad erreichbar. */
   | FoundationMode;
 
@@ -118,6 +124,7 @@ export function modesForDirection(direction: PairDirection): Mode[] {
   return [
     'cards',
     'wortliste',
+    'tempo',
     'advanced',
     ...drillsForDirection(direction),
     // Wortübung laut Definition: Tonkontur-Messung (Thai) oder Nachsprechen.
@@ -139,7 +146,10 @@ export function modeKey(mode: Mode): TranslationKey {
   if (mode === 'advanced') return 'advanced.title';
   if (mode === 'cards') return 'mode.cards';
   if (mode === 'wortliste') return 'mode.wortliste';
+  if (mode === 'tempo') return 'mode.tempo';
   if (mode === 'heute') return 'mode.heute';
+  if (mode === 'kapitelCheck') return 'chapterCheck.title';
+  if (mode === 'grammatikRegeln') return 'grammarRules.title';
   if (mode === 'speaking') return 'mode.speaking';
   if (mode === 'sagen') return 'mode.sagen';
   if (mode === 'rollenspiel') return 'mode.rollenspiel';
@@ -190,10 +200,11 @@ export function groupsForDirection(direction: PairDirection): Group[] {
   // Sag es produziert Wörter/Sätze aus dem eigenen Stoff, das Rollenspiel
   // spielt Szenen der Richtung.
   sprechen.push('sagen', 'shadowing', 'sentenceRepeat', 'rollenspiel');
-  const grammatik = bySkill('grammatik');
+  // Die Regelübersicht zuerst: Sie zeigt, was die Übungen darunter trainieren.
+  const grammatik: Mode[] = ['grammatikRegeln', ...bySkill('grammatik')];
 
   return [
-    { label: 'skill.wortschatz', modes: ['cards', 'wortliste'] },
+    { label: 'skill.wortschatz', modes: ['cards', 'wortliste', 'tempo'] },
     { label: 'skill.hoeren', modes: hoeren },
     { label: 'skill.lesenSchreiben', modes: lesenSchreiben },
     { label: 'skill.sprechen', modes: sprechen },

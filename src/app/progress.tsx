@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCallback, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -9,7 +10,12 @@ import { ThemedText, displayLineHeight } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { Tone } from '@/constants/tones';
-import { useToneColor } from '@/hooks/use-theme';
+import { useTheme, useToneColor } from '@/hooks/use-theme';
+import { canDoList, type CanDo, type CanDoStatus } from '@/lib/can-do';
+import { defaultStage, loadChapterProgress } from '@/lib/chapter-flow';
+import { ensureLanguages } from '@/lib/content/catalog-languages';
+import { pickedStage } from '@/lib/learning-path';
+import { LEARNING_STAGES, STAGE_KEYS, type LearningStage } from '@/lib/learning-stages';
 import { drillCount } from '@/lib/review-log';
 import { directionForBridge, goalLanguage, zielFuerDirection } from '@/lib/languages/goals';
 import { contentDirectionOf, PairDirection, targetLanguageOf } from '@/lib/languages/types';
@@ -117,9 +123,9 @@ export default function ProgressScreen() {
   }
 
   const ziel = zielFuerDirection(direction);
-  // Dieselbe Zahl wie „fällig“ auf der Übersicht: Wiederholungen plus die
-  // neuen Karten, die eine Sitzung heute aufnimmt.
-  const heuteFaellig = stats.totalDue;
+  // Dieselbe Zahl wie auf der Übersicht: seit 08.11.2026 nur Wiederholungen,
+  // ohne die neuen Karten einer Sitzung.
+  const heuteFaellig = stats.perDirection.reduce((sum, summary) => sum + summary.reviewDue, 0);
 
   return (
     <ScreenScaffold szene="fluss"
@@ -165,12 +171,143 @@ export default function ProgressScreen() {
         <Tile label={t('tile.mastered')} value={String(stats.cardStates.mastered)} />
       </View>
 
+      <CanDoCard direction={direction} stats={stats} />
       <Forecast stats={stats} />
       <WeakAreas stats={stats} direction={direction} />
       <Milestones stats={stats} />
       <CardStates stats={stats} />
 
     </ScreenScaffold>
+  );
+}
+
+const CAN_DO_ICONS: Record<CanDoStatus, 'ribbon' | 'checkmark-circle' | 'ellipse-outline' | 'radio-button-on'> = {
+  secured: 'ribbon',
+  done: 'checkmark-circle',
+  started: 'radio-button-on',
+  open: 'ellipse-outline',
+};
+const CAN_DO_STATUS_KEYS: Record<CanDoStatus, TranslationKey> = {
+  secured: 'progress.canDoSecured',
+  done: 'progress.canDoDone',
+  started: 'progress.canDoStarted',
+  open: 'progress.canDoOpen',
+};
+
+/**
+ * „Das kannst du“ (08.11.2026): Lernweg und Gedächtnis als zwei Balken, dann
+ * die Kann-Aussagen je Stufe. Die eigene Stufe steht offen, die anderen
+ * lassen sich aufklappen. Abgeschlossen heißt: Kapitel-Check bestanden oder
+ * ausdrücklich abgeschlossen.
+ */
+function CanDoCard({ direction, stats }: { direction: PairDirection; stats: LearningStats }) {
+  const { t } = useLocale();
+  const theme = useTheme();
+  const [state, setState] = useState<{
+    direction: PairDirection; list: CanDo[]; done: number; total: number; stage: LearningStage;
+  } | null>(null);
+  const [open, setOpen] = useState<LearningStage | null>(null);
+  useFocusEffect(useCallback(() => {
+    let cancelled = false;
+    void (async () => {
+      await ensureLanguages([targetLanguageOf(direction)]);
+      const [progress, picked] = await Promise.all([
+        loadChapterProgress(direction),
+        pickedStage(targetLanguageOf(direction)).catch(() => null),
+      ]);
+      const ids = new Set(progress.chapters.map((chapter) => chapter.id));
+      return {
+        direction,
+        list: canDoList(progress.chapters, progress.finished, progress.checks),
+        done: progress.finished.filter((id) => ids.has(id)).length,
+        total: progress.chapters.length,
+        stage: defaultStage(progress.chapters, progress.finished, picked),
+      };
+    })()
+      .then((result) => { if (!cancelled) setState(result); })
+      .catch(() => { if (!cancelled) setState(null); });
+    return () => { cancelled = true; };
+  }, [direction]));
+  if (!state || state.direction !== direction || state.total === 0) return null;
+  const started = stats.totalCards - stats.cardStates.new;
+  const shownStage = open ?? state.stage;
+  return (
+    <ThemedView type="backgroundElement" style={styles.card}>
+      <ThemedText type="smallBold">{t('progress.canDoTitle')}</ThemedText>
+      <Bar
+        label={t('progress.pathTitle')}
+        value={t('progress.pathValue', { done: state.done, total: state.total })}
+        share={state.done / state.total}
+      />
+      <Bar
+        label={t('progress.memoryTitle')}
+        value={t('progress.memoryValue', { mastered: stats.cardStates.mastered, started })}
+        share={started > 0 ? stats.cardStates.mastered / started : 0}
+      />
+      {LEARNING_STAGES.map((stage) => {
+        const rows = state.list.filter((item) => item.stage === stage);
+        if (rows.length === 0) return null;
+        const expanded = shownStage === stage;
+        return (
+          <View key={stage} style={styles.canDoStage}>
+            <Pressable
+              onPress={() => setOpen(stage)}
+              accessibilityRole="button"
+              accessibilityState={{ expanded }}
+              style={({ pressed }) => [styles.canDoHead, pressed && styles.pressed]}>
+              <ThemedText type="smallBold" themeColor={expanded ? 'text' : 'textSecondary'} style={styles.flex}>
+                {t('progress.canDoStage', {
+                  stage: t(STAGE_KEYS[stage]),
+                  done: rows.filter((item) => item.status === 'done' || item.status === 'secured').length,
+                  total: rows.length,
+                })}
+              </ThemedText>
+              <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} />
+            </Pressable>
+            {expanded ? rows.map((item) => (
+              <View
+                key={item.key}
+                style={styles.canDoRow}
+                accessible
+                accessibilityLabel={`${t(item.key)}, ${t(CAN_DO_STATUS_KEYS[item.status])}, ${t('progress.canDoRow', { done: item.done, total: item.total })}`}>
+                <Ionicons
+                  name={CAN_DO_ICONS[item.status]}
+                  size={20}
+                  color={item.status === 'open' ? theme.textSecondary : theme.accent}
+                />
+                <View style={styles.flex}>
+                  <ThemedText type="small">{t(item.key)}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {t(CAN_DO_STATUS_KEYS[item.status])} · {t('progress.canDoRow', { done: item.done, total: item.total })}
+                  </ThemedText>
+                </View>
+              </View>
+            )) : null}
+          </View>
+        );
+      })}
+      <ThemedText type="small" themeColor="textSecondary">{t('progress.canDoNote')}</ThemedText>
+    </ThemedView>
+  );
+}
+
+function Bar({ label, value, share }: { label: string; value: string; share: number }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.barBlock} accessible accessibilityLabel={`${label}: ${value}`}>
+      <View style={styles.barLine}>
+        <ThemedText type="small" themeColor="textSecondary">{label}</ThemedText>
+        <ThemedText type="small">{value}</ThemedText>
+      </View>
+      <View style={[styles.progressTrack, { backgroundColor: theme.backgroundSelected }]}>
+        <View
+          style={[
+            styles.progressFill,
+            { width: `${Math.round(Math.min(1, Math.max(0, share)) * 100)}%`, backgroundColor: theme.accent },
+          ]}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -595,6 +732,42 @@ function CardStates({ stats }: { stats: LearningStats }) {
 }
 
 const styles = StyleSheet.create({
+  canDoStage: {
+    gap: Spacing.one,
+  },
+  canDoHead: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  canDoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.two,
+    paddingVertical: Spacing.half,
+  },
+  flex: {
+    flex: 1,
+  },
+  barBlock: {
+    gap: Spacing.one,
+  },
+  barLine: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

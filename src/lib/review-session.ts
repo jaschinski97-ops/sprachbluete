@@ -182,6 +182,12 @@ export type DirectionSummary = {
   fresh: number;
   /** Stabilität über 21 Tage. */
   mastered: number;
+  /**
+   * Nur fällige Wiederholungen, ohne neue Karten (08.11.2026). `due` zählt
+   * die neuen Karten einer Sitzung mit — so stand bei jeder Sprache „20
+   * fällig“, auch bei einer, die man nie geöffnet hat.
+   */
+  reviewDue: number;
 };
 
 /**
@@ -221,9 +227,11 @@ export async function summarizeDirection(
   const { cards } = isLanguageLoaded(targetLanguageOf(direction))
     ? await ensureCardStates(direction, store, now)
     : await readCardStates(direction, store, now);
+  const faellig = dueCards(cards, now);
   return {
     direction,
-    due: dueCards(cards, now).length,
+    due: faellig.length,
+    reviewDue: faellig.filter((card) => card.state !== 'new').length,
     total: cards.length,
     fresh: cards.filter((card) => card.state === 'new').length,
     mastered: cards.filter((card) => card.state === 'mastered').length,

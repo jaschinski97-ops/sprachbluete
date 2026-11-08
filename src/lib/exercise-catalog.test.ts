@@ -75,7 +75,7 @@ describe('Kategorien-Gleichstand der Lernziele (Brücke Deutsch)', () => {
 
       it('fragt Karteikarten als Wortschatz ab', () => {
         const gruppe = groups.find((group) => group.label === 'skill.wortschatz')!;
-        expect(gruppe.modes).toEqual(['cards', 'wortliste']);
+        expect(gruppe.modes).toEqual(['cards', 'wortliste', 'tempo']);
       });
 
       it('hat immer Hören (Satz verstehen, Diktat)', () => {
@@ -130,7 +130,8 @@ describe('Die Übungsliste ist vollständig gruppiert und beschriftet', () => {
       const groups = groupsForDirection(direction);
       const modes = modesOf(groups);
       expect(new Set(modes).size).toBe(modes.length);
-      expect(new Set(modes)).toEqual(new Set(modesForDirection(direction)));
+      // „Alle Regeln“ steht im Bereich Grammatik, ist aber keine Übung.
+      expect(new Set(modes)).toEqual(new Set([...modesForDirection(direction), 'grammatikRegeln']));
       for (const mode of modes) {
         expect(typeof modeKey(mode)).toBe('string');
       }

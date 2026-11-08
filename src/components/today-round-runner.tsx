@@ -102,11 +102,14 @@ export function TodayRoundRunner({
   direction,
   stage,
   onExit,
+  onContinue,
 }: {
   direction: PairDirection;
   /** Stufe aus dem Lern-Reiter: neue Karten und Mischstoff nur aus ihr. */
   stage?: LearningStage;
   onExit: () => void;
+  /** Weiter im Lernpfad (08.11.2026): Beschriftung und Sprung zum nächsten Kapitelschritt. */
+  onContinue?: { label: string; onPress: () => void };
 }) {
   const { t } = useLocale();
   // Die produzierte Sprache des Paars — im Deutsch-Ziel (th_to_de) werden
@@ -223,6 +226,8 @@ export function TodayRoundRunner({
           {t(runde.plan.some(p => !uebersprungen.includes(p.kind) && ['cards', 'diktat'].includes(p.kind)) ? 'round.note' : 'learning.noReviews')}
         </ThemedText>
         <View style={styles.actions}>
+          {/* Nach der Wiederholung geht es im Kapitel weiter (Startseite „Heute“). */}
+          {onContinue ? <ThemedButton label={onContinue.label} onPress={onContinue.onPress} variant="primary" /> : null}
           <ThemedButton label={t('drill.newRound')} onPress={restart} />
           <ThemedButton label={t('common.back')} onPress={onExit} />
         </View>

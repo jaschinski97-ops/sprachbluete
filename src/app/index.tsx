@@ -1,4 +1,5 @@
-import { Link, useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -10,13 +11,18 @@ import { LanguageHero } from '@/components/language-hero';
 import { LanguagePicker } from '@/components/language-picker';
 import { ScreenScaffold } from '@/components/screen-scaffold';
 import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 
 import { Spacing } from '@/constants/theme';
 import { useCatalogLanguages } from '@/hooks/use-catalog-languages';
 import { useLearnerLanguage } from '@/hooks/use-learner-language';
+import { useNextStep } from '@/hooks/use-next-step';
 import { useTheme } from '@/hooks/use-theme';
 import { ensureLanguages } from '@/lib/content/catalog-languages';
 import { isLanguageLoaded } from '@/lib/content/catalog-state';
+import type { NextStep } from '@/lib/chapter-flow';
+import type { LearningChapter } from '@/lib/learning-path';
+import { situationTranslation } from '@/lib/conversation/types';
 import { useLocale } from '@/lib/i18n';
 import { featureIsImplemented } from '@/lib/languages/feature';
 import { defaultGoalDirection, zieleFuerBruecke, goalLanguage } from '@/lib/languages/goals';
@@ -69,9 +75,23 @@ export default function DashboardScreen() {
   const aktivesZiel =
     ziele.find(ziel => ziel.direction === selectedDirection) || ziele[0];
   const zielBeschreibung = t(learningLanguage(aktivesZiel.language).feature.description);
-  // „Weiter lernen“ öffnet die Sitzung des aktiven Ziels — die Zahl gehört dazu.
+  // „Weiter lernen“ öffnet die Sitzung des aktiven Ziels — die Zahl gehört
+  // dazu. Seit 08.11.2026 nur echte Wiederholungen, ohne neue Karten.
   const totalDue =
-    due.summaries?.find((item) => item.direction === aktivesZiel.direction)?.due ?? null;
+    due.summaries?.find((item) => item.direction === aktivesZiel.direction)?.reviewDue ?? null;
+  // „Heute“ (08.11.2026): erst wiederholen, dann im Kapitel weiter.
+  const heute = useNextStep(profile ? aktivesZiel.direction : null);
+  const naechster = heute?.next ?? null;
+  const nachtest = heute?.recheck ?? null;
+  // Reihenfolge: Wiederholungen, dann ein fälliger Nachtest, dann Neues.
+  const zielAdresse: string = (totalDue ?? 0) > 0
+    ? `/review?direction=${aktivesZiel.direction}&mode=heute`
+    : nachtest
+      ? `/review?direction=${aktivesZiel.direction}&mode=kapitelCheck&kapitel=${encodeURIComponent(nachtest.id)}`
+      : naechster
+      ? `/review?direction=${aktivesZiel.direction}&mode=${naechster.step?.[0] ?? 'path'}&kapitel=${encodeURIComponent(naechster.chapterId)}`
+      : `/review?direction=${aktivesZiel.direction}`;
+  const ziel = zielAdresse as Href;
   // Katalog je Lernsprache: Die Sprache des aktiven Ziels bleibt geladen
   // (Merkhilfe, Lern-Reiter). Das Ladetor hat sie beim Start schon geholt.
   // Erst mit gelesenem Profil: Vorher steht hier die Vorgabe Thai, und eine
@@ -153,7 +173,9 @@ export default function DashboardScreen() {
       {/* Mit Richtung: Ein neuer Nutzer hat noch kein gemerktes Ziel, ohne
           Adresse fragte der Lern-Reiter dann erneut nach der Sprache, obwohl
           die Zahl am Knopf schon zum aktiven Ziel gehört (Testrunde 25.10.). */}
-      <Link href={`/review?direction=${aktivesZiel.direction}`} asChild>
+      <HeuteKarte reviews={totalDue} next={heute === undefined ? undefined : naechster} recheck={nachtest} />
+
+      <Link href={ziel} asChild>
         {/* accessible: Knopf und Badge sind eine Handlung — der Screenreader
             soll sie als eine Ansage bringen, nicht als zwei Elemente.
             Die Fläche steht bewusst auf dem inneren View, NICHT auf dem
@@ -241,7 +263,80 @@ export default function DashboardScreen() {
   );
 }
 
+/**
+ * „Heute“ auf der Startseite (08.11.2026): was der Knopf darunter gleich
+ * tut — erst die fälligen Wiederholungen, dann der nächste Kapitelschritt.
+ * Zahlen erscheinen erst geladen, nie geraten.
+ */
+function HeuteKarte({
+  reviews,
+  next,
+  recheck,
+}: {
+  reviews: number | null;
+  next: NextStep | null | undefined;
+  recheck: LearningChapter | null;
+}) {
+  const { t, uiLanguage } = useLocale();
+  const theme = useTheme();
+  if (reviews === null && next === undefined) return null;
+  const kapitel = next
+    ? next.chapter
+      ? situationTranslation(next.chapter.situation, uiLanguage).title
+      : t('foundations.title')
+    : '';
+  return (
+    <ThemedView type="backgroundElement" style={styles.today}>
+      <ThemedText type="smallBold" themeColor="accent">{t('home.todayTitle')}</ThemedText>
+      {reviews !== null ? (
+        <View style={styles.todayLine}>
+          <Ionicons name="refresh" size={18} color={theme.textSecondary} />
+          <ThemedText type="small" style={styles.todayText}>
+            {reviews > 0 ? t('home.todayReviews', { count: reviews }) : t('home.todayNoReviews')}
+          </ThemedText>
+        </View>
+      ) : null}
+      {recheck ? (
+        <View style={styles.todayLine}>
+          <Ionicons name="ribbon-outline" size={18} color={theme.textSecondary} />
+          <ThemedText type="small" style={styles.todayText}>
+            {t('home.todayRecheck', { chapter: situationTranslation(recheck.situation, uiLanguage).title })}
+          </ThemedText>
+        </View>
+      ) : null}
+      {next !== undefined ? (
+        <View style={styles.todayLine}>
+          <Ionicons name={next ? 'book-outline' : 'checkmark-circle'} size={18} color={theme.textSecondary} />
+          <View style={styles.todayText}>
+            {next ? <ThemedText type="small" themeColor="textSecondary">{t('chapter.upNext')}</ThemedText> : null}
+            <ThemedText type="small">
+              {next
+                ? next.step
+                  ? t('home.todayNext', { chapter: kapitel, step: t(next.step[1]) })
+                  : t('home.todayFinish', { chapter: kapitel })
+                : t('home.todayAllDone')}
+            </ThemedText>
+          </View>
+        </View>
+      ) : null}
+    </ThemedView>
+  );
+}
+
 const styles = StyleSheet.create({
+  today: {
+    borderRadius: 18,
+    padding: Spacing.three,
+    gap: Spacing.two,
+  },
+  todayLine: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.two,
+  },
+  todayText: {
+    flex: 1,
+  },
   section: {
     gap: Spacing.two,
   },

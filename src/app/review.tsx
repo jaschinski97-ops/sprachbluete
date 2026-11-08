@@ -42,7 +42,7 @@ import {
   type PairDirection,
 } from '@/lib/languages/types';
 import { LearnerProfile, loadProfile, setLanguage, setReviewSpot } from '@/lib/profile';
-import { loadSituations, rateCard } from '@/lib/repository';
+import { rateCard } from '@/lib/repository';
 import { buildReviewQueue, directionLabel, ReviewItem } from '@/lib/review-session';
 import {
   groupsForDirection,
@@ -58,19 +58,39 @@ import { RoleplayRunner } from '@/components/roleplay-runner';
 import { ReadingTextsRunner } from '@/components/reading-texts-runner';
 import { AdvancedLessonRunner } from '@/components/advanced-lesson-runner';
 import { ChapterGrammarRunner } from '@/components/chapter-grammar-runner';
+import { ChapterCheckRunner } from '@/components/chapter-check-runner';
+import { TempoRunner } from '@/components/tempo-runner';
+import {
+  checkKind,
+  daysUntilRecheck,
+  dueRecheck,
+  recheckDue,
+  saveCheckResult,
+  scheduleFirstRecheck,
+  type CheckKind,
+  type CheckRecord,
+} from '@/lib/chapter-recheck';
+import { GrammarOverview } from '@/components/grammar-overview';
+import { canDoKey } from '@/lib/can-do';
+import {
+  chapterPhases,
+  chapterSteps,
+  defaultStage,
+  loadChapterProgress,
+  nextOpenStep,
+  nextStepFor,
+  type ChapterStep,
+  type NextStep,
+} from '@/lib/chapter-flow';
 import { FoundationsRunner } from '@/components/foundations-runner';
 import { ROUND_MINUTES } from '@/lib/today-round';
 import { FOUNDATIONS_ID, foundationModesFor, foundationSteps, foundationsIntroKey, isFoundationMode } from '@/lib/foundations';
 import { activeVocabularyFor } from '@/data/active-vocabulary';
 import {
-  chapterGrammarDrill,
-  chaptersForDirection,
   finishChapter,
-  finishedChapterIds,
   markStepPractised,
   pickedStage,
   pickStage,
-  practisedSteps,
   type LearningChapter,
 } from '@/lib/learning-path';
 import { situationTranslation, spokenText, type ConversationSituation } from '@/lib/conversation/types';
@@ -112,35 +132,6 @@ const RATING_COLORS: Record<Rating, { bg: ThemeColor; text: ThemeColor }> = {
  * types`), damit Profil, Auswahl und Screens dieselbe Schranke lesen.
  */
 
-/** Die Übungen, die ein Kapitel als Schritt 1 (Grammatik) öffnen kann. */
-const CHAPTER_GRAMMAR_MODES: readonly Mode[] = ['article', 'irregularPast', 'serEstar', 'polite', 'zaehlerwort', 'konsonantenklasse', 'toneRule'];
-
-type ChapterStep = readonly [Mode, TranslationKey];
-
-/**
- * Die sieben Schritte eines Kapitels. Schrittliste und „Weiter: …“ in der
- * Übung lesen dieselbe Reihenfolge. Die Grammatik übt die Regel, die die
- * Szene erklärt (Nutzertest 17.10.2026).
- *
- * SEIT 18.10.2026 DIALOG ZUERST (Nutzerentscheidung): Vorher war die Regel
- * Schritt 1 — ein Anfänger las „fallender Ton“, bevor er Töne oder den
- * Dialog kannte. Jetzt: Dialog hören, lesen, die Wörter auf Karten, dann die
- * Regel aus dem Dialog, und erst danach selbst schreiben, sprechen, spielen.
- */
-function chapterSteps(direction: PairDirection, chapter: LearningChapter): ChapterStep[] {
-  const grammar: Mode = chapterGrammarDrill(chapter.situation, modesForDirection(direction))
-    ?? (targetLanguageOf(direction) === 'th' ? 'polite' : groupsForDirection(direction)[4].modes[0]);
-  return [
-    ['sentenceListening', 'mode.sentenceListening'],
-    ['lesestoffe', 'mode.lesestoffe'],
-    ['cards', 'mode.cards'],
-    [grammar, 'skill.grammatik'],
-    ['writing', 'mode.writing'],
-    ['sentenceRepeat', 'mode.sentenceRepeat'],
-    ['rollenspiel', 'mode.rollenspiel'],
-  ];
-}
-
 /** Fehlertext eines gescheiterten Ladevorgangs — wie im Fortschritts-Reiter. */
 function messageOf(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -151,7 +142,9 @@ function parseMode(value: unknown, direction: PairDirection): Mode {
   // ist für jede Richtung gültig oder fällt auf Karteikarten zurück — auch ein
   // Alte oder ungültige Modus-Adressen landen auf der Lernübersicht. 'heute'
   // ist als Sammelmodus überall gültig.
-  const modes: string[] = [...modesForDirection(direction), ...foundationModesFor(direction), 'heute', 'path'];
+  const modes: string[] = [
+    ...modesForDirection(direction), ...foundationModesFor(direction), 'heute', 'path', 'kapitelCheck', 'grammatikRegeln',
+  ];
   return typeof value === 'string' && modes.includes(value) ? (value as Mode) : 'path';
 }
 
@@ -174,7 +167,8 @@ function ZurueckZurUebersicht() {
 
 export default function ReviewScreen() {
   const { t, uiLanguage } = useLocale();
-  const params = useLocalSearchParams<{ direction?: string; mode?: string; waehlen?: string }>();
+  // `kapitel` (08.11.2026): die Startseite öffnet einen Kapitelschritt direkt.
+  const params = useLocalSearchParams<{ direction?: string; mode?: string; waehlen?: string; kapitel?: string }>();
   const router = useRouter();
 
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
@@ -214,6 +208,7 @@ export default function ReviewScreen() {
         direction,
         mode,
         waehlen: undefined,
+        kapitel: undefined,
       });
     },
     [router]
@@ -281,6 +276,8 @@ export default function ReviewScreen() {
       <ReviewBody
         direction={direction}
         mode={mode}
+        chapterParam={typeof params.kapitel === 'string' ? params.kapitel : null}
+        onChapterResolved={() => router.setParams({ kapitel: undefined })}
         onOpen={open}
         onSwitch={() => {
           remember(null);
@@ -289,7 +286,7 @@ export default function ReviewScreen() {
         onRemember={remember}
         onExit={() => {
           // Ein expliziter Pfadmodus schließt auch direkte Übungsadressen.
-          router.setParams({ direction, mode: 'path' });
+          router.setParams({ direction, mode: 'path', kapitel: undefined });
         }}
       />
     </CatalogLanguages>
@@ -311,6 +308,8 @@ export default function ReviewScreen() {
 function ReviewBody({
   direction,
   mode,
+  chapterParam,
+  onChapterResolved,
   onOpen,
   onSwitch,
   onRemember,
@@ -318,6 +317,9 @@ function ReviewBody({
 }: {
   direction: PairDirection;
   mode: Mode;
+  /** Kapitel aus der Adresse (`?kapitel=`), zu dem der geöffnete Schritt gehört. */
+  chapterParam: string | null;
+  onChapterResolved: () => void;
   onOpen: (direction: PairDirection, mode: Mode) => void;
   onSwitch: () => void;
   onRemember: (direction: PairDirection | null, mode?: Mode) => void;
@@ -330,6 +332,7 @@ function ReviewBody({
   const [chapters, setChapters] = useState<LearningChapter[] | null>(null);
   const [finished, setFinished] = useState<string[]>([]);
   const [practised, setPractised] = useState<Record<string, string[]>>({});
+  const [checks, setChecks] = useState<Record<string, CheckRecord>>({});
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [practiceChapter, setPracticeChapter] = useState<LearningChapter | null>(null);
   // Kapitel 0 ist kein Dialogkapitel — eigener Merker für „Weiter: …“.
@@ -358,9 +361,7 @@ function ReviewBody({
     return () => { cancelled = true; };
   }, [sprache]);
   const stageLoaded = stagePick?.language === sprache;
-  const naechstes = chapters?.find((item) => !finished.includes(item.id)) ?? chapters?.[0];
-  const stage: LearningStage = (stageLoaded ? stagePick.stage : null)
-    ?? (naechstes ? stageForLevel(naechstes.situation.level) : 'beginner');
+  const stage: LearningStage = defaultStage(chapters ?? [], finished, stageLoaded ? stagePick.stage : null);
   // Übungen starten erst mit feststehender Stufe — sonst bauten sie ihren
   // Stoff zweimal und zeigten kurz den falschen.
   const stageReady = stageLoaded && (stagePick.stage !== null || chapters !== null);
@@ -386,17 +387,13 @@ function ReviewBody({
     setChapterError(null);
     void (async () => {
       try {
-        const situations = await loadSituations();
-        const next = chaptersForDirection(direction, situations, activeVocabularyFor(targetLanguageOf(direction)));
-        // Kapitel 0 teilt Abschluss und Häkchen mit den Dialogkapiteln.
-        const ids = [FOUNDATIONS_ID, ...next.map((item) => item.id)];
-        const done = await finishedChapterIds(direction, ids.map((id) => ({ id })));
-        const steps = await Promise.all(ids.map((id) => practisedSteps(direction, id)));
+        const progress = await loadChapterProgress(direction);
         if (!cancelled) {
           chaptersDirection.current = direction;
-          setChapters(next);
-          setFinished(done);
-          setPractised(Object.fromEntries(ids.map((id, index) => [id, steps[index]])));
+          setChapters(progress.chapters);
+          setFinished(progress.finished);
+          setPractised(progress.practised);
+          setChecks(progress.checks);
         }
       } catch (error) {
         if (!cancelled) {
@@ -449,7 +446,100 @@ function ReviewBody({
     : inFoundations ? foundationSteps(direction) : [];
   const stepIndex = steps.findIndex(([candidate]) => candidate === mode);
   const nextStep = stepIndex >= 0 ? steps[stepIndex + 1] : undefined;
-  const chapterGrammar = Boolean(practiceChapter && CHAPTER_GRAMMAR_MODES.includes(mode));
+  // Schritt 4 eines Kapitels ist seine Grammatik: Regeln der Szene, dann die Übung.
+  const chapterGrammar = Boolean(practiceChapter && stepIndex === 3 && mode !== 'grammatikRegeln');
+
+  // Ein Kapitel aus der Adresse (Startseite „Weiter lernen“) übernehmen,
+  // sobald die Kapitel geladen sind — einmal, dann verschwindet der Parameter.
+  useEffect(() => {
+    if (!chapterParam || chapters === null || chaptersDirection.current !== direction) return;
+    const chapter = chapters.find((item) => item.id === chapterParam);
+    if (mode === 'path') {
+      setSelectedChapterId(chapterParam);
+      setLessonOpen(true);
+    } else if (chapterParam === FOUNDATIONS_ID) {
+      setPracticeChapter(null);
+      setFoundationsPractice(true);
+      void markStepPractised(direction, FOUNDATIONS_ID, mode)
+        .then((saved) => setPractised((current) => ({ ...current, [FOUNDATIONS_ID]: saved })))
+        .catch(() => {});
+    } else if (chapter) {
+      setPracticeChapter(chapter);
+      setFoundationsPractice(false);
+      void markStepPractised(direction, chapter.id, mode)
+        .then((saved) => setPractised((current) => ({ ...current, [chapter.id]: saved })))
+        .catch(() => {});
+    }
+    onChapterResolved();
+    // Nur beim Laden der Kapitel oder einem neuen Parameter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapterParam, chapters, direction]);
+  const waitingForChapter = Boolean(chapterParam) && mode !== 'path';
+
+  // Wo es im Lernpfad weitergeht — für das Ende der Heutigen Runde.
+  const upcoming: NextStep | null = chapters ? nextStepFor(direction, chapters, finished, practised, stage) : null;
+  // Ohne geöffnetes Kapitel (z. B. nach Neuladen der Seite) prüft der Check
+  // das gewählte oder das nächste offene Kapitel.
+  // Ein fälliger Nachtest geht neuen Kapitelschritten vor (Festigen vor Neuem).
+  const recheck = chapters ? dueRecheck(chapters, finished, checks, Date.now()) : null;
+  const checkChapter = practiceChapter
+    ?? chapters?.find((item) => item.id === selectedChapterId)
+    ?? recheck
+    ?? upcoming?.chapter
+    ?? chapters?.find((item) => stageForLevel(item.situation.level) === stage && !finished.includes(item.id))
+    ?? null;
+  const continueWith = (next: NextStep) => {
+    if (next.step && next.foundations) openFoundationStep(next.step[0]);
+    else if (next.step && next.chapter) openChapterStep(next.step[0], next.chapter);
+    else {
+      setSelectedChapterId(next.chapterId);
+      setLessonOpen(true);
+      onExit();
+    }
+  };
+  const upcomingLabel = (next: NextStep) => next.step
+    ? t('round.continueChapter', { step: t(next.step[1]) })
+    : t('round.continueChapterOpen');
+
+  // Abschluss eines Kapitels: über den Kapitel-Check oder ausdrücklich ohne ihn.
+  const finishNow = async (chapterId: string) => {
+    setFinishing(true);
+    try {
+      await finishChapter(direction, chapterId);
+      // Auch ohne Check kommt nach drei Wochen ein Nachtest (Kapitel 0 hat keinen).
+      if (chapterId !== FOUNDATIONS_ID) {
+        const record = await scheduleFirstRecheck(direction, chapterId, Date.now());
+        setChecks((current) => ({ ...current, [chapterId]: record }));
+      }
+      const done = [...new Set([...finished, chapterId])];
+      setFinished(done);
+      setSelectedChapterId(chapters?.find((item) => !done.includes(item.id))?.id ?? chapterId);
+      setLessonOpen(false);
+    } catch (error) {
+      setChapterError(messageOf(error));
+      throw error;
+    } finally {
+      setFinishing(false);
+    }
+  };
+
+  // Ergebnis eines Kapitel-Checks oder Nachtests speichern.
+  const saveCheck = async (chapterId: string, kind: CheckKind, passed: boolean) => {
+    const record = await saveCheckResult(direction, chapterId, kind, passed, Date.now());
+    if (record) setChecks((current) => ({ ...current, [chapterId]: record }));
+    if (kind === 'first' && passed) {
+      const done = [...new Set([...finished, chapterId])];
+      setFinished(done);
+      setSelectedChapterId(chapters?.find((item) => !done.includes(item.id))?.id ?? chapterId);
+      setLessonOpen(false);
+    }
+    return record;
+  };
+  // Wörter bestandener Kapitel gelten in der Tempo-Runde als sicher.
+  const passedChapterWords = useMemo(
+    () => new Set((chapters ?? []).filter((item) => finished.includes(item.id)).flatMap((item) => item.vocabulary.map((word) => word.id))),
+    [chapters, finished]
+  );
 
   return (
     <ScreenScaffold szene="trauerkirsche"
@@ -465,7 +555,18 @@ function ReviewBody({
             : direction
       }>
       {mode === 'heute' ? (
-        stageReady ? <TodayRoundRunner key={direction} direction={direction} stage={stage} onExit={onExit} /> : null
+        stageReady ? <TodayRoundRunner
+          key={direction}
+          direction={direction}
+          stage={stage}
+          onExit={onExit}
+          onContinue={recheck
+            ? {
+                label: t('home.todayRecheck', { chapter: situationTranslation(recheck.situation, uiLanguage).title }),
+                onPress: () => openChapterStep('kapitelCheck', recheck),
+              }
+            : upcoming ? { label: upcomingLabel(upcoming), onPress: () => continueWith(upcoming) } : undefined}
+        /> : null
       ) : mode === 'path' ? (
         <>
           <LearnPath
@@ -476,6 +577,7 @@ function ReviewBody({
             direction={direction}
             chapters={chapters}
             finished={finished}
+            checks={checks}
             selectedChapterId={selectedChapterId}
             chapterError={chapterError}
             finishing={finishing}
@@ -486,18 +588,7 @@ function ReviewBody({
               setLessonOpen(false);
               scrollRef.current?.scrollTo({ y: 0, animated: true });
             }}
-            onFinish={(chapterId) => {
-              setFinishing(true);
-              void finishChapter(direction, chapterId)
-                .then(() => {
-                  const done = [...new Set([...finished, chapterId])];
-                  setFinished(done);
-                  setSelectedChapterId(chapters?.find((item) => !done.includes(item.id))?.id ?? chapterId);
-                  setLessonOpen(false);
-                })
-                .catch((error) => setChapterError(messageOf(error)))
-                .finally(() => setFinishing(false));
-            }}
+            onFinish={(chapterId) => void finishNow(chapterId).catch(() => {})}
             practised={practised}
             onOpenFoundation={openFoundationStep}
             onOpen={(picked, chapter) => {
@@ -535,7 +626,7 @@ function ReviewBody({
             </ThemedText>
           </View>
 
-          {!stageReady ? null : isFoundationMode(mode) ? (
+          {!stageReady || waitingForChapter ? null : isFoundationMode(mode) ? (
         <FoundationsRunner key={`${direction}:${mode}`} mode={mode} direction={direction} onExit={onExit} />
       ) : practiceChapter && chapterGrammar ? (
         <ChapterGrammarRunner
@@ -545,6 +636,41 @@ function ReviewBody({
           // CHAPTER_GRAMMAR_MODES sind ausnahmslos Drill-Kennungen.
           drill={mode as DrillId}
           onExit={onExit}
+        />
+      ) : mode === 'kapitelCheck' ? (
+        checkChapter ? (
+          <ChapterCheckRunner
+            key={checkChapter.id}
+            chapter={checkChapter}
+            direction={direction}
+            kind={checkKind(finished.includes(checkChapter.id), checks[checkChapter.id], Date.now())}
+            record={checks[checkChapter.id] ?? null}
+            onResult={(kind, passed) => saveCheck(checkChapter.id, kind, passed)}
+            onNextChapter={() => {
+              setPracticeChapter(null);
+              onExit();
+            }}
+            onExit={onExit}
+          />
+        ) : (
+          <ThemedText type="small" themeColor="textSecondary">
+            {t(chapters === null ? 'round.assembling' : 'chapterCheck.empty')}
+          </ThemedText>
+        )
+      ) : mode === 'grammatikRegeln' ? (
+        <GrammarOverview
+          direction={direction}
+          chapters={chapters}
+          finished={finished}
+          practised={practised}
+          checks={checks}
+          stage={stage}
+          onOpenChapter={(chapterId) => {
+            setPracticeChapter(null);
+            setSelectedChapterId(chapterId);
+            setLessonOpen(true);
+            onExit();
+          }}
         />
       ) : mode === 'cards' ? (
         <CardSession
@@ -559,6 +685,8 @@ function ReviewBody({
           onReveal={() => scrollRef.current?.scrollToEnd({ animated: true })}
           key={direction}
         />
+      ) : mode === 'tempo' ? (
+        <TempoRunner key={`${direction}:tempo`} direction={direction} passedChapterWords={passedChapterWords} onExit={onExit} />
       ) : mode === 'wortliste' ? (
         <WordListRunner key={`${direction}:wortliste`} direction={direction} stage={freeStage} onExit={onExit} />
       ) : mode === 'writing' ? (
@@ -650,6 +778,7 @@ function LearnPath({
   direction,
   chapters,
   finished,
+  checks,
   selectedChapterId,
   chapterError,
   finishing,
@@ -668,6 +797,7 @@ function LearnPath({
   direction: PairDirection;
   chapters: LearningChapter[] | null;
   finished: string[];
+  checks: Record<string, CheckRecord>;
   practised: Record<string, string[]>;
   selectedChapterId: string | null;
   chapterError: string | null;
@@ -717,20 +847,44 @@ function LearnPath({
   const foundationsActive = foundationsShown && (selectedChapterId === FOUNDATIONS_ID
     || (!foundationsDone && !stageChapters.some((item) => item.id === selectedChapterId)));
   const foundationsIntro = t(foundationsIntroKey(direction));
+  const chapterStepList: ChapterStep[] = chapter ? chapterSteps(direction, chapter) : [];
+  const foundationStepList: ChapterStep[] = foundationSteps(direction);
+  // Der erste noch nicht geöffnete Schritt trägt „Als Nächstes“.
+  const upNext = foundationsActive
+    ? nextOpenStep(foundationStepList, practised[FOUNDATIONS_ID] ?? [])
+    : chapter ? nextOpenStep(chapterStepList, practised[chapter.id] ?? []) : -1;
+  const upNextStep = (foundationsActive ? foundationStepList : chapterStepList)[upNext];
+  // Das Ziel des Kapitels als Kann-Aussage (Thema × Stufe).
+  const goalKey = chapter ? canDoKey(chapter.situation.topic, stageForLevel(chapter.situation.level)) : null;
   const stepRow = ([candidate, key]: readonly [Mode, TranslationKey], index: number, chapterId: string, open: () => void) => {
     const geuebt = (practised[chapterId] ?? []).includes(candidate);
     const label = `${index + 1}. ${t(key)}`;
+    // Bestandene Kapitel: Der Check wird zum Nachtest mit eigenem Termin.
+    const nachtest = candidate === 'kapitelCheck' && finished.includes(chapterId)
+      ? recheckDue(true, checks[chapterId], Date.now())
+        ? t('chapter.recheckDue')
+        : t('chapter.recheckIn', { days: daysUntilRecheck(checks[chapterId]!, Date.now()) })
+      : null;
+    const faellig = nachtest !== null && recheckDue(true, checks[chapterId], Date.now());
+    const naechster = index === upNext || faellig;
     return (
       <Pressable
         key={`${candidate}:${index}`}
         onPress={open}
         accessibilityRole="button"
-        accessibilityLabel={geuebt ? t('path.stepPractisedA11y', { step: label }) : label}
-        style={({ pressed }) => [styles.pathStep, pressed && styles.pressed]}>
-        <ThemedText type="smallBold">{label}</ThemedText>
-        {geuebt
-          ? <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
-          : <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />}
+        accessibilityLabel={geuebt ? t('path.stepPractisedA11y', { step: label }) : naechster ? `${label}, ${t('chapter.upNext')}` : label}
+        style={({ pressed }) => pressed && styles.pressed}>
+        <ThemedView type={naechster ? 'backgroundSelected' : 'background'} style={styles.pathStep}>
+          <View style={styles.skillText}>
+            <ThemedText type="smallBold">{label}</ThemedText>
+            {nachtest
+              ? <ThemedText type="small" themeColor={faellig ? 'accent' : 'textSecondary'}>{nachtest}</ThemedText>
+              : naechster ? <ThemedText type="small" themeColor="accent">{t('chapter.upNext')}</ThemedText> : null}
+          </View>
+          {geuebt
+            ? <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
+            : <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />}
+        </ThemedView>
       </Pressable>
     );
   };
@@ -755,6 +909,9 @@ function LearnPath({
           <ThemedText type="small" themeColor="textSecondary">{t('foundations.chapter')}</ThemedText>
           <ThemedText type="subtitle">{t('foundations.title')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">{foundationsIntro}</ThemedText>
+          {upNextStep && !foundationsDone ? <ThemedText type="small" themeColor="accent">
+            {t('chapter.upNextStep', { step: `${upNext + 1}. ${t(upNextStep[1])}` })}
+          </ThemedText> : null}
           <ThemedButton label={t('path.open')} onPress={() => setLessonOpen(true)} variant="primary" />
         </ThemedView>
       )) : chapter && translated ? (lessonOpen ? null : (
@@ -774,7 +931,13 @@ function LearnPath({
             ) : null}
             <ThemedText type="small" themeColor="textSecondary">{translated.turns[turnIndex]}</ThemedText>
           </ThemedView> : null}
-          <ThemedText type="small" themeColor="textSecondary">{t('path.sequence')}</ThemedText>
+          {goalKey ? <ThemedText type="small">{t('chapter.goal', { goal: t(goalKey) })}</ThemedText> : null}
+          <ThemedText type="small" themeColor="textSecondary">
+            {chapterPhases(chapterStepList).map((phase) => t(phase.title)).join(' → ')}
+          </ThemedText>
+          {upNextStep && !finished.includes(chapter.id) ? <ThemedText type="small" themeColor="accent">
+            {t('chapter.upNextStep', { step: `${upNext + 1}. ${t(upNextStep[1])}` })}
+          </ThemedText> : null}
           <ThemedButton
             label={lessonOpen ? t('common.back') : t('path.open')}
             onPress={() => setLessonOpen(!lessonOpen)}
@@ -794,7 +957,7 @@ function LearnPath({
           <ThemedText type="smallBold">{t('foundations.chapter')} · {t('foundations.title')}</ThemedText>
           <ThemedText type="small">{foundationsIntro}</ThemedText>
           <ThemedButton label={t('common.back')} onPress={() => setLessonOpen(false)} />
-          {foundationSteps(direction).map((step, index) =>
+          {foundationStepList.map((step, index) =>
             stepRow(step, index, FOUNDATIONS_ID, () => onOpenFoundation(step[0])))}
           <ThemedButton
             label={foundationsDone ? t('chapter.completed') : t('chapter.finish')}
@@ -806,17 +969,33 @@ function LearnPath({
         <ThemedView type="backgroundElement" style={styles.lessonPanel}>
           <ThemedText type="smallBold">{stufenText(chapter.situation.level)} · {translated?.title}</ThemedText>
           <ThemedText type="small">{translated?.setting}</ThemedText>
+          {goalKey ? <ThemedText type="small" themeColor="accent">{t('chapter.goal', { goal: t(goalKey) })}</ThemedText> : null}
           <ThemedButton label={t('common.back')} onPress={() => setLessonOpen(false)} />
           <ThemedText type="smallBold">
             {t('chapter.words', { count: chapter.vocabulary.length })}
           </ThemedText>
-          {chapterSteps(direction, chapter).map((step, index) =>
-            stepRow(step, index, chapter.id, () => onOpen(step[0], chapter)))}
-          <ThemedButton
-            label={finished.includes(chapter.id) ? t('chapter.completed') : t('chapter.finish')}
-            disabled={finishing || finished.includes(chapter.id)}
-            onPress={() => onFinish(chapter.id)}
-          />
+          {/* Vier Phasen (08.11.2026): Jede sagt in einem Satz, warum sie an
+              dieser Stelle steht — der Ablauf folgt Verstehen → Üben →
+              Anwenden → Prüfen. */}
+          {chapterPhases(chapterStepList).map((phase) => (
+            <View key={phase.title} style={styles.phase}>
+              <ThemedText type="smallBold" themeColor="accent">{t(phase.title)}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">{t(phase.why)}</ThemedText>
+              {phase.steps.map(({ step, index }) =>
+                stepRow(step, index, chapter.id, () => onOpen(step[0], chapter)))}
+            </View>
+          ))}
+          {finished.includes(chapter.id) ? (
+            <ThemedButton label={t('chapter.completed')} disabled onPress={() => {}} />
+          ) : (
+            <Pressable
+              onPress={() => onFinish(chapter.id)}
+              disabled={finishing}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.tapTarget, pressed && styles.pressed]}>
+              <ThemedText type="small" themeColor="textSecondary">{t('chapter.finishWithoutCheck')}</ThemedText>
+            </Pressable>
+          )}
         </ThemedView>
       ) : null}
 
@@ -997,6 +1176,7 @@ function ModeBar({ direction, onPick, expanded, setExpanded }: {
               <View style={styles.skillModes}>
                 <ThemedButton label={t('mode.cards')} onPress={() => onPick('cards')} />
                 <ThemedButton label={t('mode.wortliste')} onPress={() => onPick('wortliste')} />
+                <ThemedButton label={t('mode.tempo')} onPress={() => onPick('tempo')} />
               </View>
             ) : null}
           </ThemedView>
@@ -1306,8 +1486,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: Spacing.two,
     paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
     borderRadius: Spacing.two,
+  },
+  phase: {
+    gap: Spacing.one,
   },
   skillCard: {
     borderRadius: Spacing.three,

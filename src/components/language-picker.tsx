@@ -79,7 +79,8 @@ export function LanguagePicker({
   const { t, languageName, uiLanguage } = useLocale();
 
   const fälligJeRichtung = new Map(
-    (due ?? []).map((summary) => [summary.direction, summary.due])
+    // Nur echte Wiederholungen: Neue Karten sind nicht „fällig“ (08.11.2026).
+    (due ?? []).map((summary) => [summary.direction, summary.reviewDue])
   );
   // Aktives Ziel: die gemerkte Richtung, wenn sie zur gewählten Paar-Sprache
   // gehört, sonst das erste Ziel dieser Sprache — Thai hat mehrere Ziele,
@@ -117,7 +118,7 @@ export function LanguagePicker({
               accessibilityLabel={
                 [
                   t('dashboard.cta', { direction: name }),
-                  fällig !== undefined ? t('home.dueBadge', { count: fällig }) : null,
+                  fällig ? t('home.dueBadge', { count: fällig }) : null,
                   t('home.vocabCount', { count: wortschatz }),
                   t(languageOf(gelehrteSprache).challenge),
                   t(languageOf(gelehrteSprache).feature.label),
@@ -167,7 +168,7 @@ export function LanguagePicker({
                 <ThemedText type="small" themeColor="textSecondary">
                   {t('catalog.loading')}
                 </ThemedText>
-              ) : fällig !== undefined ? (
+              ) : fällig ? (
                 <ThemedView type="accent" style={styles.badge}>
                   <ThemedText type="smallBold" themeColor="accentText">
                     {t('home.dueBadge', { count: fällig })}

@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "copyright": "2026 Nico Jaschinski",
     "categories": [
       "EDUCATION",
@@ -30,7 +30,8 @@
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
-        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/datenschutz.html"
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/datenschutz.html",
+        "releaseNotes": "Neu in Version 1.1:\n• Heute: Die Startseite zeigt, was jetzt dran ist – zuerst die fälligen Wiederholungen, dann der nächste Schritt im Kapitel.\n• Kapitel-Check: Am Ende jedes Kapitels prüfst du Wörter und Sätze, zum Wählen und zum Selbstschreiben. Einige Wochen später kommt ein Nachtest. Erst wenn du ihn bestehst, sitzt das Kapitel.\n• Deine Ziele: Der Fortschritt zeigt, was du schon kannst, und alle Grammatikregeln nach Themen.\n• Tempo-Runde: eine Minute mit Wörtern, die du schon sicher kennst.\n• Automatische Sicherung: Die App sichert deinen Lernstand täglich auf dem Gerät, auch abgeschlossene Kapitel. Zurückholen unter Einstellungen → Datensicherung.\n• Ehrlichere Zahlen: „fällig“ zählt nur noch Wörter, die wirklich wiederholt werden müssen.\n• Die App gibt es jetzt auch auf Italienisch und Japanisch."
       },
       "en-US": {
         "title": "Sprachblüte",
@@ -50,7 +51,8 @@
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
-        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
+        "releaseNotes": "New in version 1.1:\n• Today: the home screen shows what to do now – first the reviews that are due, then the next step in your chapter.\n• Chapter check: at the end of each chapter you test words and sentences, by choosing and by writing them yourself. A few weeks later a recheck follows. Only once you pass it does the chapter stick.\n• Your goals: progress shows what you can already do, plus all grammar rules by topic.\n• Speed round: one minute with words you already know well.\n• Automatic backup: the app backs up your progress on the device every day, including finished chapters. Restore it under Settings → Backup.\n• More honest numbers: \"due\" now only counts words that really need a review.\n• The app is now also available in Italian and Japanese."
       },
       "es-ES": {
         "title": "Sprachblüte",
@@ -69,7 +71,8 @@
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
-        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
+        "releaseNotes": "Novedades de la versión 1.1:\n• Hoy: la pantalla de inicio muestra qué toca ahora: primero los repasos pendientes y después el siguiente paso del capítulo.\n• Prueba del capítulo: al final de cada capítulo compruebas palabras y frases, eligiendo y escribiéndolas tú. Unas semanas después llega una prueba de repaso. Solo cuando la apruebas, el capítulo queda afianzado.\n• Tus objetivos: el progreso muestra lo que ya sabes hacer y todas las reglas de gramática por temas.\n• Ronda rápida: un minuto con palabras que ya conoces bien.\n• Copia de seguridad automática: la app guarda tu progreso cada día en el dispositivo, también los capítulos terminados. Puedes recuperarlo en Ajustes → Copia de seguridad.\n• Números más honestos: «pendiente» solo cuenta las palabras que de verdad hay que repasar.\n• La app ahora también está en italiano y japonés."
       },
       "th": {
         "title": "Sprachblüte",
@@ -87,7 +90,8 @@
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
-        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html"
+        "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
+        "releaseNotes": "มีอะไรใหม่ในเวอร์ชัน 1.1\n• วันนี้: หน้าแรกบอกว่าตอนนี้ควรทำอะไร ทบทวนคำที่ถึงกำหนดก่อน แล้วต่อด้วยขั้นตอนถัดไปของบทเรียน\n• แบบทดสอบท้ายบท: เมื่อจบแต่ละบท คุณจะทดสอบคำและประโยค ทั้งแบบเลือกคำตอบและแบบเขียนเอง อีกไม่กี่สัปดาห์จะมีแบบทดสอบซ้ำ เมื่อผ่านแล้วจึงถือว่าจำบทนั้นได้แน่น\n• เป้าหมายของคุณ: หน้าความก้าวหน้าแสดงสิ่งที่คุณทำได้แล้ว และกฎไวยากรณ์ทั้งหมดแยกตามหัวข้อ\n• รอบเร็ว: หนึ่งนาทีกับคำที่คุณรู้แน่นแล้ว\n• สำรองข้อมูลอัตโนมัติ: แอปสำรองความก้าวหน้าไว้ในเครื่องทุกวัน รวมถึงบทที่เรียนจบแล้ว กู้คืนได้ที่ ตั้งค่า → สำรองข้อมูล\n• ตัวเลขตรงความจริงขึ้น: \"ถึงกำหนด\" นับเฉพาะคำที่ต้องทบทวนจริง ๆ\n• แอปมีภาษาอิตาลีและภาษาญี่ปุ่นแล้ว"
       }
     }
   }

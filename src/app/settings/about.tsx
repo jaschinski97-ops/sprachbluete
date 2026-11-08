@@ -10,8 +10,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { languageDisplayName, useLocale } from '@/lib/i18n';
-import { LANGUAGE_CODES } from '@/lib/languages/types';
-import { activeVocabularyIds } from '@/data/active-vocabulary';
+import { RELEASED_LEARNING_LANGUAGES } from '@/lib/languages/released';
+import { vocabularyCountFor } from '@/data/active-vocabulary';
 
 /**
  * „Über die App" (UI-Review 10.09.): Version, was an Lernmaterial drinsteckt
@@ -38,7 +38,12 @@ export default function AboutScreen() {
       <ThemedView type="backgroundElement" style={styles.card}>
         <ThemedText type="smallBold">{t('settings.version', { version: version ?? '—' })}</ThemedText>
         <ThemedText type="small">
-          {t('settings.materialCount', { count: activeVocabularyIds().size, languages: LANGUAGE_CODES.map(code => languageDisplayName(code, uiLanguage)).join(', ') })}
+          {/* Nur die Wörter der freigegebenen Lernsprachen: Der Store-Build
+              enthält auch die Kataloge der ausgeblendeten (released.ts). */}
+          {t('settings.materialCount', {
+            count: RELEASED_LEARNING_LANGUAGES.reduce((sum, code) => sum + vocabularyCountFor(code), 0),
+            languages: RELEASED_LEARNING_LANGUAGES.map(code => languageDisplayName(code, uiLanguage)).join(', '),
+          })}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {t('settings.materialBody')}

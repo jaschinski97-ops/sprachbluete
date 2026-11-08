@@ -1,5 +1,12 @@
 # Changelog
 
+## 08.11.2026 (Update 1.1.0 vorbereitet, ohne die neuen Lernsprachen)
+
+- Der Store-Build zeigt nur Lernsprachen mit veröffentlichtem Sprachpaket: `EXPO_PUBLIC_LERNSPRACHEN` in `eas.json` (Profile `production` und `rc-ios-packs`, `th,en,es,de`), gelesen in `src/lib/languages/released.ts`. Grund: Der Store-Build bettet keine Medien ein, und für Französisch, Portugiesisch, Italienisch, Chinesisch und Japanisch gibt es noch kein Paket. Ausgeblendet sind sie als Lernziel (`zieleFuerBruecke`), in Einstellungen → Sprachpakete und in „Über die App“ (die Wortzahl dort zählt nur noch die freigegebenen Sprachen, im Store-Build 7.860 statt 17.533). App-Sprachen bleiben sie, der Katalog bleibt unberührt. Ohne die Variable (Entwicklung, Studio, Jest, Profil `testflight`) gibt es alle neun.
+- Gemessen: Französisch und Chinesisch sind komplett vertont, Italienisch hat 809 von 1.932 Wortclips, Portugiesisch und Japanisch fast keine. Die Pakete `pack-en/es/de-v1` passen vollständig zum heutigen Katalog, in `pack-th-v1` fehlen 10 später neu erzeugte Thai-Clips (dort spricht die Systemstimme).
+- Version 1.1.0 (`app.json`, `package.json`, `store.config.json`), dazu „Neu in dieser Version“ in de/en/es/th (`releaseNotes`, für `eas metadata:push`). Probe-Export für iOS im Paketmodus: Freigabeliste eingesetzt, Bündel 7,5 MB plus 61 MB Kataloge, keine eingebetteten Clips.
+- Ablauf und Freigabe weiterer Sprachen in `docs/release-mac.md`. Neuer Test `released.test.ts` (auch: eas.json nennt genau th, en, es, de).
+
 ## 08.11.2026 (Sicherung automatisch auf dem Gerät, mit Lernweg)
 
 - Geschützter Bereich „Speicherung der Lernstände“, Freigabe des Nutzers im Chat am 08.11.2026. Grund: Die Sicherung kannte nur Karten, Protokoll, Profil und Übungsgedächtnis. Wer das Gerät wechselte oder neu installierte, verlor abgeschlossene Kapitel und Nachtests. Außerdem ist die Ausgabe einer Datei über das Teilen-Menü auf dem iPhone umständlich.

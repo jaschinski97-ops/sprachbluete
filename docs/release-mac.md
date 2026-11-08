@@ -1,7 +1,8 @@
 # Release von Sprachblüte (MacBook)
 
-Stand 26.10.2026. Für Claude Code auf dem Mac und für Nico. Die App heißt
-**Sprachblüte**, Bundle-ID `com.sprachbluete.app`, Version 1.0.0.
+Stand 26.10.2026, Update-Abschnitt 08.11.2026. Für Claude Code auf dem Mac und für Nico.
+Die App heißt **Sprachblüte**, Bundle-ID `com.sprachbluete.app`. Version 1.0.0 (Build 9)
+liegt im Store, 1.1.0 ist vorbereitet.
 
 ## Was schon erledigt ist
 
@@ -60,3 +61,39 @@ Auf dem Mac im Projektordner:
    Build-Nummer und lädt direkt zu TestFlight hoch.
 4. Nach 10–30 min in TestFlight testen: Sprachpaket laden, Animationen.
 
+## Welche Lernsprachen der Store-Build zeigt (seit 08.11.2026)
+
+Der Store-Build lädt Hörclips und Bilder aus Sprachpaketen. Eine Lernsprache ohne
+veröffentlichtes Paket hätte dort weder Clips noch Bilder. Deshalb zeigt er nur die Sprachen
+aus `EXPO_PUBLIC_LERNSPRACHEN` in `eas.json` (Profile `production` und `rc-ios-packs`,
+derzeit `th,en,es,de`; Code `src/lib/languages/released.ts`). Ohne die Variable
+(Entwicklung, Studio, Tests, Profil `testflight`) gibt es alle Lernsprachen. Die übrigen
+Sprachen bleiben App-Sprachen, ihr Katalog bleibt im Build.
+
+Eine weitere Lernsprache freigeben:
+
+1. Clips vollständig? `node -e` über den Katalog oder Studio-Bericht.
+2. `npm run pack:build -- --lang <l>`, dann `npm run pack:publish -- --lang <l>` (nur mit Nicos Ja).
+3. Code in `EXPO_PUBLIC_LERNSPRACHEN` eintragen (beide Profile), Test `released.test.ts`
+   anpassen, neuen Build hochladen. Store-Texte in `store.config.json` nennen die Sprachen
+   in der Beschreibung.
+
+Stand 08.11.2026: Französisch und Chinesisch sind komplett vertont, aber ohne Paket;
+Portugiesisch, Italienisch (809 von 1.932 Wortclips) und Japanisch haben fast keine Clips.
+Im Paket `pack-th-v1` fehlen 10 Thai-Clips, die nach dem 26.10. neu erzeugt wurden (dort
+spricht die Systemstimme); `pack-th-v2` würde sie nachliefern, ohne neuen App-Build.
+
+## Update 1.1.0
+
+- Version in `app.json`, `package.json` und `store.config.json` (`apple.version`) auf 1.1.0.
+  Die Build-Nummer zählt EAS selbst hoch (`appVersionSource: remote`).
+- „Neu in dieser Version“ steht je Sprache als `releaseNotes` in `store.config.json`
+  und geht mit `npx eas metadata:push` zu App Store Connect (Apple-Anmeldung durch Nico).
+- Bauen und hochladen: `eas build -p ios --profile production --auto-submit`
+  (läuft in der Expo-Cloud, geht auch von Linux aus).
+- In TestFlight auf dem iPhone prüfen: nur Thai, Englisch, Spanisch, Deutsch als
+  Lernsprache; Update über die alte Version installieren und schauen, dass der Lernstand
+  bleibt; Einstellungen → Datensicherung → „Jetzt sichern“ und „Zurückholen“; Heute-Karte,
+  Kapitel-Check, Tempo-Runde; Sprachpaket schon geladen bzw. neu laden.
+- Dann in App Store Connect Version 1.1.0 anlegen (macht `eas metadata:push` mit), Build
+  wählen, „Zur Prüfung einreichen“ (Nico).

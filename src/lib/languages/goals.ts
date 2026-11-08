@@ -2,6 +2,7 @@ import { vocabularyCountFor } from '@/data/active-vocabulary';
 import { UI_LANGUAGES } from '@/lib/i18n/types';
 
 import { LEARNING_LANGUAGES } from './definitions';
+import { isReleasedLearningLanguage } from './released';
 import {
   ForeignBridge,
   isForeignBridge,
@@ -49,7 +50,9 @@ export function zieleFuerBruecke(bridge: Lang | ForeignBridge): Lernziel[] {
   // Die App-Sprache selbst ist nie Ziel — auch nicht „Thai (von Deutsch)“
   // auf Thai-Oberfläche: Dort war die Bedeutung identisch mit dem Thai-Text
   // (Testlauf 08.10.2026, Nutzerentscheidung).
-  const ziele = reihenfolge.filter((code) => code !== bridge);
+  // Nur die Lernsprachen, die dieser Build freigibt (`released.ts`): Der
+  // Store-Build zeigt keine Sprache ohne veröffentlichtes Sprachpaket.
+  const ziele = reihenfolge.filter((code) => code !== bridge && isReleasedLearningLanguage(code));
   // Eine Lernsprache ohne Wortschatz ist (noch) kein Ziel (04.11.2026): So
   // erscheint eine neue Sprache wie Französisch erst, wenn ihre Wörter im
   // Katalog liegen, und ein Zwischen-Release zeigt keine leere Sprache. Ist

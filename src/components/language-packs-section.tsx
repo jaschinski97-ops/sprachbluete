@@ -7,7 +7,8 @@ import { ThemedView } from './themed-view';
 
 import { Spacing } from '@/constants/theme';
 import { useLocale } from '@/lib/i18n';
-import { LANGUAGE_CODES, type LanguageCode } from '@/lib/languages/types';
+import { RELEASED_LEARNING_LANGUAGES } from '@/lib/languages/released';
+import type { LanguageCode } from '@/lib/languages/types';
 import {
   downloadPack,
   megabytes,
@@ -30,7 +31,7 @@ export function LanguagePacksSection() {
       <ThemedText type="small" themeColor="textSecondary">
         {t('pack.intro')}
       </ThemedText>
-      {LANGUAGE_CODES.map((language) => (
+      {RELEASED_LEARNING_LANGUAGES.map((language) => (
         <PackRow key={language} language={language} />
       ))}
     </ThemedView>

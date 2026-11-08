@@ -382,6 +382,7 @@ describe('runImageBatch - Ablage', () => {
       ...store,
       get: store.get.bind(store),
       getAll: store.getAll.bind(store),
+      getEntries: store.getEntries.bind(store),
       putMany: store.putMany.bind(store),
       remove: store.remove.bind(store),
       clear: store.clear.bind(store),

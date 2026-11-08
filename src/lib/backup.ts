@@ -17,6 +17,11 @@
  *   `loadAllWordPractice` aus `./word-practice`. Ältere Sicherungen haben es
  *   nicht; dann startet es leer. Kaputte Einzeleinträge werden übergangen —
  *   sie steuern nur die Auswahl freier Übungen, nie den Lernstand.
+ * - **Lernweg** (`meta`, seit 08.11.2026, optional): abgeschlossene und
+ *   geöffnete Kapitelschritte, Nachtests, gewählte Stufe je Sprache,
+ *   Tempo-Bestwert und B1-Einheiten — alle `meta`-Einträge mit einem Präfix
+ *   aus `LEARNING_PATH_PREFIXES`. Ältere Sicherungen haben ihn nicht; dann
+ *   bleibt der Lernweg auf dem Gerät, wie er ist.
  *
  * BEWUSST NICHT GESICHERT: die Anbieter-Einstellungen aus
  * `./providers/settings` (Geräte-/Setup-Angelegenheit) und der API-Schlüssel
@@ -69,8 +74,9 @@ export const BACKUP_VERSION = 1;
 /**
  * Obergrenze für einzulesende Dateien. Kein Schutz grenzenloser Größe —
  * `asset.size` und Textlänge werden VOR dem Anwenden geprüft —, aber eine
- * Plausibilitätsdecke: die App schreibt selbst Werte im zweistelligen
- * Kilobyte-Bereich, 20 MB sind also rund zwei Zehnerpotenzen Luft.
+ * Plausibilitätsdecke. Gemessen am 08.11.2026: 2,6 MB mit 15.575 Karten
+ * (gespeichert werden auch neue Karten jeder geöffneten Richtung); alle
+ * neun Sprachen in beiden Richtungen kämen auf rund 6 MB.
  */
 export const MAX_BACKUP_BYTES = 20 * 1024 * 1024;
 
@@ -83,12 +89,34 @@ export const MAX_BACKUP_BYTES = 20 * 1024 * 1024;
  */
 const BACKUP_MIME_TYPES = ['application/json', 'application/octet-stream', 'text/plain'];
 
+/**
+ * Die `meta`-Schlüssel des Lernwegs (08.11.2026). Bewusst eine feste Liste:
+ * Geräte- und Studio-Einstellungen (Anbieter, Wortschatzziele, Tag/Nacht,
+ * Schema-Version) gehören nicht in eine Lernstand-Sicherung.
+ */
+export const LEARNING_PATH_PREFIXES = [
+  'learning-chapter:',
+  'learning-chapter-steps:',
+  'learning-chapter-check:',
+  'learning-stage:',
+  'tempo-best:',
+  'advanced-lesson:',
+] as const;
+
+export function isLearningPathKey(id: string): boolean {
+  return LEARNING_PATH_PREFIXES.some((prefix) => id.startsWith(prefix));
+}
+
+export type MetaEntry = { id: string; value: unknown };
+
 export type BackupData = {
   cards: FSRSCardState[];
   reviewLog: ReviewDayLog[];
   profile: LearnerProfile | null;
   /** Fehlt in Sicherungen vor dem 22.10.2026. */
   wordPractice?: WordPractice[];
+  /** Fehlt in Sicherungen vor dem 08.11.2026. */
+  learningPath?: MetaEntry[];
 };
 
 export type BackupDocument = {
@@ -103,9 +131,26 @@ export type BackupImportSummary = {
   cards: number;
   logEntries: number;
   profileApplied: boolean;
+  /** Abgeschlossene Kapitel aus dem Lernweg; `null`, wenn die Sicherung keinen Lernweg trägt. */
+  chapters: number | null;
   /** Wann die Sicherung erstellt wurde (ISO), oder `null` wenn unbekannt. */
   exportedAt: string | null;
 };
+
+/** Die Lernweg-Einträge des Speichers. */
+export async function loadLearningPath(store?: DataStore): Promise<MetaEntry[]> {
+  const db = store ?? (await getStore());
+  const entries = await db.getEntries<unknown>('meta');
+  return entries.filter((entry) => isLearningPathKey(entry.id));
+}
+
+/** Hat die Sicherung überhaupt Lernstand? Eine leere wird nicht automatisch geschrieben. */
+export function hasLearningData(data: BackupData): boolean {
+  return data.cards.length > 0
+    || data.reviewLog.length > 0
+    || (data.wordPractice?.length ?? 0) > 0
+    || (data.learningPath?.length ?? 0) > 0;
+}
 
 /* ---------- Aufbauen (Export) ---------- */
 
@@ -117,17 +162,18 @@ export async function buildBackupDocument(
   store?: DataStore,
   now: number = Date.now()
 ): Promise<BackupDocument> {
-  const [cards, reviewLog, profile, wordPractice] = await Promise.all([
+  const [cards, reviewLog, profile, wordPractice, learningPath] = await Promise.all([
     loadAllCardStates(store),
     loadReviewLog(store),
     loadProfile(store),
     loadAllWordPractice(store),
+    loadLearningPath(store),
   ]);
   return {
     format: BACKUP_FORMAT,
     version: BACKUP_VERSION,
     exportedAt: new Date(now).toISOString(),
-    data: { cards, reviewLog, profile, wordPractice },
+    data: { cards, reviewLog, profile, wordPractice, learningPath },
   };
 }
 
@@ -362,8 +408,20 @@ export function validateBackupDocument(raw: unknown): ValidationResult {
       ...(Array.isArray(data.wordPractice)
         ? { wordPractice: data.wordPractice.filter(isValidWordPractice) }
         : {}),
+      // Nachsichtig wie das Übungsgedächtnis: Einträge ohne Lernweg-Schlüssel
+      // oder ohne Wert werden übergangen, nie in `meta` geschrieben.
+      ...(Array.isArray(data.learningPath)
+        ? { learningPath: data.learningPath.filter(isValidMetaEntry) as MetaEntry[] }
+        : {}),
     },
   };
+}
+
+function isValidMetaEntry(entry: unknown): boolean {
+  return isPlainObject(entry)
+    && typeof entry.id === 'string'
+    && isLearningPathKey(entry.id)
+    && entry.value !== undefined;
 }
 
 /**
@@ -427,8 +485,21 @@ export async function applyBackupToStore(
       'practice',
       (data.wordPractice ?? []).map((entry) => ({ id: entry.vocabId, value: entry }))
     );
+    // Der Lernweg wird nur ersetzt, wenn die Sicherung einen trägt: Ältere
+    // Sicherungen kennen ihn nicht und sollen abgeschlossene Kapitel nicht
+    // löschen. Andere `meta`-Einträge (Einstellungen) bleiben immer.
+    if (data.learningPath) {
+      for (const entry of await db.getEntries<unknown>('meta')) {
+        if (isLearningPathKey(entry.id)) await db.remove('meta', entry.id);
+      }
+      await db.putMany('meta', data.learningPath.map((entry) => ({ id: entry.id, value: entry.value })));
+    }
     return { cards: data.cards.length, logEntries: data.reviewLog.length };
   });
+
+  const chapters = data.learningPath
+    ? data.learningPath.filter((entry) => entry.id.startsWith('learning-chapter:') && entry.value === true).length
+    : null;
 
   let profileApplied = false;
   if (data.profile) {
@@ -440,7 +511,7 @@ export async function applyBackupToStore(
     profileApplied = true;
   }
 
-  return { cards, logEntries, profileApplied, exportedAt: null };
+  return { cards, logEntries, profileApplied, chapters, exportedAt: null };
 }
 
 /* ---------- Plattform-Arme des Imports ---------- */

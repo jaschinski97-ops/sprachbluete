@@ -202,8 +202,7 @@ const en: Partial<Record<TranslationKey, string>> = {
   'appLanguage.body':
     'The app starts in your device’s language. Here you can set it permanently.',
   'appLanguage.system': 'System',
-  'backup.body':
-    'Save your learning progress as a file — for example before switching devices or reinstalling. You can restore such a backup here; it then replaces the learning history on this device.',
+  "backup.body": "Only needed if you want to delete the app: save your progress as a file, for example in iCloud Drive, and restore it here after reinstalling. It then replaces the learning history on this device.",
   'backup.exportA11y': 'Save learning history as a file',
   'backup.importA11y': 'Read backup and replace learning history',
   'backup.exportButton': 'Save learning history',
@@ -1037,6 +1036,20 @@ const en: Partial<Record<TranslationKey, string>> = {
   "tempo.best": "Your best: {{best}}",
   "tempo.newBest": "New personal best!",
   "tempo.again": "One more round",
+  "backup.autoTitle": "Automatically on this device",
+  "backup.autoBody": "The app backs up your progress by itself every day – cards, chapters and rechecks, with no file and no internet. The last 7 days are kept. On a new device the backup comes along with the device backup (e.g. iCloud). If you delete the app, it is gone too.",
+  "backup.autoLast": "Last backup: {{date}}",
+  "backup.autoNone": "No backup on this device yet.",
+  "backup.autoNow": "Back up now",
+  "backup.autoSaving": "Backing up …",
+  "backup.autoSaved": "Backed up.",
+  "backup.autoEmpty": "Nothing to back up yet.",
+  "backup.autoRestoreDay": "Restore: {{date}}",
+  "backup.autoRestoreBefore": "Restore: state before the last restore",
+  "backup.autoUndoHint": "The previous state is kept under “state before the last restore”.",
+  "backup.today": "today",
+  "backup.fileTitle": "As a file",
+  "backup.partsChapters": "{{chapters, plural, one {# chapter} other {# chapters}}} completed",
 };
 
 export default en;

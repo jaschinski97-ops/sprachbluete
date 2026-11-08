@@ -72,6 +72,14 @@ class SQLiteDataStore implements DataStore {
     return rows.map((row) => JSON.parse(row.value) as T);
   }
 
+  async getEntries<T>(collection: CollectionName): Promise<{ id: string; value: T }[]> {
+    const rows = await this.requireDb().getAllAsync<{ id: string; value: string }>(
+      'SELECT id, value FROM documents WHERE collection = ?',
+      [collection]
+    );
+    return rows.map((row) => ({ id: row.id, value: JSON.parse(row.value) as T }));
+  }
+
   async put<T>(collection: CollectionName, id: string, value: T): Promise<void> {
     await this.requireDb().runAsync(
       'INSERT OR REPLACE INTO documents (collection, id, value) VALUES (?, ?, ?)',

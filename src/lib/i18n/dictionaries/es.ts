@@ -200,8 +200,7 @@ const es: Partial<Record<TranslationKey, string>> = {
   'appLanguage.title': 'Idioma de la app',
   'appLanguage.body': 'La app arranca en el idioma de tu dispositivo. Aquí puedes fijarlo.',
   'appLanguage.system': 'Sistema',
-  'backup.body':
-    'Guarda tu progreso como archivo — por ejemplo antes de cambiar de dispositivo o reinstalar. Puedes restaurar esa copia aquí; sustituye entonces el historial de este dispositivo.',
+  "backup.body": "Solo hace falta si quieres borrar la app: guarda tu progreso como archivo, por ejemplo en iCloud Drive, y recupéralo aquí después de reinstalarla. Entonces sustituye el historial de aprendizaje de este dispositivo.",
   'backup.exportA11y': 'Guardar el historial como archivo',
   'backup.importA11y': 'Leer la copia y reemplazar el historial',
   'backup.exportButton': 'Guardar historial',
@@ -1043,6 +1042,20 @@ const es: Partial<Record<TranslationKey, string>> = {
   "tempo.best": "Tu récord: {{best}}",
   "tempo.newBest": "¡Nuevo récord!",
   "tempo.again": "Otra ronda",
+  "backup.autoTitle": "Automáticamente en este dispositivo",
+  "backup.autoBody": "La app guarda tu progreso sola cada día: tarjetas, capítulos y tests de repaso, sin archivo y sin internet. Se conservan los últimos 7 días. A un dispositivo nuevo la copia llega con la copia de seguridad del dispositivo (por ejemplo, iCloud). Si borras la app, también se borra.",
+  "backup.autoLast": "Última copia: {{date}}",
+  "backup.autoNone": "Todavía no hay ninguna copia en este dispositivo.",
+  "backup.autoNow": "Guardar ahora",
+  "backup.autoSaving": "Guardando …",
+  "backup.autoSaved": "Guardado.",
+  "backup.autoEmpty": "Todavía no hay nada que guardar.",
+  "backup.autoRestoreDay": "Recuperar: {{date}}",
+  "backup.autoRestoreBefore": "Recuperar: estado antes de la última restauración",
+  "backup.autoUndoHint": "El estado anterior queda en «estado antes de la última restauración».",
+  "backup.today": "hoy",
+  "backup.fileTitle": "Como archivo",
+  "backup.partsChapters": "{{chapters, plural, one {# capítulo completado} other {# capítulos completados}}}",
 };
 
 export default es;

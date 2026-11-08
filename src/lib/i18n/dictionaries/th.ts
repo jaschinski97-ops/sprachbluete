@@ -200,8 +200,7 @@ const th: Partial<Record<TranslationKey, string>> = {
   'appLanguage.title': 'ภาษาของแอป',
   'appLanguage.body': 'แอปเริ่มด้วยภาษาของเครื่อง ตั้งค่าให้แน่นอนได้ที่นี่',
   'appLanguage.system': 'ตามระบบ',
-  'backup.body':
-    'บันทึกความก้าวหน้าเป็นไฟล์ — เช่น ก่อนเปลี่ยนเครื่องหรือติดตั้งใหม่ กู้คืนไฟล์สำรองได้ที่นี่ ซึ่งจะแทนประวัติการเรียนบนเครื่องนี้',
+  "backup.body": "จำเป็นเฉพาะเมื่อคุณจะลบแอป: บันทึกความคืบหน้าเป็นไฟล์ เช่น ใน iCloud Drive แล้วกู้คืนที่นี่หลังติดตั้งใหม่ ไฟล์จะแทนที่ประวัติการเรียนบนอุปกรณ์นี้",
   'backup.exportA11y': 'บันทึกประวัติการเรียนเป็นไฟล์',
   'backup.importA11y': 'อ่านไฟล์สำรองและแทนที่ประวัติ',
   'backup.exportButton': 'บันทึกประวัติ',
@@ -1025,6 +1024,20 @@ const th: Partial<Record<TranslationKey, string>> = {
   "tempo.best": "สถิติของคุณ: {{best}}",
   "tempo.newBest": "สถิติใหม่!",
   "tempo.again": "อีกรอบ",
+  "backup.autoTitle": "อัตโนมัติบนอุปกรณ์นี้",
+  "backup.autoBody": "แอปสำรองความคืบหน้าของคุณเองทุกวัน ทั้งบัตรคำ บท และแบบทดสอบทบทวน โดยไม่มีไฟล์และไม่ใช้อินเทอร์เน็ต เก็บไว้ 7 วันล่าสุด เมื่อย้ายไปอุปกรณ์ใหม่ ข้อมูลสำรองจะไปพร้อมกับการสำรองข้อมูลของอุปกรณ์ (เช่น iCloud) ถ้าลบแอป ข้อมูลสำรองนี้จะหายไปด้วย",
+  "backup.autoLast": "สำรองล่าสุด: {{date}}",
+  "backup.autoNone": "ยังไม่มีข้อมูลสำรองบนอุปกรณ์นี้",
+  "backup.autoNow": "สำรองตอนนี้",
+  "backup.autoSaving": "กำลังสำรอง …",
+  "backup.autoSaved": "สำรองแล้ว",
+  "backup.autoEmpty": "ยังไม่มีอะไรให้สำรอง",
+  "backup.autoRestoreDay": "กู้คืน: {{date}}",
+  "backup.autoRestoreBefore": "กู้คืน: สถานะก่อนการกู้คืนครั้งล่าสุด",
+  "backup.autoUndoHint": "สถานะก่อนหน้าเก็บไว้ที่ “สถานะก่อนการกู้คืนครั้งล่าสุด”",
+  "backup.today": "วันนี้",
+  "backup.fileTitle": "เป็นไฟล์",
+  "backup.partsChapters": "บทที่เรียนจบ {{chapters}} บท",
 };
 
 export default th;

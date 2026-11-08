@@ -180,6 +180,13 @@ class WebDataStore implements DataStore {
     });
   }
 
+  async getEntries<T>(collection: CollectionName): Promise<{ id: string; value: T }[]> {
+    return this.run(async () => {
+      const bucket = await this.loadNow(collection);
+      return [...bucket.entries()].map(([id, value]) => ({ id, value: copy(value) as T }));
+    });
+  }
+
   async put<T>(collection: CollectionName, id: string, value: T): Promise<void> {
     await this.mutate(collection, (bucket) => {
       bucket.set(id, copy(value));

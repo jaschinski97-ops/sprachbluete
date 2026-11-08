@@ -32,6 +32,10 @@ export class MemoryDataStore implements DataStore {
     return [...this.bucket(collection).values()].map((raw) => JSON.parse(raw) as T);
   }
 
+  async getEntries<T>(collection: CollectionName): Promise<{ id: string; value: T }[]> {
+    return [...this.bucket(collection).entries()].map(([id, raw]) => ({ id, value: JSON.parse(raw) as T }));
+  }
+
   async put<T>(collection: CollectionName, id: string, value: T): Promise<void> {
     this.bucket(collection).set(id, JSON.stringify(value));
   }

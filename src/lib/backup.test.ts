@@ -404,6 +404,66 @@ describe('applyBackupToStore', () => {
     expect(result.data.wordPractice?.map((entry) => entry.vocabId)).toEqual(['gut']);
   });
 
+  it('sichert den Lernweg und ersetzt nur ihn in den Einstellungen (08.11.2026)', async () => {
+    const quelle = await freshStore();
+    await quelle.putMany<unknown>('meta', [
+      { id: 'learning-chapter:de_to_es:a', value: true },
+      { id: 'learning-chapter-steps:de_to_es:a', value: ['cards'] },
+      { id: 'learning-chapter-check:de_to_es:a', value: { passedAt: 1, rechecks: 1, recheckAt: 2, secured: true } },
+      { id: 'learning-stage:es', value: 'beginner' },
+      { id: 'tempo-best:de_to_es', value: 12 },
+      { id: 'advanced-lesson:de_to_es:b1:done', value: true },
+      // Geräte- und Studio-Einstellungen gehören nicht hinein.
+      { id: 'generators', value: { text: 'x' } },
+      { id: 'appearance', value: 'dark' },
+      { id: 'schemaVersion', value: { version: 2 } },
+    ]);
+    const doc = await buildBackupDocument(quelle);
+    expect(doc.data.learningPath?.map((entry) => entry.id).sort()).toEqual([
+      'advanced-lesson:de_to_es:b1:done',
+      'learning-chapter-check:de_to_es:a',
+      'learning-chapter-steps:de_to_es:a',
+      'learning-chapter:de_to_es:a',
+      'learning-stage:es',
+      'tempo-best:de_to_es',
+    ]);
+
+    const ziel = await freshStore();
+    await ziel.putMany<unknown>('meta', [
+      { id: 'learning-chapter:de_to_es:alt', value: true },
+      { id: 'appearance', value: 'light' },
+    ]);
+    const { data } = parseBackupText(JSON.stringify(doc));
+    const summary = await applyBackupToStore(data, ziel);
+
+    expect(summary.chapters).toBe(1);
+    expect(await ziel.get('meta', 'learning-chapter:de_to_es:alt')).toBeNull();
+    expect(await ziel.get('meta', 'learning-chapter:de_to_es:a')).toBe(true);
+    expect(await ziel.get('meta', 'tempo-best:de_to_es')).toBe(12);
+    expect(await ziel.get('meta', 'appearance')).toBe('light');
+    expect(await ziel.get('meta', 'generators')).toBeNull();
+  });
+
+  it('lässt den Lernweg bei älteren Sicherungen ohne Eintrag stehen und übergeht fremde Schlüssel', async () => {
+    const store = await freshStore();
+    await store.put('meta', 'learning-chapter:de_to_es:a', true);
+    const summary = await applyBackupToStore(validDocument().data, store);
+    expect(summary.chapters).toBeNull();
+    expect(await store.get('meta', 'learning-chapter:de_to_es:a')).toBe(true);
+
+    const raw = validDocument();
+    raw.data.learningPath = [
+      { id: 'learning-chapter:de_to_es:b', value: true },
+      { id: 'generators', value: { text: 'fremd' } },
+      { id: 'learning-stage:es' },
+      { value: true },
+    ];
+    const result = validateBackupDocument(raw);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.learningPath).toEqual([{ id: 'learning-chapter:de_to_es:b', value: true }]);
+  });
+
   it('macht doppelte Schlüssel idempotent — der letzte Eintrag gewinnt', async () => {
     const store = await freshStore();
     const doc = validDocument();

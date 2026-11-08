@@ -20,6 +20,14 @@ import {
   exportBackup,
   restoreBackup,
 } from '@/lib/backup';
+import {
+  BEFORE_RESTORE_FILE,
+  listLocalBackups,
+  restoreLocalBackup,
+  writeLocalBackup,
+  type LocalBackup,
+} from '@/lib/local-backup';
+import { dayKey } from '@/lib/review-log';
 import { isStorageDegraded } from '@/lib/storage';
 import { useTheme } from '@/hooks/use-theme';
 import { saveErscheinung, useErscheinung, type Erscheinung } from '@/lib/appearance';
@@ -42,6 +50,7 @@ function formatSummary(summary: BackupImportSummary, t: Translate, localeTag: st
     t('backup.partsLog', { days: summary.logEntries }),
   ];
   if (summary.profileApplied) parts.push(t('backup.partsProfile'));
+  if (summary.chapters !== null) parts.push(t('backup.partsChapters', { chapters: summary.chapters }));
   const when = summary.exportedAt
     ? new Date(summary.exportedAt).toLocaleDateString(localeTag)
     : null;
@@ -216,10 +225,66 @@ export function AppearanceSection() {
   );
 }
 
+/** `YYYY-MM-DD` in der Schreibweise der App-Sprache, „heute“ für heute. */
+function dayLabel(day: string, t: Translate, localeTag: string): string {
+  if (day === dayKey(Date.now())) return t('backup.today');
+  const [year, month, date] = day.split('-').map(Number);
+  return new Date(year, month - 1, date).toLocaleDateString(localeTag);
+}
+
+/**
+ * Datensicherung (08.11.2026): oben die automatische Sicherung auf dem Gerät
+ * (`lib/local-backup.ts`) mit „Zurückholen“ ohne Dateiauswahl, darunter der
+ * Datei-Export für den Fall, dass die App gelöscht wird.
+ */
 export function BackupSection() {
   const { t, uiLanguage } = useLocale();
-  const [busy, setBusy] = useState<null | 'export' | 'import'>(null);
+  const localeTag = localeTagFor(uiLanguage);
+  const [busy, setBusy] = useState<null | 'export' | 'import' | 'save' | string>(null);
   const [status, setStatus] = useState<StatusMessage | null>(null);
+  const [backups, setBackups] = useState<LocalBackup[] | null>(null);
+
+  const refresh = useCallback(async () => {
+    setBackups(await listLocalBackups().catch(() => []));
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const onSaveNow = useCallback(async () => {
+    if (busy) return;
+    setBusy('save');
+    setStatus(null);
+    try {
+      const result = await writeLocalBackup();
+      setStatus({ kind: 'success', text: t(result === 'written' ? 'backup.autoSaved' : 'backup.autoEmpty') });
+      await refresh();
+    } catch (error) {
+      setStatus({ kind: 'error', text: messageOf(error, t) });
+    } finally {
+      setBusy(null);
+    }
+  }, [busy, refresh, t]);
+
+  const onRestoreLocal = useCallback(async (backup: LocalBackup) => {
+    if (busy) return;
+    if (!(await confirmReplace(t))) return;
+    setBusy(backup.name);
+    setStatus(null);
+    try {
+      const summary = await restoreLocalBackup(backup.name);
+      setStatus({
+        kind: 'success',
+        text: `${formatSummary(summary, t, localeTag)} ${t('backup.autoUndoHint')}`,
+      });
+      await refresh();
+    } catch (error) {
+      setStatus({ kind: 'error', text: messageOf(error, t) });
+    } finally {
+      setBusy(null);
+    }
+  }, [busy, localeTag, refresh, t]);
 
   const onExport = useCallback(async () => {
     if (busy) return;
@@ -247,21 +312,43 @@ export function BackupSection() {
       const summary = await restoreBackup(asset);
       setStatus({
         kind: 'success',
-        text: formatSummary(summary, t, localeTagFor(uiLanguage)),
+        text: formatSummary(summary, t, localeTag),
       });
     } catch (error) {
       setStatus({ kind: 'error', text: messageOf(error, t) });
     } finally {
       setBusy(null);
     }
-  }, [busy, t, uiLanguage]);
+  }, [busy, localeTag, t]);
+
+  const newest = backups?.find((backup) => backup.day !== null) ?? null;
 
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
+      <ThemedText type="smallBold">{t('backup.autoTitle')}</ThemedText>
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('backup.autoBody')}
+      </ThemedText>
+      {backups !== null ? (
+        <ThemedText type="small">
+          {newest?.day ? t('backup.autoLast', { date: dayLabel(newest.day, t, localeTag) }) : t('backup.autoNone')}
+        </ThemedText>
+      ) : null}
+      <ThemedButton variant="primary" disabled={busy !== null} onPress={onSaveNow}
+        label={busy === 'save' ? t('backup.autoSaving') : t('backup.autoNow')} />
+      {(backups ?? []).map((backup) => (
+        <ThemedButton key={backup.name} disabled={busy !== null} onPress={() => void onRestoreLocal(backup)}
+          label={backup.name === BEFORE_RESTORE_FILE || !backup.day
+            ? t('backup.autoRestoreBefore')
+            : t('backup.autoRestoreDay', { date: dayLabel(backup.day, t, localeTag) })} />
+      ))}
+
+      <View style={styles.trenner} />
+      <ThemedText type="smallBold">{t('backup.fileTitle')}</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
         {t('backup.body')}
       </ThemedText>
-      <ThemedButton variant="primary" accessibilityLabel={t('backup.exportA11y')}
+      <ThemedButton accessibilityLabel={t('backup.exportA11y')}
         disabled={busy !== null} onPress={onExport}
         label={busy === 'export' ? t('backup.exporting') : t('backup.exportButton')} />
       <ThemedButton accessibilityLabel={t('backup.importA11y')}
@@ -322,5 +409,8 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
+  },
+  trenner: {
+    height: Spacing.two,
   },
 });

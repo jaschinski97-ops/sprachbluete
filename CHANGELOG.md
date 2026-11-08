@@ -1,5 +1,15 @@
 # Changelog
 
+## 08.11.2026 (Sicherung automatisch auf dem Gerät, mit Lernweg)
+
+- Geschützter Bereich „Speicherung der Lernstände“, Freigabe des Nutzers im Chat am 08.11.2026. Grund: Die Sicherung kannte nur Karten, Protokoll, Profil und Übungsgedächtnis. Wer das Gerät wechselte oder neu installierte, verlor abgeschlossene Kapitel und Nachtests. Außerdem ist die Ausgabe einer Datei über das Teilen-Menü auf dem iPhone umständlich.
+- Lernweg in der Sicherung (`backup.ts`): alle `meta`-Einträge mit einem Präfix aus `LEARNING_PATH_PREFIXES` (Kapitelabschluss, geöffnete Schritte, Nachtests, gewählte Stufe je Sprache, Tempo-Bestwert, B1-Einheiten). Geräte- und Studio-Einstellungen bleiben draußen. Beim Wiederherstellen wird nur der Lernweg ersetzt; ältere Sicherungen ohne Lernweg lassen ihn stehen. Format-Version bleibt 1 (neues Feld ist optional).
+- Speicher-Schnittstelle: `getEntries(collection)` liefert Einträge mit Schlüssel (SQLite, IndexedDB, Speicher-Fake). Bestehende Sammlungen und ihr Format sind unverändert.
+- Automatische Sicherung (`lib/local-backup.ts`, `hooks/use-automatic-backup.ts`): 8 s nach dem Start und beim Wechsel in den Hintergrund, höchstens alle 10 Minuten, eine Datei je Tag, die letzten 7 bleiben. Nativ im Ordner `sicherungen` in den Dokumenten der App (kommt mit dem Geräte-Backup auf ein neues iPhone, wird beim Löschen der App mit gelöscht), im Web in einer eigenen IndexedDB-Datenbank. Ein leerer Lernstand oder der Notfall-Speicher wird nie geschrieben. Vor jedem Zurückholen wird der aktuelle Stand als „Stand vor der letzten Wiederherstellung“ abgelegt.
+- Einstellungen → Datensicherung: oben „Automatisch auf diesem Gerät“ mit „Zuletzt gesichert“, „Jetzt sichern“ und je Tag „Zurückholen“, ohne Dateiauswahl. Darunter „Als Datei“ nur noch für den Fall, dass die App gelöscht wird. Die Erfolgsmeldung nennt die abgeschlossenen Kapitel.
+- Gemessen: Eine Sicherung des Entwickler-Lernstands hat 2,6 MB (15.575 Karten, auch neue Karten jeder geöffneten Richtung).
+- 14 neue und 1 geänderter Text in allen 12 App-Sprachen. Neue Tests: `local-backup.test.ts`, Lernweg in `backup.test.ts`.
+
 ## 08.11.2026 (Schreibfragen im Check, Nachtest, Tempo-Runde)
 
 - Kapitel-Check mit Schreibfragen (`lib/chapter-check.ts`): jetzt 3 Wörter zum Wählen, 2 Wörter selbst schreiben und 3 Dialogsätze. Geschrieben wird wie in der Schreibübung (Synonyme, Kana-Lesung, Artikel, Sonderzeichenleiste); die Schreibfragen nehmen andere Wörter als die Auswahlfragen und keine Bedeutung, die dort als Lösung stand. Grund: Wiedererkennen ist leichter als selbst Hervorbringen.

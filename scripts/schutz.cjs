@@ -43,7 +43,7 @@ const BEREICHE = [
     dateien: [
       'src/lib/storage/backend.ts', 'src/lib/storage/backend.web.ts', 'src/lib/storage/document-persistence.web.ts',
       'src/lib/storage/index.ts', 'src/lib/storage/memory-store.ts', 'src/lib/storage/migration.ts',
-      'src/lib/storage/types.ts', 'src/lib/backup.ts',
+      'src/lib/storage/types.ts', 'src/lib/backup.ts', 'src/lib/local-backup.ts',
     ],
   },
   {

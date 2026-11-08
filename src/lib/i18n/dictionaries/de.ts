@@ -271,8 +271,7 @@ const de = {
   'appLanguage.body':
     'Die App startet in der Sprache deines Geräts. Hier stellst du sie dauerhaft um.',
   'appLanguage.system': 'System',
-  'backup.body':
-    'Sichere deinen Lernfortschritt als Datei — etwa vor einem Gerätewechsel oder einer Neuinstallation. Eine solche Sicherung kannst du hier wiederherstellen; sie ersetzt dann die Lernhistorie auf diesem Gerät.',
+  "backup.body": "Nur nötig, wenn du die App löschen willst: Sichere den Lernstand als Datei, zum Beispiel in iCloud Drive, und hole ihn nach der Neuinstallation hier zurück. Er ersetzt dann die Lernhistorie auf diesem Gerät.",
   'backup.exportA11y': 'Lernhistorie als Datei sichern',
   'backup.importA11y': 'Sicherung einlesen und Lernhistorie ersetzen',
   'backup.exportButton': 'Lernhistorie sichern',
@@ -1061,6 +1060,20 @@ const de = {
   "tempo.best": "Dein Bestwert: {{best}}",
   "tempo.newBest": "Neuer Bestwert!",
   "tempo.again": "Noch eine Runde",
+  "backup.autoTitle": "Automatisch auf diesem Gerät",
+  "backup.autoBody": "Die App sichert deinen Lernstand jeden Tag selbst – Karten, Kapitel und Nachtests, ohne Datei und ohne Netz. Die letzten 7 Tage bleiben. Auf ein neues Gerät kommt die Sicherung mit dem Geräte-Backup (etwa iCloud). Löschst du die App, ist sie mit weg.",
+  "backup.autoLast": "Zuletzt gesichert: {{date}}",
+  "backup.autoNone": "Noch keine Sicherung auf diesem Gerät.",
+  "backup.autoNow": "Jetzt sichern",
+  "backup.autoSaving": "Wird gesichert …",
+  "backup.autoSaved": "Gesichert.",
+  "backup.autoEmpty": "Noch nichts zu sichern.",
+  "backup.autoRestoreDay": "Zurückholen: {{date}}",
+  "backup.autoRestoreBefore": "Zurückholen: Stand vor der letzten Wiederherstellung",
+  "backup.autoUndoHint": "Der Stand davor liegt unter „Stand vor der letzten Wiederherstellung“.",
+  "backup.today": "heute",
+  "backup.fileTitle": "Als Datei",
+  "backup.partsChapters": "{{chapters, plural, one {# Kapitel} other {# Kapitel}}} abgeschlossen",
 } as const;
 
 export default de;

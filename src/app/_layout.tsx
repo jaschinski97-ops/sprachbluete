@@ -8,6 +8,7 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { CatalogGate } from '@/components/catalog-gate';
 import { IntroGuide } from '@/components/intro-guide';
+import { useAutomaticBackup } from '@/hooks/use-automatic-backup';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { meldeAktivitaet } from '@/lib/aktivitaet';
 import { loadErscheinung } from '@/lib/appearance';
@@ -41,6 +42,8 @@ function aktivBeiBeruehrung(): boolean {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  // Lernstand täglich auf dem Gerät sichern, ohne Datei und Dialog (08.11.2026).
+  useAutomaticBackup();
   // Im Browser zählen auch Mausrad und Tastatur als Benutzung (Akku, 25.10.2026).
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof document === 'undefined') return;

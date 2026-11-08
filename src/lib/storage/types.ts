@@ -57,6 +57,12 @@ export interface DataStore {
 
   get<T>(collection: CollectionName, id: string): Promise<T | null>;
   getAll<T>(collection: CollectionName): Promise<T[]>;
+  /**
+   * Alle Einträge MIT Schlüssel (08.11.2026). Die Sicherung braucht die
+   * Schlüssel der `meta`-Einträge des Lernwegs („learning-chapter:…“), die
+   * `getAll` nicht liefert.
+   */
+  getEntries<T>(collection: CollectionName): Promise<{ id: string; value: T }[]>;
   put<T>(collection: CollectionName, id: string, value: T): Promise<void>;
   /** Ein Schreibvorgang für viele Einträge — deutlich schneller als put() in einer Schleife. */
   putMany<T>(collection: CollectionName, entries: { id: string; value: T }[]): Promise<void>;

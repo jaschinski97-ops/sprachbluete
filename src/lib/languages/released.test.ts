@@ -5,8 +5,9 @@ import { parseReleasedLanguages } from './released';
 import { LANGUAGE_CODES } from './types';
 
 /**
- * Update 1.1 (08.11.2026) ohne die neuen Lernsprachen: Der Store-Build zeigt
- * nur Sprachen mit veröffentlichtem Sprachpaket.
+ * Der Store-Build zeigt nur Sprachen mit veröffentlichtem Sprachpaket
+ * (Update 1.1 vom 08.11.2026: th, en, es, de). Seit Update 1.2 (09.11.2026)
+ * haben alle neun ein Paket.
  */
 describe('freigegebene Lernsprachen', () => {
   it('ohne Angabe gelten alle (Entwicklung, Studio, Tests)', () => {
@@ -22,12 +23,14 @@ describe('freigegebene Lernsprachen', () => {
     expect(parseReleasedLanguages('deutsch')).toEqual(LANGUAGE_CODES);
   });
 
-  it('der Store-Build zeigt nur die Sprachen mit veröffentlichtem Paket', () => {
+  it('der Store-Build zeigt alle Sprachen mit veröffentlichtem Paket, seit 1.2 alle neun', () => {
     const eas = JSON.parse(readFileSync(join(__dirname, '../../../eas.json'), 'utf8'));
-    expect(parseReleasedLanguages(eas.build.production.env.EXPO_PUBLIC_LERNSPRACHEN)).toEqual(['th', 'en', 'es', 'de']);
+    for (const profile of ['production', 'rc-ios-packs']) {
+      expect(parseReleasedLanguages(eas.build[profile].env.EXPO_PUBLIC_LERNSPRACHEN)).toEqual(LANGUAGE_CODES);
+    }
   });
 
-  it('Lernziele im Store-Build: die neuen Sprachen fehlen, die App-Sprache bleibt ausgeblendet', () => {
+  it('Lernziele bei eingeschränkter Liste (wie 1.1): fehlende Sprachen sind weg, die App-Sprache bleibt ausgeblendet', () => {
     const vorher = process.env.EXPO_PUBLIC_LERNSPRACHEN;
     process.env.EXPO_PUBLIC_LERNSPRACHEN = 'th,en,es,de';
     try {

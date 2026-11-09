@@ -1,5 +1,21 @@
 # Changelog
 
+## 09.11.2026 (Update 1.2.0: alle neun Lernsprachen, neues Aussehen)
+
+- Hörclips komplett: Der Audio-Lauf des Nutzers hat Portugiesisch, Italienisch und Japanisch vertont (Wörter, Beispielsätze, Dialogzeilen) und 6 Thai-Clips nachgeliefert. Insgesamt 12.371 neue Clips, Katalog jetzt 91 MiB.
+  - Gemessen: Alle Wörter haben einen Clip, bis auf 3 Thai-Wörter.
+  - Bei den Beispielsätzen fehlen je Sprache höchstens 9, dort spricht die Systemstimme.
+- Vorbild-Kurven für die Sprechübung neu gerechnet (`assets/kurven/`), jetzt auch für pt, it und ja. Vorher waren diese Dateien leer.
+- Sprachpakete gebaut: `pack-fr/pt/it/zh/ja-v1` mit je rund 100 MB und `pack-th-v2` mit 175 MB, das die nachgelieferten Thai-Clips enthält. Wer v1 hat, bekommt in der App „Aktualisieren“ angeboten.
+- Store-Build zeigt alle neun Lernsprachen: `EXPO_PUBLIC_LERNSPRACHEN` in `eas.json` steht auf `th,en,es,de,fr,pt,it,zh,ja`. `released.test.ts` prüft beide Profile.
+- Version 1.2.0 (`app.json`, `package.json`, `store.config.json`).
+- Store-Texte in de/en/es/th:
+  - neun Lernsprachen statt vier;
+  - zwölf App-Sprachen statt zehn;
+  - ein Abschnitt zu Thai-, Chinesisch- und Japanisch-Schrift;
+  - neue Schlüsselwörter;
+  - „Neu in Version 1.2“.
+
 ## 09.11.2026 (Entwürfe A, B und C sichtbar eingebaut)
 
 - Grund: Der geführte Lernweg vom 08.11. war nur in der Funktion da, das Aussehen war das alte. Auf dem Handy sah deshalb alles gleich aus. Hintergründe, Szenen und Animationen bleiben unverändert.

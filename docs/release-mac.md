@@ -78,10 +78,9 @@ Eine weitere Lernsprache freigeben:
    anpassen, neuen Build hochladen. Store-Texte in `store.config.json` nennen die Sprachen
    in der Beschreibung.
 
-Stand 08.11.2026: Französisch und Chinesisch sind komplett vertont, aber ohne Paket;
-Portugiesisch, Italienisch (809 von 1.932 Wortclips) und Japanisch haben fast keine Clips.
-Im Paket `pack-th-v1` fehlen 10 Thai-Clips, die nach dem 26.10. neu erzeugt wurden (dort
-spricht die Systemstimme); `pack-th-v2` würde sie nachliefern, ohne neuen App-Build.
+Stand 09.11.2026 (Update 1.2.0): Alle neun Lernsprachen sind vertont und freigegeben.
+Die Pakete `pack-fr/pt/it/zh/ja-v1` und `pack-th-v2` sind gebaut. `pack-th-v2` liefert die
+Thai-Clips nach, die nach dem 26.10. entstanden sind.
 
 ## Update 1.1.0
 

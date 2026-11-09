@@ -34,7 +34,7 @@
       "extends": "rc-ios",
       "env": {
         "THAISPEAKER_MEDIA": "packs",
-        "EXPO_PUBLIC_LERNSPRACHEN": "th,en,es,de"
+        "EXPO_PUBLIC_LERNSPRACHEN": "th,en,es,de,fr,pt,it,zh,ja"
       }
     },
     "testflight": {
@@ -48,7 +48,7 @@
       "autoIncrement": true,
       "env": {
         "THAISPEAKER_MEDIA": "packs",
-        "EXPO_PUBLIC_LERNSPRACHEN": "th,en,es,de"
+        "EXPO_PUBLIC_LERNSPRACHEN": "th,en,es,de,fr,pt,it,zh,ja"
       },
       "android": {
         "buildType": "app-bundle"

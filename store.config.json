@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "copyright": "2026 Nico Jaschinski",
     "categories": [
       "EDUCATION",
@@ -15,83 +15,88 @@
       "de-DE": {
         "title": "Sprachblüte",
         "subtitle": "Thai, Spanisch & mehr lernen",
-        "promoText": "Thai, Englisch, Spanisch und Deutsch lernen: mit Alltagsdialogen, Karteikarten, Hörclips und Sprechübungen. Kostenlos, ohne Konto, ohne Werbung.",
-        "description": "Sprachblüte hilft dir, Thai, Englisch, Spanisch oder Deutsch zu lernen – kostenlos, ohne Konto und ohne Werbung.\n\nKAPITEL MIT ECHTEN DIALOGEN\nJedes Kapitel beginnt mit einem Alltagsgespräch: im Restaurant, beim Einkaufen, unterwegs. Du hörst und liest den Dialog, lernst die Wörter daraus, übst die Regel dahinter und schreibst und sprichst am Ende selbst.\n\nWÖRTER, DIE BLEIBEN\nRund 2.000 Wörter je Sprache in drei Stufen: Anfänger, Fortgeschritten und Profi. Karteikarten fragen jedes Wort im richtigen Moment wieder ab, bevor du es vergisst. Zu den Wörtern gibt es Bilder und Hörclips.\n\nSPRECHEN MIT RÜCKMELDUNG\nBeim Shadowing sprichst du einen Satz nach und siehst deine Satzmelodie direkt neben der des Vorbilds. Die App zeigt dir die auffälligste Stelle mit einem konkreten Tipp, und du kannst Vorbild und eigene Aufnahme im Wechsel anhören. Die Worterkennung läuft auf deinem Gerät, deine Aufnahmen verlassen das Telefon nicht.\n\nTHAI MIT TÖNEN\nThai-Wörter stehen in Thai-Schrift mit Umschrift. Grundlagen-Kapitel führen in Schrift, Töne und Zahlen ein.\n\nÜBEN AUF VIELE ARTEN\nHören, Lesen & Schreiben, Sprechen, Grammatik und Wortschatz: Diktat, Satzbau, Lesetexte, Rollenspiel, Wortlisten und eine tägliche Runde.\n\nOFFLINE UND PRIVAT\nHörclips und Bilder lädst du je Lernsprache einmal als Sprachpaket herunter, danach funktioniert alles ohne Internet. Dein Lernfortschritt bleibt auf deinem Gerät. Die App sammelt keine Daten.\n\nDie Oberfläche gibt es in zehn Sprachen: Deutsch, Englisch, Spanisch, Thai, Arabisch, Chinesisch, Hindi, Französisch, Bengalisch und Portugiesisch.",
+        "promoText": "Neun Sprachen lernen, von Thai bis Japanisch: mit Alltagsdialogen, Karteikarten, Hörclips und Sprechübungen. Kostenlos, ohne Konto, ohne Werbung.",
+        "description": "Sprachblüte hilft dir, Thai, Englisch, Spanisch, Deutsch, Französisch, Portugiesisch (Brasilien), Italienisch, Chinesisch oder Japanisch zu lernen – kostenlos, ohne Konto und ohne Werbung.\n\nKAPITEL MIT ECHTEN DIALOGEN\nJedes Kapitel beginnt mit einem Alltagsgespräch: im Restaurant, beim Einkaufen, unterwegs. Du hörst und liest den Dialog, lernst die Wörter daraus, übst die Regel dahinter und schreibst und sprichst am Ende selbst.\n\nWÖRTER, DIE BLEIBEN\nRund 2.000 Wörter je Sprache in drei Stufen: Anfänger, Fortgeschritten und Profi. Karteikarten fragen jedes Wort im richtigen Moment wieder ab, bevor du es vergisst. Zu den Wörtern gibt es Bilder und Hörclips.\n\nSPRECHEN MIT RÜCKMELDUNG\nBeim Shadowing sprichst du einen Satz nach und siehst deine Satzmelodie direkt neben der des Vorbilds. Die App zeigt dir die auffälligste Stelle mit einem konkreten Tipp, und du kannst Vorbild und eigene Aufnahme im Wechsel anhören. Die Worterkennung läuft auf deinem Gerät, deine Aufnahmen verlassen das Telefon nicht.\n\nTHAI, CHINESISCH UND JAPANISCH IN IHRER SCHRIFT\nThai-Wörter stehen in Thai-Schrift mit Umschrift, Chinesisch mit Pinyin und Tonzeichen, Japanisch mit Kana und Romaji. Grundlagen-Kapitel führen in Schrift, Töne und Zahlen ein.\n\nÜBEN AUF VIELE ARTEN\nHören, Lesen & Schreiben, Sprechen, Grammatik und Wortschatz: Diktat, Satzbau, Lesetexte, Rollenspiel, Wortlisten und eine tägliche Runde.\n\nOFFLINE UND PRIVAT\nHörclips und Bilder lädst du je Lernsprache einmal als Sprachpaket herunter, danach funktioniert alles ohne Internet. Dein Lernfortschritt bleibt auf deinem Gerät. Die App sammelt keine Daten.\n\nDie Oberfläche gibt es in zwölf Sprachen: Deutsch, Englisch, Spanisch, Thai, Arabisch, Chinesisch, Hindi, Französisch, Bengalisch, Portugiesisch, Italienisch und Japanisch.",
         "keywords": [
           "Thai",
           "Sprachen lernen",
           "Vokabeln",
           "Spanisch",
-          "Englisch",
-          "Deutsch",
-          "Karteikarten",
-          "Aussprache",
-          "Shadowing"
+          "Französisch",
+          "Japanisch",
+          "Chinesisch",
+          "Italienisch",
+          "Englisch"
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/datenschutz.html",
-        "releaseNotes": "Neu in Version 1.1:\n• Heute: Die Startseite zeigt, was jetzt dran ist – zuerst die fälligen Wiederholungen, dann der nächste Schritt im Kapitel.\n• Kapitel-Check: Am Ende jedes Kapitels prüfst du Wörter und Sätze, zum Wählen und zum Selbstschreiben. Einige Wochen später kommt ein Nachtest. Erst wenn du ihn bestehst, sitzt das Kapitel.\n• Deine Ziele: Der Fortschritt zeigt, was du schon kannst, und alle Grammatikregeln nach Themen.\n• Tempo-Runde: eine Minute mit Wörtern, die du schon sicher kennst.\n• Automatische Sicherung: Die App sichert deinen Lernstand täglich auf dem Gerät, auch abgeschlossene Kapitel. Zurückholen unter Einstellungen → Datensicherung.\n• Ehrlichere Zahlen: „fällig“ zählt nur noch Wörter, die wirklich wiederholt werden müssen.\n• Die App gibt es jetzt auch auf Italienisch und Japanisch."
+        "releaseNotes": "Neu in Version 1.2:\n• Fünf neue Lernsprachen: Französisch, Portugiesisch (Brasilien), Italienisch, Chinesisch und Japanisch – je rund 1.900 Wörter in drei Stufen, 50 Dialoge, Hörclips und Bilder. Chinesisch mit Pinyin und Tönen, Japanisch mit Kana und Romaji.\n• Neue Startseite „Heute“: „Deine Runde“ zeigt, was heute dran ist und wie lange es ungefähr dauert. Dazu Tage in Folge, sichere Wörter und „Frei üben“ für jeden Bereich.\n• Kapitel als Lernzyklus: Verstehen, Wörter und Regel, Selbst anwenden und Kapitel-Check stehen als Phasen untereinander. Du siehst auf einen Blick, wo du stehst und was als Nächstes kommt.\n• Fortschritt: Oben steht jetzt „Was du kannst“, darunter Lernweg und Gedächtnis als Balken."
       },
       "en-US": {
         "title": "Sprachblüte",
         "subtitle": "Learn Thai, Spanish & more",
-        "promoText": "Learn Thai, English, Spanish and German with everyday dialogues, flashcards, audio and speaking practice. Free, no account, no ads.",
-        "description": "Sprachblüte helps you learn Thai, English, Spanish or German – free, without an account and without ads.\n\nCHAPTERS BUILT ON REAL DIALOGUES\nEvery chapter starts with an everyday conversation: at a restaurant, shopping, getting around. You listen to and read the dialogue, learn its words, practise the rule behind it and finally write and speak yourself.\n\nWORDS THAT STICK\nAround 2,000 words per language in three levels: beginner, intermediate and advanced. Flashcards bring each word back at the right moment, before you forget it. Words come with pictures and audio clips.\n\nSPEAKING WITH FEEDBACK\nIn shadowing you repeat a sentence and see your sentence melody right next to the model's. The app points out the most noticeable spot with one concrete tip, and you can listen to the model and your own recording in turn. Word recognition runs on your device; your recordings never leave the phone.\n\nTHAI WITH TONES\nThai words are shown in Thai script with romanisation. Foundation chapters introduce the script, the tones and numbers.\n\nMANY WAYS TO PRACTISE\nListening, reading & writing, speaking, grammar and vocabulary: dictation, sentence building, reading texts, role play, word lists and a daily round.\n\nOFFLINE AND PRIVATE\nDownload audio and pictures once per language as a language pack; after that everything works without internet. Your progress stays on your device. The app collects no data.\n\nThe interface is available in ten languages: German, English, Spanish, Thai, Arabic, Chinese, Hindi, French, Bengali and Portuguese.",
+        "promoText": "Learn nine languages, from Thai to Japanese, with everyday dialogues, flashcards, audio and speaking practice. Free, no account, no ads.",
+        "description": "Sprachblüte helps you learn Thai, English, Spanish, German, French, Portuguese (Brazil), Italian, Chinese or Japanese – free, without an account and without ads.\n\nCHAPTERS BUILT ON REAL DIALOGUES\nEvery chapter starts with an everyday conversation: at a restaurant, shopping, getting around. You listen to and read the dialogue, learn its words, practise the rule behind it and finally write and speak yourself.\n\nWORDS THAT STICK\nAround 2,000 words per language in three levels: beginner, intermediate and advanced. Flashcards bring each word back at the right moment, before you forget it. Words come with pictures and audio clips.\n\nSPEAKING WITH FEEDBACK\nIn shadowing you repeat a sentence and see your sentence melody right next to the model's. The app points out the most noticeable spot with one concrete tip, and you can listen to the model and your own recording in turn. Word recognition runs on your device; your recordings never leave the phone.\n\nTHAI, CHINESE AND JAPANESE IN THEIR OWN SCRIPT\nThai words are shown in Thai script with romanisation, Chinese with pinyin and tone marks, Japanese with kana and romaji. Foundation chapters introduce the script, the tones and numbers.\n\nMANY WAYS TO PRACTISE\nListening, reading & writing, speaking, grammar and vocabulary: dictation, sentence building, reading texts, role play, word lists and a daily round.\n\nOFFLINE AND PRIVATE\nDownload audio and pictures once per language as a language pack; after that everything works without internet. Your progress stays on your device. The app collects no data.\n\nThe interface is available in twelve languages: German, English, Spanish, Thai, Arabic, Chinese, Hindi, French, Bengali, Portuguese, Italian and Japanese.",
         "keywords": [
           "learn Thai",
           "language",
           "vocabulary",
           "Spanish",
+          "French",
+          "Japanese",
+          "Chinese",
+          "Italian",
           "German",
-          "English",
-          "flashcards",
-          "pronunciation",
-          "shadowing"
+          "flashcards"
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
-        "releaseNotes": "New in version 1.1:\n• Today: the home screen shows what to do now – first the reviews that are due, then the next step in your chapter.\n• Chapter check: at the end of each chapter you test words and sentences, by choosing and by writing them yourself. A few weeks later a recheck follows. Only once you pass it does the chapter stick.\n• Your goals: progress shows what you can already do, plus all grammar rules by topic.\n• Speed round: one minute with words you already know well.\n• Automatic backup: the app backs up your progress on the device every day, including finished chapters. Restore it under Settings → Backup.\n• More honest numbers: \"due\" now only counts words that really need a review.\n• The app is now also available in Italian and Japanese."
+        "releaseNotes": "New in version 1.2:\n• Five new languages to learn: French, Portuguese (Brazil), Italian, Chinese and Japanese – each with around 1,900 words in three levels, 50 dialogues, audio clips and pictures. Chinese with pinyin and tones, Japanese with kana and romaji.\n• New \"Today\" home screen: \"Your round\" shows what is up today and roughly how long it takes, plus your streak, solid words and \"Free practice\" for every area.\n• Chapters as a learning cycle: Understand, Words and rule, Use it yourself and Chapter check are listed as phases. You see at a glance where you are and what comes next.\n• Progress: \"What you can do\" now comes first, followed by bars for your learning path and memory."
       },
       "es-ES": {
         "title": "Sprachblüte",
         "subtitle": "Aprende tailandés y más",
-        "promoText": "Aprende tailandés, inglés, español y alemán con diálogos cotidianos, tarjetas, audios y práctica oral. Gratis, sin cuenta y sin anuncios.",
-        "description": "Sprachblüte te ayuda a aprender tailandés, inglés, español o alemán: gratis, sin cuenta y sin anuncios.\n\nCAPÍTULOS CON DIÁLOGOS REALES\nCada capítulo empieza con una conversación cotidiana: en el restaurante, de compras, de viaje. Escuchas y lees el diálogo, aprendes sus palabras, practicas la regla y al final escribes y hablas tú.\n\nPALABRAS QUE SE QUEDAN\nUnas 2.000 palabras por idioma en tres niveles: principiante, intermedio y avanzado. Las tarjetas te preguntan cada palabra en el momento justo, antes de que la olvides. Las palabras tienen imágenes y audios.\n\nHABLAR CON RESPUESTA\nCon el shadowing repites una frase y ves tu entonación junto a la del modelo. La app te señala el punto más llamativo con un consejo concreto, y puedes escuchar el modelo y tu grabación alternándolos. El reconocimiento de palabras funciona en tu dispositivo; tus grabaciones no salen del teléfono.\n\nTAILANDÉS CON TONOS\nLas palabras tailandesas aparecen en escritura tailandesa con transcripción. Los capítulos básicos presentan la escritura, los tonos y los números.\n\nMUCHAS FORMAS DE PRACTICAR\nComprensión auditiva, lectura y escritura, expresión oral, gramática y vocabulario: dictado, construcción de frases, textos de lectura, juegos de rol, listas de palabras y una ronda diaria.\n\nSIN CONEXIÓN Y PRIVADA\nDescargas los audios y las imágenes una vez por idioma como paquete; después todo funciona sin internet. Tu progreso se queda en tu dispositivo. La app no recoge datos.\n\nLa interfaz está disponible en diez idiomas: alemán, inglés, español, tailandés, árabe, chino, hindi, francés, bengalí y portugués.",
+        "promoText": "Aprende nueve idiomas, del tailandés al japonés, con diálogos cotidianos, tarjetas, audios y práctica oral. Gratis, sin cuenta y sin anuncios.",
+        "description": "Sprachblüte te ayuda a aprender tailandés, inglés, español, alemán, francés, portugués (Brasil), italiano, chino o japonés: gratis, sin cuenta y sin anuncios.\n\nCAPÍTULOS CON DIÁLOGOS REALES\nCada capítulo empieza con una conversación cotidiana: en el restaurante, de compras, de viaje. Escuchas y lees el diálogo, aprendes sus palabras, practicas la regla y al final escribes y hablas tú.\n\nPALABRAS QUE SE QUEDAN\nUnas 2.000 palabras por idioma en tres niveles: principiante, intermedio y avanzado. Las tarjetas te preguntan cada palabra en el momento justo, antes de que la olvides. Las palabras tienen imágenes y audios.\n\nHABLAR CON RESPUESTA\nCon el shadowing repites una frase y ves tu entonación junto a la del modelo. La app te señala el punto más llamativo con un consejo concreto, y puedes escuchar el modelo y tu grabación alternándolos. El reconocimiento de palabras funciona en tu dispositivo; tus grabaciones no salen del teléfono.\n\nTAILANDÉS, CHINO Y JAPONÉS CON SU ESCRITURA\nLas palabras tailandesas aparecen en escritura tailandesa con transcripción, el chino con pinyin y marcas de tono, el japonés con kana y romaji. Los capítulos básicos presentan la escritura, los tonos y los números.\n\nMUCHAS FORMAS DE PRACTICAR\nComprensión auditiva, lectura y escritura, expresión oral, gramática y vocabulario: dictado, construcción de frases, textos de lectura, juegos de rol, listas de palabras y una ronda diaria.\n\nSIN CONEXIÓN Y PRIVADA\nDescargas los audios y las imágenes una vez por idioma como paquete; después todo funciona sin internet. Tu progreso se queda en tu dispositivo. La app no recoge datos.\n\nLa interfaz está disponible en doce idiomas: alemán, inglés, español, tailandés, árabe, chino, hindi, francés, bengalí, portugués, italiano y japonés.",
         "keywords": [
           "tailandés",
           "aprender idiomas",
           "vocabulario",
           "inglés",
+          "francés",
+          "japonés",
+          "chino",
+          "italiano",
           "alemán",
-          "tarjetas",
-          "pronunciación",
-          "shadowing"
+          "tarjetas"
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
-        "releaseNotes": "Novedades de la versión 1.1:\n• Hoy: la pantalla de inicio muestra qué toca ahora: primero los repasos pendientes y después el siguiente paso del capítulo.\n• Prueba del capítulo: al final de cada capítulo compruebas palabras y frases, eligiendo y escribiéndolas tú. Unas semanas después llega una prueba de repaso. Solo cuando la apruebas, el capítulo queda afianzado.\n• Tus objetivos: el progreso muestra lo que ya sabes hacer y todas las reglas de gramática por temas.\n• Ronda rápida: un minuto con palabras que ya conoces bien.\n• Copia de seguridad automática: la app guarda tu progreso cada día en el dispositivo, también los capítulos terminados. Puedes recuperarlo en Ajustes → Copia de seguridad.\n• Números más honestos: «pendiente» solo cuenta las palabras que de verdad hay que repasar.\n• La app ahora también está en italiano y japonés."
+        "releaseNotes": "Novedades de la versión 1.2:\n• Cinco idiomas nuevos para aprender: francés, portugués (Brasil), italiano, chino y japonés, cada uno con unas 1.900 palabras en tres niveles, 50 diálogos, audios e imágenes. El chino con pinyin y tonos, el japonés con kana y romaji.\n• Nueva pantalla de inicio «Hoy»: «Tu ronda» muestra qué toca hoy y cuánto dura más o menos, además de tu racha, las palabras seguras y «Práctica libre» para cada área.\n• Capítulos como ciclo de aprendizaje: Entender, Palabras y regla, Aplicarlo tú y Prueba del capítulo aparecen como fases. Ves de un vistazo dónde estás y qué viene después.\n• Progreso: arriba aparece ahora «Lo que sabes hacer», debajo las barras de tu camino de aprendizaje y de tu memoria."
       },
       "th": {
         "title": "Sprachblüte",
         "subtitle": "เรียนอังกฤษ สเปน เยอรมัน",
-        "promoText": "เรียนภาษาอังกฤษ สเปน และเยอรมันด้วยบทสนทนาในชีวิตประจำวัน บัตรคำ คลิปเสียง และการฝึกพูด ฟรี ไม่ต้องมีบัญชี ไม่มีโฆษณา",
-        "description": "Sprachblüte ช่วยให้คุณเรียนภาษาอังกฤษ สเปน หรือเยอรมัน ฟรี ไม่ต้องสมัครบัญชี และไม่มีโฆษณา\n\nบทเรียนจากบทสนทนาจริง\nแต่ละบทเริ่มด้วยบทสนทนาในชีวิตประจำวัน เช่น ที่ร้านอาหาร ตอนซื้อของ หรือระหว่างเดินทาง คุณจะได้ฟังและอ่านบทสนทนา เรียนคำศัพท์ ฝึกไวยากรณ์ แล้วลองเขียนและพูดด้วยตัวเอง\n\nคำศัพท์ที่จำได้นาน\nประมาณ 2,000 คำต่อภาษา แบ่งเป็นสามระดับ: เริ่มต้น กลาง และสูง บัตรคำจะถามซ้ำในเวลาที่เหมาะสมก่อนที่คุณจะลืม ทุกคำมีรูปภาพและคลิปเสียง\n\nฝึกพูดพร้อมคำแนะนำ\nในการฝึกพูดตาม (shadowing) คุณพูดประโยคตามแล้วเห็นทำนองเสียงของคุณเทียบกับต้นแบบ แอปจะชี้จุดที่ต่างที่สุดพร้อมคำแนะนำ และคุณฟังต้นแบบสลับกับเสียงของตัวเองได้ การจำคำพูดทำงานบนอุปกรณ์ของคุณ เสียงที่บันทึกไม่ถูกส่งออกจากโทรศัพท์\n\nฝึกได้หลายแบบ\nการฟัง การอ่านและเขียน การพูด ไวยากรณ์ และคำศัพท์: เขียนตามคำบอก เรียงประโยค บทอ่าน บทบาทสมมติ รายการคำ และรอบฝึกประจำวัน\n\nใช้งานออฟไลน์และเป็นส่วนตัว\nดาวน์โหลดคลิปเสียงและรูปภาพเป็นชุดภาษาเพียงครั้งเดียว หลังจากนั้นใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต ความคืบหน้าในการเรียนเก็บไว้บนอุปกรณ์ของคุณ แอปไม่เก็บข้อมูลใด ๆ\n\nหน้าจอแอปมีให้เลือกสิบภาษา: เยอรมัน อังกฤษ สเปน ไทย อาหรับ จีน ฮินดี ฝรั่งเศส เบงกาลี และโปรตุเกส",
+        "promoText": "เรียนภาษาอังกฤษ จีน ญี่ปุ่น และภาษาอื่นอีกมาก ด้วยบทสนทนาในชีวิตประจำวัน บัตรคำ คลิปเสียง และการฝึกพูด ฟรี ไม่ต้องมีบัญชี ไม่มีโฆษณา",
+        "description": "Sprachblüte ช่วยให้คุณเรียนภาษาอังกฤษ สเปน เยอรมัน ฝรั่งเศส โปรตุเกส (บราซิล) อิตาลี จีน หรือญี่ปุ่น ฟรี ไม่ต้องสมัครบัญชี และไม่มีโฆษณา\n\nบทเรียนจากบทสนทนาจริง\nแต่ละบทเริ่มด้วยบทสนทนาในชีวิตประจำวัน เช่น ที่ร้านอาหาร ตอนซื้อของ หรือระหว่างเดินทาง คุณจะได้ฟังและอ่านบทสนทนา เรียนคำศัพท์ ฝึกไวยากรณ์ แล้วลองเขียนและพูดด้วยตัวเอง\n\nคำศัพท์ที่จำได้นาน\nประมาณ 2,000 คำต่อภาษา แบ่งเป็นสามระดับ: เริ่มต้น กลาง และสูง บัตรคำจะถามซ้ำในเวลาที่เหมาะสมก่อนที่คุณจะลืม ทุกคำมีรูปภาพและคลิปเสียง\n\nฝึกพูดพร้อมคำแนะนำ\nในการฝึกพูดตาม (shadowing) คุณพูดประโยคตามแล้วเห็นทำนองเสียงของคุณเทียบกับต้นแบบ แอปจะชี้จุดที่ต่างที่สุดพร้อมคำแนะนำ และคุณฟังต้นแบบสลับกับเสียงของตัวเองได้ การจำคำพูดทำงานบนอุปกรณ์ของคุณ เสียงที่บันทึกไม่ถูกส่งออกจากโทรศัพท์\n\nภาษาจีนและญี่ปุ่นพร้อมคำอ่าน\nภาษาจีนแสดงพร้อมพินอินและเครื่องหมายวรรณยุกต์ ภาษาญี่ปุ่นแสดงพร้อมคานะและโรมาจิ บทพื้นฐานจะแนะนำตัวอักษร เสียง และตัวเลข\n\nฝึกได้หลายแบบ\nการฟัง การอ่านและเขียน การพูด ไวยากรณ์ และคำศัพท์: เขียนตามคำบอก เรียงประโยค บทอ่าน บทบาทสมมติ รายการคำ และรอบฝึกประจำวัน\n\nใช้งานออฟไลน์และเป็นส่วนตัว\nดาวน์โหลดคลิปเสียงและรูปภาพเป็นชุดภาษาเพียงครั้งเดียว หลังจากนั้นใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต ความคืบหน้าในการเรียนเก็บไว้บนอุปกรณ์ของคุณ แอปไม่เก็บข้อมูลใด ๆ\n\nหน้าจอแอปมีให้เลือกสิบสองภาษา: เยอรมัน อังกฤษ สเปน ไทย อาหรับ จีน ฮินดี ฝรั่งเศส เบงกาลี โปรตุเกส อิตาลี และญี่ปุ่น",
         "keywords": [
           "เรียนภาษาอังกฤษ",
+          "ภาษาจีน",
+          "ภาษาญี่ปุ่น",
+          "ภาษาฝรั่งเศส",
           "ภาษาสเปน",
           "ภาษาเยอรมัน",
           "คำศัพท์",
           "บัตรคำ",
-          "ฝึกพูด",
-          "ออกเสียง"
+          "ฝึกพูด"
         ],
         "marketingUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "supportUrl": "https://jaschinski97-ops.github.io/sprachbluete/",
         "privacyPolicyUrl": "https://jaschinski97-ops.github.io/sprachbluete/privacy.html",
-        "releaseNotes": "มีอะไรใหม่ในเวอร์ชัน 1.1\n• วันนี้: หน้าแรกบอกว่าตอนนี้ควรทำอะไร ทบทวนคำที่ถึงกำหนดก่อน แล้วต่อด้วยขั้นตอนถัดไปของบทเรียน\n• แบบทดสอบท้ายบท: เมื่อจบแต่ละบท คุณจะทดสอบคำและประโยค ทั้งแบบเลือกคำตอบและแบบเขียนเอง อีกไม่กี่สัปดาห์จะมีแบบทดสอบซ้ำ เมื่อผ่านแล้วจึงถือว่าจำบทนั้นได้แน่น\n• เป้าหมายของคุณ: หน้าความก้าวหน้าแสดงสิ่งที่คุณทำได้แล้ว และกฎไวยากรณ์ทั้งหมดแยกตามหัวข้อ\n• รอบเร็ว: หนึ่งนาทีกับคำที่คุณรู้แน่นแล้ว\n• สำรองข้อมูลอัตโนมัติ: แอปสำรองความก้าวหน้าไว้ในเครื่องทุกวัน รวมถึงบทที่เรียนจบแล้ว กู้คืนได้ที่ ตั้งค่า → สำรองข้อมูล\n• ตัวเลขตรงความจริงขึ้น: \"ถึงกำหนด\" นับเฉพาะคำที่ต้องทบทวนจริง ๆ\n• แอปมีภาษาอิตาลีและภาษาญี่ปุ่นแล้ว"
+        "releaseNotes": "มีอะไรใหม่ในเวอร์ชัน 1.2\n• ภาษาใหม่ห้าภาษา: ฝรั่งเศส โปรตุเกส (บราซิล) อิตาลี จีน และญี่ปุ่น แต่ละภาษามีประมาณ 1,900 คำในสามระดับ บทสนทนา 50 บท คลิปเสียงและรูปภาพ ภาษาจีนมีพินอินและวรรณยุกต์ ภาษาญี่ปุ่นมีคานะและโรมาจิ\n• หน้าแรก \"วันนี้\" แบบใหม่: \"รอบของคุณ\" บอกว่าวันนี้ต้องทำอะไรและใช้เวลาประมาณเท่าไร พร้อมจำนวนวันต่อเนื่อง คำที่จำได้แม่น และ \"ฝึกอิสระ\" สำหรับแต่ละหมวด\n• บทเรียนเป็นวงจรการเรียน: เข้าใจ คำศัพท์และกฎ ลองใช้เอง และแบบทดสอบท้ายบท เรียงเป็นขั้น ๆ เห็นได้ทันทีว่าอยู่ตรงไหนและต้องทำอะไรต่อ\n• ความก้าวหน้า: ด้านบนแสดง \"สิ่งที่คุณทำได้\" ด้านล่างเป็นแถบเส้นทางการเรียนและความจำ"
       }
     }
   }

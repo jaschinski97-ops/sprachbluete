@@ -21,10 +21,21 @@ const BEREICHE = ['skill.wortschatz', 'skill.hoeren', 'skill.lesenSchreiben', 's
 const REITER = ['tabs.overview', 'tabs.learn', 'tabs.progress', 'tabs.settings'];
 
 /** Lern-Reiter mit gewählter Lernsprache (Name englisch, z. B. „Thai“). */
+/**
+ * Die Sprachliste auf „Heute“ ist seit 09.11.2026 zugeklappt, sobald ein
+ * Lernziel gemerkt ist; beim ersten Start steht sie offen.
+ */
+async function oeffneSprachliste(g) {
+  await g.warteAuf(t('home.switchLanguage'));
+  const offen = (await g.lies()).some((k) => /^(Learn: |Thai$|Spanish$)/.test(k.text || k.beschriftung || ''));
+  if (!offen) await g.tippe(t('home.switchLanguage'));
+}
+
 async function oeffneLernen(g, sprache) {
   // Über den „Learn“-Knopf der Sprachkarte (`language-picker.tsx`): eindeutig,
   // egal welche Sprache der Lern-Reiter zuletzt offen hatte.
   await g.tippeReiter(t('tabs.overview'));
+  await oeffneSprachliste(g);
   const knopf = `${t('tabs.learn')}: ${sprache}`;
   await g.scrolleZu(knopf);
   await g.tippe(knopf);
@@ -128,8 +139,9 @@ const ABLAEUFE = [
     schonend: true,
     async lauf(g) {
       await g.warteAuf(t('tabs.overview'), { zeit: 30_000 });
-      await g.warteAuf(t('home.heroCta'));
-      for (const sprache of ['Thai', 'Spanish', 'German']) await g.warteAuf(sprache);
+      await g.warteAuf(t('home.freePractice'));
+      await oeffneSprachliste(g);
+      for (const sprache of ['Thai', 'Spanish', 'German']) await g.scrolleZu(sprache);
       // Wortzahl je Sprache steht da und ist nicht 0.
       const knoten = await g.lies();
       const zahlen = knoten.map((k) => /^(\d+) words$/.exec(k.text)).filter(Boolean).map((m) => Number(m[1]));
@@ -149,7 +161,7 @@ const ABLAEUFE = [
       await g.tippeReiter(t('tabs.learn'));
       await g.warteAufEines([t('review.pickSubtitle'), t('level.choose')]);
       await g.tippeReiter(t('tabs.overview'));
-      await g.warteAuf(t('home.heroCta'));
+      await g.warteAuf(t('home.freePractice'));
     },
   },
   {
@@ -220,7 +232,7 @@ const ABLAEUFE = [
         await g.warteAuf(t(titel));
       }
       await g.tippe(t('intro.done'));
-      await g.warteAuf(t('home.heroCta'));
+      await g.warteAuf(t('home.freePractice'));
     },
   },
   {

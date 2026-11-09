@@ -15,7 +15,7 @@ import { canDoList, type CanDo, type CanDoStatus } from '@/lib/can-do';
 import { defaultStage, loadChapterProgress } from '@/lib/chapter-flow';
 import { ensureLanguages } from '@/lib/content/catalog-languages';
 import { pickedStage } from '@/lib/learning-path';
-import { LEARNING_STAGES, STAGE_KEYS, type LearningStage } from '@/lib/learning-stages';
+import { LEARNING_STAGES, STAGE_KEYS, stageForLevel, type LearningStage } from '@/lib/learning-stages';
 import { drillCount } from '@/lib/review-log';
 import { directionForBridge, goalLanguage, zielFuerDirection } from '@/lib/languages/goals';
 import { contentDirectionOf, PairDirection, targetLanguageOf } from '@/lib/languages/types';
@@ -130,8 +130,14 @@ export default function ProgressScreen() {
   return (
     <ScreenScaffold szene="fluss"
       title={t('tabs.progress')}
-      subtitle={t('progress.subtitle')}>
+      subtitle={languageName(ziel ? goalLanguage(ziel) : targetLanguageOf(direction))}>
 
+      {/* Entwurf C (09.11.2026, Nutzerentscheidung): zuerst, was du kannst —
+          Lernweg und Gedächtnis gleich dazu. Die Zahlen stehen darunter. */}
+      <LanguageSwitch selected={direction} onSelect={setSelected} />
+      <CanDoCard direction={direction} stats={stats} />
+
+      <ThemedText type="smallBold">{t('progress.numbersTitle')}</ThemedText>
       {/* Sprachübergreifend: was heute passiert ist. */}
       <View style={styles.grid}>
         <Tile label={t('tile.reviewsToday')} value={String(stats.reviewsToday)} />
@@ -158,7 +164,6 @@ export default function ProgressScreen() {
           language: languageName(ziel ? goalLanguage(ziel) : targetLanguageOf(direction)),
         })}
       </ThemedText>
-      <LanguageSwitch selected={direction} onSelect={setSelected} />
       <View style={styles.grid}>
         {/* Erarbeitetes statt Stapelgröße: „begonnen“ heißt mindestens einmal
             bewertet; die Gesamtzahl steht klein daneben. */}
@@ -171,7 +176,6 @@ export default function ProgressScreen() {
         <Tile label={t('tile.mastered')} value={String(stats.cardStates.mastered)} />
       </View>
 
-      <CanDoCard direction={direction} stats={stats} />
       <Forecast stats={stats} />
       <WeakAreas stats={stats} direction={direction} />
       <Milestones stats={stats} />
@@ -204,7 +208,12 @@ function CanDoCard({ direction, stats }: { direction: PairDirection; stats: Lear
   const { t } = useLocale();
   const theme = useTheme();
   const [state, setState] = useState<{
-    direction: PairDirection; list: CanDo[]; done: number; total: number; stage: LearningStage;
+    direction: PairDirection;
+    list: CanDo[];
+    done: number;
+    total: number;
+    stage: LearningStage;
+    stages: { stage: LearningStage; done: number; total: number }[];
   } | null>(null);
   const [open, setOpen] = useState<LearningStage | null>(null);
   useFocusEffect(useCallback(() => {
@@ -222,6 +231,14 @@ function CanDoCard({ direction, stats }: { direction: PairDirection; stats: Lear
         done: progress.finished.filter((id) => ids.has(id)).length,
         total: progress.chapters.length,
         stage: defaultStage(progress.chapters, progress.finished, picked),
+        stages: LEARNING_STAGES.map((stage) => {
+          const inStage = progress.chapters.filter((chapter) => stageForLevel(chapter.situation.level) === stage);
+          return {
+            stage,
+            done: inStage.filter((chapter) => progress.finished.includes(chapter.id)).length,
+            total: inStage.length,
+          };
+        }).filter((entry) => entry.total > 0),
       };
     })()
       .then((result) => { if (!cancelled) setState(result); })
@@ -230,20 +247,11 @@ function CanDoCard({ direction, stats }: { direction: PairDirection; stats: Lear
   }, [direction]));
   if (!state || state.direction !== direction || state.total === 0) return null;
   const started = stats.totalCards - stats.cardStates.new;
+  const wackelig = stats.cardStates.learning + stats.cardStates.review;
   const shownStage = open ?? state.stage;
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
-      <ThemedText type="smallBold">{t('progress.canDoTitle')}</ThemedText>
-      <Bar
-        label={t('progress.pathTitle')}
-        value={t('progress.pathValue', { done: state.done, total: state.total })}
-        share={state.done / state.total}
-      />
-      <Bar
-        label={t('progress.memoryTitle')}
-        value={t('progress.memoryValue', { mastered: stats.cardStates.mastered, started })}
-        share={started > 0 ? stats.cardStates.mastered / started : 0}
-      />
+      <ThemedText type="subtitle">{t('progress.canDoTitle')}</ThemedText>
       {LEARNING_STAGES.map((stage) => {
         const rows = state.list.filter((item) => item.stage === stage);
         if (rows.length === 0) return null;
@@ -273,10 +281,10 @@ function CanDoCard({ direction, stats }: { direction: PairDirection; stats: Lear
                 <Ionicons
                   name={CAN_DO_ICONS[item.status]}
                   size={20}
-                  color={item.status === 'open' ? theme.textSecondary : theme.accent}
+                  color={item.status === 'open' ? theme.textSecondary : item.status === 'started' ? theme.link : theme.accent}
                 />
                 <View style={styles.flex}>
-                  <ThemedText type="small">{t(item.key)}</ThemedText>
+                  <ThemedText type="small" themeColor={item.status === 'open' ? 'textSecondary' : 'text'}>{t(item.key)}</ThemedText>
                   <ThemedText type="small" themeColor="textSecondary">
                     {t(CAN_DO_STATUS_KEYS[item.status])} · {t('progress.canDoRow', { done: item.done, total: item.total })}
                   </ThemedText>
@@ -287,26 +295,51 @@ function CanDoCard({ direction, stats }: { direction: PairDirection; stats: Lear
         );
       })}
       <ThemedText type="small" themeColor="textSecondary">{t('progress.canDoNote')}</ThemedText>
+
+      {/* Lernweg: ein Abschnitt je Stufe, so breit wie ihre Kapitelzahl. */}
+      <View style={styles.barBlock} accessible accessibilityLabel={`${t('progress.pathTitle')}: ${t('progress.pathValue', { done: state.done, total: state.total })}`}>
+        <View style={styles.barLine}>
+          <ThemedText type="small" themeColor="textSecondary">{t('progress.pathTitle')}</ThemedText>
+          <ThemedText type="small">{t('progress.pathValue', { done: state.done, total: state.total })}</ThemedText>
+        </View>
+        <View style={styles.wegLeiste}>
+          {state.stages.map((entry) => (
+            <View key={entry.stage} style={[styles.progressTrack, { flex: entry.total, backgroundColor: `${theme.borderSubtle}59` }]}>
+              <View style={[styles.progressFill, { width: `${Math.round((entry.done / entry.total) * 100)}%`, backgroundColor: theme.accent }]} />
+            </View>
+          ))}
+        </View>
+        <ThemedText type="small" themeColor="textSecondary">
+          {state.stages.map((entry) => `${t(STAGE_KEYS[entry.stage])} ${entry.done}/${entry.total}`).join(' · ')}
+        </ThemedText>
+      </View>
+
+      {/* Gedächtnis: sicher, wackelig, neu in einem Balken. */}
+      <View style={styles.barBlock} accessible accessibilityLabel={`${t('progress.memoryTitle')}: ${t('progress.memoryValue', { mastered: stats.cardStates.mastered, started })}`}>
+        <View style={styles.barLine}>
+          <ThemedText type="small" themeColor="textSecondary">{t('progress.memoryTitle')}</ThemedText>
+          <ThemedText type="small">{t('progress.memoryValue', { mastered: stats.cardStates.mastered, started })}</ThemedText>
+        </View>
+        <View style={[styles.gedaechtnis, { backgroundColor: `${theme.borderSubtle}59` }]}>
+          <View style={{ flex: stats.cardStates.mastered, backgroundColor: theme.accent }} />
+          <View style={{ flex: wackelig, backgroundColor: theme.link }} />
+          <View style={{ flex: stats.cardStates.new }} />
+        </View>
+        <View style={styles.legende}>
+          <Punkt color={theme.accent} label={t('progress.memorySecure', { count: stats.cardStates.mastered })} />
+          <Punkt color={theme.link} label={t('progress.memoryShaky', { count: wackelig })} />
+          <Punkt color={`${theme.borderSubtle}59`} label={t('progress.memoryNew', { count: stats.cardStates.new })} />
+        </View>
+      </View>
     </ThemedView>
   );
 }
 
-function Bar({ label, value, share }: { label: string; value: string; share: number }) {
-  const theme = useTheme();
+function Punkt({ color, label }: { color: string; label: string }) {
   return (
-    <View style={styles.barBlock} accessible accessibilityLabel={`${label}: ${value}`}>
-      <View style={styles.barLine}>
-        <ThemedText type="small" themeColor="textSecondary">{label}</ThemedText>
-        <ThemedText type="small">{value}</ThemedText>
-      </View>
-      <View style={[styles.progressTrack, { backgroundColor: theme.backgroundSelected }]}>
-        <View
-          style={[
-            styles.progressFill,
-            { width: `${Math.round(Math.min(1, Math.max(0, share)) * 100)}%`, backgroundColor: theme.accent },
-          ]}
-        />
-      </View>
+    <View style={styles.punktZeile}>
+      <View style={[styles.punkt, { backgroundColor: color }]} />
+      <ThemedText type="small" themeColor="textSecondary">{label}</ThemedText>
     </View>
   );
 }
@@ -763,6 +796,32 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     overflow: 'hidden',
+  },
+  wegLeiste: {
+    flexDirection: 'row',
+    gap: 3,
+  },
+  gedaechtnis: {
+    flexDirection: 'row',
+    height: 10,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  legende: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: Spacing.three,
+    rowGap: Spacing.half,
+  },
+  punktZeile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  punkt: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   progressFill: {
     height: '100%',

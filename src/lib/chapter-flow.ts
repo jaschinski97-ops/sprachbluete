@@ -106,6 +106,8 @@ export type NextStep = {
   chapter: LearningChapter | null;
   /** 1-basierte Stelle des Kapitels in seiner Stufe (Kapitel 0 = 0). */
   position: number;
+  /** Wie viele Kapitel die Stufe dieses Kapitels hat (Kapitel 0: die Anfänger-Kapitel). */
+  stageCount: number;
   /** Der nächste offene Schritt; fehlt, wenn alle Schritte schon geöffnet sind. */
   step: ChapterStep | null;
   stepIndex: number;
@@ -125,14 +127,14 @@ export function nextStepFor(
   const chapter = chapters.find((item) => item.id === chapterId) ?? null;
   const steps: readonly ChapterStep[] = chapter ? chapterSteps(direction, chapter) : foundationSteps(direction);
   const stepIndex = nextOpenStep(steps, practised[chapterId] ?? []);
-  const sameStage = chapter
-    ? chapters.filter((item) => stageForLevel(item.situation.level) === stageForLevel(chapter.situation.level))
-    : [];
+  const chapterStage = chapter ? stageForLevel(chapter.situation.level) : 'beginner';
+  const sameStage = chapters.filter((item) => stageForLevel(item.situation.level) === chapterStage);
   return {
     chapterId,
     foundations: chapter === null,
     chapter,
     position: chapter ? sameStage.indexOf(chapter) + 1 : 0,
+    stageCount: sameStage.length,
     step: steps[stepIndex] ?? null,
     stepIndex,
     stepCount: steps.length,

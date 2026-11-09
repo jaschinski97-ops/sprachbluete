@@ -3,7 +3,6 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 import ReviewScreen from '@/app/review';
 import type { ConversationSituation } from '@/lib/conversation/types';
 import { translate, type TranslationKey } from '@/lib/i18n';
-import { ThemedButton } from './themed-button';
 
 jest.mock('expo-audio', () => ({}));
 jest.mock('expo-router', () => ({
@@ -36,8 +35,7 @@ it('stellt Kapitel 0 „Grundlagen“ vor Kapitel 1 und öffnet seine sieben Tha
   await act(async () => { renderer = create(<ReviewScreen />); });
   expect(text(renderer)).toContain(t('foundations.title'));
   expect(text(renderer)).toContain(t('foundations.introThai'));
-  const open = renderer.root.findAllByType(ThemedButton).find((node) => node.props.label === t('path.open'))!;
-  await act(async () => open.props.onPress());
+  // Seit 09.11.2026 (Entwurf B) stehen die Schritte gleich da, ohne „Lektion öffnen“.
   for (const [index, key] of (['foundations.numbers', 'foundations.prices', 'foundations.consonants', 'drill.konsonantenklasse',
     'foundations.vowels', 'foundations.tones', 'drill.tone'] as const).entries()) {
     expect(text(renderer)).toContain(`${index + 1}. ${t(key)}`);
@@ -51,11 +49,16 @@ it('beginnt ein Dialogkapitel mit dem Dialog, nicht mit der Regel (Nutzerentsche
   const row = renderer.root.findAll((node) => typeof node.type !== 'string' && node.props.accessibilityRole === 'button'
     && typeof node.props.onPress === 'function' && JSON.stringify(node.props.accessibilityState) === '{"selected":false}')[0];
   await act(async () => row.props.onPress());
-  const open = renderer.root.findAllByType(ThemedButton).find((node) => node.props.label === t('path.open'))!;
-  await act(async () => open.props.onPress());
+  // Die laufende Phase „Verstehen“ ist offen: Dialog vor Lesetexten.
+  const understand = text(renderer);
+  expect(understand).toContain(`1. ${t('mode.sentenceListening')}`);
+  expect(understand).toContain(`2. ${t('mode.lesestoffe')}`);
+  expect(understand).not.toContain(`3. ${t('mode.cards')}`);
+  // Die Phase „Lernen“ klappt auf Antippen auf: Karten vor der Regel.
+  const learn = renderer.root.findAll((node) => typeof node.type !== 'string' && typeof node.props.onPress === 'function'
+    && typeof node.props.accessibilityLabel === 'string' && node.props.accessibilityLabel.startsWith(`${t('phase.learn')}:`))[0];
+  await act(async () => learn.props.onPress());
   const steps = text(renderer);
-  expect(steps).toContain(`1. ${t('mode.sentenceListening')}`);
-  expect(steps).toContain(`2. ${t('mode.lesestoffe')}`);
   expect(steps).toContain(`3. ${t('mode.cards')}`);
   expect(steps).toContain(`4. ${t('skill.grammatik')}`);
   await act(async () => renderer.unmount());

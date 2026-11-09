@@ -35,7 +35,7 @@ export default function AppTabs() {
         name="index"
         options={{
           title: t('tabs.overview'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="sunny" color={color} size={size} />,
         }}
       />
       <Tabs.Screen

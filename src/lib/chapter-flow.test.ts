@@ -76,10 +76,10 @@ test('Anfänger beginnen mit Kapitel 0, danach das erste offene Kapitel ihrer St
 
 test('nextStepFor nennt Kapitel, Stelle in der Stufe und den offenen Schritt', () => {
   const next = nextStepFor('de_to_en', [A, B, C], [FOUNDATIONS_ID, 'greeting-A1'], { 'market-A1': ['sentenceListening'] }, 'beginner');
-  expect(next).toMatchObject({ chapterId: 'market-A1', foundations: false, position: 2, stepIndex: 1, stepCount: 8 });
+  expect(next).toMatchObject({ chapterId: 'market-A1', foundations: false, position: 2, stageCount: 2, stepIndex: 1, stepCount: 8 });
   expect(next?.step?.[0]).toBe('lesestoffe');
   const foundations = nextStepFor('de_to_en', [A, B, C], [], {}, 'beginner');
-  expect(foundations).toMatchObject({ chapterId: FOUNDATIONS_ID, foundations: true, chapter: null, stepIndex: 0 });
+  expect(foundations).toMatchObject({ chapterId: FOUNDATIONS_ID, foundations: true, chapter: null, stageCount: 2, stepIndex: 0 });
 });
 
 test('ohne eigene Wahl gilt die Stufe des nächsten offenen Kapitels', () => {

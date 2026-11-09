@@ -20,7 +20,7 @@ import { useTheme } from '@/hooks/use-theme';
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 
 const LINKS = [
-  { name: 'home', href: '/', icon: 'home' },
+  { name: 'home', href: '/', icon: 'sunny' },
   { name: 'review', href: '/review', icon: 'layers' },
   { name: 'progress', href: '/progress', icon: 'stats-chart' },
   { name: 'settings', href: '/settings', icon: 'settings' },

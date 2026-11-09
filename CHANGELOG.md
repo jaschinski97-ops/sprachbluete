@@ -1,5 +1,21 @@
 # Changelog
 
+## 09.11.2026 (Entwürfe A, B und C sichtbar eingebaut)
+
+- Grund: Der geführte Lernweg vom 08.11. war nur in der Funktion da, das Aussehen war das alte. Auf dem Handy sah deshalb alles gleich aus. Hintergründe, Szenen und Animationen bleiben unverändert.
+- Startseite „Heute“ (Entwurf A, `src/app/index.tsx`). Der Reiter heißt „Heute“ und hat ein Sonnen-Symbol. Oben steht „Thai · Kapitel n von N“. Die Karte „Deine Runde · ca. N Min“ zeigt bis zu drei Zeilen:
+  - Wiederholen, mit der Zahl der Wörter, die man sonst vergisst;
+  - einen fälligen Nachtest;
+  - „Weiter im Kapitel“ mit Schritt n von 8.
+
+  Darunter kommen der Knopf „Runde starten“, zwei Kacheln „In Folge“ (Tage am Stück, `loadStreak` in `stats.ts`) und „Sicher“ sowie „Frei üben“ mit den fünf Bereichen. Ein Tipp öffnet „Lernen“, klappt den Bereich auf und scrollt hin (Parameter `bereich`). Die Sprachwahl ist eingeklappt („Du lernst … · Sprache wechseln“); beim ersten Start ist sie offen. Die Minuten sind geschätzt, nicht gemessen (`lib/today-plan.ts`), deshalb steht „ca.“ davor. Die Zahlen werden bei jedem Besuch des Reiters neu gelesen.
+- Kapitel als Lernzyklus (Entwurf B, `components/chapter-cycle.tsx`). Das Kapitel steht gleich offen da, „Lektion öffnen“ entfällt. Es zeigt das Ziel als Kann-Satz und vier Phasen mit Kreis, Haken, Schrittnamen und Minuten. Die laufende Phase („· jetzt“) ist aufgeklappt, die anderen klappen auf Antippen auf. Der Kapitel-Check steht als gestrichelte Karte mit „8 Aufgaben, schließt das Kapitel ab“ bzw. Nachtest-Stand am Ende, darunter der Grund der laufenden Phase. Kapitel 0 hat dasselbe Aussehen ohne Phasen.
+- Fortschritt (Entwurf C, `src/app/progress.tsx`). Zuerst kommt „Was du kannst“: die Kann-Liste je Stufe, darunter Lernweg als Balken je Stufe und Gedächtnis als geteilter Balken (sicher · wackelig · neu). Erst danach folgen „Deine Zahlen“, also Kacheln, Verlauf und Vorschau.
+- `NextStep.stageCount` (`chapter-flow.ts`) zählt die Kapitel der Stufe für „Kapitel n von N“.
+- Klick-Tests suchen „Frei üben“ statt des alten Lernen-Knopfs und klappen die Sprachliste auf (`scripts/e2e/`). Nicht gelaufen, Android ruht.
+- 22 neue und 3 geänderte Texte in allen 12 App-Sprachen. Neuer Test: `today-plan.test.ts`. `learn-path-foundations.test.tsx` klappt jetzt Phasen auf, statt „Lektion öffnen“ zu drücken.
+- Jest braucht seit dem großen Katalog mehr Speicher je Worker: `NODE_OPTIONS=--max-old-space-size=6144`, sonst bricht einzelnen Workern der Heap ab.
+
 ## 08.11.2026 (Update 1.1.0 vorbereitet, ohne die neuen Lernsprachen)
 
 - Der Store-Build zeigt nur Lernsprachen mit veröffentlichtem Sprachpaket: `EXPO_PUBLIC_LERNSPRACHEN` in `eas.json` (Profile `production` und `rc-ios-packs`, `th,en,es,de`), gelesen in `src/lib/languages/released.ts`. Grund: Der Store-Build bettet keine Medien ein, und für Französisch, Portugiesisch, Italienisch, Chinesisch und Japanisch gibt es noch kein Paket. Ausgeblendet sind sie als Lernziel (`zieleFuerBruecke`), in Einstellungen → Sprachpakete und in „Über die App“ (die Wortzahl dort zählt nur noch die freigegebenen Sprachen, im Store-Build 7.860 statt 17.533). App-Sprachen bleiben sie, der Katalog bleibt unberührt. Ohne die Variable (Entwicklung, Studio, Jest, Profil `testflight`) gibt es alle neun.

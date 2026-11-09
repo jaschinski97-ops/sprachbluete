@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useFocusEffect, useRouter, type Href } from 'expo-router';
+import { type ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
@@ -13,7 +13,7 @@ import { ScreenScaffold } from '@/components/screen-scaffold';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-import { Spacing } from '@/constants/theme';
+import { Spacing, type ThemeColor } from '@/constants/theme';
 import { useCatalogLanguages } from '@/hooks/use-catalog-languages';
 import { useLearnerLanguage } from '@/hooks/use-learner-language';
 import { useNextStep } from '@/hooks/use-next-step';
@@ -21,6 +21,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { ensureLanguages } from '@/lib/content/catalog-languages';
 import { isLanguageLoaded } from '@/lib/content/catalog-state';
 import type { NextStep } from '@/lib/chapter-flow';
+import { groupsForDirection } from '@/lib/exercise-catalog';
 import type { LearningChapter } from '@/lib/learning-path';
 import { situationTranslation } from '@/lib/conversation/types';
 import { useLocale } from '@/lib/i18n';
@@ -29,20 +30,22 @@ import { defaultGoalDirection, zieleFuerBruecke, goalLanguage } from '@/lib/lang
 import { learningLanguage } from '@/lib/languages/definitions';
 import { targetLanguageOf, type PairDirection } from '@/lib/languages/types';
 import { setReviewSpot } from '@/lib/profile';
+import { loadStreak } from '@/lib/stats';
 import { migrateStore } from '@/lib/storage/migration';
+import { todayMinutes } from '@/lib/today-plan';
+
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
+/** Ein Symbol je Lernbereich, in der Reihenfolge von `groupsForDirection` (wie im Lern-Reiter). */
+const BEREICH_ICONS: IoniconName[] = ['layers', 'headset', 'book', 'mic', 'extension-puzzle'];
 
 /**
- * Übersicht — Handlung zuerst (UI-Review 2026-09-09): Das Markenwort in seinen
- * Tönen, der Weg in die Sitzung, und erst dann die Auswahl als Abschnitte
- * darunter.
- *
- * Der CTA trägt die fälligen Karten als ehrliche Zahl — nur solange sie
- * geladen ist, nie als Deko: Während des Ladens bleibt der Knopf schlicht, bei
- * null steht „nichts fällig“. Der Zahlenstand wird EINMAL gehoben
- * (`useDirectionSummaries`) und an die Sprachauswahl durchgereicht — seit dem
- * Lernziel-Umbau (Nutzerentscheidung 2026-09-10) hängen die Fällig-Badges an
- * den Ziel-Zeilen des Pickers, eine eigene „Richtungen“-Sektion gibt es nicht
- * mehr.
+ * „Heute“ statt Sprachliste (Entwurf A, 09.11.2026, Nutzerentscheidung):
+ * Die Startseite sagt, was heute dran ist — erst die fälligen Wiederholungen,
+ * dann ein fälliger Nachtest, dann der nächste Kapitelschritt — und startet
+ * das mit einem Knopf. Darunter zwei Zahlen (Tage in Folge, sichere Wörter)
+ * und „Frei üben“ für die fünf Lernbereiche. Die Sprachliste steht unten
+ * zum Aufklappen; bei einem neuen Nutzer ist sie offen.
  *
  * Der Migrationslauf (AE-43) wird hier einmal angestoßen: Er ist idempotent,
  * lässt Kartenzustände unangetastet und tut auf einem aktuellen Speicher
@@ -53,13 +56,22 @@ export default function DashboardScreen() {
   const { t, systemLanguage, languageName, uiLanguage } = useLocale();
   const router = useRouter();
   const theme = useTheme();
-  const ctaPress = usePressScale();
   // SEIT STUFE 1 FOLGT DIE ZIELLISTE DER BRÜCKE (App-/Oberflächensprache):
   // Brücke Deutsch sieht die vier Bestandsziele, Brücken th/en/es ihre
   // jeweiligen Paare — inklusive Kreuzzielen mit concept-gekoppeltem Stoff.
   const ziele = zieleFuerBruecke(uiLanguage);
+  // Jedes Mal neu zählen, wenn die Seite wieder sichtbar wird: Nach einer
+  // Übung stand sonst die alte Fällig-Zahl da.
+  const [fokus, setFokus] = useState(0);
+  const [serie, setSerie] = useState<number | null>(null);
+  useFocusEffect(useCallback(() => {
+    setFokus((wert) => wert + 1);
+    let cancelled = false;
+    loadStreak().then((tage) => { if (!cancelled) setSerie(tage); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []));
   // Fällig-Zahlen genau für die Ziele dieser Oberfläche.
-  const due = useDirectionSummariesFor(ziele.map((ziel) => ziel.direction));
+  const due = useDirectionSummariesFor(ziele.map((ziel) => ziel.direction), fokus > 0, fokus);
   // Lokale Wahl schlägt das Profil: Sie steht sofort fest, während das
   // Lesezeichen noch geschrieben wird — sonst spränge die Markierung des
   // Deutsch-Ziels (gleiche Profil-Sprache wie Thai) kurz zurück.
@@ -70,16 +82,13 @@ export default function DashboardScreen() {
 
   // Die Beschreibung unter dem Picker hängt am GEWÄHLTEN Ziel: Beim Deutsch-
   // Ziel war sonst der Thai-Tontext zu lesen (gleiche Paarsprache, anderes
-  // Ziel — Nutzerhinweis 10.09.). Deutsch hat kein Registry-Merkmal und
-  // bekommt einen eigenen Satz; ohne Wahl gilt das erste Ziel der Brücke.
+  // Ziel — Nutzerhinweis 10.09.). Ohne Wahl gilt das erste Ziel der Brücke.
   const aktivesZiel =
     ziele.find(ziel => ziel.direction === selectedDirection) || ziele[0];
   const zielBeschreibung = t(learningLanguage(aktivesZiel.language).feature.description);
-  // „Weiter lernen“ öffnet die Sitzung des aktiven Ziels — die Zahl gehört
-  // dazu. Seit 08.11.2026 nur echte Wiederholungen, ohne neue Karten.
-  const totalDue =
-    due.summaries?.find((item) => item.direction === aktivesZiel.direction)?.reviewDue ?? null;
-  // „Heute“ (08.11.2026): erst wiederholen, dann im Kapitel weiter.
+  const summary = due.summaries?.find((item) => item.direction === aktivesZiel.direction);
+  // Seit 08.11.2026 nur echte Wiederholungen, ohne neue Karten.
+  const totalDue = summary?.reviewDue ?? null;
   const heute = useNextStep(profile ? aktivesZiel.direction : null);
   const naechster = heute?.next ?? null;
   const nachtest = heute?.recheck ?? null;
@@ -91,7 +100,6 @@ export default function DashboardScreen() {
       : naechster
       ? `/review?direction=${aktivesZiel.direction}&mode=${naechster.step?.[0] ?? 'path'}&kapitel=${encodeURIComponent(naechster.chapterId)}`
       : `/review?direction=${aktivesZiel.direction}`;
-  const ziel = zielAdresse as Href;
   // Katalog je Lernsprache: Die Sprache des aktiven Ziels bleibt geladen
   // (Merkhilfe, Lern-Reiter). Das Ladetor hat sie beim Start schon geholt.
   // Erst mit gelesenem Profil: Vorher steht hier die Vorgabe Thai, und eine
@@ -99,22 +107,21 @@ export default function DashboardScreen() {
   useCatalogLanguages(profile ? [aktivesZiel.language] : []);
   const [ladeRichtung, setLadeRichtung] = useState<PairDirection | null>(null);
   const [ladeFehler, setLadeFehler] = useState(false);
+  // Sprachliste: offen, solange noch kein Lernziel gemerkt ist (erster Start).
+  const [sprachenOffen, setSprachenOffen] = useState<boolean | null>(null);
+  const listeOffen = sprachenOffen ?? (profile !== null && profile.review === null);
   const letzteWahl = useRef(0);
 
   /**
    * Lernziel gewählt: Paarsprache UND Richtung in einem. Reihenfolge ist
    * Bedeutung — `setLanguage` wirft den gemerkten Stand bewusst weg (Geste
    * „von vorn”), erst danach darf die neue Richtung als Lesezeichen
-   * (`review` spot) geschrieben werden — bei Kreuzzielen verzichtet das
-   * Schreiben bewusst darauf, das Profil trägt nur de-geankerte Stände.
-   * Fehler werden geschluckt; navigiert wird über den CTA oben oder den
-   * „Lernen”-Knopf der Zeile.
+   * (`review` spot) geschrieben werden.
+   *
+   * Katalog je Lernsprache: Erst wird die Sprachdatei geladen (die Zeile sagt
+   * „lädt …“), dann gewählt — so sehen Merkhilfe und Lern-Reiter nie eine
+   * leere Sprache. Gilt nur die jeweils letzte Wahl; meldet, ob gewählt wurde.
    */
-  //
-  // Katalog je Lernsprache: Erst wird die Sprachdatei geladen (die Zeile sagt
-  // „lädt …“), dann gewählt — so sehen Merkhilfe und Lern-Reiter nie eine
-  // leere Sprache. Die bisherige Sprache bleibt geladen, bis eine dritte
-  // gebraucht wird. Gilt nur die jeweils letzte Wahl; meldet, ob gewählt wurde.
   const chooseGoal = useCallback(
     async (direction: PairDirection): Promise<boolean> => {
       const sprache = targetLanguageOf(direction);
@@ -145,8 +152,7 @@ export default function DashboardScreen() {
   /**
    * Direkter Einstieg aus einer Ziel-Zeile (Nutzerwunsch 13.09.): wählt wie
    * die Zeile selbst und öffnet den Lern-Reiter SOFORT mit der Richtung als
-   * Adresse — der Screen liest den Parameter vor dem Profil und wartet nicht
-   * auf das (asynchrone) Profil-Schreiben, nur auf die Sprachdatei.
+   * Adresse.
    */
   const startGoal = useCallback(
     (direction: PairDirection) => {
@@ -163,190 +169,299 @@ export default function DashboardScreen() {
     });
   }, []);
 
+  // Kopfzeile wie im Entwurf: „Spanisch · Kapitel 3 von 25“.
+  const sprachName = languageName(goalLanguage(aktivesZiel));
+  const kopfzeile = naechster?.chapter
+    ? `${sprachName} · ${t('home.chapterOf', { index: naechster.position, total: naechster.stageCount })}`
+    : naechster?.foundations
+      ? `${sprachName} · ${t('foundations.title')}`
+      : sprachName;
+
   return (
-    <ScreenScaffold title={t('tabs.overview')} subtitle={t('home.subtitle')}>
-      {/* Der Gruß folgt dem GEWÄHLTEN Ziel: Die gelehrte Sprache des aktiven
-          Lernziels entscheidet, welcher Gruß hier steht (Nutzerwunsch
-          13.09.) — Thai zeigt die Töne, Deutsch den deutschen Gruß. */}
+    <ScreenScaffold title={t('home.todayTitle')} subtitle={kopfzeile}>
+      {/* Der Gruß folgt dem GEWÄHLTEN Ziel (Nutzerwunsch 13.09.): Thai zeigt
+          die Töne, Deutsch den deutschen Gruß. */}
       <LanguageHero language={goalLanguage(aktivesZiel)} />
 
-      {/* Mit Richtung: Ein neuer Nutzer hat noch kein gemerktes Ziel, ohne
-          Adresse fragte der Lern-Reiter dann erneut nach der Sprache, obwohl
-          die Zahl am Knopf schon zum aktiven Ziel gehört (Testrunde 25.10.). */}
-      <HeuteKarte reviews={totalDue} next={heute === undefined ? undefined : naechster} recheck={nachtest} />
+      <DeineRunde
+        reviews={totalDue}
+        next={heute === undefined ? undefined : naechster}
+        recheck={nachtest}
+        href={zielAdresse as Href}
+      />
 
-      <Link href={ziel} asChild>
-        {/* accessible: Knopf und Badge sind eine Handlung — der Screenreader
-            soll sie als eine Ansage bringen, nicht als zwei Elemente.
-            Die Fläche steht bewusst auf dem inneren View, NICHT auf dem
-            Pressable: expo-routers asChild-Klon ersetzt den Style des Kindes,
-            ein Style am Pressable selbst landet nie im DOM (UI-Review
-            2026-09-09, im Web-Build gemessen). */}
-        <Pressable
-          accessible
-          accessibilityRole="button"
-          onPressIn={ctaPress.onPressIn}
-          onPressOut={ctaPress.onPressOut}>
-          {/* Seit 22.10.2026 der Glanzpunkt der Übersicht: Verlauf, Leuchten
-              und ein wanderndes Glanzlicht; beim Druck federt die Fläche. */}
-          <Animated.View
-            style={[styles.cta, { boxShadow: `0 12px 34px ${theme.gradientStart}59` }, ctaPress.style]}>
-            <GradientFill radius={18} />
-            <Shine />
-            <ThemedText type="default" style={[styles.ctaLabel, { color: theme.gradientText }]}>
-              {t('home.heroCta')}
-            </ThemedText>
-            {totalDue === null ? null : totalDue > 0 ? (
-              <View style={[styles.ctaBadge, { borderColor: theme.gradientText }]}>
-                <ThemedText type="smallBold" style={{ color: theme.gradientText }}>
-                  {t('home.dueBadge', { count: totalDue })}
-                </ThemedText>
-              </View>
-            ) : (
-              <ThemedText type="small" style={{ color: theme.gradientText }}>
-                {t('home.nothingDue')}
-              </ThemedText>
-            )}
-          </Animated.View>
-        </Pressable>
-      </Link>
-
-      <View style={styles.section}>
-        <ThemedText type="smallBold" themeColor="textSecondary">
-          {t('home.sectionLanguages')}
-        </ThemedText>
-        <LanguagePicker
-          // Die Markierung folgt dem AKTIVEN Ziel, nicht der gemerkten Profil-
-          // Sprache: Fällt die Richtung auf ein anderes Ziel zurück (gemerktes
-          // en_to_de auf der de-Brücke — dort ist Deutsch ausgeblendet),
-          // wanderen sonst Radio und Blick (Held/Legende/Beschreibung)
-          // auseinander (Nutzerbefund 21.09., Fund 2). `ziel.language` ist
-          // genau der Zeilenschlüssel des Pickers (beim Deutsch-Ziel 'th').
-          selected={aktivesZiel.language}
-          selectedDirection={selectedDirection}
-          onSelect={(direction) => void chooseGoal(direction)}
-          onStart={startGoal}
-          due={due.summaries}
-          loadingDirection={ladeRichtung}
-        />
-        {ladeFehler ? (
-          <ThemedText type="small" themeColor="textSecondary">
-            {t('catalog.loadFailed')}
-          </ThemedText>
-        ) : null}
+      <View style={styles.kacheln}>
+        <Kachel label={t('home.streak')} value={serie === null ? '–' : t('home.streakValue', { count: serie })} />
+        <Kachel label={t('home.secure')} value={summary ? t('home.vocabCount', { count: summary.mastered }) : '–'} />
       </View>
 
-      {/* Seit Phase 18 hat jede Sprache ihre eigene Merkhilfe: Tonfarben bei
-          Thai, die Betonungsregel bei Spanisch, die Schriftstueck-Gruppen bei
-          Englisch. Vorher stand hier fuer zwei von drei Sprachen nichts - die
-          Bedingung war auf die Toene gemuenzt und schloss die anderen aus. */}
-      {featureIsImplemented(aktivesZiel.language) ? <FeatureLegend language={aktivesZiel.language} /> : null}
+      <View style={styles.section}>
+        <ThemedText type="smallBold" themeColor="textSecondary">{t('home.freePractice')}</ThemedText>
+        <View style={styles.chips}>
+          {groupsForDirection(aktivesZiel.direction).map((group, index) => (
+            <Link key={group.label} href={`/review?direction=${aktivesZiel.direction}&bereich=${index}` as Href} asChild>
+              <Pressable accessibilityRole="link" style={({ pressed }) => pressed && styles.pressed}>
+                <ThemedView type="backgroundElement" style={styles.chip}>
+                  <Ionicons name={BEREICH_ICONS[index] ?? 'sparkles'} size={14} color={theme.accent} />
+                  <ThemedText type="small">{t(group.label)}</ThemedText>
+                </ThemedView>
+              </Pressable>
+            </Link>
+          ))}
+        </View>
+      </View>
 
-      {/* Die Beschreibung folgt dem GEWÄHLTEN Ziel, nicht der Paarsprache:
-          Beim Deutsch-Ziel stand hier sonst der Thai-Tontext (Nutzerhinweis
-          10.09.). Deutsch hat kein Registry-Merkmal und bekommt einen eigenen
-          Satz; Kreuzziele erben die Beschreibung ihrer Zielsprache. */}
-      <ThemedText type="small" themeColor="textSecondary">
-        {zielBeschreibung}
-      </ThemedText>
-
-      {/* Dezent, ganz unten: welche Sprache das Gerät meldet. Sie ist die
-          Brückensprache der App — wer abweichend davon lernt, sieht hier,
-          worauf die Voreinstellung beruht. */}
-      {/* Nur solange die App-Sprache der Gerätesprache folgt: Bei einer
-          eigenen Wahl stand hier „Systemsprache: Deutsch“ unter einer Thai-
-          Oberfläche (Testlauf 04.10.2026). */}
-      {uiLanguage === systemLanguage ? <ThemedText type="small" themeColor="textSecondary">
-        {t('home.systemLanguage', { language: languageName(systemLanguage) })}
-      </ThemedText> : null}
+      <View style={styles.section}>
+        <Pressable
+          onPress={() => setSprachenOffen(!listeOffen)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: listeOffen }}
+          style={({ pressed }) => [styles.sprachKopf, pressed && styles.pressed]}>
+          <View style={styles.flex}>
+            <ThemedText type="small" themeColor="textSecondary">{t('home.languageNow')}</ThemedText>
+            <ThemedText type="smallBold">{sprachName}</ThemedText>
+          </View>
+          <ThemedText type="small" themeColor="accent">{t('home.switchLanguage')}</ThemedText>
+          <Ionicons name={listeOffen ? 'chevron-up' : 'chevron-down'} size={16} color={theme.accent} />
+        </Pressable>
+        {listeOffen ? (
+          <>
+            <LanguagePicker
+              // Die Markierung folgt dem AKTIVEN Ziel, nicht der gemerkten Profil-
+              // Sprache (Nutzerbefund 21.09., Fund 2). `ziel.language` ist genau
+              // der Zeilenschlüssel des Pickers (beim Deutsch-Ziel 'th').
+              selected={aktivesZiel.language}
+              selectedDirection={selectedDirection}
+              onSelect={(direction) => void chooseGoal(direction)}
+              onStart={startGoal}
+              due={due.summaries}
+              loadingDirection={ladeRichtung}
+            />
+            {ladeFehler ? (
+              <ThemedText type="small" themeColor="textSecondary">
+                {t('catalog.loadFailed')}
+              </ThemedText>
+            ) : null}
+            {/* Jede Sprache hat ihre eigene Merkhilfe: Tonfarben bei Thai, die
+                Betonungsregel bei Spanisch, die Schriftstück-Gruppen bei Englisch. */}
+            {featureIsImplemented(aktivesZiel.language) ? <FeatureLegend language={aktivesZiel.language} /> : null}
+            <ThemedText type="small" themeColor="textSecondary">
+              {zielBeschreibung}
+            </ThemedText>
+            {/* Nur solange die App-Sprache der Gerätesprache folgt (Testlauf 04.10.2026). */}
+            {uiLanguage === systemLanguage ? <ThemedText type="small" themeColor="textSecondary">
+              {t('home.systemLanguage', { language: languageName(systemLanguage) })}
+            </ThemedText> : null}
+          </>
+        ) : null}
+      </View>
     </ScreenScaffold>
   );
 }
 
+function Kachel({ label, value }: { label: string; value: string }) {
+  return (
+    <ThemedView type="backgroundElement" style={styles.kachel} accessible accessibilityLabel={`${label}: ${value}`}>
+      <ThemedText type="small" themeColor="textSecondary">{label}</ThemedText>
+      <ThemedText type="subtitle" style={styles.kachelWert}>{value}</ThemedText>
+    </ThemedView>
+  );
+}
+
+/** Eine Zeile der Runde: Symbol im farbigen Kreis, Titel, eine Zeile Erklärung. */
+function RundenZeile({
+  icon,
+  bg,
+  fg,
+  title,
+  body,
+  done = false,
+}: {
+  icon: IoniconName;
+  bg: ThemeColor;
+  fg: ThemeColor;
+  title: string;
+  body?: string;
+  done?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={styles.zeile} accessible accessibilityLabel={body ? `${title}: ${body}` : title}>
+      <View style={[styles.kreis, { backgroundColor: done ? 'transparent' : theme[bg] }]}>
+        <Ionicons name={done ? 'checkmark-circle' : icon} size={done ? 26 : 16} color={done ? theme.accent : theme[fg]} />
+      </View>
+      <View style={styles.flex}>
+        <ThemedText type="smallBold" themeColor={done ? 'textSecondary' : 'text'}>{title}</ThemedText>
+        {body ? <ThemedText type="small" themeColor="textSecondary">{body}</ThemedText> : null}
+      </View>
+    </View>
+  );
+}
+
 /**
- * „Heute“ auf der Startseite (08.11.2026): was der Knopf darunter gleich
- * tut — erst die fälligen Wiederholungen, dann der nächste Kapitelschritt.
- * Zahlen erscheinen erst geladen, nie geraten.
+ * „Deine Runde“: was der Knopf darunter nacheinander öffnet. Zahlen
+ * erscheinen erst geladen, nie geraten; die Dauer ist eine Schätzung
+ * (`lib/today-plan.ts`) und steht deshalb mit „ca.“ da.
  */
-function HeuteKarte({
+function DeineRunde({
   reviews,
   next,
   recheck,
+  href,
 }: {
   reviews: number | null;
   next: NextStep | null | undefined;
   recheck: LearningChapter | null;
+  href: Href;
 }) {
   const { t, uiLanguage } = useLocale();
   const theme = useTheme();
-  if (reviews === null && next === undefined) return null;
+  const ctaPress = usePressScale();
+  const minuten = reviews === null || next === undefined
+    ? 0
+    : todayMinutes({ reviews, recheck: recheck !== null, step: next?.step?.[0] ?? null });
   const kapitel = next
     ? next.chapter
       ? situationTranslation(next.chapter.situation, uiLanguage).title
       : t('foundations.title')
     : '';
+  const offen = (reviews ?? 0) > 0 || recheck !== null || Boolean(next);
   return (
-    <ThemedView type="backgroundElement" style={styles.today}>
-      <ThemedText type="smallBold" themeColor="accent">{t('home.todayTitle')}</ThemedText>
+    <ThemedView type="backgroundElement" style={styles.runde}>
+      <ThemedText type="smallBold">
+        {minuten > 0 ? `${t('home.roundTitle')} · ${t('common.aboutMinutes', { minutes: minuten })}` : t('home.roundTitle')}
+      </ThemedText>
       {reviews !== null ? (
-        <View style={styles.todayLine}>
-          <Ionicons name="refresh" size={18} color={theme.textSecondary} />
-          <ThemedText type="small" style={styles.todayText}>
-            {reviews > 0 ? t('home.todayReviews', { count: reviews }) : t('home.todayNoReviews')}
-          </ThemedText>
-        </View>
+        <RundenZeile
+          icon="refresh"
+          bg="gradientStart"
+          fg="gradientText"
+          title={t('home.roundReview')}
+          body={reviews > 0 ? t('home.roundReviewBody', { count: reviews }) : t('home.todayNoReviews')}
+          done={reviews === 0}
+        />
       ) : null}
       {recheck ? (
-        <View style={styles.todayLine}>
-          <Ionicons name="ribbon-outline" size={18} color={theme.textSecondary} />
-          <ThemedText type="small" style={styles.todayText}>
-            {t('home.todayRecheck', { chapter: situationTranslation(recheck.situation, uiLanguage).title })}
-          </ThemedText>
-        </View>
+        <RundenZeile
+          icon="ribbon-outline"
+          bg="rateHardBg"
+          fg="rateHardText"
+          title={t('home.roundRecheck')}
+          body={t('home.roundRecheckBody', { chapter: situationTranslation(recheck.situation, uiLanguage).title })}
+        />
       ) : null}
       {next !== undefined ? (
-        <View style={styles.todayLine}>
-          <Ionicons name={next ? 'book-outline' : 'checkmark-circle'} size={18} color={theme.textSecondary} />
-          <View style={styles.todayText}>
-            {next ? <ThemedText type="small" themeColor="textSecondary">{t('chapter.upNext')}</ThemedText> : null}
-            <ThemedText type="small">
-              {next
-                ? next.step
-                  ? t('home.todayNext', { chapter: kapitel, step: t(next.step[1]) })
-                  : t('home.todayFinish', { chapter: kapitel })
-                : t('home.todayAllDone')}
-            </ThemedText>
-          </View>
-        </View>
+        next ? (
+          <RundenZeile
+            icon="book-outline"
+            bg="backgroundSelected"
+            fg="link"
+            title={t('home.roundChapter', { index: next.position, chapter: kapitel })}
+            body={next.step
+              ? t('home.roundStep', { step: next.stepIndex + 1, total: next.stepCount, name: t(next.step[1]) })
+              : t('home.todayFinish', { chapter: kapitel })}
+          />
+        ) : (
+          <RundenZeile icon="checkmark-circle" bg="backgroundSelected" fg="link" title={t('home.todayAllDone')} done />
+        )
       ) : null}
+      <Link href={href} asChild>
+        {/* Die Fläche steht bewusst auf dem inneren View, NICHT auf dem
+            Pressable: expo-routers asChild-Klon ersetzt den Style des Kindes
+            (UI-Review 2026-09-09, im Web-Build gemessen). */}
+        <Pressable
+          accessible
+          accessibilityRole="button"
+          onPressIn={ctaPress.onPressIn}
+          onPressOut={ctaPress.onPressOut}>
+          {/* Der Glanzpunkt der Startseite (seit 22.10.2026): Verlauf, Leuchten
+              und ein wanderndes Glanzlicht; beim Druck federt die Fläche. */}
+          <Animated.View
+            style={[styles.cta, { boxShadow: `0 12px 34px ${theme.gradientStart}59` }, ctaPress.style]}>
+            <GradientFill radius={16} />
+            <Shine />
+            <Ionicons name="play" size={18} color={theme.gradientText} />
+            <ThemedText type="default" style={[styles.ctaLabel, { color: theme.gradientText }]}>
+              {offen ? t('home.roundStart') : t('home.heroCta')}
+            </ThemedText>
+          </Animated.View>
+        </Pressable>
+      </Link>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  today: {
+  runde: {
     borderRadius: 18,
     padding: Spacing.three,
     gap: Spacing.two,
   },
-  todayLine: {
+  zeile: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    gap: Spacing.two,
+    paddingVertical: 2,
+  },
+  kreis: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex: {
+    flex: 1,
+  },
+  kacheln: {
+    flexDirection: 'row',
     gap: Spacing.two,
   },
-  todayText: {
+  kachel: {
     flex: 1,
+    borderRadius: 16,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    gap: 2,
+  },
+  kachelWert: {
+    fontSize: 22,
+    lineHeight: 28,
   },
   section: {
     gap: Spacing.two,
   },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: 8,
+    minHeight: 40,
+  },
+  sprachKopf: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    minHeight: 44,
+  },
+  pressed: {
+    opacity: 0.7,
+  },
   cta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     gap: Spacing.two,
-    minHeight: 60,
-    borderRadius: 18,
+    minHeight: 54,
+    marginTop: Spacing.one,
+    borderRadius: 16,
     overflow: 'hidden',
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
@@ -354,11 +469,5 @@ const styles = StyleSheet.create({
   ctaLabel: {
     fontWeight: '800',
     fontSize: 18,
-  },
-  ctaBadge: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 2,
   },
 });

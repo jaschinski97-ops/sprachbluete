@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { PairDirection } from '@/lib/languages/types';
 import { DirectionSummary, summarizeDirection } from '@/lib/review-session';
@@ -18,18 +18,26 @@ export type DirectionSummaries = {
  */
 export function useDirectionSummariesFor(
   directions: readonly PairDirection[],
-  enabled = true
+  enabled = true,
+  /**
+   * Neu zählen, ohne die alten Zahlen vorher wegzunehmen (09.11.2026): Die
+   * Startseite zählt so nach jeder Übung neu, ohne dass die Zahlen flackern.
+   */
+  refreshKey = 0
 ): DirectionSummaries {
   const [summaries, setSummaries] = useState<DirectionSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Effekt am Richtungs-Satz, nicht an der Array-Identität — die Liste wird
   // bei jedem Render neu gebaut.
   const schluessel = directions.join('|');
+  const letzterSchluessel = useRef<string | null>(null);
 
   useEffect(() => {
     if (!enabled || !schluessel) return;
     let cancelled = false;
-    setSummaries(null);
+    // Nur bei anderen Richtungen leeren: alte Zahlen gehören dann nicht mehr dazu.
+    if (letzterSchluessel.current !== schluessel) setSummaries(null);
+    letzterSchluessel.current = schluessel;
     setError(null);
     const liste = schluessel.split('|') as PairDirection[];
     // Nacheinander statt parallel: jede Zusammenfassung legt fehlende Karten
@@ -48,7 +56,7 @@ export function useDirectionSummariesFor(
     return () => {
       cancelled = true;
     };
-  }, [schluessel, enabled]);
+  }, [schluessel, enabled, refreshKey]);
 
   return { summaries, error };
 }

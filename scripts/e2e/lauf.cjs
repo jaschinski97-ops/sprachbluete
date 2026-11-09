@@ -76,10 +76,10 @@ async function main() {
       try {
         if (!ablauf.name.startsWith('Einführung')) {
           // Frische App: Einführung wegklicken, falls sie (noch) kommt.
-          const { index } = await g.warteAufEines([t('intro.skip'), t('home.heroCta')], { zeit: 40_000 });
+          const { index } = await g.warteAufEines([t('intro.skip'), t('home.freePractice')], { zeit: 40_000 });
           if (index === 0) {
             await g.tippe(t('intro.skip'));
-            await g.warteAuf(t('home.heroCta'));
+            await g.warteAuf(t('home.freePractice'));
           }
           // Übersicht steht; kurz Luft, bis die Reiter Berührungen annehmen.
           await schlafe(800);

@@ -20,7 +20,7 @@ const de = {
   'common.unknownError': 'Unbekannter Fehler.',
 
   /* ---------- Navigation (app-tabs, beide Plattformen) ---------- */
-  'tabs.overview': 'Übersicht',
+  'tabs.overview': "Heute",
   'tabs.learn': 'Lernen',
   'tabs.conversation': 'Gespräch',
   'tabs.progress': 'Fortschritt',
@@ -75,7 +75,7 @@ const de = {
 
   /* ---------- Lernen (review.tsx) ---------- */
   'review.subtitle': 'Lernrichtung',
-  'review.backToOverview': 'Zur Übersicht',
+  'review.backToOverview': "Heute",
   'review.loadingProfile': 'Lade Lernprofil …',
   'review.pickSubtitle': 'Welche Sprache möchtest du üben?',
   'review.switch': '← Sprache oder Richtung wechseln',
@@ -995,7 +995,7 @@ const de = {
   "home.todayNext": "{{chapter}} · {{step}}",
   "home.todayFinish": "{{chapter}} abschließen",
   "home.todayAllDone": "Alle Kapitel abgeschlossen. Die Heutige Runde hält alles frisch.",
-  "progress.canDoTitle": "Deine Ziele",
+  "progress.canDoTitle": "Was du kannst",
   "progress.canDoNote": "Geschafft: alle Kapitel dazu bestanden. Sitzt: auch der Nachtest Wochen später bestanden.",
   "progress.canDoStage": "{{stage}} · {{done}} von {{total}} geschafft",
   "progress.canDoRow": "{{done}} von {{total}} Kapiteln",
@@ -1074,6 +1074,28 @@ const de = {
   "backup.today": "heute",
   "backup.fileTitle": "Als Datei",
   "backup.partsChapters": "{{chapters, plural, one {# Kapitel} other {# Kapitel}}} abgeschlossen",
+  "home.chapterOf": "Kapitel {{index}} von {{total}}",
+  "home.roundTitle": "Deine Runde",
+  "common.aboutMinutes": "ca. {{minutes}} Min",
+  "home.roundReview": "Wiederholen",
+  "home.roundReviewBody": "{{count, plural, one {# Wort, das du sonst vergisst} other {# Wörter, die du sonst vergisst}}}",
+  "home.roundRecheck": "Nachtest",
+  "home.roundRecheckBody": "{{chapter}}: prüfen, ob es sitzt",
+  "home.roundChapter": "Weiter im Kapitel {{index}}: {{chapter}}",
+  "home.roundStep": "Schritt {{step}} von {{total}} · {{name}}",
+  "home.roundStart": "Runde starten",
+  "home.streak": "In Folge",
+  "home.streakValue": "{{count, plural, one {# Tag} other {# Tage}}}",
+  "home.secure": "Sicher",
+  "home.freePractice": "Frei üben",
+  "home.languageNow": "Du lernst",
+  "home.switchLanguage": "Sprache wechseln",
+  "chapter.phaseNow": "jetzt",
+  "chapter.checkCaption": "{{count}} Aufgaben, schließt das Kapitel ab",
+  "progress.numbersTitle": "Deine Zahlen",
+  "progress.memorySecure": "{{count}} sicher",
+  "progress.memoryShaky": "{{count}} wackelig",
+  "progress.memoryNew": "{{count}} neu",
 } as const;
 
 export default de;

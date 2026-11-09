@@ -112,6 +112,12 @@ export function computeStreak(days: ReviewDayLog[]): number {
   return streak;
 }
 
+/** Nur die Serie aktiver Tage — für die Startseite, ohne die ganze Statistik. */
+export async function loadStreak(store?: DataStore, now: number = Date.now()): Promise<number> {
+  const db = store ?? (await getStore());
+  return computeStreak(lastDays(await loadReviewLog(db), STREAK_WINDOW_DAYS, now));
+}
+
 /** Fällige Karten je Tag der nächsten `tage` Tage — Überfälliges zählt zu heute. */
 export function dueForecast(
   cards: readonly FSRSCardState[],

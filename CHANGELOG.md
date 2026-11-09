@@ -15,6 +15,8 @@
   - ein Abschnitt zu Thai-, Chinesisch- und Japanisch-Schrift;
   - neue Schlüsselwörter;
   - „Neu in Version 1.2“.
+- Sprachpakete `pack-fr/pt/it/zh/ja-v1` und `pack-th-v2` als GitHub-Releases veröffentlicht.
+- iOS 1.2.0 (Build 11) gebaut, hochgeladen und am 09.11.2026 zur App-Prüfung eingereicht. Veröffentlichung automatisch nach Freigabe. Die Store-Bildschirmfotos sind noch die von 1.1.
 
 ## 09.11.2026 (Entwürfe A, B und C sichtbar eingebaut)
 

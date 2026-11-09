@@ -80,7 +80,9 @@ Eine weitere Lernsprache freigeben:
 
 Stand 09.11.2026 (Update 1.2.0): Alle neun Lernsprachen sind vertont und freigegeben.
 Die Pakete `pack-fr/pt/it/zh/ja-v1` und `pack-th-v2` sind gebaut. `pack-th-v2` liefert die
-Thai-Clips nach, die nach dem 26.10. entstanden sind.
+Thai-Clips nach, die nach dem 26.10. entstanden sind. Alle sechs Pakete sind veröffentlicht.
+1.2.0 (Build 11) ist am 09.11.2026 zur Prüfung eingereicht. Der erste Klick auf
+„Zur Prüfung hinzufügen“ brach mit einem Apple-Serverfehler ab, nach Neuladen ging es.
 
 ## Update 1.1.0
 
